@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://configurator.reprapfirmware.org
+
+ExpiresActive On
+ExpiresDefault A1
+Header append Cache-Control must-revalidate

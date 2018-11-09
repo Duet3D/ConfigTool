@@ -1,0 +1,3746 @@
+<!DOCTYPE html>
+<!--	RepRapFirmware Configuration Tool
+
+		written by Christian Hammacher
+		for Think3DPrint3D, (c) 2016-2018
+-->
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width">
+		<meta name="description" content="Online configuration tool for the Duet Electronics (+ Extension)">
+		<meta name="author" content="Christian Hammacher">
+
+		<title id="title">RRF Configuration Tool</title>
+
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="favicon.ico">
+		<!-- CSS -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+		<link href="css/defaults.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<!-- Navigation bar -->
+		<nav class="navbar navbar-default">
+			<div class="container">
+				<div class="navbar-header">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#start" data-toggle="tab">Start</a></li>
+						<li><a href="#general" data-toggle="tab">General</a></li>
+						<li><a href="#motors" data-toggle="tab">Motors</a></li>
+						<li><a href="#endstops" data-toggle="tab">Endstops</a></li>
+						<li><a href="#heaters" data-toggle="tab">Heaters</a></li>
+						<li><a href="#tools" data-toggle="tab">Tools</a></li>
+						<li><a href="#compensation" data-toggle="tab">Compensation</a></li>
+						<li><a href="#network" data-toggle="tab">Network</a></li>
+						<li><a href="#finish" data-toggle="tab">Finish</a></li>
+					</ul>
+				</div>
+
+				<a class="navbar-brand pull-right">RepRapFirmware Configuration Tool</a>
+			</div>
+		</nav>
+
+		<!-- Content -->
+		<form autocomplete="off">
+			<div class="container tab-content">
+				<!-- Start page -->
+				<div class="tab-pane fade in active" id="start">
+					<div class="text-center">
+						<h1>Welcome to the official RepRapFirmware Configuration Tool</h1>
+						<h3 class="text-muted">Please follow this wizard to obtain an individual configuration bundle for your printer</h3>
+					</div>
+
+					<div class="well">
+						<p>If you are using a printer that was originally shipped with RepRapFirmware, you can select a predefined template here:</p>
+
+						<div class="input-group">
+							<div class="radio">
+								<label>
+									<input type="radio" name="machine" value="minikossel">
+									T3P3 Mini Kossel
+								</label>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="input-group">
+								<div class="radio">
+									<label>
+										<input type="radio" name="machine" value="ormerod1">
+										RepRapPro Ormerod 1
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="machine" value="ormerod2">
+										RepRapPro Ormerod 2
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="machine" value="fisher">
+										RepRapPro Fisher
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<p>The following templates were contributed by users and have not been throughly tested:</p>
+
+						<div class="form-group">
+							<div class="input-group">
+								<div class="radio">
+									<label>
+										<input type="radio" name="machine" value="distech-prometheus-system">
+										Distech Prometheus System
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="machine" value="reach3d">
+										Reach3D Printer
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="machine" value="wanhao-di3">
+										Wanhao Duplicator i3
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<p>Alternatively you can create your own individual configuration by creating a new one from scratch or by loading an existing JSON template:</p>
+
+						<div class="input-group">
+							<div class="radio">
+								<label>
+									<input type="radio" name="machine" value="custom" checked>
+									Custom configuration
+								</label>
+							</div>
+
+							<div class="radio">
+								<label>
+									<input type="radio" name="machine" value="existing">
+									Use existing configuration
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<ul class="pager">
+						<li class="next"><a href="#general" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- General page -->
+				<div class="tab-pane fade" id="general">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							General preferences
+						</div>
+
+						<div class="panel-body">
+							<div class="row form-group">
+								<div class="col-md-4">
+									<label for="board">Board:</label>
+									<select class="form-control" id="board">
+										<option value="duet06">Duet 0.6</option>
+										<option value="duet085">Duet 0.8.5</option>
+										<option value="duetwifi10" selected>Duet 2 WiFi</option>
+										<option value="duetethernet10">Duet 2 Ethernet</option>
+										<option value="duetm10">Duet 2 Maestro</option>
+									</select>
+								</div>
+								<div class="col-md-4">
+									<label for="firmware">Firmware version:</label>
+									<select class="form-control" id="firmware">
+										<option value="1.16">1.16 or older</option>
+										<option value="1.17">1.17 to 1.19</option>
+										<option value="1.20">1.20</option>
+										<option value="1.21" selected>1.21 or newer</option>
+									</select>
+								</div>
+								<div class="col-md-4">
+									<label for="compatibility">Firmware compatibility:</label>
+									<select class="form-control" id="compatibility" data-title="Output emulation used for USB and Telnet (M555)">
+										<option value="0">Native</option>
+										<option value="1">RepRapFirmware</option>
+										<option value="2" selected>Marlin</option>
+										<option value="3">Teacup</option>
+										<option value="4">Sprinter</option>
+										<option value="5">Repetier</option>
+									</select>
+								</div>
+							</div>
+
+							<div class="checkbox">
+								<label data-title="Load non-volatile configuration parameters on start-up (M501)">
+									<input type="checkbox" id="nvram">Enable non-volatile memory
+								</label>
+							</div>
+
+							<div class="checkbox fw-120">
+								<label data-title="Store the last valid print parameters on the SD card when a power failure occurs">
+									<input type="checkbox" id="power_failure_handling">Save print state on power failure
+								</label>
+							</div>
+
+							<div id="power_failure_options" class="margin-left fw-120 hidden">
+								<div class="row">
+									<div class="col-md-2">
+										<label for="auto_save_threshold">Auto save threshold:</label>
+										<div class="input-group has-success">
+											<input type="number" value="10" min="1" max="32" id="auto_save_threshold" class="form-control">
+											<span class="input-group-addon">V</span>
+										</div>
+									</div>
+									<div class="col-md-2">
+										<label for="auto_resume_threshold">Resume threshold:</label>
+										<div class="input-group has-success">
+											<input type="number" value="11" min="1" max="32" id="auto_resume_threshold" class="form-control">
+											<span class="input-group-addon">V</span>
+										</div>
+									</div>
+									<div class="col-md-8">
+										<label for="auto_save_gcodes">G-codes to run when auto-saving is performed:</label>
+										<input type="text" value="M913 X0 Y0 G91 M83 G1 Z3 E-5 F1000" id="auto_save_gcodes" class="form-control optional">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Printer geometry
+						</div>
+
+						<div class="panel-body">
+							<ul class="nav nav-tabs" id="geometry">
+								<li class="active"><a href="#cartesian" data-toggle="tab">Cartesian</a></li>
+								<li><a href="#corexy" data-toggle="tab">CoreXY</a></li>
+								<li><a href="#corexz" data-toggle="tab">CoreXZ</a></li>
+								<li><a href="#delta" data-toggle="tab">Delta</a></li>
+							</ul>
+
+							<div class="tab-content">
+								<!-- Min and max values for cartesian geometries -->
+								<div class="cartesian" id="axis_minmax">
+									<table>
+										<tr class="tr-xyz">
+											<td>
+												<label for="x_min">X minimum: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="x_min" max="230" value="0" data-title="Distance between the low X axis end and the bed corner">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+											<td>
+												<label for="y_min">Y minimum: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="y_min" max="210" value="0" data-title="Distance between the low Y axis end and the bed corner">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+											<td>
+												<label for="z_min">Z minimum: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="z_min" max="200" value="0" data-title="Minimum allowed Z position">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+										</tr>
+										<tr class="tr-xyz">
+											<td>
+												<label for="x_max">X maximum: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="x_max" min="0" value="230" data-title="Maximum length of the X axis plus X minimum">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+											<td>
+												<label for="y_max">Y maximum: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="y_max" min="0" value="210" data-title="Maximum length of the Y axis plus Y minimum">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+											<td>
+												<label for="z_max">Z maximum: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="z_max" min="0" value="200" data-title="Maximum allowed Z position">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<!-- Cartesian -->
+								<div class="tab-pane active" id="cartesian">
+									<p class="help-block">This machine uses individual motors to drives each axis</p>
+								</div>
+
+								<!-- CoreXY -->
+								<div class="tab-pane" id="corexy">
+									<p class="help-block">This machine uses two coupled motors to position the nozzle on the XY plane</p>
+								</div>
+
+								<!-- CoreXZ -->
+								<div class="tab-pane" id="corexz">
+									<p class="help-block">This machine uses two coupled motors to position the nozzle on the XZ plane</p>
+								</div>
+
+								<!-- Delta -->
+								<div class="tab-pane" id="delta">
+									<table>
+										<tr class="tr-xy">
+											<td>
+												<label for="delta_radius">Delta radius: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="delta_radius" min="1" max="500" value="105.6" data-title="Horizontal distance subtended by each rod, measured between joint centres, when the effector is in the centre">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+											<td>
+												<label for="rod_length">Diagonal rod length: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="rod_length" min="1" value="215" data-title="Distance between the centre of your towers and the joint at the effector">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+										</tr>
+										<tr class="tr-xy">
+											<td>
+												<label for="print_radius">Printable radius: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="print_radius" min="1" max="105.6" value="85" data-title="Safe printing radius">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+											<td>
+												<label for="homed_height">Homed height: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="homed_height" min="1" value="250" data-title="Maximum build height of your printer">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+										</tr>
+										<tr class="tr-xy">
+											<td>
+												<label for="z_min_delta">Minimum Z: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="z_min_delta" value="0" data-title="Minimum allowed Z travel">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+											<td>
+												<label for="max_carriage_travel">Maximum carriage travel: </label>
+											</td>
+											<td>
+												<div class="input-group has-success">
+													<input type="number" class="form-control" id="max_carriage_travel" min="1" value="260" data-title="Maximum travel length in Z direction">
+													<span class="input-group-addon">mm</span>
+												</div>
+											</td>
+										</tr>
+									</table>
+
+									<div class="checkbox">
+										<label data-title="This is recommended for initial delta configurations">
+											<input type="checkbox" id="homed_height_warning">
+											Add a warning in config.g if you are setting your homed height too high and will measure it during calibration
+										</label>
+									</div>
+
+									<p class="help-block">This machine uses towers to position the nozzle</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#start" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#motors" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Motors page -->
+				<div class="tab-pane fade" id="motors">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Axes
+
+							<a href="#" id="a_steps_calculator" class="pull-right">Calculate steps per mm</a>
+						</div>
+
+						<table class="table" id="table_axes">
+							<thead>
+								<tr>
+									<th>Axis</th>
+									<th>Direction</th>
+									<th>Microstepping</th>
+									<th>Steps&nbsp;per&nbsp;mm</th>
+									<th>Max.&nbsp;instant speed&nbsp;change</th>
+									<th>Max.&nbsp;speed</th>
+									<th>Acceleration</th>
+									<th>Motor&nbsp;current</th>
+									<th>Motor&nbsp;driver</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- X axis -->
+								<tr>
+									<td>X</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive0_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive0_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive0_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive0_steps_per_mm" min="10" value="80">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive0_instant_dv" min="0" value="15">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive0_max_speed" min="1" value="100">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive0_acceleration" min="1" value="500">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive0_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive0_driver" data-title="Motor driver (M584)">
+											<option value="0" selected>0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- Y axis -->
+								<tr>
+									<td>Y</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive1_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive1_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive1_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive1_steps_per_mm" min="10" value="80">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive1_instant_dv" min="0" value="15">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive1_max_speed" min="1" value="100">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive1_acceleration" min="1" value="20">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive1_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive1_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1" selected>1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- Z axis -->
+								<tr>
+									<td>Z</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive2_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive2_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive2_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive2_steps_per_mm" min="10" value="4000">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive2_instant_dv" min="0" value="0.2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive2_max_speed" min="1" value="3">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive2_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive2_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive2_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2" selected>2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Extruders
+						</div>
+
+						<div class="panel-body">
+							<label for="num_extruders">Number of extruder drives:</label>
+							<div class="form-group">
+								<select class="form-control" id="num_extruders">
+									<option value="0">0</option>
+									<option value="1" selected>1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+									<option value="6">6</option>
+								</select>
+							</div>
+						</div>
+
+						<table class="table" id="table_extruders">
+							<thead>
+								<tr>
+									<th>Drive</th>
+									<th>Direction</th>
+									<th>Microstepping</th>
+									<th>Steps&nbsp;per&nbsp;mm</th>
+									<th>Max.&nbsp;instant speed&nbsp;change</th>
+									<th>Maximum&nbsp;speed</th>
+									<th>Acceleration</th>
+									<th>Motor&nbsp;current</th>
+									<th>Motor&nbsp;driver</th>
+								</tr>
+							</thead>
+							<tbody id="driveextruders">
+								<!-- E0 drive -->
+								<tr>
+									<td>E0</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive3_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive3_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive3_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive3_steps_per_mm" min="10" value="420">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive3_instant_dv" min="0" value="2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive3_max_speed" min="1" value="20">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive3_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive3_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive3_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3" selected>3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- E1 drive -->
+								<tr class="hidden">
+									<td>E1</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive4_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive4_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive4_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive4_steps_per_mm" min="10" value="420">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive4_instant_dv" min="0" value="2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive4_max_speed" min="1" value="20">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive4_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive4_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive4_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4" selected>4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- E2 drive -->
+								<tr class="hidden">
+									<td>E2</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive5_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive5_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive5_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive5_steps_per_mm" min="10" value="420">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive5_instant_dv" min="0" value="2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive5_max_speed" min="1" value="20">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive5_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive5_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive5_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5" selected>5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- E3 drive -->
+								<tr class="hidden">
+									<td>E3</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive6_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive6_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive6_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive6_steps_per_mm" min="10" value="420">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive6_instant_dv" min="0" value="2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive6_max_speed" min="1" value="20">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive6_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive6_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive6_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6" selected>6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- E4 drive -->
+								<tr class="hidden">
+									<td>E4</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive7_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive7_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive7_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive7_steps_per_mm" min="10" value="420">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive7_instant_dv" min="0" value="2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive7_max_speed" min="1" value="20">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive7_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive7_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive7_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7" selected>7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- E5 drive -->
+								<tr class="hidden">
+									<td>E5</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive8_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive8_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive8_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive8_steps_per_mm" min="10" value="420">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive8_instant_dv" min="0" value="2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive8_max_speed" min="1" value="20">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive8_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive8_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive8_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8" selected>8 (E5)</option>
+											<option value="9">9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+
+								<!-- E6 drive -->
+								<tr class="hidden">
+									<td>E6</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive9_forward" value="1" type="radio" checked>Forwards
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive9_forward" value="0" type="radio">Backwards
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive9_microstepping" disabled data-title="Microstepping for Duet WiFi (M350)">
+											<option value="1">x1</option>
+											<option value="1_i" class="hidden">x1 interpolated to x256</option>
+											<option value="2">x2</option>
+											<option value="2_i" class="hidden">x2 interpolated to x256</option>
+											<option value="4">x4</option>
+											<option value="4_i" class="hidden">x4 interpolated to x256</option>
+											<option value="8">x8</option>
+											<option value="8_i" class="hidden">x8 interpolated to x256</option>
+											<option value="16">x16</option>
+											<option value="16_i" selected>x16 interpolated to x256</option>
+											<option value="32">x32</option>
+											<option value="32_i" class="hidden">x32 interpolated to x256</option>
+											<option value="64">x64</option>
+											<option value="64_i" class="hidden">x64 interpolated to x256</option>
+											<option value="128">x128</option>
+											<option value="128_i" class="hidden">x128 interpolated to x256</option>
+											<option value="256">x256</option>
+										</select>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor steps per mm (M92)">
+											<input type="number" class="form-control" id="drive9_steps_per_mm" min="10" value="420">
+											<span class="input-group-addon">mm⁻¹</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed instantenous speed change (M566)">
+											<input type="number" class="form-control" id="drive9_instant_dv" min="0" value="2">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed speed (M203)">
+											<input type="number" class="form-control" id="drive9_max_speed" min="1" value="20">
+											<span class="input-group-addon">mm/s</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Drive acceleration (M201)">
+											<input type="number" class="form-control" id="drive9_acceleration" min="1" value="250">
+											<span class="input-group-addon">mm/s²</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Motor current (M906)">
+											<input type="number" class="form-control" id="drive9_current" min="100" max="2000" value="800">
+											<span class="input-group-addon">mA</span>
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="drive9_driver" data-title="Motor driver (M584)">
+											<option value="0">0 (X)</option>
+											<option value="1">1 (Y)</option>
+											<option value="2">2 (Z)</option>
+											<option value="3">3 (E0)</option>
+											<option value="4">4 (E1)</option>
+											<option value="5">5 (E2)</option>
+											<option value="6">6 (E3)</option>
+											<option value="7">7 (E4)</option>
+											<option value="8">8 (E5)</option>
+											<option value="9" selected>9 (E6)</option>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Motor current reduction
+						</div>
+
+						<div class="panel-body">
+							<table id="table_idle">
+								<tr>
+									<td>
+										<div class="checkbox">
+											<label data-title="Disable motors on inactivity">
+												<input type="checkbox" id="idle_used" checked>
+												Reduce motor currents automatically when idle
+											</label>
+										</div>
+									</td>
+									<td>
+										<label for="idle_factor">Idle current percentage:</label>
+										<div class="input-group has-success" data-title="Motor idle current reduction factor (M906)">
+											<input class="form-control" id="idle_factor" min="0" max="100" value="30" type="number">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<label for="idle_timeout">Idle timeout:</label>
+										<div class="input-group has-success" data-title="Motor idle timeout value (M84)">
+											<input class="form-control" id="idle_timeout" min="0" value="30" type="number">
+											<span class="input-group-addon">s</span>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+
+					<div class="alert alert-warning hidden" id="current_warning">
+						<p><strong><span class="glyphicon glyphicon-warning-sign"></span> Warning</strong></p>
+						<p>Your specified motor currents exceed the safe range. You may have to use extra cooling to prevent damage of your stepper drivers!</p>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#general" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#endstops" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Endstops page -->
+				<div class="tab-pane fade" id="endstops">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Z-Probe
+						</div>
+
+						<div class="panel-body">
+							<div class="row form-group">
+								<div class="col-md-3">
+									<label for="probe_x_offset">Probe X offset:</label>
+									<div class="input-group has-success" data-title="Offset of the Z-probe in X direction">
+										<input type="number" class="form-control" id="probe_x_offset" value="0">
+										<span class="input-group-addon">mm</span>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="probe_y_offset">Probe Y offset:</label>
+									<div class="input-group has-success" data-title="Offset of the Z-probe in Y direction">
+										<input type="number" class="form-control" id="probe_y_offset" value="0">
+										<span class="input-group-addon">mm</span>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="probe_speed">Probing speed:</label>
+									<div class="input-group has-success" data-title="Speed at which bed points are probed">
+										<input type="number" class="form-control" id="probe_speed" value="2">
+										<span class="input-group-addon">mm/s</span>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<div class="checkbox" id="checkbox_probe_deploy">
+										<label data-title="Deploy or retract a mechanical probe by running a macro file">
+											<input type="checkbox" id="probe_deploy">
+											Deploy/retract probe
+										</label>
+									</div>
+								</div>
+							</div>
+
+							<ul class="nav nav-tabs" id="probe">
+								<li><a href="#noprobe" data-toggle="tab">No Z probe</a></li>
+								<li><a href="#switch" data-toggle="tab">Switch</a></li>
+								<li class="active"><a href="#unmodulated" data-toggle="tab">Unmodulated or smart IR probe</a></li>
+								<li><a href="#modulated" data-toggle="tab">Simple modulated IR probe</a></li>
+								<li><a href="#ultrasonic" data-toggle="tab">Ultrasonic probe</a></li>
+								<li><a href="#effector" data-toggle="tab">Smart Effector</a></li>
+								<li><a href="#bltouch" data-toggle="tab">BLTouch</a></li>
+							</ul>
+
+							<div class="tab-content form-group">
+								<!-- Trigger height and value -->
+								<div class="row form-group" id="zprobe_params">
+									<div class="col-md-6">
+										<label for="trigger_height">Trigger height:</label>
+										<div class="input-group has-success" data-title="Height of the nozzle(s) when the probe is triggered">
+											<input type="number" class="form-control" id="trigger_height" value="2.5">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<label for="trigger_value">Trigger value:</label>
+										<div class="has-success">
+											<input type="number" class="form-control" id="trigger_value" min="0" max="1024" value="500" data-title="Trigger threshold for the probe">
+										</div>
+									</div>
+								</div>
+
+								<!-- No probe -->
+								<div class="tab-pane" id="noprobe">
+									<p class="help-block">No Z-probe is installed. The distance between the nozzle and the bed must be manually determined.</p>
+								</div>
+
+								<!-- Switch -->
+								<div class="tab-pane" id="switch">
+									<p class="help-block">A switch is used to determine the distance between nozzle and bed.<br/><br/>This switch must be connected to the Z probe terminal and <strong>not</strong> to the Z endstop switch terminal!</p>
+									<p class="help-block delta hidden"><strong>Important:</strong> In this case the switch must be connected to the E0 endstop instead!</p>
+								</div>
+
+								<!-- Unmodulated probe -->
+								<div class="tab-pane active" id="unmodulated">
+									<p class="help-block">An umodulated Z-probe is used to determine the distance between nozzle and bed (without trigger signal)</p>
+								</div>
+
+								<!-- Modulated probe -->
+								<div class="tab-pane" id="modulated">
+									<p class="help-block">A modulated Z-probe is used to determine the distance between nozzle and bed (with trigger signal)</p>
+								</div>
+
+								<!-- Ultrasonic probe -->
+								<div class="tab-pane" id="ultrasonic">
+									<p class="help-block">An ultrasonic Z-probe is used to determine the distance between nozzle and bed</p>
+								</div>
+
+								<!-- Smart effector -->
+								<div class="tab-pane" id="effector">
+									<div class="row form-group" id="effector_params">
+										<div class="col-md-4">
+											<label for="effector_trigger_height">Trigger height:</label>
+											<div class="input-group has-success" data-title="Height of the nozzle when the smart effector is triggered">
+												<input type="number" class="form-control" id="effector_trigger_height" value="-0.1">
+												<span class="input-group-addon">mm</span>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<label for="effector_trigger_value">Trigger value:</label>
+											<div class="has-success">
+												<input type="number" class="form-control" id="effector_trigger_value" min="0" max="1024" value="100" data-title="Trigger threshold for the probe">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<label for="effector_recovery_time">Recovery time:</label>
+											<div class="input-group has-success" data-title="Recovery time of the smart effector">
+												<input type="number" class="form-control" id="effector_recovery_time" value="0.4">
+												<span class="input-group-addon">s</span>
+											</div>
+										</div>
+									</div>
+
+
+									<p class="help-block">Official <a href="https://www.duet3d.com/DeltaSmartEffector" target="_blank">Duet3D Smart Effector</a> for Delta printers (also see <a href="https://www.duet3d.com/wiki/Smart_effector_and_carriage_adapters_for_delta_printer" target="_blank">Duet3D Wiki</a>)</p>
+								</div>
+
+								<!-- BLTouch -->
+								<div class="tab-pane" id="bltouch">
+									<div class="row form-group" id="effector_params">
+										<div class="col-md-6">
+											<label for="effector_trigger_height">Trigger height:</label>
+											<div class="input-group has-success" data-title="Height of the nozzle when the BLTouch probe is triggered">
+												<input type="number" class="form-control" id="bltouch_trigger_height" value="0">
+												<span class="input-group-addon">mm</span>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<label for="effector_recovery_time">PWM channel to use:</label>
+											<select class="form-control" id="bltouch_channel" data-title="PWM channel to control the BLTouch probe with">
+												<option value="0">Bed output</option>
+												<option value="1">E0 output</option>
+												<option value="2">E1 output</option>
+												<option value="3" selected>E2 output</option>
+												<option value="4">E3 output</option>
+												<option value="5">E4 output</option>
+												<option value="6">E5 output</option>
+												<option value="7">E6 output</option>
+												<option value="8">E7 output</option>
+											</select>
+										</div>
+									</div>
+
+									<p class="help-block">Use a BLTouch for Z-probing. Make sure you change it to use +3.3V instead of +5V before you connect it or you risk damaging your board! See <a href="https://duet3d.dozuki.com/Wiki/Connecting_a_Z_probe#Section_BLTouch" target="_blank">here</a> for further details.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Endstop configuration
+
+							<abbr class="pull-right" title="When an endstop is hit, the axis position will be set to the corresponding axis minimum/maximum. If your endstop switch is not mounted at the axis end, you will have to add an extra G92 code after the homing move (G1..S1) to your homing files in order to set the new axis position. When homing the Z axis using a Z probe, the firmware will set the new Z position to the specified trigger height">Note</abbr>
+						</div>
+
+						<table class="table" id="table_endstops">
+							<thead>
+								<tr>
+									<th>Axis</th>
+									<th>Endstop type</th>
+									<th>Endstop location</th>
+								</tr>
+							</thead>
+							<tbody>
+								<!-- X axis -->
+								<tr>
+									<td>X</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Requires manual homing via G92">
+													<input name="drive0_endstop_type" value="0" type="radio">None
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Endstop switch pulls signal from GND to +3.3V when triggered">
+													<input name="drive0_endstop_type" value="1" type="radio">Active high (normally-closed switch)
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Endstop switch pulls signal from +3.3V to GND when triggered">
+													<input name="drive0_endstop_type" value="2" type="radio">Active low (normally-open switch)
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active" data-title="Z-Probe homes this axis">
+													<input name="drive0_endstop_type" value="3" type="radio" checked>Z-Probe
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm motor-load-detection">
+												<label class="btn btn-default" data-title="Motor stall detection of the stepper drivers">
+													<input name="drive0_endstop_type" value="4" type="radio">Motor stall detect
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive0_endstop_location" value="1" type="radio" checked>At low end
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive0_endstop_location" value="2" type="radio">At high end
+												</label>
+											</div>
+										</div>
+									</td>
+								</tr>
+
+								<!-- Y axis -->
+								<tr>
+									<td>Y</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Requires manual homing via G92">
+													<input name="drive1_endstop_type" value="0" type="radio">None
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active" data-title="Endstop switch pulls signal from GND to +3.3V when triggered">
+													<input name="drive1_endstop_type" value="1" type="radio" checked>Active high (normally-closed switch)
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Endstop switch pulls signal from +3.3V to GND when triggered">
+													<input name="drive1_endstop_type" value="2" type="radio">Active low (normally-open switch)
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Z-Probe homes this axis">
+													<input name="drive1_endstop_type" value="3" type="radio">Z-Probe
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm motor-load-detection">
+												<label class="btn btn-default" data-title="Motor stall detection of the stepper drivers">
+													<input name="drive1_endstop_type" value="4" type="radio">Motor stall detect
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive1_endstop_location" value="1" type="radio">At low end
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive1_endstop_location" value="2" type="radio" checked>At high end
+												</label>
+											</div>
+										</div>
+									</td>
+								</tr>
+
+								<!-- Z axis -->
+								<tr>
+									<td>Z</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Requires manual homing via G92">
+													<input name="drive2_endstop_type" value="0" type="radio">None
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Endstop switch pulls signal from GND to +3.3V when triggered">
+													<input name="drive2_endstop_type" value="1" type="radio">Active high (normally-closed switch)
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default" data-title="Endstop switch pulls signal from +3.3V to GND when triggered">
+													<input name="drive2_endstop_type" value="2" type="radio">Active low (normally-open switch)
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active" data-title="Z-Probe homes this axis">
+													<input name="drive2_endstop_type" value="3" type="radio" checked>Z-Probe
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm motor-load-detection">
+												<label class="btn btn-default" data-title="Motor stall detection of the stepper drivers">
+													<input name="drive2_endstop_type" value="4" type="radio">Motor stall detect
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default active">
+													<input name="drive2_endstop_location" value="1" type="radio" checked>At low end
+												</label>
+											</div>
+											<div class="btn-group btn-group-sm">
+												<label class="btn btn-default">
+													<input name="drive2_endstop_location" value="2" type="radio">At high end
+												</label>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Homing preferences
+						</div>
+
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-3">
+									<label for="homing_speed_fast">Homing speed (first pass):</label>
+									<div class="input-group has-success" data-title="Homing is performed in two stages. First pass means the initial homing run">
+										<input class="form-control" id="homing_speed_fast" min="1" value="30" type="number">
+										<span class="input-group-addon">mm/s</span>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="homing_speed_slow">Homing speed (second pass):</label>
+									<div class="input-group has-success" data-title="Second pass means the second homing run after the endstops were triggered for the first time">
+										<input class="form-control" id="homing_speed_slow" min="1" value="6" type="number">
+										<span class="input-group-addon">mm/s</span>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="travel_speed">Travel speed:</label>
+									<div class="input-group has-success" data-title="Speed for travel moves">
+										<input type="number" class="form-control" id="travel_speed" value="100">
+										<span class="input-group-addon">mm/s</span>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="z_dive_height">Z dive height:</label>
+									<div class="input-group has-success" data-title="Z lift amount for bed probing and for cartesian homing files">
+										<input type="number" class="form-control" id="z_dive_height" value="5">
+										<span class="input-group-addon">mm</span>
+									</div>
+								</div>
+							</div>
+
+							<div class="delta hidden">
+								<div class="checkbox" id="checkbox_slow_homing">
+									<label data-title="Recommended for initial calibration">
+										<input type="checkbox" id="slow_homing">
+										Set initial homing speed to 10% for calibration and add a note to homedelta.g
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#motors" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#heaters" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Heaters page -->
+				<div class="tab-pane fade" id="heaters">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							General heater settings
+						</div>
+
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-9">
+									<label for="num_nozzles">Number of nozzle heaters:</label>
+									<div class="form-group">
+										<select class="form-control" id="num_nozzles">
+											<option value="0">0</option>
+											<option value="1" selected>1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7" disabled>7</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="checkbox">
+									<label data-title="Enable this if you want to connect the first nozzle heater to the big hot bed terminals">
+										<input type="checkbox" id="bed_is_nozzle">
+										Assign bed heater to first nozzle
+									</label>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" id="bed_present" checked>
+										Heated bed present
+									</label>
+								</div>
+								<div class="row" id="bed_options">
+									<div class="col-md-9">
+										<div class="margin-left">
+											<label for="bed_heater">Bed heater output:</label>
+											<select class="form-control" id="bed_heater">
+												<option value="0" selected>Bed</option>
+												<option value="1">E0</option>
+												<option value="2">E1</option>
+												<option value="3">E2</option>
+												<option value="4">E3</option>
+												<option value="5">E4</option>
+												<option value="6">E5</option>
+												<option value="7">E6</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<label>Control method:</label>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group">
+												<label class="btn btn-default" data-title="Use PID regulation for the hot bed">
+													<input name="bed_pid" value="1" type="radio">PID
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default active" data-title="Use bang-bang control for the hot bed">
+													<input name="bed_pid" value="0" type="radio" checked>Bang-bang
+												</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="checkbox">
+									<label>
+										<input type="checkbox" id="chamber_present">
+										Chamber heater present
+									</label>
+								</div>
+								<div class="row hidden" id="chamber_options">
+									<div class="col-md-9">
+										<div class="margin-left">
+											<label for="chamber_heater">Chamber heater output:</label>
+											<select class="form-control" id="chamber_heater">
+												<option value="0" selected>Bed</option>
+												<option value="1">E0</option>
+												<option value="2">E1</option>
+												<option value="3">E2</option>
+												<option value="4">E3</option>
+												<option value="5">E4</option>
+												<option value="6">E5</option>
+												<option value="7">E6</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="col-md-3">
+										<label>Control method:</label>
+										<div class="btn-group" data-toggle="buttons">
+											<div class="btn-group">
+												<label class="btn btn-default" data-title="Use PID regulation for the chamber heater">
+													<input name="chamber_pid" value="1" type="radio">PID
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default active" data-title="Use bang-bang control for the chamber heater">
+													<input name="chamber_pid" value="0" type="radio" checked>Bang-bang
+												</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default" id="panel_heaters">
+						<div class="panel-heading">
+							Heaters
+
+							<a href="#" id="a_thermistor_calculator" class="pull-right" data-toggle="popover">Calculate thermistor coefficients or choose preset</a>
+						</div>
+
+						<table class="table" id="table_heaters">
+							<thead>
+								<tr>
+									<th>Heater</th>
+									<th>Type</th>
+									<th>Temp. limit</th>
+									<th>PWM limit</th>
+									<th>Series res.</th>
+									<th colspan="2" class="fw-116 hidden">Thermistor coefficients</th>
+									<th colspan="3" class="fw-117"><a href="#" id="a_thermistor_coefficients" data-title="Toggle between β-model and Steinhart-Hart AB parameters">Thermistor coefficients</a></th>
+									<th>Sensor channel</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-type="bed">
+									<td>Bed</td>
+									<td>Heated bed</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater0_temp_limit" value="120">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater0_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater0_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater0_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater0_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater0_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater0_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater0_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater0_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0" selected>Bed Thermistor</option>
+											<option value="1">E0 Thermistor</option>
+											<option value="2">E1 Thermistor</option>
+											<option value="3">E2 Thermistor</option>
+											<option value="4">E3 Thermistor</option>
+											<option value="5">E4 Thermistor</option>
+											<option value="6">E5 Thermistor</option>
+											<option value="7">E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+								<tr data-type="nozzle">
+									<td>E0</td>
+									<td>Nozzle</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater1_temp_limit" value="280">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater1_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater1_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater1_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater1_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater1_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater1_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater1_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater1_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0">Bed Thermistor</option>
+											<option value="1" selected>E0 Thermistor</option>
+											<option value="2">E1 Thermistor</option>
+											<option value="3">E2 Thermistor</option>
+											<option value="4">E3 Thermistor</option>
+											<option value="5">E4 Thermistor</option>
+											<option value="6">E5 Thermistor</option>
+											<option value="7">E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+								<tr class="hidden" data-type="nozzle">
+									<td>E1</td>
+									<td>Nozzle</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater2_temp_limit" value="280">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater2_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater2_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater2_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater2_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater2_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater2_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater2_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater2_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0">Bed Thermistor</option>
+											<option value="1">E0 Thermistor</option>
+											<option value="2" selected>E1 Thermistor</option>
+											<option value="3">E2 Thermistor</option>
+											<option value="4">E3 Thermistor</option>
+											<option value="5">E4 Thermistor</option>
+											<option value="6">E5 Thermistor</option>
+											<option value="7">E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+								<tr class="hidden" data-type="nozzle">
+									<td>E2</td>
+									<td>Nozzle</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater3_temp_limit" value="280">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater3_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater3_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater3_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater3_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater3_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater3_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater3_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater3_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0">Bed Thermistor</option>
+											<option value="1">E0 Thermistor</option>
+											<option value="2">E1 Thermistor</option>
+											<option value="3" selected>E2 Thermistor</option>
+											<option value="4">E3 Thermistor</option>
+											<option value="5">E4 Thermistor</option>
+											<option value="6">E5 Thermistor</option>
+											<option value="7">E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+								<tr class="hidden" data-type="nozzle">
+									<td>E3</td>
+									<td>Nozzle</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater4_temp_limit" value="280">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater4_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater4_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater4_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater4_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater4_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater4_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater4_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater4_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0">Bed Thermistor</option>
+											<option value="1">E0 Thermistor</option>
+											<option value="2">E1 Thermistor</option>
+											<option value="3">E2 Thermistor</option>
+											<option value="4" selected>E3 Thermistor</option>
+											<option value="5">E4 Thermistor</option>
+											<option value="6">E5 Thermistor</option>
+											<option value="7">E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+								<tr class="hidden" data-type="nozzle">
+									<td>E4</td>
+									<td>Nozzle</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater5_temp_limit" value="280">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater5_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater5_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater5_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater5_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater5_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater5_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater5_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater5_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0">Bed Thermistor</option>
+											<option value="1">E0 Thermistor</option>
+											<option value="2">E1 Thermistor</option>
+											<option value="3">E2 Thermistor</option>
+											<option value="4">E3 Thermistor</option>
+											<option value="5" selected>E4 Thermistor</option>
+											<option value="6">E5 Thermistor</option>
+											<option value="7">E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+								<tr class="hidden" data-type="nozzle">
+									<td>E5</td>
+									<td>Nozzle</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater6_temp_limit" value="280">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater6_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater6_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater6_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater6_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater6_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater6_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater6_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater6_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0">Bed Thermistor</option>
+											<option value="1">E0 Thermistor</option>
+											<option value="2">E1 Thermistor</option>
+											<option value="3">E2 Thermistor</option>
+											<option value="4">E3 Thermistor</option>
+											<option value="5">E4 Thermistor</option>
+											<option value="6" selected>E5 Thermistor</option>
+											<option value="7">E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+								<tr class="hidden" data-type="nozzle">
+									<td>E6</td>
+									<td>Nozzle</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Maximum allowed temperature of this heater before a temperature fault is raised">
+											<input type="number" class="form-control" id="heater7_temp_limit" value="280">
+											<span class="input-group-addon">°C</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters">
+											<input type="number" class="form-control" id="heater7_scale_factor" value="100">
+											<span class="input-group-addon">%</span>
+										</div>
+									</td>
+									<td>
+										<div class="input-group input-group-sm has-success" data-title="On-board series resistance. Usually you do not need to change this">
+											<input type="number" class="form-control" id="heater7_series" value="4700">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="input-group input-group-sm has-success" data-title="Heater thermistor resistance at 25°C">
+											<span class="input-group-addon">R25</span>
+											<input type="number" class="form-control" id="heater7_thermistor" value="100000">
+											<span class="input-group-addon">Ω</span>
+										</div>
+									</td>
+									<td class="beta-parameter">
+										<div class="form-group input-group input-group-sm has-success" data-title="β model coefficient">
+											<span class="input-group-addon">β</span>
+											<input type="number" class="form-control" id="heater7_beta" value="4138">
+											<span class="input-group-addon">K</span>
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="A coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">A</span>
+											<input type="text" class="number form-control" id="heater7_a" value="5.717725e-4">
+										</div>
+									</td>
+									<td class="abc-parameter hidden">
+										<div class="form-group input-group input-group-sm has-success" data-title="B coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">B</span>
+											<input type="text" class="number form-control" id="heater7_b" value="2.416626e-4">
+										</div>
+									</td>
+									<td class="fw-117">
+										<div class="form-group input-group input-group-sm has-success" data-title="C coefficient of the Steinhart-Hart equation">
+											<span class="input-group-addon">C</span>
+											<input type="text" class="number form-control" id="heater7_c" value="0">
+										</div>
+									</td>
+									<td>
+										<select class="form-control input-sm" id="heater7_channel" data-title="Assigned thermistor channel for this heater">
+											<option value="0">Bed Thermistor</option>
+											<option value="1">E0 Thermistor</option>
+											<option value="2">E1 Thermistor</option>
+											<option value="3">E2 Thermistor</option>
+											<option value="4">E3 Thermistor</option>
+											<option value="5">E4 Thermistor</option>
+											<option value="6">E5 Thermistor</option>
+											<option value="7" selected>E6 Thermistor</option>
+											<option value="100">MAX31855 Thermocouple 0</option>
+											<option value="101">MAX31855 Thermocouple 1</option>
+											<option value="102">MAX31855 Thermocouple 2</option>
+											<option value="103">MAX31855 Thermocouple 3</option>
+											<option value="104">MAX31855 Thermocouple 4</option>
+											<option value="105">MAX31855 Thermocouple 5</option>
+											<option value="106">MAX31855 Thermocouple 6</option>
+											<option value="107">MAX31855 Thermocouple 7</option>
+											<option value="150">MAX31856 Thermocouple 0</option>
+											<option value="151">MAX31856 Thermocouple 1</option>
+											<option value="152">MAX31856 Thermocouple 2</option>
+											<option value="153">MAX31856 Thermocouple 3</option>
+											<option value="154">MAX31856 Thermocouple 4</option>
+											<option value="155">MAX31856 Thermocouple 5</option>
+											<option value="156">MAX31856 Thermocouple 6</option>
+											<option value="157">MAX31856 Thermocouple 7</option>
+											<option value="200">RTD 0</option>
+											<option value="201">RTD 1</option>
+											<option value="202">RTD 2</option>
+											<option value="203">RTD 3</option>
+											<option value="204">RTD 4</option>
+											<option value="205">RTD 5</option>
+											<option value="206">RTD 6</option>
+											<option value="207">RTD 7</option>
+											<option class="fw-120" value="500">PT1000 on Bed Input</option>
+											<option class="fw-120" value="501">PT1000 on E0 Input</option>
+											<option class="fw-120" value="502">PT1000 on E1 Input</option>
+											<option class="fw-120" value="503">PT1000 on E2 Input</option>
+											<option class="fw-120" value="504">PT1000 on E3 Input</option>
+											<option class="fw-120" value="505">PT1000 on E4 Input</option>
+											<option class="fw-120" value="506">PT1000 on E5 Input</option>
+											<option class="fw-120" value="507">PT1000 on E6 Input</option>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#endstops" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#tools" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Tools page -->
+				<div class="tab-pane fade" id="tools">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Tool mapping
+						</div>
+
+						<div class="panel-body">
+							<div class="form-group">
+								<label for="max_heating_time">Number of tools:</label>
+								<div class="input-group has-success">
+									<input type="number" class="form-control" id="num_tools" min="0" max="64" value="1">
+									<div class="input-group-btn">
+										<button class="btn btn-success" id="btn_add_tool" type="button">
+											<span class="glyphicon glyphicon-plus"></span>
+										</button>
+										<button class="btn btn-danger" id="btn_delete_tool" type="button">
+											<span class="glyphicon glyphicon-minus"></span>
+										</button>
+									</div>
+								</div>
+							</div>
+
+							<div class="checkbox">
+								<label>
+									<input class="checkbox" id="toolchange_wait_for_temperatures" type="checkbox" checked>
+									Wait for temperatures to be reached on tool change
+								</label>
+							</div>
+
+							<div class="checkbox">
+								<label>
+									<input class="checkbox" id="generate_t_code" type="checkbox">
+									Select first tool on start-up
+								</label>
+							</div>
+						</div>
+
+						<table class="table" id="table_tools">
+							<thead>
+								<tr>
+									<th>Tool&nbsp;number</th>
+									<th>Assigned&nbsp;extruders</th>
+									<th>Assigned&nbsp;heaters</th>
+									<th>X offset</th>
+									<th>Y offset</th>
+									<th>Z offset</th>
+									<th>Mixing ratio</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#heaters" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#compensation" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Compensation -->
+				<div class="tab-pane fade" id="compensation">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<span class="cartesian">Bed compensation</span>
+							<span class="delta hidden">Delta calibration</span>
+						</div>
+						<div class="panel-body">
+							<div class="row cartesian">
+								<div class="col-md-4">
+									<label for="num_probe_points">Number of probe points:</label>
+									<div class="form-group">
+										<select class="form-control" id="num_probe_points">
+											<option value="3">3</option>
+											<option value="4" selected>4</option>
+											<option value="5">5</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="col-md-2">
+									<label for="bed_length">Bed length:</label>
+									<div class="form-group">
+										<div class="input-group has-success">
+											<input class="form-control" id="bed_length" min="0" value="210" type="number" data-title="Length of the bed in X direction">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-2">
+									<label for="bed_width">Bed width:</label>
+									<div class="form-group">
+										<div class="input-group has-success">
+											<input class="form-control" id="bed_width" min="0" value="230" type="number" data-title="Width of the bed in Y direction">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-2">
+									<label for="compensation_x_offset">X offset from bed corner:</label>
+									<div class="form-group">
+										<div class="input-group has-success">
+											<input class="form-control" id="compensation_x_offset" min="0" value="15" type="number" data-title="Distance between bed corners and X probe points">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-2">
+									<label for="compensation_y_offset">Y offset from bed corner:</label>
+									<div class="form-group">
+										<div class="input-group has-success">
+											<input class="form-control" id="compensation_y_offset" min="0" value="15" type="number" data-title="Distance between bed corners and Y probe points">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="row delta hidden">
+								<div class="col-md-3">
+									<label for="num_peripheral_points">Number of peripheral points:</label>
+									<div class="form-group">
+										<select class="form-control" id="num_peripheral_points" data-title="Number of outer probe points">
+											<option value="3" selected>3</option>
+											<option value="6">6</option>
+											<option value="10">10</option>
+											<option value="12">12</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="num_halfway_points">Number of halfway points:</label>
+									<div class="form-group">
+										<select class="form-control" id="num_halfway_points" data-title="Number of inner probe points">
+											<option value="0" selected>0</option>
+											<option value="3">3</option>
+											<option value="6">6</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="num_calibration_factors">Number of calibration factors:</label>
+									<div class="form-group">
+										<select class="form-control" id="num_calibration_factors" data-title="Number of adjustment factors used for auto-calibration">
+											<option value="3" selected>3</option>
+											<option value="4">4</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="col-md-3">
+									<label for="probe_radius">Probing radius:</label>
+									<div class="form-group has-success" data-title="Radius of the outer probe points">
+										<div class="input-group">
+											<input class="form-control" id="probe_radius" min="1" value="150" type="number">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="recalculate_points" checked>
+									Recalculate coordinates automatically when the values above change
+								</label>
+							</div>
+
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="home_first">
+									<span class="cartesian" data-title="Home all axes in bed.g before any points are probed">Home axes before auto bed compensation</span>
+									<span class="delta hidden" data-title="Home all towers in bed.g before any points are probed">Home towers before auto calibration</span>
+								</label>
+							</div>
+						</div>
+
+						<table class="table" id="table_points">
+							<thead>
+								<tr>
+									<th>Probe&nbsp;point</th>
+									<th>X coordinate</th>
+									<th>Y coordinate</th>
+									<th>Height correction</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Grid Compensation
+						</div>
+
+						<div class="panel-body">
+							<div class="row cartesian">
+								<div class="col-md-2">
+									<label for="mesh_x_min">X minimum:</label>
+									<div class="form-group has-success">
+										<div class="input-group">
+											<input type="number" class="form-control" id="mesh_x_min" value="15">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<label for="mesh_x_max">X maximum:</label>
+									<div class="form-group has-success">
+										<div class="input-group">
+											<input type="number" class="form-control" id="mesh_x_max" value="215">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<label for="mesh_y_min">Y minimum:</label>
+									<div class="form-group has-success">
+										<div class="input-group">
+											<input type="number" class="form-control" id="mesh_y_min" value="15">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-2">
+									<label for="mesh_y_max">Y maximum:</label>
+									<div class="form-group has-success">
+										<div class="input-group">
+											<input type="number" class="form-control" id="mesh_y_max" value="195">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<label for="mesh_cartesian_spacing">Spacing between probe points:</label>
+									<div class="form-group has-success">
+										<div class="input-group">
+											<input type="number" class="form-control" id="mesh_cartesian_spacing" value="20">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="row delta hidden">
+								<div class="col-md-6">
+									<label for="mesh_radius">Probing radius:</label>
+									<div class="form-group has-success">
+										<div class="input-group">
+											<input type="number" class="form-control" id="mesh_radius" value="85">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<label for="mesh_delta_spacing">Spacing between probe points:</label>
+									<div class="form-group has-success">
+										<div class="input-group">
+											<input type="number" class="form-control" id="mesh_delta_spacing" value="20">
+											<span class="input-group-addon">mm</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Orthogonal axis compensation
+						</div>
+
+						<div class="panel-body">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="orthogonal">
+									Enable orthogonal axis compensation
+								</label>
+							</div>
+
+							<div class="margin-left hidden" id="orthogonal_settings">
+								<div class="row">
+									<div class="col-md-3">
+										<label for="measured_height">Measured height:</label>
+										<div class="form-group has-success">
+											<div class="input-group">
+												<input type="number" class="form-control" id="measured_height" value="0">
+												<span class="input-group-addon">mm</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<label for="x_deviation">Deviation in X direction:</label>
+										<div class="form-group has-success">
+											<div class="input-group">
+												<input type="number" class="form-control" id="x_deviation" value="0">
+												<span class="input-group-addon">mm</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<label for="y_deviation">Deviation in Y direction:</label>
+										<div class="form-group has-success">
+											<div class="input-group">
+												<input type="number" class="form-control" id="y_deviation" value="0">
+												<span class="input-group-addon">mm</span>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<label for="z_deviation">Deviation in Z direction:</label>
+										<div class="form-group has-success">
+											<div class="input-group">
+												<input type="number" class="form-control" id="z_deviation" value="0">
+												<span class="input-group-addon">mm</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#tools" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#network" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Network page -->
+				<div class="tab-pane fade" id="network">
+					<div class="panel panel-default" id="ethernet">
+						<div class="panel-heading">
+							Network settings
+						</div>
+
+						<div class="panel-body">
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" id="enable_network" checked>
+									Enable network
+								</label>
+							</div>
+
+							<div class="margin-left" id="network_settings">
+								<div class="row">
+									<div class="col-md-6">
+										<label for="name">Printer name:</label>
+										<div class="form-group has-success has-feedback" data-title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local">
+											<input type="text" class="form-control" id="name" maxlength="40" value="My printer">
+											<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<label for="password">Password:</label>
+										<div class="form-group">
+											<input type="text" class="form-control" id="password" placeholder="reprap" maxlength="64" data-title="Optional password to protect your printer from others on your local network (M551)">
+										</div>
+									</div>
+								</div>
+
+								<label for="mac_address">MAC address:</label>
+								<div class="form-group has-success has-feedback" data-title="MAC address identifier of your machine (M540). This value must be unique on your network">
+									<input type="text" class="form-control optional" id="mac_address" placeholder="automatically generated" maxlength="17">
+									<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+								</div>
+
+								<div class="row hidden" id="wifi_settings">
+									<div class="col-md-6">
+										<label for="ssid">WiFi access point name:</label>
+										<div class="form-group has-warning has-feedback">
+											<input type="text" class="form-control" id="ssid" maxlength="32" placeholder="configure manually" value="">
+											<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+										</div>
+									</div>
+
+									<div class="col-md-6">
+										<label for="ssid_password">WiFi password:</label>
+										<div class="form-group">
+											<input type="text" class="form-control" id="ssid_password" maxlength="64" value="">
+										</div>
+									</div>
+								</div>
+
+								<div class="checkbox">
+									<label data-title="Use DHCP to acquire a dynamic IP configuration from your router (M552)">
+										<input type="checkbox" id="dhcp" checked>
+										Acquire dynamic IP address via DHCP
+									</label>
+								</div>
+
+								<div class="margin-left hidden" id="staticip">
+									<div class="row">
+										<div class="col-md-4">
+											<label for="ip_address">IP address:</label>
+											<div class="form-group has-success has-feedback" data-title="Static IP address of your printer (M552). This value should be unique on your local network">
+												<input type="text" class="form-control ip" id="ip_address" maxlength="15" value="192.168.1.20">
+												<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+											</div>
+										</div>
+
+										<div class="col-md-4">
+											<label for="netmask">Subnet mask:</label>
+											<div class="form-group has-success has-feedback" data-title="Netmask of your local network (M553)">
+												<input type="text" class="form-control ip" id="netmask" maxlength="15" value="255.255.255.0">
+												<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+											</div>
+										</div>
+
+
+										<div class="col-md-4">
+											<label for="gateway">Gateway:</label>
+											<div class="form-group has-success has-feedback" data-title="This should be the router's IP address on your local network (M554)">
+												<input type="text" class="form-control ip" id="gateway" maxlength="15" value="192.168.1.254">
+												<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="col-md-5">
+										<label data-title="Enable HyperText Transmission Protocol to provide access to the web interface">
+											<input type="checkbox" id="http" checked>
+											Enable HTTP (required for Duet Web Control)
+										</label>
+									</div>
+
+									<div class="col-md-3">
+										<label data-title="Enable File Transmission Protocol. Be aware that RepRapFirmware only supports one concurrent connection!">
+											<input type="checkbox" id="ftp">
+											Enable FTP
+										</label>
+									</div>
+
+									<div class="col-md-4">
+										<label data-title="Enable Telnet. Be aware that RepRapFirmware only supports one concurrent connection!">
+											<input type="checkbox" id="telnet">
+											Enable Telnet
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#compensation" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#finish" data-toggle="tab">Next <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Finish page -->
+				<div class="tab-pane fade" id="finish">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Cooling fans
+						</div>
+
+						<table class="table" id="table_fans">
+							<thead>
+								<tr>
+									<th>Fan&nbsp;name</th>
+									<th>Value</th>
+									<th>Invert&nbsp;output</th>
+									<th>Frequency</th>
+									<th>Thermostatic control</th>
+									<th>Monitored&nbsp;heaters</th>
+									<th>Thermostatic&nbsp;mode trigger&nbsp;temperature</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								<tr>
+									<td>FAN0</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="Initial value of this fan when turned on">
+												<input class="form-control" id="fan0_value" min="0" max="100" value="30" type="number">
+												<span class="input-group-addon">%</span>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons" data-title="Invert fan PWM signal (required for 4-pin PWM cooling fans)">
+											<div class="btn-group">
+												<label class="btn btn-default">
+													<input name="fan0_inverted" value="1" type="radio">
+													Yes
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default active">
+													<input name="fan0_inverted" value="0" type="radio" checked>
+													No
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="PWM frequency of this fan. 500Hz works well for normal fans, use 25kHz for 4-pin PWM cooling fans">
+												<input class="form-control" id="fan0_frequency" min="1" max="65535" value="500" type="number">
+												<span class="input-group-addon">Hz</span>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons" data-title="Enable thermostatic control for this fan">
+											<div class="btn-group">
+												<label class="btn btn-default">
+													<input name="fan0_thermostatic" value="1" type="radio">
+													Yes
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default active">
+													<input name="fan0_thermostatic" value="0" type="radio" checked>
+													No
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group hidden" data-toggle="buttons" id="fan0_heaters" data-title="Heaters to monitor for thermostatic control"></div>
+										<span>None available</span>
+									</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="If a monitored heater exceeds this temperature, this fan will be turned on">
+												<input class="form-control" id="fan0_trigger_temperature" min="-273" max="2000" value="45" type="number">
+												<span class="input-group-addon">°C</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>FAN1</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="Initial value of this fan when turned on">
+												<input class="form-control" id="fan1_value" min="50" max="100" value="100" type="number">
+												<span class="input-group-addon">%</span>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons" data-title="Invert fan PWM signal (required for 4-pin PWM cooling fans)">
+											<div class="btn-group">
+												<label class="btn btn-default">
+													<input name="fan1_inverted" value="1" type="radio">
+													Yes
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default active">
+													<input name="fan1_inverted" value="0" type="radio" checked>
+													No
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="PWM frequency of this fan. 500Hz works well for normal fans, use 25kHz for 4-pin PWM cooling fans">
+												<input class="form-control" id="fan1_frequency" min="1" max="65535" value="500" type="number">
+												<span class="input-group-addon">Hz</span>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons" data-title="Enable thermostatic control for this fan">
+											<div class="btn-group">
+												<label class="btn btn-default active">
+													<input name="fan1_thermostatic" value="1" type="radio" checked>
+													Yes
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default">
+													<input name="fan1_thermostatic" value="0" type="radio">
+													No
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group hidden" data-toggle="buttons" id="fan1_heaters" data-title="Heaters to monitor for thermostatic control"></div>
+										<span>None available</span>
+									</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="If a monitored heater exceeds this temperature, this fan will be turned on">
+												<input class="form-control" id="fan1_trigger_temperature" min="-273" max="2000" value="45" type="number">
+												<span class="input-group-addon">°C</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+								<tr class="hidden">
+									<td>FAN2</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="Initial value of this fan when turned on">
+												<input class="form-control" id="fan2_value" min="50" max="100" value="100" type="number">
+												<span class="input-group-addon">%</span>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons" data-title="Invert fan PWM signal (required for 4-pin PWM cooling fans)">
+											<div class="btn-group">
+												<label class="btn btn-default">
+													<input name="fan2_inverted" value="1" type="radio">
+													Yes
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default active">
+													<input name="fan2_inverted" value="0" type="radio" checked>
+													No
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="PWM frequency of this fan. 500Hz works well for normal fans, use 25kHz for 4-pin PWM cooling fans">
+												<input class="form-control" id="fan2_frequency" min="1" max="65535" value="500" type="number">
+												<span class="input-group-addon">Hz</span>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group" data-toggle="buttons" data-title="Enable thermostatic control for this fan">
+											<div class="btn-group">
+												<label class="btn btn-default active">
+													<input name="fan2_thermostatic" value="1" type="radio" checked>
+													Yes
+												</label>
+											</div>
+											<div class="btn-group">
+												<label class="btn btn-default">
+													<input name="fan2_thermostatic" value="0" type="radio">
+													No
+												</label>
+											</div>
+										</div>
+									</td>
+									<td>
+										<div class="btn-group hidden" data-toggle="buttons" id="fan2_heaters" data-title="Heaters to monitor for thermostatic control"></div>
+										<span>None available</span>
+									</td>
+									<td>
+										<div class="form-group">
+											<div class="input-group has-success" data-title="If a monitored heater exceeds this temperature, this fan will be turned on">
+												<input class="form-control" id="fan2_trigger_temperature" min="-273" max="2000" value="45" type="number">
+												<span class="input-group-addon">°C</span>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Miscellaneous
+						</div>
+
+						<div class="panel-body">
+							<div class = "form-group">
+								<label for="custom_settings">Custom settings for config.g:</label>
+								<a class="pull-right" href="https://duet3d.com/wiki/G-code" target="_blank">Full list of all available G-codes</a>
+								<textarea class="form-control" id="custom_settings" rows="4"></textarea>
+							</div>
+						</div>
+					</div>
+
+					<div class="alert alert-warning hidden" id="error_notification">
+						<p><strong><span class="glyphicon glyphicon-warning-sign"></span> Warning</strong></p>
+						<p>This configuration contains errors on the following pages:</p>
+						<ul id="error_pages"></ul>
+						<p>You must resolve them before you can complete this wizard.</p>
+					</div>
+
+					<ul class="pager">
+						<li class="previous"><a href="#network" data-toggle="tab"><span aria-hidden="true">&larr;</span> Back</a></li>
+						<li class="next"><a href="#end">Finish <span aria-hidden="true">&rarr;</span></a></li>
+					</ul>
+				</div>
+
+				<!-- Duet 0.6 modal -->
+				<div class="modal fade" id="modal_duet06">
+					<div class="modal-dialog modal-md">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+								<h4 class="modal-title">Check your Duet board!</h4>
+							</div>
+
+							<div class="modal-body">
+								<h4>Is your Duet 0.6 board marked with a note saying "4.7K" or was it shipped with an original RepRapPro Ormerod 2?</h4>
+								<p class="text-muted">Note: Older Duet 0.6 boards use 1 kΩ series resistors.</p>
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-success" id="duet06_4_7k">Yes</button>
+								<button type="button" class="btn btn-danger" id="duet06_1k">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Steps/mm calculator -->
+				<div class="modal fade" id="modal_steps_calculator">
+					<div class="modal-dialog modal-md">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+								<h4 class="modal-title">Calculate steps per mm</h4>
+							</div>
+
+							<div class="modal-body">
+								<div class="container-fluid">
+									<div class="row row-xyz">
+										<div class="col-md-5">
+											Calculate steps for this axis:
+										</div>
+										<div class="col-md-7">
+											<div class="btn-group" data-toggle="buttons">
+												<label class="btn btn-default active">
+													<input type="radio" name="steps_drive" value="0" checked>
+													X
+												</label>
+												<label class="btn btn-default">
+													<input type="radio" name="steps_drive" value="1">
+													Y
+												</label>
+												<label class="btn btn-default">
+													<input type="radio" name="steps_drive" value="2">
+													Z
+												</label>
+											</div>
+										</div>
+									</div>
+
+									<div class="row row-stepangle">
+										<div class="col-md-5">
+											Motor step angle:
+										</div>
+
+										<div class="col-md-7">
+											<select id="step_angle">
+												<option value="0.9">0.9° (400 steps per revolution)</option>
+												<option value="1.8" selected>1.8° (200 steps per revolution)</option>
+												<option value="7.5">7.5° (48 steps per revolution)</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="row row-type">
+										<div class="col-md-5">
+											This axis is driven by:
+										</div>
+										<div class="col-md-7">
+											<div class="btn-group" data-toggle="buttons">
+												<label class="btn btn-default active">
+													<input type="radio" name="steps_type" value="belt" checked>
+													Belt
+												</label>
+												<label class="btn btn-default">
+													<input type="radio" name="steps_type" value="leadscrew">
+													Leadscrew
+												</label>
+											</div>
+										</div>
+									</div>
+
+									<div class="well">
+										<!-- Belt-driven -->
+										<div id="div_belt">
+											<div class="row">
+												<div class="col-md-5">
+													<label for="belt_preset">Belt preset:</label>
+													<select id="belt_preset" class="form-control">
+														<option value="2" selected>GT2 (2mm)</option>
+														<option value="2.03">MXL (2.03mm)</option>
+														<option value="2.5">T2.5 (2.5mm)</option>
+														<option value="5">T5 (5mm)</option>
+														<option value="custom" disabled>Custom</option>
+													</select>
+												</div>
+												<div class="col-md-4">
+													<label for="belt_pitch">Belt pitch:</label>
+													<div class="input-group has-success">
+														<input type="number" min="0.1" value="2" id="belt_pitch" class="form-control">
+														<span class="input-group-addon">mm</span>
+													</div>
+												</div>
+												<div class="col-md-3">
+													<label for="pulley_teeth">Pulley teeth:</label>
+													<div class="has-success">
+														<input type="number" min="1" value="20" id="pulley_teeth" class="form-control">
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<!-- Leadscrew-driven -->
+										<div id="div_leadscrew" class="hidden">
+											<div class="row">
+												<div class="col-md-5">
+													<label for="leadscrew_preset">Leadscrew preset:</label>
+													<select id="leadscrew_preset" class="form-control">
+														<option value="0.8" selected>Metric M5 (0.8mm)</option>
+														<option value="1">Metric M6 (1mm)</option>
+														<option value="1.25">Metric M8 (1.25mm)</option>
+														<option value="custom" disabled>Custom</option>
+													</select>
+												</div>
+												<div class="col-md-4">
+													<label for="leadscrew_pitch">Leadscrew pitch:</label>
+													<div class="input-group has-success">
+														<input type="number" min="0.01" value="0.8" id="leadscrew_pitch" class="form-control">
+														<span class="input-group-addon">mm</span>
+													</div>
+												</div>
+												<div class="col-md-3">
+													<label for="pulley_teeth">Gear ratio:</label>
+													<table>
+														<tr>
+															<td>
+																<div class="has-success">
+																	<input type="number" min="0.1" value="1" id="gear_ratio_1" class="form-control">
+																</div>
+															</td>
+															<td>&nbsp;:&nbsp;</td>
+															<td>
+																<div class="has-success">
+																	<input type="number" min="0.1" value="1" id="gear_ratio_2" class="form-control">
+																</div>
+															</td>
+														</tr>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<h3 id="resulting_steps">Resulting steps per mm: 80.000</h3>
+									<h4 id="resulting_steps_details">for the X axis at x16 microstepping</h4>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+								<button type="button" class="btn btn-success" id="btn_set_steps"><span class="glyphicon glyphicon-ok"></span> Apply this value</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Thermistor coefficient calculator -->
+				<div class="modal fade" id="modal_thermistor_calculator">
+					<div class="modal-dialog modal-md">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+								<h4 class="modal-title">Calculate thermistor coefficients</h4>
+							</div>
+
+							<div class="modal-body">
+								<div class="container-fluid">
+									<div class="row row-select">
+										<div class="col-md-6">
+											Calculate coefficients for this heater:
+										</div>
+										<div class="col-md-6">
+											<select id="thermistor_heater" class="form-control">
+												<option value="0">Bed</option>
+												<option value="1">E0</option>
+												<option value="2">E1</option>
+												<option value="3">E2</option>
+												<option value="4">E3</option>
+												<option value="5">E4</option>
+												<option value="6">E5</option>
+											</select>
+										</div>
+									</div>
+
+									<div class="row row-select">
+										<div class="col-md-6">
+											Choose a thermistor preset:
+										</div>
+
+										<div class="col-md-6">
+											<select id="thermistor_preset" class="form-control">
+												<option value="semitec_104_gt2" data-r25="100000" data-beta="4388" data-a="2.236745e-3" data-b="2.116402e-4" data-c="0.706e-7">Semitec 104-GT2 (used by E3D)</option>
+												<option value="honeywell_135_104qad_j01" data-r25="100000" data-beta="4138" data-a="0.57177248e-3" data-b="2.4166263e-4" data-c="0">Honeywell 135-104QAD-J01 (RepRapPro hot ends)</option>
+												<option value="epcos_b57863s0103f040" data-r25="10000" data-beta="3988" data-a="1.0445028e-3" data-b="2.5075225e-4" data-c="0">EPCOS B57863S0103F040 (Ormerod bed thermistor)</option>
+												<option value="custom" selected>Custom</option>
+											</select>
+										</div>
+									</div>
+
+									<div id="custom_thermistor" class="well">
+										<p class="fw-116 hidden">Measure the resistances of your thermistor at three different temperatures and enter your values below:</p>
+										<p class="fw-117">Measure the resistances of your thermistor at three different temperatures and enter your values below. The third data pair is optional and can be left out.</p>
+
+										<div class="row row-pair">
+											<div class="col-md-1">T1:</div>
+
+											<div class="col-md-5">
+												<div class="input-group has-success">
+													<input type="number" value="25" min="-273" max="1999" id="t1" class="form-control">
+													<span class="input-group-addon">°C</span>
+												</div>
+											</div>
+
+											<div class="col-md-1">R1:</div>
+
+											<div class="col-md-5">
+												<div class="input-group has-success">
+													<input type="number" value="10000" min="1" max="10000000" id="r1" class="form-control">
+													<span class="input-group-addon">Ω</span>
+												</div>
+											</div>
+										</div>
+
+										<div class="row row-pair">
+											<div class="col-md-1">T2:</div>
+
+											<div class="col-md-5">
+												<div class="input-group has-success">
+													<input type="number" value="220" min="-273" max="1999" id="t2" class="form-control">
+													<span class="input-group-addon">°C</span>
+												</div>
+											</div>
+
+											<div class="col-md-1">R2:</div>
+
+											<div class="col-md-5">
+												<div class="input-group has-success">
+													<input type="number" value="1360" min="1" max="10000000" id="r2" class="form-control">
+													<span class="input-group-addon">Ω</span>
+												</div>
+											</div>
+										</div>
+										<div class="row row-pair fw-117">
+											<div class="col-md-1">T3:</div>
+
+											<div class="col-md-5">
+												<div class="input-group has-warning">
+													<input type="number" value="" min="-273" max="1999" id="t3" class="form-control optional">
+													<span class="input-group-addon">°C</span>
+												</div>
+											</div>
+
+											<div class="col-md-1">R3:</div>
+
+											<div class="col-md-5">
+												<div class="input-group has-warning">
+													<input type="number" value="" min="1" max="10000000" id="r3" class="form-control optional">
+													<span class="input-group-addon">Ω</span>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-12">
+											<h3>Resulting coefficients:</h3>
+										</div>
+
+										<!-- Values for RRF <= 1.16 -->
+										<div class="col-md-4">
+											<h4 id="resulting_r25">R25: n/a</h4>
+										</div>
+										<div class="col-md-8">
+											<h4 id="resulting_beta">β: n/a</h4>
+										</div>
+
+										<!-- Values for RRF >= 1.17 -->
+										<div class="col-md-4 fw-117">
+											<h4 id="resulting_a">A: n/a</h4>
+										</div>
+										<div class="col-md-4 fw-117">
+											<h4 id="resulting_b">B: n/a</h4>
+										</div>
+										<div class="col-md-4 fw-117">
+											<h4 id="resulting_c">C: n/a</h4>
+										</div>
+
+										<div class="col-md-12">
+											<p class="text-muted text-justify">Note: RepRapFirmware versions up to v1.16 rely on the <a href="https://en.wikipedia.org/wiki/Thermistor#B_or_.CE.B2_parameter_equation" target="_blank">β parameter equation</a> to calculate temperatures, however starting from RepRapFirmware 1.17 the <a href="https://en.wikipedia.org/wiki/Steinhart–Hart_equation" target="_blank">Steinhart-Hart equation</a> is used for improved accuarcy.</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+								<button type="button" class="btn btn-success" id="btn_set_coefficients"><span class="glyphicon glyphicon-ok"></span> Apply these values</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- B-parameter conversion prompt -->
+				<div class="modal fade" id="modal_convert_b">
+					<div class="modal-dialog modal-md">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+								<h4 class="modal-title">Convert β-parameter to B-value?</h4>
+							</div>
+
+							<div class="modal-body">
+								<p>The specified 'B' value is rather big. Did you enter a beta value for your thermistor and would you like to convert it?</p>
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-success" id="btn_convert_beta">Yes</button>
+								<button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Finish modal -->
+				<div class="modal fade" id="modal_finish">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+								<h4 class="modal-title">Configuration ready</h4>
+							</div>
+
+							<div class="modal-body">
+								<p>The following files will be generated:</p>
+								<div class="well">
+									<ul id="file_list"></ul>
+								</div>
+
+								<p>If you are already using Duet Web Control, you can upload the generated ZIP file <u>without extracting</u> on the Settings page.</p>
+
+								<p>Alternatively you can unzip the contents of this file to the "sys" directory on your SD card.</p>
+								<p>See <a href="https://duet3d.com/wiki/SD_card_folder_structure" target="_blank">this page</a> for further information about the purpose of these files.</p>
+							</div>
+
+							<div class="modal-footer">
+								<a class="btn btn-default pull-left" id="download_config" download="config.json"><span class="glyphicon glyphicon-floppy-disk"></span> <span>Download JSON template</span></a>
+								<button type="button" class="btn btn-primary" id="download_zip"><span class="glyphicon glyphicon-download-alt"></span> <span>Download configuration bundle as ZIP file</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Misc -->
+				<input type="file" id="input_file_upload" class="hidden">				
+			</div>
+		</form>
+
+		<!-- Bootstrap core JavaScript
+	  	================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="js/jquery-2.2.3.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/jszip.min.js"></script>
+		<script src="js/ejs.min.js"></script>
+		<script src="js/boards.js"></script>
+		<script src="js/model.js"></script>
+		<script src="js/viewmodel.js"></script>
+		<script src="js/FileSaver.min.js"></script>
+	</body>
+</html>
+<!-- vim: ts=4 sw=4
+-->

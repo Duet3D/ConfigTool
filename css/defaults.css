@@ -1,0 +1,414 @@
+/* RepRapFirmware Configuration Tool
+ *
+ * written by Christian Hammacher, (c) 2016
+ */
+
+
+/** General tweaks **/
+label {
+	font-weight: 100;
+}
+
+input[type='number'] {
+	text-align: right;
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+textarea {
+	resize: vertical;
+}
+
+.tab-pane > div.form-group:last-child {
+	margin-bottom: 0px;
+}
+
+.tab-pane p.help-block {
+	margin-top: 15px;
+	margin-bottom: 0px;
+}
+
+.flip-x {
+	-webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+.flip-y {
+	-webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
+}
+
+.rotate-90 {
+	transform: rotate(90deg);
+}
+
+.rotate-180 {
+	transform: rotate(180deg);
+}
+
+.rotate-270 {
+	transform: rotate(270deg);
+}
+
+
+/* Indentation for hidden options */
+.margin-left {
+	margin-left: 20px;
+}
+
+
+/* Borders for tabs */
+div.panel-body > div.tab-content {
+	border: 1px solid #ddd;
+	border-top: 0px;
+	padding: 15px;
+}
+
+
+/* Proper widths for XY(Z) rows */
+.tr-xy label,
+.tr-xyz label {
+	float: right;
+	margin-bottom: 0px;
+	margin-right: 9px;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+.tr-xy > td:not(:first-child) > label,
+.tr-xyz > td:not(:first-child) > label {
+	margin-left: 15px;
+}
+
+.tr-xy > td:nth-child(2), .tr-xy > td:nth-child(4) {
+	width: 50%;
+}
+
+.tr-xyz > td:nth-child(2), .tr-xyz > td:nth-child(4), .tr-xyz > td:nth-child(6) {
+	width: 33%;
+}
+
+.tr-xy:not(:last-child) > td,
+.tr-xyz:not(:last-child) > td {
+	padding-bottom: 15px;
+}
+
+.tr-xy div.input-group,
+.tr-xyz div.input-group {
+	width: 100%;
+}
+
+/** Start page **/
+#start h1 {
+	margin-bottom: 30px;
+}
+
+#start h3 {
+	margin-bottom: 45px;
+}
+
+
+/** General page **/
+#axis_minmax tr:first-child h4 {
+	margin-top: 0px;
+}
+
+#axis_minmax tr:nth-child(3) h4 {
+	margin-top: 15px;
+}
+
+#delta > div.checkbox {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+
+/** Motors page **/
+#motors table .btn-group {
+	display: inline-flex;
+}
+
+#motors table > thead > tr > th:first-child {
+	text-align: center;
+}
+
+#motors table > tbody > tr > td:first-child {
+	text-align: center;
+	vertical-align: middle;
+}
+
+#motors div.form-group {
+	margin-bottom: 0px;
+}
+
+#table_idle {
+	width: 100%;
+}
+
+#table_idle td {
+	width: 33%;
+}
+
+#table_idle td:first-child > div {
+	text-align: left;
+}
+
+#table_idle td:last-child {
+	padding-left: 15px;
+}
+
+
+/** Endstops page **/
+#endstops table > thead > tr > th:first-child {
+	text-align: center;
+}
+
+#endstops table > tbody > tr > td:first-child {
+	text-align: center;
+	vertical-align: middle;
+}
+
+#table_endstops div.btn-group {
+	display: inline-flex;
+}
+
+#table_endstops div.form-group {
+	margin-bottom: 0px;
+}
+
+#table_endstops tr > td:nth-child(2) {
+	width: 75%;
+}
+
+#table_endstops tr > td:nth-child(3) {
+	width: 25%;
+}
+
+#table_endstops div.btn-group,
+#table_endstops label {
+	width: 100%;
+}
+
+#checkbox_slow_homing {
+	margin-top: 15px;
+}
+
+#checkbox_probe_deploy {
+	margin-top: 30px;
+}
+
+#noprobe > p {
+	margin-top: 0px;
+}
+
+
+/** Heaters page **/
+#heaters div.btn-group,
+#heaters div.btn-group > label {
+	width: 100%;
+}
+
+#heaters div.btn-group {
+	display: inline-flex;
+}
+
+#table_heaters > thead > tr {
+	white-space: nowrap;
+}
+
+#table_heaters > thead > tr > th:first-child,
+#table_heaters > thead > tr > th:nth-child(2) {
+	text-align: center;
+}
+
+#table_heaters > tbody > tr > td:first-child,
+#table_heaters > tbody > tr > td:nth-child(2) {
+	text-align: center;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+#table_heaters div.form-group {
+	margin-bottom: 0px;
+}
+
+#table_heaters select {
+	width: auto;
+}
+
+#modal_thermistor_calculator h3 {
+	margin-top: 0px;
+}
+
+
+/** Tools page **/
+#table_tools div.form-group {
+	margin-bottom: 0px;
+}
+
+#table_tools div.btn-group {
+	display: inline-flex;
+}
+
+#table_tools > tbody > tr > td:first-child input {
+	width: 90px;
+}
+
+#table_tools > thead > tr > th:nth-child(2),
+#table_tools > thead > tr > th:nth-child(3),
+#table_tools > tbody > tr > td:nth-child(2),
+#table_tools > tbody > tr > td:nth-child(3) {
+	text-align: center;
+}
+
+#table_tools > tbody > tr > td:nth-child(4) div.input-group,
+#table_tools > tbody > tr > td:nth-child(5) div.input-group,
+#table_tools > tbody > tr > td:nth-child(6) div.input-group {
+	width: 100px;
+}
+
+#table_tools > tbody > tr > td {
+	vertical-align: middle;
+}
+
+
+/** Compensation page **/
+#compensation table div.form-group {
+	margin-bottom: 0px;
+}
+
+#table_points > thead > tr > th:first-child {
+	text-align: center;
+}
+
+#table_points > tbody > tr > td:first-child {
+	text-align: center;
+	vertical-align: middle;
+}
+
+
+/** Network page **/
+#staticip {
+	padding-bottom: 15px;
+}
+
+
+/** Finish page **/
+#table_fans div.form-group {
+	margin-bottom: 0px;
+}
+
+#table_fans div.btn-group {
+	display: inline-flex;
+}
+
+#table_fans > thead > tr > th:first-child,
+#table_fans > tbody > tr > td:first-child,
+#table_fans > tbody > tr > td:nth-child(6) {
+	text-align: center;
+}
+
+#table_fans > tbody > tr > td {
+	vertical-align: middle;
+}
+
+#error_notification > ul {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+
+/** Duet 0.6 modal **/
+#modal_duet06 div.modal-footer {
+	text-align: center !important;
+}
+
+
+/** Steps per mm calculator modal **/
+.row-xyz {
+	margin-bottom: 15px;
+}
+
+.row-xyz > div:first-child {
+	padding-top: 9px;
+}
+
+.row-xyz div.btn-group {
+	width: 100%;
+}
+
+.row-xyz div.btn-group > label:first-child,
+.row-xyz div.btn-group > label:last-child {
+	width: 33%;
+}
+
+.row-xyz div.btn-group > label:nth-child(2) {
+	width: 34%;
+}
+
+.row-stepangle {
+	margin-bottom: 15px;
+}
+
+.row-stepangle > div:first-child {
+	padding-top: 6px;
+}
+
+.row-stepangle select {
+	width: 100%;
+}
+
+.row-type {
+	margin-bottom: 15px;
+}
+
+.row-type > div:first-child {
+	padding-top: 9px;
+}
+
+.row-type div.btn-group {
+	width: 100%;
+}
+
+.row-type div.btn-group > label {
+	width: 50%;
+}
+
+
+/** Thermistor calculator modal **/
+.row-select {
+	margin-bottom: 15px;
+}
+
+div > .row-pair:last-child {
+	margin-bottom: 0px;
+}
+
+.row-select > div:first-child {
+	padding-top: 9px;
+}
+
+.row-pair {
+	margin-bottom: 15px;
+}
+
+.row-pair > div.col-md-1 {
+	text-align: center;
+	padding-top: 9px;
+	padding-right: 0px;
+}
+
+#modal_thermistor_calculator p.text-muted {
+	margin-top: 9px;
+}
+
+
+/** Finish modal **/
+#file_list {
+	padding-left: 15px;
+	margin-bottom: 0px;
+}
