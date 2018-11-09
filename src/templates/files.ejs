@@ -1,0 +1,23 @@
+bed.g
+config.g
+<%	if (template.probe.deploy) { -%>
+deployprobe.g
+retractprobe.g
+<%	} -%>
+<%	if (template.geometry.type == "delta") { -%>
+homedelta.g
+<%	} else { -%>
+homeall.g
+homex.g
+homey.g
+homez.g
+<%	} -%>
+pause.g
+resume.g
+sleep.g
+stop.g
+<%	template.tools.forEach(function(tool) { -%>
+<%- "tfree" + tool.number + ".g" %>
+<%- "tpre" + tool.number + ".g" %>
+<%- "tpost" + tool.number + ".g" %>
+<%	}); -%>

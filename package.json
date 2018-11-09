@@ -1,0 +1,31 @@
+{
+  "name": "configtool",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.7",
+    "@fortawesome/free-solid-svg-icons": "^5.4.2",
+    "@fortawesome/vue-fontawesome": "^0.1.1",
+    "axios": "^0.18.0",
+    "babel-polyfill": "^6.26.0",
+    "bootstrap-vue": "github:chrishamm/bootstrap-vue",
+    "ejs": "^2.6.1",
+    "es6-promise": "^4.2.5",
+    "file-saver": "^2.0.0-rc.4",
+    "font-awesome": "^4.7.0",
+    "jszip": "^3.1.5",
+    "npm": "^6.4.1",
+    "vue": "^2.5.17",
+    "vue-router": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.5",
+    "@vue/cli-service": "^3.0.5",
+    "copy-webpack-plugin": "^4.5.4",
+    "vue-template-compiler": "^2.5.17"
+  }
+}
