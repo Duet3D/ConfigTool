@@ -45,7 +45,7 @@ input::-webkit-inner-spin-button {
 			</ul>
 		</b-container>
 
-		<b-modal ref="errorModal" :ok-only="true" title="Invalid input">
+		<b-modal ref="errorModal" :ok-only="true" title="Invalid input" @hidden="highlightErrors">
 			<h4>This page still contains errors.</h4>
 			<h5>Please fix them before you continue.</h5>
 		</b-modal>
@@ -119,6 +119,9 @@ export default {
 				this.$refs.errorModal.show();
 			}
 			e.preventDefault();
+		},
+		highlightErrors() {
+			this.$refs.mainForm.reportValidity();
 		},
 
 		async finishShow() {

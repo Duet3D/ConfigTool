@@ -2,8 +2,8 @@
 
 import Vue from 'vue'
 
-import Boards from './defaults/Boards.js'
-import Template from './defaults/Template.js'
+import Boards from '../defaults/Boards.js'
+import Template from '../defaults/Template.js'
 
 // This is the mixin that registers global data and makes it accessible
 // to each Vue component.
@@ -20,6 +20,7 @@ let data = {
 };
 
 let enforcingConstraints = false;
+let oldMins = data.template.geometry.mins.slice(), oldMaxes = data.template.geometry.maxes.slice();
 
 export default {
 	beforeCreate() {
@@ -387,14 +388,19 @@ export default {
 	},
 	data: () => data,
 	watch: {
-		"template": function(to, from) {
+		"template": function(to) {
 			this.board = Boards.getBoard(to.board);
 			if (to.board == "duet06" && to.heaters.length > 1) {
 				// Duet 0.6 series resistor can vary so update the corresponding field
 				this.board.seriesResistor = to.heaters[1].series;
 			}
 
+			if (to.geometry.hasOwnProperty("mins") && to.geometry.hasOwnProperty("maxes")) {
+				oldMins = to.geometry.mins.slice();
+				oldMaxes = to.geometry.maxes.slice();
+			}
 			Template.update(to);
+
 			this.preset = Object.assign({}, to);
 		},
 		"template.bed_is_nozzle": function() { this.enforceConstraintsNextTick(); },
@@ -453,18 +459,6 @@ export default {
 			handler() { this.enforceConstraintsNextTick(); },
 			deep: true
 		},
-		"template.compensation_x_offset": function(to, from) {
-			if (this.template.mesh.x_min == from) {
-				this.template.mesh.x_min = to;
-				this.recalculateProbePoints();
-			}
-		},
-		"template.compensation_y_offset": function(to, from) {
-			if (this.template.mesh.y_min == from) {
-				this.template.mesh.y_min = to;
-				this.recalculateProbePoints();
-			}
-		},
 		"template.drives": function() { this.enforceConstraintsNextTick(); },
 		"template.firmware": function() { this.enforceConstraintsNextTick(); },
 		"template.geometry.type": function() {
@@ -473,9 +467,19 @@ export default {
 				this.recalculateProbePoints();
 			});
 		},
-		"template.geometry.maxes": function(to, from) {
-			if (this.template.bed.length == from[0]) { this.template.bed.length = to[0]; }
-			if (this.template.bed.width == from[1]) { this.template.bed.length = to[1]; }
+		"template.geometry.mins": function(to) {
+			if (this.template.mesh.x_min == oldMins[0] + this.template.compensation_x_offset) {
+				this.template.mesh.x_min = to[0] + this.template.compensation_x_offset;
+			}
+			if (this.template.mesh.y_min == oldMins[1] + this.template.compensation_y_offset) {
+				this.template.mesh.y_min = to[1] + this.template.compensation_y_offset;
+			}
+			oldMins = to.slice();
+		},
+		"template.geometry.maxes": function(to) {
+			if (this.template.bed.length == oldMaxes[0]) { this.template.bed.length = to[0]; }
+			if (this.template.bed.width == oldMaxes[1]) { this.template.bed.length = to[1]; }
+			oldMaxes = to.slice();
 		},
 		"template.geometry.print_radius": function(to, from) {
 			if (this.template.probe_radius == from) { this.template.probe_radius = to; }

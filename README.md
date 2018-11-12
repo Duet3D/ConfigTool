@@ -22,7 +22,7 @@ To generate macro files EJS is used. To the `render` funtion of each EJS file th
 The main goal of this project compared to the first version is the DRY (don't repeat yourself) concept in order to keep everything as flexible as possible.
 If new options are supposed to be added, the `v-preset` directive can be used to indicate a title and the constraints of an input field as a Bootstrap tooltip and the default value of `preset`. If the `v-model` directive of an input field does not point to `template`, the target preset can be explicitly specified via `v-preset="<object>"`.
 
-Please note that *Vuex* could not be used in this project due to the missing support for two-way bindings. Instead of this, `src/Store.js` populates the same `board`, `preset` and `template` instances among certain methods to every component that is used anywhere in this project.
+Please note that *Vuex* could not be used in this project due to the missing support for two-way bindings. Instead of this, `src/mixins/Store.js` populates the same `board`, `preset` and `template` instances among certain methods to every component that is used anywhere in this project.
 
 ## Build Setup
 

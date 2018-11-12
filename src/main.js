@@ -13,11 +13,13 @@ import Preset from './directives/Preset.js'
 
 import App from './App.vue'
 import Router from './Router.js'
-import Store from './Store.js'
+import Store from './mixins/Store.js'
+import ValidityIndicator from './mixins/ValidityIndicator.js'
 
-Vue.directive('preset', Preset);
-Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
+Vue.directive('preset', Preset);
+Vue.mixin(ValidityIndicator);
+Vue.use(BootstrapVue);
 
 window.isNumber = function(value) {
 	return (value != undefined && value.constructor == Number && !isNaN(value) && isFinite(value));
