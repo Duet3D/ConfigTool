@@ -1,9 +1,9 @@
 <template>
 	<div>
 		<b-input-group :append="unit" v-if="unit != undefined">
-			<b-form-input ref="inputUnit" v-model="heater[parameter]" v-preset="presetHeater[parameter]" :title="title" :min="min" :max="max" type="number" step="any" required />
+			<b-form-input ref="inputUnit" v-model.number="heater[parameter]" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required />
 		</b-input-group>
-		<b-form-input v-else ref="inputUnitless" v-model="heater[parameter]" v-preset="presetHeater[parameter]" :title="title" :min="min" :max="max" type="number" step="any" required />
+		<b-form-input v-else ref="inputUnitless" v-model.number="heater[parameter]" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required />
 
 		<b-popover :target="inputElement" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" triggers="focus" @show="onShow">
 			<b-form-group label="Thermistor Preset:">
@@ -60,10 +60,10 @@
 							<h4 :class="{ 'text-danger' : !isValid }">B: {{ isValid ? calculatedParameters.b.toExponential(6) : "error" }}</h4>
 						</template>
 						<template v-else>
-							<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.r25)} Ω` : "error" }} </h4>
+							<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.thermistor)} Ω` : "error" }} </h4>
 							<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${Math.round(calculatedParameters.beta)} K` : "error" }} </h4>
 						</template>
-						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }">C: {{ isValid ? (isThirdPairValid ? calculatedParameters.c.toExponential(6) : "0") : "error" }}</h4>
+						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }">C: {{ isValid ? (((sensorPreset != "custom" || isThirdPairValid) && calculatedParameters.c != 0) ? calculatedParameters.c.toExponential(6) : "0") : "error" }}</h4>
 					</b-col>
 					<b-col cols="auto" align-self="center">
 						<b-button size="sm" variant="primary" :disabled="!isValid" @click="apply">
@@ -87,7 +87,7 @@ export default {
 			if (this.sensorPreset.constructor === String) {
 				const beta = Math.log(this.parameters.r2 / this.parameters.r1) / ((1 / (this.parameters.t2 + 273.15)) -
 					(1 / (this.parameters.t1 + 273.15)));
-				const r25 = this.parameters.r1 * Math.exp(beta * ((1 / 298.15) - (1 / (this.parameters.t1 + 273.15))));
+				const thermistor = this.parameters.r1 * Math.exp(beta * ((1 / 298.15) - (1 / (this.parameters.t1 + 273.15))));
 
 				// Check if we can calculate ABC or only AB
 				let a, b, c;
@@ -115,7 +115,7 @@ export default {
 					a = (1 / (this.parameters.t1 + 273.15)) - b * Math.log(this.parameters.r1);
 					c = 0;
 				}
-				return { r25, beta, a, b, c };
+				return { thermistor, beta, a, b, c };
 			}
 			return this.sensorPreset;
 		},
@@ -138,9 +138,9 @@ export default {
 			},
 			sensorPreset: "custom",
 			sensorPresets: [
-				{ text: "Semitec 104-GT2 (used by E3D)", value: { r25: 100000, beta: 4388, a: 0.57177248e-3, b: 2.116402e-4, c: 0.706e-7 } },
-				{ text: "Honeywell 135-104QAD-J01 (RepRapPro hot ends)", value: { r25: 100000, beta: 4138, a: 2.236745e-3, b: 2.4166263e-4, c: 0 } },
-				{ text: "EPCOS B57863S0103F040 (Ormerod bed thermistor)", value: { r25: 10000, beta: 3988, a: 1.0445028e-3, b: 2.5075225e-4, c: 0 } },
+				{ text: "Semitec 104-GT2 (used by E3D)", value: { thermistor: 100000, beta: 4388, a: 0.57177248e-3, b: 2.116402e-4, c: 0.706e-7 } },
+				{ text: "Honeywell 135-104QAD-J01 (RepRapPro hot ends)", value: { thermistor: 100000, beta: 4138, a: 2.236745e-3, b: 2.4166263e-4, c: 0 } },
+				{ text: "EPCOS B57863S0103F040 (Ormerod bed thermistor)", value: { thermistor: 10000, beta: 3988, a: 1.0445028e-3, b: 2.5075225e-4, c: 0 } },
 				{ text: "Custom", value: "custom" }
 			],
 			popoverShown: false
@@ -149,11 +149,11 @@ export default {
 	methods: {
 		apply() {
 			const params = this.calculatedParameters;
-			this.heater.r25 = Math.round(params.r25);
+			this.heater.thermistor = Math.round(params.thermistor);
 			this.heater.beta = Math.round(params.beta);
 			this.heater.a = params.a.toExponential(6);
 			this.heater.b = params.b.toExponential(6);
-			this.heater.c = this.isThirdPairValid ? params.c.toExponential(6) : 0;
+			this.heater.c = (this.sensorPreset != "custom" || this.isThirdPairValid) ? params.c.toExponential(6) : 0;
 			this.popoverShown = false;
 		},
 		inputElement() {
@@ -161,6 +161,15 @@ export default {
 			return (this.unit == undefined) ? this.$refs.inputUnitless : this.$refs.inputUnit;
 		},
 		onShow(e) {
+			this.sensorPreset = "custom";
+			for(let i = 0; i < this.sensorPresets.length; i++) {
+				const preset = this.sensorPresets[i].value;
+				if (this.heater.thermistor == preset.thermistor && this.heater.beta == preset.beta && this.heater.c == preset.c) {
+					this.sensorPreset = preset;
+					break;
+				}
+			}
+
 			e.relatedTarget.style.maxWidth = "390px";
 		}
 	},

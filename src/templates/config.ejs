@@ -304,6 +304,7 @@ M307 H<%- template.chamber.heater %> B0 S<%- (template.heaters[template.chamber.
 <%		}
 	}
 
+	// FIXME: Adjust the block below if Steinhart-Hart parameters are supposed to be used!
 	template.heaters.forEach(function(heater, i) {
 		if (heater != null) {
 			if (i != (template.bed.present ? template.bed.heater : -1) &&
@@ -314,7 +315,7 @@ M301 H<%- i %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; Set heater <%- i
 			if (template.firmware <= 1.16) { -%>
 M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta %> R<%- heater.series %><%- (heater.channel != i) ? " X" + heater.channel : "" %> ; Set thermistor + ADC parameters for heater <%- i %><%- (heater.channel != i) ? " and remap it to channel " + heater.channel : "" %>
 <%			} else if (heater.channel < 100) { -%>
-M305 P<%- i %> T<%- heater.thermistor %> B<%- (heater.b == 0) ? 0 : Math.round(1 / heater.b) %> C<%- (heater.c == 0) ? 0 : heater.c.toExponential(6) %> R<%- heater.series %><%- (heater.channel != i) ? " X" + heater.channel : "" %> ; Set thermistor + ADC parameters for heater <%- i %><%- (heater.channel != i) ? " and remap it to channel " + heater.channel : "" %>
+M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta + ((heater.c == 0) ? 0 : " C" + heater.c.toExponential(6)) %> R<%- heater.series %><%- (heater.channel != i) ? " X" + heater.channel : "" %> ; Set thermistor + ADC parameters for heater <%- i %><%- (heater.channel != i) ? " and remap it to channel " + heater.channel : "" %>
 M143 H<%- i %> S<%- heater.temp_limit %> ; Set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
 <%			} else { -%>
 M305 P<%- i %> X<%- heater.channel %> ; Configure thermocouple for heater <%- i %>

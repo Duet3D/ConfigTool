@@ -48,6 +48,7 @@
 				</b-col>
 			</b-form-row>
 			<br v-else/>
+			<!-- FIXME: If uncommenting the line below, make sure AB is recalculated automatically when R25+BETA change! -->
 			<!--<b-checkbox v-if="template.firmware > 1.16" v-model="useSteinhartHart" v-b-tooltip.hover title="RepRapFirmware versions up to v1.16 rely on the β parameter equation to calculate temperatures, however starting from RepRapFirmware 1.17 the Steinhart-Hart equation is used for improved accuarcy.">Use Steinhart-Hart Equation for Higher Accuracy</b-checkbox>-->
 		</b-card>
 
@@ -172,9 +173,9 @@ export default {
 			sensors: {
 				Thermistors: [],
 				PT1000: [],
-				MAX31855: [],
-				MAX31856: [],
-				RTD: []
+				"MAX31855 (K-Type Thermocouple)": [],
+				"MAX31856 (K-Type Thermocouple)": [],
+				"MAX31856 (PT100)": []
 			},
 			useSteinhartHart: false
 		}
@@ -218,9 +219,9 @@ export default {
 		}
 
 		for(let i = 0; i < this.board.maxRtdBoards; i++) {
-			this.sensors.MAX31855.push({ value: 100 + i, text: `MAX31855 Thermocouple ${i}` });
-			this.sensors.MAX31856.push({ value: 150 + i, text: `MAX31856 Thermocouple ${i}` });
-			this.sensors.RTD.push({ value: 150 + i, text: `MAX31856 Thermocouple ${i}` });
+			this.sensors["MAX31855 (K-Type Thermocouple)"].push({ value: 100 + i, text: `MAX31855 on CS${i + 1}` });
+			this.sensors["MAX31856 (K-Type Thermocouple)"].push({ value: 150 + i, text: `MAX31856 on CS${i + 1}` });
+			this.sensors["MAX31856 (PT100)"].push({ value: 200 + i, text: `MAX31856 on CS${i + 1}` });
 		}
 	}
 }

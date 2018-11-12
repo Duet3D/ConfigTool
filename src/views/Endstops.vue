@@ -173,7 +173,7 @@
 
 import ZProbeValues from '../components/EndstopsZProbeValues.vue'
 
-const probeTypes = ["noprobe", "switch", "unmodulated", "modulated", "ultrasonic", "effector", "bltouch"];
+const probeTypes = ["noprobe", "switch", "unmodulated", "modulated", /*"ultrasonic",*/ "effector", "bltouch"];
 
 export default {
 	beforeMount() {
