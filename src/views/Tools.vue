@@ -30,7 +30,7 @@
 							<b-form-input v-model.number="tool.number" type="number" min="0" step="1" required />
 						</td>
 						<td>
-							<b-input v-model="tool.name" placeholder="optional" type="text" />
+							<b-form-input v-model="tool.name" placeholder="optional" type="text" />
 						</td>
 						<td class="pt-3">
 							<b-form-checkbox-group buttons button-variant="outline-primary" size="sm" :name="'tool-extruders-' + index" v-model="tool.extruders" :options="extruders" />

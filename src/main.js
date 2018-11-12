@@ -9,9 +9,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import './Icons.js'
 
-import Preset from './directives/Preset.js'
-
 import App from './App.vue'
+import Preset from './directives/Preset.js'
 import Router from './Router.js'
 import Store from './mixins/Store.js'
 import ValidityIndicator from './mixins/ValidityIndicator.js'

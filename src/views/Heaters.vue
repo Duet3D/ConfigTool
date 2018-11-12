@@ -109,7 +109,7 @@
 							<thermistor-input :heater="heater" :preset-heater="getPresetHeater(index)" title="C coefficient of the Steinhart-Hart equation. May be used to improve the β model parameters too" :useSteinhartHart="useSteinhartHart" parameter="c" />
 						</td>
 						<td>
-							<sensor-select v-model="heater.channel" v-b-tooltip.hover title="Assigned sensor channel for this heater" :options="sensors" />
+							<sensor-select v-model="heater.channel" v-preset="index" title="Assigned sensor channel for this heater" :options="sensors" />
 						</td>
 					</tr>
 				</tbody>

@@ -81,7 +81,7 @@ tr > td:last-child > select {
 				<span v-if="drive.current >= board.motorWarningCurrent" v-b-tooltip.hover title="Your specified motor current exceeds the safe range. You may have to use extra cooling to prevent damage of your stepper drivers!" class="text-warning small-text"><font-awesome-icon icon="exclamation-triangle" /> <u class="ml-1">Warning!</u></span>
 		</td>
 		<td>
-			<b-select v-model.number="drive.driver" :options="drivers" v-b-tooltip.hover title="Motor driver (M584)" />
+			<b-select v-model.number="drive.driver" :options="drivers" v-preset="index" title="Motor driver (M584)" />
 		</td>
 	</tr>
 </template>

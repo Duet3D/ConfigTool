@@ -73,7 +73,7 @@ export default {
 
 	async compileZIP(filenames, template, board) {
 		let zip = new JSZip();
-		zip.file("config.json", JSON.stringify(template));
+		zip.file("sys/config.json", JSON.stringify(template));
 
 		// Generate config macros
 		for(let i = 0; i < filenames.length; i++) {
