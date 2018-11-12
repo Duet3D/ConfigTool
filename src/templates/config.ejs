@@ -314,14 +314,16 @@ M301 H<%- i %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; Set heater <%- i
 <%			}
 			if (template.firmware <= 1.16) { -%>
 M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta %> R<%- heater.series %><%- (heater.channel != i) ? " X" + heater.channel : "" %> ; Set thermistor + ADC parameters for heater <%- i %><%- (heater.channel != i) ? " and remap it to channel " + heater.channel : "" %>
-<%			} else if (heater.channel < 100) { -%>
+<%			} else {
+				if (heater.channel < 100) { -%>
 M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta + ((heater.c == 0) ? 0 : " C" + heater.c.toExponential(6)) %> R<%- heater.series %><%- (heater.channel != i) ? " X" + heater.channel : "" %> ; Set thermistor + ADC parameters for heater <%- i %><%- (heater.channel != i) ? " and remap it to channel " + heater.channel : "" %>
-M143 H<%- i %> S<%- heater.temp_limit %> ; Set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
-<%			} else { -%>
+<%				} else if (heater.channel >= 500 && heater.channel < 550) { -%>
+M305 P<%- i %> X<%- heater.channel %> R<%- heater.series %> ; Configure PT1000 for heater <%- i %>
+<%				} else { -%>
 M305 P<%- i %> X<%- heater.channel %> ; Configure thermocouple for heater <%- i %>
+<%				} -%>
 M143 H<%- i %> S<%- heater.temp_limit %> ; Set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
-<%
-			}
+<%			}
 		}
 	}); -%>
 
