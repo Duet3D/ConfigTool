@@ -29,29 +29,33 @@
 			<b-form-checkbox v-model="template.nvram" v-preset title="Load saved configuration parameters on start-up (M501)">Read config-override.g file at end of startup process</b-form-checkbox>
 			<br/>
 			<b-form-checkbox v-if="board.hasPowerFailureDetection" v-model="template.auto_save.enabled" v-preset title="Store the last valid print parameters on the SD card when a power failure occurs (M911)">Save print state on power failure</b-form-checkbox>
-			<b-form-row v-if="template.auto_save.enabled" class="mt-3 pl-4">
-				<b-col>
-					<b-form-group label="Auto Save Threshold:" class="mb-0">
-						<b-input-group append="V">
-							<b-form-input v-model.number="template.auto_save.save_threshold" type="number" step="any" required />
-						</b-input-group>
-					</b-form-group>
-				</b-col>
+			<div v-if="template.auto_save.enabled" class="mt-3 pl-4">
+				<b-form-row>
+					<b-col>
+						<b-form-group label="Auto Save Threshold:">
+							<b-input-group append="V">
+								<b-form-input v-model.number="template.auto_save.save_threshold" type="number" step="any" required />
+							</b-input-group>
+						</b-form-group>
+					</b-col>
 
-				<b-col>
-					<b-form-group label="Resume Threshold:" class="mb-0">
-						<b-input-group append="V">
-							<b-form-input v-model.number="template.auto_save.resume_threshold" type="number" step="any" required />
-						</b-input-group>
-					</b-form-group>
-				</b-col>
+					<b-col>
+						<b-form-group label="Resume Threshold:">
+							<b-input-group append="V">
+								<b-form-input v-model.number="template.auto_save.resume_threshold" type="number" step="any" required />
+							</b-input-group>
+						</b-form-group>
+					</b-col>
 
-				<b-col cols="6">
-					<b-form-group label="G-Codes to run when Auto-Saving is performed:" class="mb-0">
-						<b-form-input v-model.trim="template.auto_save.gcodes_to_run" type="text" required />
-					</b-form-group>
-				</b-col>
-			</b-form-row>
+					<b-col cols="6">
+						<b-form-group label="G-Codes to run when Auto-Saving is performed:">
+							<b-form-input v-model.trim="template.auto_save.gcodes_to_run" type="text" required />
+						</b-form-group>
+					</b-col>
+				</b-form-row>
+
+				<span>Important: The file /sys/resurrect-prologue.g must be set up manually for resume to work (see <a href="https://duet3d.dozuki.com/Wiki/Setting_up_to_resume_a_print_after_a_power_failure#Section_Setting_up_the_sys_resurrect_prologue_g_file" target="_blank">Duet3D wiki</a>)</span>
+			</div>
 		</b-card>
 
 		<b-card no-body header="Printer Geometry" class="mt-3">

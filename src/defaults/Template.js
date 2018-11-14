@@ -97,28 +97,7 @@ export default {
 				y_offset: 0,
 				speed: 2,
 				deploy: false,
-				points: [
-					{
-						x: 15,
-						y: 15,
-						z: 0
-					},
-					{
-						x: 15,
-						y: 195,
-						z: 0
-					},
-					{
-						x: 215,
-						y: 195,
-						z: 0
-					},
-					{
-						x: 215,
-						y: 15,
-						z: 0
-					}
-				],
+				points: [],
 				pwm_channel: 3,
 				pwm_inverted: true
 			},
