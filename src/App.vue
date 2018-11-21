@@ -156,10 +156,15 @@ export default {
 			try {
 				const output = await Compiler.compileTemplate(filename, this.template, this.board);
 
-				let tab = window.open();
-				tab.document.body.innerHTML = output.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
-				tab.document.body.style="font-family: monospace;"
-				tab.document.title = filename;
+				let tab = window.open('about:blank', '_blank');
+				if (tab == null) {
+					alert("Could not open a new tab!\n\nPlease allow pop-ups for this page and try again.");
+				} else {
+					tab.document.write(output.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;"));
+					tab.document.body.style="font-family: monospace;"
+					tab.document.title = filename;
+					tab.document.close();
+				}
 			} catch (e) {
 				alert(`Failed to generate file ${filename}:\n\n${e}`);
 			}
