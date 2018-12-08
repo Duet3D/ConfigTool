@@ -21,7 +21,7 @@ Vue.mixin(ValidityIndicator);
 Vue.use(BootstrapVue);
 
 window.isNumber = function(value) {
-	return (value != undefined && value.constructor == Number && !isNaN(value) && isFinite(value));
+	return (value !== undefined && value !== null && value.constructor == Number && !isNaN(value) && isFinite(value));
 }
 
 const app = new Vue({

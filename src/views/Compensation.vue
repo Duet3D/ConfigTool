@@ -6,6 +6,10 @@
 
 <template>
 	<b-container>
+		<b-alert show v-if="template.firmware >= 1.21 && template.geometry.type != 'delta'">
+			<i class="fas fa-info"></i> <strong>Note:</strong> 3/4/5 Point Bed Compensation has been deprecated. It has been replaced by the new Mesh Bed Compensation.
+		</b-alert>
+
 		<b-card v-if="template.firmware < 1.21 && template.geometry.type != 'delta'" no-body header="Bed Probing">
 			<div class="card-body">
 				<b-form-row>

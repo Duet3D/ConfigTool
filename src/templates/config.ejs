@@ -188,14 +188,14 @@ M208 X<%- template.geometry.maxes[0] %> Y<%- template.geometry.maxes[1] %> Z<%- 
 
 ; Endstops
 <%	let activeLowSwitches = "";
-	if (template.drives[0].endstop_type == 3 && template.firmware < 1.20) { activeLowSwitches += " X0"; }
+	if (template.drives[0].endstop_type == 0 || (template.drives[0].endstop_type == 3 && template.firmware < 1.20)) { activeLowSwitches += " X0"; }
 	if (template.drives[0].endstop_type == 2) { activeLowSwitches += " X" + template.drives[0].endstop_location; }
-	if (template.drives[1].endstop_type == 3 && template.firmware < 1.20) { activeLowSwitches += " Y0"; }
+	if (template.drives[1].endstop_type == 0 || (template.drives[1].endstop_type == 3 && template.firmware < 1.20)) { activeLowSwitches += " Y0"; }
 	if (template.drives[1].endstop_type == 2) { activeLowSwitches += " Y" + template.drives[1].endstop_location; }
-	if (template.drives[2].endstop_type == 3 && template.firmware < 1.20 && template.probe.type != "noprobe") { activeLowSwitches += " Z0"; }
+	if (template.drives[2].endstop_type == 0 || (template.drives[2].endstop_type == 3 && template.firmware < 1.20 && template.probe.type != "noprobe")) { activeLowSwitches += " Z0"; }
 	if (template.drives[2].endstop_type == 2 && template.probe.type != "noprobe") { activeLowSwitches += " Z" + template.drives[2].endstop_location; }
 	if (activeLowSwitches != "") { -%>
-M574<%- activeLowSwitches %> S0 ; Set active low endstops
+M574<%- activeLowSwitches %> S0 ; Set active low and disabled endstops
 <%	}
 	let activeHighSwitches = "";
 	if (template.drives[0].endstop_type == 1) { activeHighSwitches += " X" + template.drives[0].endstop_location; }
