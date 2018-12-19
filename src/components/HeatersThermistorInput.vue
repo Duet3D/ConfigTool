@@ -67,7 +67,7 @@
 					</b-col>
 					<b-col cols="auto" align-self="center">
 						<b-button size="sm" variant="primary" :disabled="!isValid" @click="apply">
-							<font-awesome-icon icon="check" /> Set
+							<font-awesome-icon icon="check"></font-awesome-icon> Set
 						</b-button>
 					</b-col>
 				</b-form-row>
@@ -81,13 +81,23 @@
 
 const popoverTemplate = '<div class="popover calc-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
 
+const parameters = {
+	t1: 25,
+	t2: 220,
+	t3: '',
+	r1: 10000,
+	r2: 1360,
+	r3: ''
+}
+let hadInput = false
+
 export default {
 	computed: {
 		calculatedParameters() {
 			if (this.sensorPreset.constructor === String) {
-				const beta = Math.log(this.parameters.r2 / this.parameters.r1) / ((1 / (this.parameters.t2 + 273.15)) -
+				let beta = Math.log(this.parameters.r2 / this.parameters.r1) / ((1 / (this.parameters.t2 + 273.15)) -
 					(1 / (this.parameters.t1 + 273.15)));
-				const thermistor = this.parameters.r1 * Math.exp(beta * ((1 / 298.15) - (1 / (this.parameters.t1 + 273.15))));
+				let thermistor = this.parameters.r1 * Math.exp(beta * ((1 / 298.15) - (1 / (this.parameters.t1 + 273.15))));
 
 				// Check if we can calculate ABC or only AB
 				let a, b, c;
@@ -104,6 +114,12 @@ export default {
 						b = g2 - c * (l1 * l1 + l1 * l2 + l2 * l2);
 						a = (1 / (this.parameters.t1 + 273.15)) - (b + l1 * l1 * c) * l1;
 					}
+
+					// Recalculate R25 and beta
+					const x = 1 / (2 * c) * (a - 1 / 298.15);
+					const y = Math.sqrt(Math.pow(b / (3 * c), 3) + Math.pow(x, 2));
+					thermistor = Math.exp(Math.pow(y - x, 1 / 3) - Math.pow(y + x, 1 / 3));
+					beta = 1 / b;
 
 					// C may become extremely small so it doesn't matter if it's set to 0
 					if (c > -1e-16 && c < 1e-16) {
@@ -128,20 +144,14 @@ export default {
 	},
 	data() {
 		return {
-			parameters: {
-				t1: 25,
-				t2: 220,
-				t3: "",
-				r1: 10000,
-				r2: 1360,
-				r3: ""
-			},
+			parameters,
 			sensorPreset: "custom",
 			sensorPresets: [
-				{ text: "Semitec 104-GT2 (used by E3D)", value: { thermistor: 100000, beta: 4388, a: 0.57177248e-3, b: 2.116402e-4, c: 0.706e-7 } },
-				{ text: "Honeywell 135-104QAD-J01 (RepRapPro hot ends)", value: { thermistor: 100000, beta: 4138, a: 2.236745e-3, b: 2.4166263e-4, c: 0 } },
-				{ text: "EPCOS B57863S0103F040 (Ormerod bed thermistor)", value: { thermistor: 10000, beta: 3988, a: 1.0445028e-3, b: 2.5075225e-4, c: 0 } },
-				{ text: "Custom", value: "custom" }
+				{ text: 'Semitec 104-GT2 (used by E3D)', value: { thermistor: 100000, beta: 4388, a: 0.57177248e-3, b: 2.116402e-4, c: 0.706e-7 } },
+				{ text: 'Honeywell 135-104QAD-J01 (RepRapPro hot ends)', value: { thermistor: 100000, beta: 4138, a: 2.236745e-3, b: 2.4166263e-4, c: 0 } },
+				{ text: 'EPCOS B57863S0103F040 (Ormerod bed thermistor)', value: { thermistor: 10000, beta: 3988, a: 1.0445028e-3, b: 2.5075225e-4, c: 0 } },
+				{ text: 'Slice Engineering High-Temperature Thermistor', value: { thermistor: 500000, beta: 4723, a: 3.055357e-4, b: 2.117134e-4, c: 1.196220e-7 } },
+				{ text: 'Custom', value: "custom" }
 			],
 			popoverShown: false
 		}
@@ -153,7 +163,7 @@ export default {
 			this.heater.beta = Math.round(params.beta);
 			this.heater.a = params.a.toExponential(6);
 			this.heater.b = params.b.toExponential(6);
-			this.heater.c = (this.sensorPreset != "custom" || this.isThirdPairValid) ? params.c.toExponential(6) : 0;
+			this.heater.c = (this.sensorPreset != 'custom' || this.isThirdPairValid) ? params.c.toExponential(6) : 0;
 			this.popoverShown = false;
 		},
 		inputElement() {
@@ -161,16 +171,18 @@ export default {
 			return (this.unit == undefined) ? this.$refs.inputUnitless : this.$refs.inputUnit;
 		},
 		onShow(e) {
-			this.sensorPreset = "custom";
-			for(let i = 0; i < this.sensorPresets.length; i++) {
-				const preset = this.sensorPresets[i].value;
-				if (this.heater.thermistor == preset.thermistor && this.heater.beta == preset.beta && this.heater.c == preset.c) {
-					this.sensorPreset = preset;
-					break;
+			if (!hadInput) {
+				this.sensorPreset = 'custom';
+				for (let i = 0; i < this.sensorPresets.length; i++) {
+					const preset = this.sensorPresets[i].value;
+					if (this.heater.thermistor == preset.thermistor && this.heater.beta == preset.beta && this.heater.c == preset.c) {
+						this.sensorPreset = preset;
+						break;
+					}
 				}
 			}
 
-			e.relatedTarget.style.maxWidth = "390px";
+			e.relatedTarget.style.maxWidth = '390px';
 		}
 	},
 	props: {
@@ -192,6 +204,12 @@ export default {
 		title: String,
 		unit: String,
 		useSteinhartHart: Boolean
+	},
+	watch: {
+		parameters: {
+			deep: true,
+			handler: () => hadInput = true
+		}
 	}
 }
 </script>
