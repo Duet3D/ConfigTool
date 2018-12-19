@@ -68,7 +68,7 @@ input::-webkit-inner-spin-button {
 			<p>See <a href="https://duet3d.com/wiki/SD_card_folder_structure" target="_blank">this page</a> for further information about the purpose of these files.</p>
 
 			<template slot="modal-footer">
-				<a href="configLink" class="btn btn-secondary" download="config.json"><font-awesome-icon icon="save" /> Download JSON template</a>
+				<a :href="configLink" class="btn btn-secondary" download="config.json"><font-awesome-icon icon="save" /> Download JSON template</a>
 				<b-button variant="primary" @click="generateZIP" :disabled="generatingZIP"><font-awesome-icon icon="download" v-show="!generatingZIP" /> {{ generatingZIP ? "Generating ZIP bundle..." : "Download configuration bundle as ZIP file"}}</b-button>
 			</template>
 		</b-modal>
@@ -127,7 +127,7 @@ export default {
 		async finishShow() {
 			this.message = "Loading...";
 			this.files = [];
-			this.dataLink = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.template));
+			this.configLink = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.template));
 
 			try {
 				const output = await Compiler.compileFile("templates/files.ejs", { template: this.template });

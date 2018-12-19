@@ -109,17 +109,17 @@
 						<td class="pl-4 pt-3">{{ ['X', 'Y', 'Z'][i - 1] }}</td>
 						<td>
 							<b-form-radio-group buttons button-variant="outline-primary" v-model="template.drives[i - 1].endstop_type" :name="'endstopType' + i" class="w-100">
-								<b-form-radio value="0" class="w-100" v-b-tooltip.hover title="Manual homing via G92">None</b-form-radio>
-								<b-form-radio value="1" class="w-100" v-b-tooltip.hover title="Endstop switch pulls signal from GND to +3.3V when triggered">Active high (NC switch)</b-form-radio>
-								<b-form-radio value="2" class="w-100" v-b-tooltip.hover title="Endstop switch pulls signal from +3.3V to GND when triggered">Active low (NO switch)</b-form-radio>
-								<b-form-radio value="3" class="w-100" :disabled="template.probe.type == 'noprobe'" v-b-tooltip.hover title="Z-Probe is used">Z-Probe</b-form-radio>
-								<b-form-radio value="4" class="w-100" :disabled="!board.hasMotorLoadDetection" v-b-tooltip.hover title="Motor stall detection of the stepper drivers">Motor Stall Detection</b-form-radio>
+								<b-form-radio :value="0" class="w-100" v-b-tooltip.hover title="Manual homing via G92">None</b-form-radio>
+								<b-form-radio :value="1" class="w-100" v-b-tooltip.hover title="Endstop switch pulls signal from GND to +3.3V when triggered">Active high (NC switch)</b-form-radio>
+								<b-form-radio :value="2" class="w-100" v-b-tooltip.hover title="Endstop switch pulls signal from +3.3V to GND when triggered">Active low (NO switch)</b-form-radio>
+								<b-form-radio :value="3" class="w-100" :disabled="template.probe.type == 'noprobe'" v-b-tooltip.hover title="Z-Probe is used">Z-Probe</b-form-radio>
+								<b-form-radio :value="4" class="w-100" :disabled="!board.hasMotorLoadDetection" v-b-tooltip.hover title="Motor stall detection of the stepper drivers">Motor Stall Detection</b-form-radio>
 							</b-form-radio-group>
 						</td>
 						<td>
 							<b-form-radio-group buttons button-variant="outline-primary" v-model="template.drives[i - 1].endstop_location" :name="'endstopLocation' + i" class="w-100">
-								<b-form-radio value="1" class="w-100" :disabled="template.geometry.type == 'delta'">At low end</b-form-radio>
-								<b-form-radio value="2" class="w-100">At high end</b-form-radio>
+								<b-form-radio :value="1" class="w-100" :disabled="template.geometry.type == 'delta'">At low end</b-form-radio>
+								<b-form-radio :value="2" class="w-100">At high end</b-form-radio>
 							</b-form-radio-group>
 						</td>
 					</tr>
