@@ -22,6 +22,7 @@
 				<p>The following machine templates were contributed by users and have not been throughly tested:</p>
 
 				<b-form-radio-group v-model="machine" @change="setMachine" name="machine" stacked class="mb-3">
+					<b-form-radio value="anet-a8">Anet A8</b-form-radio>
 					<b-form-radio value="distech-prometheus-system">Distech Prometheus System</b-form-radio>
 					<b-form-radio value="reach3d">Reach3D Printer</b-form-radio>
 					<b-form-radio value="wanhao-di3">Wanhao Duplicator i3</b-form-radio>
