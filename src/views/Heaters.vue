@@ -70,7 +70,7 @@
 					<th v-show="!useSteinhartHart">β</th>
 					<th v-show="useSteinhartHart">A</th>
 					<th v-show="useSteinhartHart">B</th>
-					<th>C</th>
+					<th v-show="template.firmware > 1.16">C</th>
 					<th>Sensor Channel</th>
 				</thead>
 				<tbody>
@@ -105,7 +105,7 @@
 						<td v-show="useSteinhartHart">
 							<thermistor-input :heater="heater" :preset-heater="getPresetHeater(index)" title="B coefficient of the Steinhart-Hart equation" :useSteinhartHart="true" parameter="b" />
 						</td>
-						<td>
+						<td v-show="template.firmware > 1.16">
 							<thermistor-input :heater="heater" :preset-heater="getPresetHeater(index)" title="C coefficient of the Steinhart-Hart equation. May be used to improve the β model parameters too" :useSteinhartHart="useSteinhartHart" parameter="c" />
 						</td>
 						<td>
@@ -171,8 +171,8 @@ export default {
 		return {
 			heaters: [],
 			sensors: {
-				Thermistors: [],
-				PT1000: [],
+				"Thermistors": [],
+				"PT1000": [],
 				"MAX31855 (K-Type Thermocouple)": [],
 				"MAX31856 (K-Type Thermocouple)": [],
 				"MAX31856 (PT100)": []

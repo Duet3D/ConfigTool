@@ -24,7 +24,7 @@
 								<b-input v-model.number="parameters.t2" min="-273" max="1999" type="number" step="any" required />
 							</b-input-group>
 						</b-form-group>
-						<b-form-group horizontal label="T3:">
+						<b-form-group horizontal label="T3:" v-show="template.firmware > 1.16">
 							<b-input-group append="C">
 								<b-input v-model.number="parameters.t3" min="-273" max="1999" type="number" step="any" />
 							</b-input-group>
@@ -41,14 +41,14 @@
 								<b-input v-model.number="parameters.r2" min="1" type="number" step="any" required />
 							</b-input-group>
 						</b-form-group>
-						<b-form-group horizontal label="R3:" label-class="text-right">
+						<b-form-group horizontal label="R3:" label-class="text-right" v-show="template.firmware > 1.16">
 							<b-input-group append="Ω">
 								<b-input v-model.number="parameters.r3" min="1" type="number" step="any" />
 							</b-input-group>
 						</b-form-group>
 					</b-col>
 				</b-form-row>
-				<span>The third pair is optional.</span>
+				<span v-show="template.firmware > 1.16">The third pair is optional.</span>
 			</b-card>
 
 			<b-card class="mt-3">
@@ -61,9 +61,9 @@
 						</template>
 						<template v-else>
 							<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.thermistor)} Ω` : "error" }} </h4>
-							<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${Math.round(calculatedParameters.beta)} K` : "error" }} </h4>
+							<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${Math.round(isThirdPairValid ? 1 / calculatedParameters.b : calculatedParameters.beta)} K` : "error" }} </h4>
 						</template>
-						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }">C: {{ isValid ? (((sensorPreset != "custom" || isThirdPairValid) && calculatedParameters.c != 0) ? calculatedParameters.c.toExponential(6) : "0") : "error" }}</h4>
+						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }" v-show="template.firmware > 1.16">C: {{ isValid ? (((sensorPreset != "custom" || isThirdPairValid) && calculatedParameters.c != 0) ? calculatedParameters.c.toExponential(6) : "0") : "error" }}</h4>
 					</b-col>
 					<b-col cols="auto" align-self="center">
 						<b-button size="sm" variant="primary" :disabled="!isValid" @click="apply">
@@ -139,7 +139,7 @@ export default {
 			return isNumber(this.parameters.r1) && isNumber(this.parameters.r2) && isNumber(this.parameters.t1) && isNumber(this.parameters.t2);
 		},
 		isThirdPairValid() {
-			return isNumber(this.parameters.r3) && isNumber(this.parameters.t3);
+			return (this.sensorPreset != 'custom' || isNumber(this.parameters.r3) && isNumber(this.parameters.t3)) && this.template.firmware > 1.16;
 		}
 	},
 	data() {
@@ -160,10 +160,10 @@ export default {
 		apply() {
 			const params = this.calculatedParameters;
 			this.heater.thermistor = Math.round(params.thermistor);
-			this.heater.beta = Math.round(params.beta);
+			this.heater.beta = Math.round(this.isThirdPairValid ? 1 / params.b : params.beta);
 			this.heater.a = params.a.toExponential(6);
 			this.heater.b = params.b.toExponential(6);
-			this.heater.c = (this.sensorPreset != 'custom' || this.isThirdPairValid) ? params.c.toExponential(6) : 0;
+			this.heater.c = this.isThirdPairValid ? params.c.toExponential(6) : 0;
 			this.popoverShown = false;
 		},
 		inputElement() {
@@ -175,7 +175,9 @@ export default {
 				this.sensorPreset = 'custom';
 				for (let i = 0; i < this.sensorPresets.length; i++) {
 					const preset = this.sensorPresets[i].value;
-					if (this.heater.thermistor == preset.thermistor && this.heater.beta == preset.beta && this.heater.c == preset.c) {
+					const beta = (this.heater.c === 0) ? this.heater.beta : Math.round(1 / this.heater.b);
+					if (this.heater.thermistor === preset.thermistor &&
+						((this.heater.c === 0 && this.heater.beta === preset.beta) || (this.heater.c === preset.c && this.heater.b == preset.b))) {
 						this.sensorPreset = preset;
 						break;
 					}

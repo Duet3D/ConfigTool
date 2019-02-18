@@ -20,7 +20,7 @@ M667 S<%- sParam %> ; Select CoreXY mode
 <%	if (template.network.enabled) { -%>
 M550 P"<%- template.network.name %>" ; Set machine name
 <%		if (template.network.password != "") { -%>
-M551 P"<%- template.network.password %>: ; Set password
+M551 P"<%- template.network.password %>" ; Set password
 <%		}
 		if (template.network.hasOwnProperty("mac_address") && template.network.mac_address != "") { -%>
 M540 P<%- template.network.mac_address %> ; Set custom MAC address

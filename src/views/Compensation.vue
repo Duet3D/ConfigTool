@@ -150,7 +150,7 @@
 				<b-col>
 					<b-form-group label="Grid Spacing:">
 						<b-input-group append="mm">
-							<b-form-input v-model.number="template.mesh.spacing" v-preset title="Spacing between the probe points" :min="1" :max="template.mesh.radius / 2" type="number" step="any" required />
+							<b-form-input v-model.number="template.mesh.spacing" v-preset title="Spacing between the probe points" :min="1" :max="maxGridSpacing" type="number" step="any" required />
 
 						</b-input-group>
 					</b-form-group>
@@ -202,6 +202,11 @@ import PointsTable from '../components/CompensationPointsTable.vue'
 export default {
 	components: {
 		'points-table': PointsTable
+	},
+	computed: {
+		maxGridSpacing() {
+			return (this.template.geometry === 'delta') ? (this.template.mesh.radius / 2) : (this.template.bed.width / 2);
+		}
 	},
 	methods: {
 		setNumProbePoints(value) {
