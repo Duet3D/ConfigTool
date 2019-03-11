@@ -148,7 +148,7 @@ export default {
 			set(value) {
 				this.template.geometry.type = geometryTypes[value];
 
-				// Update defaults depending on motion system (requested by T3P3)
+				// Update defaults depending on motion system
 				const preset = this.preset;
 				if (this.template.geometry.type == "delta") {
 					this.template.drives.forEach(function(drive, index) {
@@ -158,6 +158,9 @@ export default {
 						if (drive.acceleration == (index < 2) ? 500 : ((index == 2) ? 20 : 250)) { drive.acceleration = 1000; };
 						if (drive.current == 800) { drive.current = (index < 3) ? 1000 : 800; };
 					});
+
+					if (this.template.drives[2].endstop_type == 3) { this.template.drives[2].endstop_type = 1; }
+					this.preset.drives[2].endstop_type = 1;
 
 					this.preset.drives.forEach(function(drive, index) {
 						drive.steps_per_mm = (index < 3) ? 80 : 663;
@@ -174,6 +177,9 @@ export default {
 						if (drive.acceleration == 1000) { drive.acceleration = (index < 2) ? 500 : ((index == 2) ? 20 : 250); }
 						if (drive.current == (index < 3) ? 1000 : 800) { drive.current = 800; }
 					});
+
+					if (this.template.drives[2].endstop_type == 1) { this.template.drives[2].endstop_type = 3; }
+					this.preset.drives[2].endstop_type = 3;
 
 					this.preset.drives.forEach(function(drive, index) {
 						drive.steps_per_mm = (index < 2) ? 80 : ((index == 2) ? 4000 : 420);
