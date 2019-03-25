@@ -29,20 +29,15 @@ Please note that *Vuex* could not be used in this project due to the missing sup
 To get going you need a working NodeJS setup.
 
 ``` bash
-# install yarn globally
-npm install -g yarn
-
 # install dependencies
-yarn
+npm install
 
 # serve with hot reload at localhost:8080
-yarn serve
+npm run serve
 
 # build for production with minification
-yarn build
+npm run build
 ```
-
-Due to missing functionality *yarn* must be used instead of *npm*.
 
 ### Contributions
 

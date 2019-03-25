@@ -317,6 +317,8 @@ M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta %> R<%- heater.series 
 <%			} else {
 				if (heater.channel < 100) { -%>
 M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta + ((heater.c == 0) ? 0 : " C" + heater.c.toExponential(6)) %> R<%- heater.series %><%- (heater.channel != i) ? " X" + heater.channel : "" %> ; Set thermistor + ADC parameters for heater <%- i %><%- (heater.channel != i) ? " and remap it to channel " + heater.channel : "" %>
+<%				} else if (heater.channel >= 200 && heater.channel < 250) { -%>
+M305 P<%- i %> X<%- heater.channel %> R<%- heater.series %> ; Configure PT100 for heater <%- i %>
 <%				} else if (heater.channel >= 500 && heater.channel < 550) { -%>
 M305 P<%- i %> X<%- heater.channel %> R<%- heater.series %> ; Configure PT1000 for heater <%- i %>
 <%				} else { -%>

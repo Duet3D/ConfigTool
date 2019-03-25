@@ -28,9 +28,7 @@
 					</b-form-group>
 				</b-col>
 			</b-form-row>
-			<br v-else/>
 			<b-checkbox v-model="template.bed_is_nozzle" v-preset title="Check this if you want to connect the first nozzle heater to the hot bed terminal">Assign Bed Heater to First Nozzle</b-checkbox>
-			<br/>
 			<b-checkbox v-model="template.chamber.present" v-preset title="Enable a heated chamber">Heated Chamber</b-checkbox>
 			<b-form-row v-if="template.chamber.present" class="mt-3 pl-4">
 				<b-col>
@@ -47,7 +45,6 @@
 					</b-form-group>
 				</b-col>
 			</b-form-row>
-			<br v-else/>
 			<!-- FIXME: If uncommenting the line below, make sure AB is recalculated automatically when R25+BETA change! -->
 			<!--<b-checkbox v-if="template.firmware > 1.16" v-model="useSteinhartHart" v-b-tooltip.hover title="RepRapFirmware versions up to v1.16 rely on the β parameter equation to calculate temperatures, however starting from RepRapFirmware 1.17 the Steinhart-Hart equation is used for improved accuarcy.">Use Steinhart-Hart Equation for Higher Accuracy</b-checkbox>-->
 		</b-card>
@@ -175,7 +172,7 @@ export default {
 				"PT1000": [],
 				"MAX31855 (K-Type Thermocouple)": [],
 				"MAX31856 (K-Type Thermocouple)": [],
-				"MAX31856 (PT100)": []
+				"MAX31865 (PT100)": []
 			},
 			useSteinhartHart: false
 		}
@@ -221,7 +218,7 @@ export default {
 		for(let i = 0; i < this.board.maxRtdBoards; i++) {
 			this.sensors["MAX31855 (K-Type Thermocouple)"].push({ value: 100 + i, text: `MAX31855 on CS${i + 1}` });
 			this.sensors["MAX31856 (K-Type Thermocouple)"].push({ value: 150 + i, text: `MAX31856 on CS${i + 1}` });
-			this.sensors["MAX31856 (PT100)"].push({ value: 200 + i, text: `MAX31856 on CS${i + 1}` });
+			this.sensors["MAX31865 (PT100)"].push({ value: 200 + i, text: `MAX31865 on CS${i + 1}` });
 		}
 	}
 }

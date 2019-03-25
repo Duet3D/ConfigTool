@@ -27,7 +27,6 @@
 			</b-form-row>
 
 			<b-form-checkbox v-model="template.nvram" v-preset title="Load saved configuration parameters on start-up (M501)">Read config-override.g file at end of startup process</b-form-checkbox>
-			<br/>
 			<b-form-checkbox v-if="board.hasPowerFailureDetection" v-model="template.auto_save.enabled" v-preset title="Store the last valid print parameters on the SD card when a power failure occurs (M911)">Save print state on power failure</b-form-checkbox>
 			<div v-if="template.auto_save.enabled" class="mt-3 pl-4">
 				<b-form-row>

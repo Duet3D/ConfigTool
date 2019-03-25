@@ -2,7 +2,6 @@
 	<b-container>
 		<b-card header="Tool Preferences">
 			<b-checkbox v-model="template.toolchange_wait_for_temperatures" v-preset title="Generate an M116 code in the tpost macros">Wait for Temperatures to be Reached on Tool Change</b-checkbox>
-			<br/>
 			<b-checkbox v-model="template.generate_t_code" v-preset title="A T-code with the first tool number is generated at the end of config.g">Select First Tool on Start-Up</b-checkbox>
 		</b-card>
 
