@@ -1,6 +1,13 @@
 <style scoped>
+.limit,
+.pwm {
+	min-width: 6.5rem;
+}
 .r25 {
-	width: 9.5rem;
+	min-width: 8.5rem;
+}
+.beta {
+	min-width: 7rem;
 }
 
 .table-heaters > tbody > tr > td:first-child,
@@ -80,12 +87,12 @@
 							(template.chamber.present && template.chamber.heater == index) ? "Chamber" :
 							"Nozzle" }}
 						</td>
-						<td>
+						<td class="limit">
 							<b-input-group append="C">
 								<b-form-input v-model.number="heater.temp_limit" v-preset="getPresetHeater(index).temp_limit" title="Maximum allowed temperature of this heater before a temperature fault is raised" min="-273" max="1999" type="number" step="any" required />
 							</b-input-group>
 						</td>
-						<td>
+						<td class="pwm">
 							<b-input-group append="%">
 								<b-form-input v-model.number="heater.scale_factor" v-preset="getPresetHeater(index).scale_factor" title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters" :disabled="isPwmLimitDisabled(index)" min="0" max="100" type="number" step="any" required />
 							</b-input-group>
@@ -93,7 +100,7 @@
 						<td v-show="!useSteinhartHart" class="r25">
 							<thermistor-input :heater="heater" :preset-heater="getPresetHeater(index)" title="Heater thermistor resistance at 25C" :useSteinhartHart="false" parameter="thermistor" unit="Ω" min="1" />
 						</td>
-						<td v-show="!useSteinhartHart">
+						<td v-show="!useSteinhartHart" class="beta">
 							<thermistor-input :heater="heater" :preset-heater="getPresetHeater(index)" title="β model coefficient" :useSteinhartHart="false" parameter="beta" unit="K" min="1" />
 						</td>
 						<td v-show="useSteinhartHart">

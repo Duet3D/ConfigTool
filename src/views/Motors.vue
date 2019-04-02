@@ -13,7 +13,7 @@
 					<th>Steps per mm</th>
 					<th>Max. Speed Change (mm/s)</th>
 					<th>Max. Speed (mm/s)</th>
-					<th>Accele&shy;ration (mm/s²)</th>
+					<th>Acceleration (mm/s²)</th>
 					<th>Motor Current (mA)</th>
 					<th>Motor Driver</th>
 				</thead>
@@ -40,7 +40,7 @@
 					<th>Steps per mm</th>
 					<th>Max. Speed Change (mm/s)</th>
 					<th>Max. Speed (mm/s)</th>
-					<th>Accele&shy;ration (mm/s²)</th>
+					<th>Acceleration (mm/s²)</th>
 					<th>Motor Current (mA)</th>
 					<th>Motor Driver</th>
 				</thead>

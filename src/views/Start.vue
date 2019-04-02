@@ -39,9 +39,14 @@
 
 		<input ref="inputJsonFile" type="file" accept="application/json" hidden @change="fileSelected" />
 
-		<span class="text-muted">Note: This version is still experimental. If you encounter problems, please use the <a href="https://configurator.reprapfirmware.org/v1">old config tool</a> and report back on the <a href="https://forum.duet3d.com" target="_blank">Duet3D forums</a>.</span>
-		<br/><br/>
-		<span class="text-muted">This web app is fully open-source and licensed under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>. Check out <a href="https://github.com/chrishamm/configtool" target="_blank">GitHub</a> for the source files.</span>
+		<div class="text-center">
+			<br/>
+			<span class="text-muted">Note: If you encounter problems, please report your problems on the <a href="https://forum.duet3d.com" target="_blank">Duet3D forums</a> or on <a href="https://github.com/chrishamm/configtool" target="_blank">GitHub</a>.
+				<br/>
+				Some configuration options may not be available yet. In this case please refer to the <a href="https://duet3d.dozuki.com" target="_blank">Duet3D wiki</a>.</span>
+			<br/><br/>
+			<span class="text-muted">This web app is fully open-source and licensed under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>.</span>
+		</div>
 	</b-container>
 </template>
 

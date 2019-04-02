@@ -199,7 +199,7 @@ export default {
 					value: 30,
 					inverted: false,
 					frequency: 500,
-					thermostatic: false,
+					thermostatic: true,
 					heaters: [],
 					trigger_temperature: 45
 				},
