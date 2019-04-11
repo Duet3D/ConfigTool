@@ -1,3 +1,15 @@
+<style scoped>
+label.btn {
+	align-items: center;
+	justify-content: center;
+	display: flex;
+}
+
+.table td {
+	vertical-align: middle;
+}
+</style>
+
 <template>
 	<b-container>
 		<b-card header="Z-Probe">

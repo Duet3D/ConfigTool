@@ -196,7 +196,7 @@ export default {
 			},
 			fans: [
 				{
-					value: 30,
+					value: 0,
 					inverted: false,
 					frequency: 500,
 					thermostatic: true,

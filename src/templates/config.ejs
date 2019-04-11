@@ -336,8 +336,20 @@ M106 P<%- fanNumber %> S<%- fan.value / 100 %> I<%- fan.inverted ? 1 : 0 %> F<%-
 <%	}); -%>
 
 ; Tools
-<%	template.tools.forEach(function(tool) { -%>
-M563 P<%- tool.number %><%- (tool.name != "") ? ` S"${tool.name}"` : "" %> D<%- tool.extruders.join(":") %> H<%- tool.heaters.join(":") %> ; Define tool <%- tool.number %>
+<%	let toolParams;
+	template.tools.forEach(function(tool) {
+		toolParams = '';
+		if (tool.name != '') {
+			toolParams += ` S"${tool.name}"`;
+		}
+		if (tool.extruders.length > 0) {
+			toolParams += ` D${tool.extruders.join(':')}`;
+		}
+		if (tool.heaters.length > 0) {
+			toolParams += ` H${tool.heaters.join(':')}`;
+		}
+-%>
+M563 P<%- tool.number + toolParams %> ; Define tool <%- tool.number %>
 G10 P<%- tool.number %> X<%- tool.x_offset %> Y<%- tool.y_offset %> Z<%- tool.z_offset %> ; Set tool <%- tool.number %> axis offsets
 G10 P<%- tool.number %> R0 S0 ; Set initial tool <%- tool.number %> active and standby temperatures to 0C
 <%		if (tool.extruders.length > 1) { -%>

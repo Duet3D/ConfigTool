@@ -70,7 +70,7 @@ export default {
 				removeTool() { this.template.tools.pop(); },
 
 				addFan() {
-					let fan = Object.assign({}, this.preset.fans[this.preset.fans.length - 1]);
+					const fan = Object.assign({}, this.preset.fans[this.preset.fans.length - 1]);
 					this.template.fans.push(fan);
 				},
 				removeFan() { this.template.fans.pop(); }

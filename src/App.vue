@@ -14,15 +14,15 @@ input::-webkit-inner-spin-button {
 		<b-navbar toggleable="md" variant="light" class="mb-4">
 			<b-container>
 				<b-navbar-nav>
-					<b-nav-item to="Start">Start</b-nav-item>
-					<b-nav-item to="General">General</b-nav-item>
-					<b-nav-item to="Motors">Motors</b-nav-item>
-					<b-nav-item to="Endstops">Endstops</b-nav-item>
-					<b-nav-item to="Heaters">Heaters</b-nav-item>
-					<b-nav-item to="Tools">Tools</b-nav-item>
-					<b-nav-item to="Compensation">Compensation</b-nav-item>
-					<b-nav-item to="Network">Network</b-nav-item>
-					<b-nav-item to="Finish">Finish</b-nav-item>
+					<b-nav-item to="Start" :active="$route.path === '/Start'">Start</b-nav-item>
+					<b-nav-item to="General" :active="$route.path === '/General'">General</b-nav-item>
+					<b-nav-item to="Motors" :active="$route.path === '/Motors'">Motors</b-nav-item>
+					<b-nav-item to="Endstops" :active="$route.path === '/Endstops'">Endstops</b-nav-item>
+					<b-nav-item to="Heaters" :active="$route.path === '/Heaters'">Heaters</b-nav-item>
+					<b-nav-item to="Tools" :active="$route.path === '/Tools'">Tools</b-nav-item>
+					<b-nav-item to="Compensation" :active="$route.path === '/Compensation'">Compensation</b-nav-item>
+					<b-nav-item to="Network" :active="$route.path === '/Network'">Network</b-nav-item>
+					<b-nav-item to="Finish" :active="$route.path === '/Finish'">Finish</b-nav-item>
 				</b-navbar-nav>
 
 				<b-navbar-brand href="#" class="text-muted">RepRapFirmware Configuration Tool</b-navbar-brand>

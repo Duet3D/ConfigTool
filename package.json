@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "serve": "rimraf dist && vue-cli-service serve",
@@ -12,7 +12,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.1",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
-    "bootstrap-vue": "^2.0.0-rc.16",
+    "bootstrap-vue": "^2.0.0-rc.18",
     "ejs": "^2.6.1",
     "es6-promise": "^4.2.5",
     "file-saver": "^2.0.0-rc.4",
@@ -20,7 +20,7 @@
     "jszip": "^3.1.5",
     "rimraf": "^2.6.2",
     "vue": "^2.5.17",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.5",

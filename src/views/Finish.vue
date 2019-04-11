@@ -12,7 +12,7 @@
 			<table class="table mb-0">
 				<thead>
 					<th>Name</th>
-					<th>Value</th>
+					<th>Speed</th>
 					<th>Inverted</th>
 					<th>Frequency</th>
 					<th>Thermostatic Control</th>
