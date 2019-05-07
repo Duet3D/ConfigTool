@@ -55,15 +55,9 @@
 				<h3 class="mb-3">Resulting Coefficients:</h3>
 				<b-form-row class="mb-0">
 					<b-col>
-						<template v-if="useSteinhartHart">
-							<h4 :class="{ 'text-danger' : !isValid }">A: {{ isValid ? calculatedParameters.a.toExponential(6) : "error" }}</h4>
-							<h4 :class="{ 'text-danger' : !isValid }">B: {{ isValid ? calculatedParameters.b.toExponential(6) : "error" }}</h4>
-						</template>
-						<template v-else>
-							<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.thermistor)} Ω` : "error" }} </h4>
-							<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${Math.round(isThirdPairValid ? 1 / calculatedParameters.b : calculatedParameters.beta)} K` : "error" }} </h4>
-						</template>
-						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }" v-show="template.firmware > 1.16">C: {{ isValid ? (((sensorPreset != "custom" || isThirdPairValid) && calculatedParameters.c != 0) ? calculatedParameters.c.toExponential(6) : "0") : "error" }}</h4>
+						<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.thermistor)} Ω` : 'error' }} </h4>
+						<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${Math.round((sensorPreset === 'custom' && isThirdPairValid) ? 1 / calculatedParameters.b : calculatedParameters.beta)} K` : 'error' }} </h4>
+						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }" v-show="template.firmware > 1.16">C: {{ isValid ? (((sensorPreset != 'custom' || isThirdPairValid) && calculatedParameters.c != 0) ? calculatedParameters.c.toExponential(6) : '0') : 'error' }}</h4>
 					</b-col>
 					<b-col cols="auto" align-self="center">
 						<b-button size="sm" variant="primary" :disabled="!isValid" @click="apply">
@@ -127,8 +121,8 @@ export default {
 					}
 				} else {
 					// Calculate AB parameters only, don't care about C
-					b = 1 / beta;
-					a = (1 / (this.parameters.t1 + 273.15)) - b * Math.log(this.parameters.r1);
+					// b = 1 / beta;
+					// a = (1 / (this.parameters.t1 + 273.15)) - b * Math.log(this.parameters.r1);
 					c = 0;
 				}
 				return { thermistor, beta, a, b, c };
@@ -139,7 +133,7 @@ export default {
 			return isNumber(this.parameters.r1) && isNumber(this.parameters.r2) && isNumber(this.parameters.t1) && isNumber(this.parameters.t2);
 		},
 		isThirdPairValid() {
-			return (this.sensorPreset != 'custom' || isNumber(this.parameters.r3) && isNumber(this.parameters.t3)) && this.template.firmware > 1.16;
+			return ((this.sensorPreset != 'custom') || (isNumber(this.parameters.r3) && isNumber(this.parameters.t3))) && this.template.firmware > 1.16;
 		}
 	},
 	data() {
@@ -147,10 +141,13 @@ export default {
 			parameters,
 			sensorPreset: 'custom',
 			sensorPresets: [
-				{ text: 'Semitec 104-GT2 (used by E3D)', value: { thermistor: 100000, beta: 4388, a: 0.57177248e-3, b: 2.116402e-4, c: 0.706e-7 } },
-				{ text: 'Honeywell 135-104QAD-J01 (RepRapPro hot ends)', value: { thermistor: 100000, beta: 4138, a: 2.236745e-3, b: 2.4166263e-4, c: 0 } },
-				{ text: 'EPCOS B57863S0103F040 (Ormerod bed thermistor)', value: { thermistor: 10000, beta: 3988, a: 1.0445028e-3, b: 2.5075225e-4, c: 0 } },
-				{ text: 'Slice Engineering High-Temperature Thermistor', value: { thermistor: 500000, beta: 4723, a: 3.055357e-4, b: 2.117134e-4, c: 1.196220e-7 } },
+				{ text: 'EPCOS B57863S0103F040 (RepRapPro beds)', value: { thermistor: 10000, beta: 3988, c: 0 } },
+				{ text: 'EPCOS B57560G1104F', value: { thermistor: 10000, beta: 4092, c: 0 } },
+				{ text: 'Hisens 3950 1% up to 300°C (Simple ONE and All In ONE hot ends)', value: { thermistor: 10000, beta: 4100, c: 0 } },
+				{ text: 'Honeywell 135-104QAD-J01 (RepRapPro hot ends)', value: { thermistor: 100000, beta: 4138, c: 0 } },
+				{ text: 'QWG-104F-3950 (QU-BD silicone bed)', value: { thermistor: 100000, beta: 3950, c: 0 } },
+				{ text: 'Semitec 104-GT2 (E3D hot ends)', value: { thermistor: 100000, beta: 4388, c: 0.706e-7 } },
+				{ text: 'Slice Engineering High-Temperature Thermistor', value: { thermistor: 500000, beta: 4723, c: 1.196220e-7 } },
 				{ text: 'Custom', value: 'custom' }
 			],
 			popoverShown: false
@@ -160,9 +157,7 @@ export default {
 		apply() {
 			const params = this.calculatedParameters;
 			this.heater.thermistor = Math.round(params.thermistor);
-			this.heater.beta = Math.round(this.isThirdPairValid ? 1 / params.b : params.beta);
-			this.heater.a = params.a.toExponential(6);
-			this.heater.b = params.b.toExponential(6);
+			this.heater.beta = Math.round((this.sensorPreset === 'custom' && this.isThirdPairValid) ? 1 / params.b : params.beta);
 			this.heater.c = this.isThirdPairValid ? parseFloat(params.c.toExponential(6)) : 0;
 			this.popoverShown = false;
 		},
@@ -175,9 +170,7 @@ export default {
 				this.sensorPreset = 'custom';
 				for (let i = 0; i < this.sensorPresets.length; i++) {
 					const preset = this.sensorPresets[i].value;
-					const beta = (this.heater.c === 0) ? this.heater.beta : Math.round(1 / this.heater.b);
-					if (this.heater.thermistor === preset.thermistor &&
-						((this.heater.c === 0 && this.heater.beta === preset.beta) || (this.heater.c === preset.c && this.heater.b == preset.b))) {
+					if (this.heater.thermistor === preset.thermistor && this.heater.beta === preset.beta && this.heater.c === preset.c) {
 						this.sensorPreset = preset;
 						break;
 					}
@@ -204,8 +197,7 @@ export default {
 			required: true
 		},
 		title: String,
-		unit: String,
-		useSteinhartHart: Boolean
+		unit: String
 	},
 	watch: {
 		parameters: {

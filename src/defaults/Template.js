@@ -218,12 +218,18 @@ export default {
 
 	// Add missing and remove obsolete fields from obj
 	update(obj) {
-		// Add Steinhart-Hart coefficients back
+		// Update Steinhart-Hart coefficients
 		obj.heaters.forEach(heater => {
-			if (heater != null && (!heater.hasOwnProperty("a") || heater.a == 0)) {
-				heater.a = (1.0 / 298.15) - (1.0 / heater.beta) * Math.log(heater.thermistor);
-				heater.b = 1.0 / heater.beta;
-				heater.c = 0.0;
+			if (heater != null) {
+				if (heater.hasOwnProperty('a')) {
+					delete heater.a;
+				}
+				if (heater.hasOwnProperty('b')) {
+					delete heater.b;
+				}
+				if (!heater.hasOwnProperty('c')) {
+					heater.c = 0.0;
+				}
 			}
 		});
 
