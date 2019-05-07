@@ -22,7 +22,7 @@ G1 Z<%- template.z_dive_height %> F<%- template.travel_speed * 60 %> S2 ; lift Z
 			break;
 		}
 	}
-	if (deployProbe) { -%>
+	if (deployProbe && template.firmware < 1.21) { -%>
 M98 Pdeployprobe.g ; deploy mechanical Z probe
 <%	}
 	if ((template.drives[a].endstop_type == 3 || template.drives[b].endstop_type == 3) && (template.probe.type == "modulated")) { -%>
@@ -81,6 +81,6 @@ G30 ; home Z by probing the bed
 ;G90 ; absolute positioning
 
 <%	}
-	if (deployProbe) { %>
+	if (deployProbe && template.firmware < 1.21) { %>
 M98 Pretractprobe.g ; retract mechanical Z probe
 <%	} -%>

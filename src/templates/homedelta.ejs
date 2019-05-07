@@ -11,7 +11,7 @@ G91 ; relative positioning
 			break;
 		}
 	}
-	if (deployProbe) { -%>
+	if (deployProbe && template.firmware < 1.21) { -%>
 M98 Pdeployprobe.g ; deploy mechanical Z probe
 <%	}
 	const lowOrHigh = endstopsAtMin ? "low" : "high";
@@ -31,6 +31,6 @@ G1 S1 X<%- endstopsAtMin ? -10 : 10 %> Y<%- endstopsAtMin ? -10 : 10 %> Z<%- end
 G1 Z<%- endstopsAtMin ? 5 : -5 %> F<%- template.travel_speed * 60 %> ; move <%- endstopsAtMin ? "up" : "down" %> a few mm so that the nozzle can be centred
 G90 ; absolute positioning
 G1 X0 Y0 F<%- template.travel_speed * 60 %> ; move X+Y to the centre
-<%	if (deployProbe) { -%>
+<%	if (deployProbe && template.firmware < 1.21) { -%>
 M98 Pretractprobe.g ; retract mechanical Z probe
 <%	} -%>
