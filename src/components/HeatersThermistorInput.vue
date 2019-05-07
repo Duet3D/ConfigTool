@@ -145,13 +145,13 @@ export default {
 	data() {
 		return {
 			parameters,
-			sensorPreset: "custom",
+			sensorPreset: 'custom',
 			sensorPresets: [
 				{ text: 'Semitec 104-GT2 (used by E3D)', value: { thermistor: 100000, beta: 4388, a: 0.57177248e-3, b: 2.116402e-4, c: 0.706e-7 } },
 				{ text: 'Honeywell 135-104QAD-J01 (RepRapPro hot ends)', value: { thermistor: 100000, beta: 4138, a: 2.236745e-3, b: 2.4166263e-4, c: 0 } },
 				{ text: 'EPCOS B57863S0103F040 (Ormerod bed thermistor)', value: { thermistor: 10000, beta: 3988, a: 1.0445028e-3, b: 2.5075225e-4, c: 0 } },
 				{ text: 'Slice Engineering High-Temperature Thermistor', value: { thermistor: 500000, beta: 4723, a: 3.055357e-4, b: 2.117134e-4, c: 1.196220e-7 } },
-				{ text: 'Custom', value: "custom" }
+				{ text: 'Custom', value: 'custom' }
 			],
 			popoverShown: false
 		}
@@ -163,7 +163,7 @@ export default {
 			this.heater.beta = Math.round(this.isThirdPairValid ? 1 / params.b : params.beta);
 			this.heater.a = params.a.toExponential(6);
 			this.heater.b = params.b.toExponential(6);
-			this.heater.c = this.isThirdPairValid ? params.c.toExponential(6) : 0;
+			this.heater.c = this.isThirdPairValid ? parseFloat(params.c.toExponential(6)) : 0;
 			this.popoverShown = false;
 		},
 		inputElement() {

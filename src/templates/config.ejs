@@ -57,7 +57,7 @@ M552 S0 ; Disable network
 	let drivesRemapped = false;
 	template.drives.forEach(function(drive, i) {
 -%>
-M569 P<%- i %> S<%- drive.direction %> ; Drive <%- i %> goes <%- (drive.direction == 0) ? "backwards" : "forwards" %>
+M569 P<%- drive.driver %> S<%- drive.direction %> ; Physical drive <%- drive.driver %> goes <%- (drive.direction == 0) ? "backwards" : "forwards" %>
 <%		switch (i) {
 			case 0: // X axis
 				if (xDrives == undefined) {
