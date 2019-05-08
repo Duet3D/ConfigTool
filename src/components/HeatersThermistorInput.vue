@@ -56,7 +56,7 @@
 				<b-form-row class="mb-0">
 					<b-col>
 						<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.thermistor)} Ω` : 'error' }} </h4>
-						<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${Math.round((sensorPreset === 'custom' && isThirdPairValid) ? 1 / calculatedParameters.b : calculatedParameters.beta)} K` : 'error' }} </h4>
+						<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${(calculatedParameters.b && isThirdPairValid) ? Math.round(1 / calculatedParameters.b) : calculatedParameters.beta} K` : 'error' }} </h4>
 						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }" v-show="template.firmware > 1.16">C: {{ isValid ? (((sensorPreset != 'custom' || isThirdPairValid) && calculatedParameters.c != 0) ? calculatedParameters.c.toExponential(6) : '0') : 'error' }}</h4>
 					</b-col>
 					<b-col cols="auto" align-self="center">
@@ -113,19 +113,18 @@ export default {
 					const x = 1 / (2 * c) * (a - 1 / 298.15);
 					const y = Math.sqrt(Math.pow(b / (3 * c), 3) + Math.pow(x, 2));
 					thermistor = Math.exp(Math.pow(y - x, 1 / 3) - Math.pow(y + x, 1 / 3));
-					beta = 1 / b;
+					beta = Math.round(1 / b);
 
 					// C may become extremely small so it doesn't matter if it's set to 0
 					if (c > -1e-16 && c < 1e-16) {
 						c = 0;
 					}
 				} else {
-					// Calculate AB parameters only, don't care about C
-					// b = 1 / beta;
-					// a = (1 / (this.parameters.t1 + 273.15)) - b * Math.log(this.parameters.r1);
+					// Round beta and don't care about C
+					beta = Math.round(beta);
 					c = 0;
 				}
-				return { thermistor, beta, a, b, c };
+				return { thermistor, beta, c };
 			}
 			return this.sensorPreset;
 		},
@@ -146,7 +145,7 @@ export default {
 				{ text: 'Hisens 3950 1% up to 300°C (Simple ONE and All In ONE hot ends)', value: { thermistor: 10000, beta: 4100, c: 0 } },
 				{ text: 'Honeywell 135-104QAD-J01 (RepRapPro hot ends)', value: { thermistor: 100000, beta: 4138, c: 0 } },
 				{ text: 'QWG-104F-3950 (QU-BD silicone bed)', value: { thermistor: 100000, beta: 3950, c: 0 } },
-				{ text: 'Semitec 104-GT2 (E3D hot ends)', value: { thermistor: 100000, beta: 4388, c: 0.706e-7 } },
+				{ text: 'Semitec 104-GT2 (E3D hot ends)', value: { thermistor: 100000, b: 0.00021164021164021165, beta: 4388, c: 0.706e-7 } },
 				{ text: 'Slice Engineering High-Temperature Thermistor', value: { thermistor: 500000, beta: 4723, c: 1.196220e-7 } },
 				{ text: 'Custom', value: 'custom' }
 			],
@@ -157,7 +156,7 @@ export default {
 		apply() {
 			const params = this.calculatedParameters;
 			this.heater.thermistor = Math.round(params.thermistor);
-			this.heater.beta = Math.round((this.sensorPreset === 'custom' && this.isThirdPairValid) ? 1 / params.b : params.beta);
+			this.heater.beta = (this.isThirdPairValid && params.b) ? Math.round(1 / params.b) : params.beta;
 			this.heater.c = this.isThirdPairValid ? parseFloat(params.c.toExponential(6)) : 0;
 			this.popoverShown = false;
 		},
@@ -170,7 +169,8 @@ export default {
 				this.sensorPreset = 'custom';
 				for (let i = 0; i < this.sensorPresets.length; i++) {
 					const preset = this.sensorPresets[i].value;
-					if (this.heater.thermistor === preset.thermistor && this.heater.beta === preset.beta && this.heater.c === preset.c) {
+					const beta = (this.isThirdPairValid && preset.b) ? Math.round(1 / preset.b) : preset.beta;
+					if (this.heater.thermistor === preset.thermistor && this.heater.beta === beta && this.heater.c === preset.c) {
 						this.sensorPreset = preset;
 						break;
 					}
