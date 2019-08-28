@@ -9,7 +9,7 @@
 							{{ `E${idx}:` }}
 						</b-col>
 						<b-col>
-							<b-input v-model.number="mixRatio[idx]" type="number" step="any" />
+							<b-input v-model.number="mixRatio[idx]" type="number" step="any"></b-input>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -21,7 +21,7 @@
 			<b-row class="mt-2">
 				<b-col class="text-center">
 					<b-button variant="primary" :disabled="!mixValid" @click="setMix">
-						<font-awesome-icon icon="check" /> Set Mix
+						<font-awesome-icon icon="check"></font-awesome-icon> Set Mix
 					</b-button>
 				</b-col>
 			</b-row>
@@ -39,9 +39,7 @@ export default {
 			});
 			return parseFloat(sum.toFixed(2));
 		},
-		mixValid() {
-			return this.mixSum == 1;
-		}
+		mixValid() { return this.mixSum == 1; }
 	},
 	data() {
 		return {

@@ -1,8 +1,8 @@
 export default {
 	getBoards: () => [
 		{
-			name: "duet06",
-			caption: "Duet 0.6",
+			name: 'duet06',
+			caption: 'Duet 0.6',
 			motorWarningCurrent: 1200,
 			motorLimitCurrent: 2000,
 			seriesResistor: 4700,
@@ -16,11 +16,13 @@ export default {
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: false,
-			hasMotorLoadDetection: false
+			hasMotorLoadDetection: false,
+			supportsDisplay: false,
+			supports12864: false
 		},
 		{
-			name: "duet085",
-			caption: "Duet 0.8.5",
+			name: 'duet085',
+			caption: 'Duet 0.8.5',
 			motorWarningCurrent: 1200,
 			motorLimitCurrent: 2000,
 			seriesResistor: 4700,
@@ -34,11 +36,13 @@ export default {
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: false,
-			hasMotorLoadDetection: false
+			hasMotorLoadDetection: false,
+			supportsDisplay: false,
+			supports12864: false
 		},
 		{
-			name: "duetwifi10",
-			caption: "Duet WiFi",
+			name: 'duetwifi10',
+			caption: 'Duet WiFi',
 			motorWarningCurrent: 2000,
 			motorLimitCurrent: 2400,
 			seriesResistor: 4700,
@@ -52,11 +56,13 @@ export default {
 			hasEthernet: false,
 			hasWiFi: true,
 			hasPowerFailureDetection: true,
-			hasMotorLoadDetection: true
+			hasMotorLoadDetection: true,
+			supportsDisplay: false,
+			supports12864: false
 		},
 		{
-			name: "duetethernet10",
-			caption: "Duet WiFi",
+			name: 'duetethernet10',
+			caption: 'Duet WiFi',
 			motorWarningCurrent: 2000,
 			motorLimitCurrent: 2400,
 			seriesResistor: 4700,
@@ -70,11 +76,13 @@ export default {
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: true,
-			hasMotorLoadDetection: true
+			hasMotorLoadDetection: true,
+			supportsDisplay: false,
+			supports12864: false
 		},
 		{
-			name: "duetm10",
-			caption: "Duet Maestro",
+			name: 'duetm10',
+			caption: 'Duet Maestro',
 			motorWarningCurrent: 1200,
 			motorLimitCurrent: 1600,
 			seriesResistor: 2200,
@@ -88,17 +96,19 @@ export default {
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: true,
-			hasMotorLoadDetection: true
+			hasMotorLoadDetection: true,
+			supportsDisplay: true,
+			supports12864: true
 		}
 	],
 
 	getBoard(boardType) {
 		const boardDefinitions = this.getBoards();
-		for(let i in boardDefinitions) {
+		for (let i in boardDefinitions) {
 			if (boardDefinitions[i].name == boardType) {
 				return boardDefinitions[i];
 			}
 		}
-		throw "Invalid board";
+		throw 'Invalid board';
 	}
 }

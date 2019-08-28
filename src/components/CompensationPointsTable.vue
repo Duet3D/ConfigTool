@@ -11,17 +11,17 @@
 				<td class="text-center pt-2">{{ index + 1 }}</td>
 				<td>
 					<b-input-group append="mm" size="sm">
-						<b-form-input v-model.number="point.x" :min="minX" :max="maxX" type="number" step="any" required />
+						<b-form-input v-model.number="point.x" :min="minX" :max="maxX" type="number" step="any" required></b-form-input>
 					</b-input-group>
 				</td>
 				<td>
 					<b-input-group append="mm" size="sm">
-						<b-form-input v-model.number="point.y" :min="minY" :max="maxY" type="number" step="any" required />
+						<b-form-input v-model.number="point.y" :min="minY" :max="maxY" type="number" step="any" required></b-form-input>
 					</b-input-group>
 				</td>
 				<td>
 					<b-input-group append="mm" size="sm">
-						<b-form-input v-model.number="point.z" :disabled="disableLastZ && index == value.length - 1" type="number" step="any" required />
+						<b-form-input v-model.number="point.z" :disabled="disableLastZ && index == value.length - 1" type="number" step="any" required></b-form-input>
 					</b-input-group>
 				</td>
 			</tr>

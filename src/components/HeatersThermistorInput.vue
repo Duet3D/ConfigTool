@@ -1,54 +1,54 @@
 <template>
 	<div>
-		<b-input-group :append="unit" v-if="unit != undefined">
-			<b-form-input ref="inputUnit" v-model.number="heater[parameter]" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required />
+		<b-input-group :append="unit" v-if="unit !== undefined">
+			<b-form-input ref="inputUnit" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 		</b-input-group>
-		<b-form-input v-else ref="inputUnitless" v-model.number="heater[parameter]" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required />
+		<b-form-input v-else ref="inputUnitless" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 
 		<b-popover :target="inputElement" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" triggers="focus" @show="onShow">
 			<b-form-group label="Thermistor Preset:">
-				<b-select v-model="sensorPreset" :options="sensorPresets" />
+				<b-select v-model="sensorPreset" :options="sensorPresets"></b-select>
 			</b-form-group>
 
 			<b-card v-if="sensorPreset == 'custom'" bg-variant="light">
 				<p>Measure the resistances of your thermistor at three different temperatures and enter your values below:</p>
 				<b-form-row>
 					<b-col cols="5">
-						<b-form-group horizontal label="T1:">
+						<b-form-group label-cols="3" label="T1:">
 							<b-input-group append="C">
-								<b-input v-model.number="parameters.t1" min="-273" max="1999" type="number" step="any" required />
+								<b-input v-model.number="parameters.t1" min="-273" max="1999" type="number" step="any" required></b-input>
 							</b-input-group>
 						</b-form-group>
-						<b-form-group horizontal label="T2:">
+						<b-form-group label-cols="3" label="T2:">
 							<b-input-group append="C">
-								<b-input v-model.number="parameters.t2" min="-273" max="1999" type="number" step="any" required />
+								<b-input v-model.number="parameters.t2" min="-273" max="1999" type="number" step="any" required></b-input>
 							</b-input-group>
 						</b-form-group>
-						<b-form-group horizontal label="T3:" v-show="template.firmware > 1.16">
+						<b-form-group label-cols="3" label="T3:">
 							<b-input-group append="C">
-								<b-input v-model.number="parameters.t3" min="-273" max="1999" type="number" step="any" />
+								<b-input v-model.number="parameters.t3" min="-273" max="1999" type="number" step="any"></b-input>
 							</b-input-group>
 						</b-form-group>
 					</b-col>
 					<b-col cols="7">
-						<b-form-group horizontal label="R1:" label-class="text-right">
+						<b-form-group label-cols="3" label="R1:" label-class="text-right">
 							<b-input-group append="Ω">
-								<b-input v-model.number="parameters.r1" min="1" type="number" step="any" required />
+								<b-input v-model.number="parameters.r1" min="1" type="number" step="any" required></b-input>
 							</b-input-group>
 						</b-form-group>
-						<b-form-group horizontal label="R2:" label-class="text-right">
+						<b-form-group label-cols="3" label="R2:" label-class="text-right">
 							<b-input-group append="Ω">
-								<b-input v-model.number="parameters.r2" min="1" type="number" step="any" required />
+								<b-input v-model.number="parameters.r2" min="1" type="number" step="any" required></b-input>
 							</b-input-group>
 						</b-form-group>
-						<b-form-group horizontal label="R3:" label-class="text-right" v-show="template.firmware > 1.16">
+						<b-form-group label-cols="3" label="R3:" label-class="text-right">
 							<b-input-group append="Ω">
-								<b-input v-model.number="parameters.r3" min="1" type="number" step="any" />
+								<b-input v-model.number="parameters.r3" min="1" type="number" step="any"></b-input>
 							</b-input-group>
 						</b-form-group>
 					</b-col>
 				</b-form-row>
-				<span v-show="template.firmware > 1.16">The third pair is optional.</span>
+				<span>The third pair is optional.</span>
 			</b-card>
 
 			<b-card class="mt-3">
@@ -73,6 +73,8 @@
 <script>
 'use strict';
 
+import { mapState, mapMutations } from 'vuex'
+
 const popoverTemplate = '<div class="popover calc-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
 
 const parameters = {
@@ -87,6 +89,7 @@ let hadInput = false
 
 export default {
 	computed: {
+		...mapState(['template']),
 		calculatedParameters() {
 			if (this.sensorPreset.constructor === String) {
 				let beta = Math.log(this.parameters.r2 / this.parameters.r1) / ((1 / (this.parameters.t2 + 273.15)) -
@@ -128,11 +131,18 @@ export default {
 			}
 			return this.sensorPreset;
 		},
-		isValid() {
-			return isNumber(this.parameters.r1) && isNumber(this.parameters.r2) && isNumber(this.parameters.t1) && isNumber(this.parameters.t2);
-		},
-		isThirdPairValid() {
-			return ((this.sensorPreset != 'custom') || (isNumber(this.parameters.r3) && isNumber(this.parameters.t3))) && this.template.firmware > 1.16;
+		heater() { return this.template.heaters[this.index]; },
+		isValid() { return isNumber(this.parameters.r1) && isNumber(this.parameters.r2) &&
+						   isNumber(this.parameters.t1) && isNumber(this.parameters.t2); },
+		isThirdPairValid() { return ((this.sensorPreset !== 'custom') || (isNumber(this.parameters.r3) && isNumber(this.parameters.t3))) &&
+									this.template.firmware > 1.16; },
+		value: {
+			get() { return this.heater[this.parameter]; },
+			set(value) {
+				const payload = { heater: this.index };
+				payload[this.parameter] = value;
+				this.updateHeater(payload);
+			}
 		}
 	},
 	data() {
@@ -153,11 +163,16 @@ export default {
 		}
 	},
 	methods: {
+		...mapMutations(['updateHeater']),
 		apply() {
 			const params = this.calculatedParameters;
-			this.heater.thermistor = Math.round(params.thermistor);
-			this.heater.beta = (this.isThirdPairValid && params.b) ? Math.round(1 / params.b) : params.beta;
-			this.heater.c = this.isThirdPairValid ? parseFloat(params.c.toExponential(6)) : 0;
+			this.updateHeater({
+				heater: this.index,
+				thermistor: Math.round(params.thermistor),
+				beta: (this.isThirdPairValid && params.b) ? Math.round(1 / params.b) : params.beta,
+				// AB are no longer supported (and can be derived from r25 and beta)
+				c: this.isThirdPairValid ? parseFloat(params.c.toExponential(6)) : 0
+			});
 			this.popoverShown = false;
 		},
 		inputElement() {
@@ -181,19 +196,18 @@ export default {
 		}
 	},
 	props: {
-		heater: {
-			type: Object,
-			required: true
-		},
-		index: Number,
-		min: String,
-		max: String,
-		parameter: {
-			type: String,
+		index: {
+			type: Number,
 			required: true
 		},
 		presetHeater: {
 			type: Object,
+			required: true
+		},
+		min: String,
+		max: String,
+		parameter: {
+			type: String,
 			required: true
 		},
 		title: String,

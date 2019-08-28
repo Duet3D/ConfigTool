@@ -10,24 +10,28 @@ const BVTT = '__BV_ToolTip__'
 
 // Get description tooltip and default value
 function getTitle(preset, el, vnode) {
-	if (preset == undefined) {
-		preset = eval("vnode.context." + vnode.data.model.expression.replace("template", "preset"));
+	if (preset === undefined) {
+		if (vnode.data.model.expression.indexOf('template') === -1) {
+			preset = eval('vnode.context.preset.' + vnode.data.model.expression);
+		} else {
+			preset = eval('vnode.context.' + vnode.data.model.expression.replace('template', 'preset'));
+		}
 	}
 
-	let unit = "";
+	let unit = '';
 	for(let i = 0; i < el.parentElement.children.length; i++) {
 		const child = el.parentElement.children[i];
-		if (child.classList.contains("input-group-append")) {
-			unit = " " + child.textContent;
+		if (child.classList.contains('input-group-append')) {
+			unit = ' ' + child.textContent;
 			break;
 		}
 	}
 
 	let defaultValue;
-	if (el.tagName == "SELECT") {
+	if (el.tagName === 'SELECT') {
 		for(let i = 0; i < el.options.length; i++) {
 			const option = el.options[i];
-			const value = option.hasOwnProperty("_value") ? option._value : option.value;
+			const value = option.hasOwnProperty('_value') ? option._value : option.value;
 			if (value.constructor === Object) {
 				let equal = true;
 				for(let key in preset) {
@@ -45,21 +49,21 @@ function getTitle(preset, el, vnode) {
 				break;
 			}
 		}
-	} else if (preset == "" && el.tagName == "INPUT" && el.placeholder != "") {
+	} else if (preset === '' && el.tagName === 'INPUT' && el.placeholder !== '') {
 		defaultValue = el.placeholder;
-	} else if (el.classList.contains("btn-group-toggle")) {
+	} else if (el.classList.contains('btn-group-toggle')) {
 		for(let i = 0; i < el.children.length; i++) {
 			const child = el.children[i];
 			if (child.children.length > 0) {
 				const subChild = child.children[0];
-				if (subChild.tagName == "INPUT") {
+				if (subChild.tagName === 'INPUT') {
 					if (preset.constructor === Array) {
 						preset.forEach(function(element) {
 							if (element.toString() == subChild.value) {
 								if (defaultValue == undefined) {
 									defaultValue = child.textContent;
 								} else {
-									defaultValue += ", " + child.textContent;
+									defaultValue += ', ' + child.textContent;
 								}
 							}
 						});
@@ -71,26 +75,37 @@ function getTitle(preset, el, vnode) {
 			}
 		}
 		if (defaultValue == undefined && preset.constructor === Array) {
-			defaultValue = "None";
+			defaultValue = 'None';
 		}
 	} else if (preset.constructor === Boolean) {
-		defaultValue = preset ? "Enabled" : "Disabled";
+		defaultValue = preset ? 'Enabled' : 'Disabled';
 	} else {
 		defaultValue = preset + unit;
 	}
 
-	let range = "<br/>";
-	if (el.tagName == "INPUT") {
-		if (el.min != "" && el.max != "") {
-			range += "<br/>Allowed Range: " + el.min + " - " + el.max + unit;
-		} else if (el.min != "") {
-			range += "<br/>Minimum Value: " + el.min + unit;
-		} else if (el.max != "") {
-			range += "<br/>Maximum Value: " + el.max + unit;
+	let range = '<br>';
+	if (el.tagName === 'INPUT') {
+		if (el.min != '' && el.max != '') {
+			range += '<br>Allowed Range: ' + el.min + ' - ' + el.max + unit;
+		} else if (el.min != '') {
+			range += '<br>Minimum Value: ' + el.min + unit;
+		} else if (el.max != '') {
+			range += '<br>Maximum Value: ' + el.max + unit;
 		}
 	}
 
-	return el.dataset.originalTitle + range + '<br/>Default Value: ' + defaultValue;
+	let title = el.dataset.originalTitle;
+	if (!title) {
+		// FIXME This is a work-around for checkboxes
+		for (let i = 0; i < el.children.length; i++) {
+			const child = el.children[i];
+			if (child.title) {
+				title = child.title;
+				break;
+			}
+		}
+	}
+	return title + range + '<br>Default Value: ' + defaultValue;
 }
 
 // Build a ToolTip config based on bindings (if any)

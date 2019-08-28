@@ -1,10 +1,13 @@
 bed.g
 config.g
-<%	if (template.probe.deploy) { -%>
+<%	if (template.firmware >= 3 && template.board.startsWith('duetwifi') && template.network.ssid.trim() !== '') { -%>
+runonce.g
+<%	}
+	if (template.probe.deploy) { -%>
 deployprobe.g
 retractprobe.g
 <%	} -%>
-<%	if (template.geometry.type == "delta") { -%>
+<%	if (template.geometry.type === 'delta') { -%>
 homedelta.g
 <%	} else { -%>
 homeall.g
@@ -17,7 +20,7 @@ resume.g
 sleep.g
 stop.g
 <%	template.tools.forEach(function(tool) { -%>
-<%- "tfree" + tool.number + ".g" %>
-<%- "tpre" + tool.number + ".g" %>
-<%- "tpost" + tool.number + ".g" %>
+<%- 'tfree' + tool.number + '.g' %>
+<%- 'tpre' + tool.number + '.g' %>
+<%- 'tpost' + tool.number + '.g' %>
 <%	}); -%>

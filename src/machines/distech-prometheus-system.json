@@ -1,6 +1,6 @@
 {
   "board": "duetwifi10",
-  "firmware": 1.17,
+  "firmware": 2,
   "compatibility": 2,
   "nvram": false,
   "geometry": {

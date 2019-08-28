@@ -12,10 +12,11 @@ import './Icons.js'
 import App from './App.vue'
 import Preset from './directives/Preset.js'
 import Router from './Router.js'
-import Store from './mixins/Store.js'
+import store from './store'
 import ValidityIndicator from './mixins/ValidityIndicator.js'
 
 Vue.config.productionTip = false;
+
 Vue.directive('preset', Preset);
 Vue.mixin(ValidityIndicator);
 Vue.use(BootstrapVue);
@@ -26,7 +27,7 @@ window.isNumber = function(value) {
 
 const app = new Vue({
     el: '#app',
-	mixins: [Store],
 	render: h => h(App),
-    router: Router
+    router: Router,
+	store
 });

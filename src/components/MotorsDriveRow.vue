@@ -17,7 +17,7 @@ tr > td:nth-child(2) > select {
 	width: 8.5rem;
 }
 tr > td:nth-child(3) > select {
-	width: 9rem;
+	width: 8rem;
 }
 tr > td:nth-child(4) > div,
 tr > td:nth-child(6) > input,
@@ -36,13 +36,13 @@ tr > td:last-child > select {
 	<tr>
 		<td v-text="getDriveCaption(index)"></td>
 		<td>
-			<b-select v-model.number="drive.direction" v-preset="presetDrive.direction" title="Direction of this drive">
-				<option value="0">Backwards</option>
-				<option value="1">Forwards</option>
+			<b-select :value="direction" @change="updateDrive({ drive: index, forwards: $event })" v-preset="presetDrive.direction" title="Direction of this drive">
+				<option :value="false">Backwards</option>
+				<option :value="true">Forwards</option>
 			</b-select>
 		</td>
 		<td :class="{ 'reduce-padding' : drive.microstepping_interpolation }">
-			<b-select v-model="microsteppingOption" v-preset="presetDrive.microsteppingOption" title="Microstepping value (M350)" :disabled="!board.microstepping">
+			<b-select v-model="microsteppingOption" v-preset="presetMicrosteppingOption" title="Microstepping value (M350)" :disabled="!board.microstepping">
 				<option value="1">x1</option>
 				<option v-if="board.microsteppingInterpolation" value="1_i" class="hidden">x1 (on)</option>
 				<option value="2">x2</option>
@@ -61,33 +61,37 @@ tr > td:last-child > select {
 				<option v-if="board.microsteppingInterpolation" value="128_i" class="hidden">x128 (on)</option>
 				<option value="256">x256</option>
 			</b-select>
-			<br/>
+			<br>
 			<span v-if="drive.microstepping_interpolation" class="small-text">interpolated to x256</span>
 		</td>
 		<td>
-			<steps-per-mm-input :drive="drive" :presetDrive="presetDrive" :index="index" />
+			<steps-per-mm-input :index="index" :drive="drive" :preset-drive="presetDrive"></steps-per-mm-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="drive.instant_dv" v-preset="presetDrive.instant_dv" title="Maximum allowed instantenous speed change (M566)" min="0.1" :max="drive.max_speed" type="number" step="any" required />
+			<b-form-input v-model.number="instantDv" v-preset="presetDrive.instant_dv" title="Maximum allowed instantenous speed change (M566)" min="0.1" :max="drive.max_speed" type="number" step="any" required></b-form-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="drive.max_speed" v-preset="presetDrive.max_speed" title="Maximum allowed speed (M203)" :min="drive.instant_dv" type="number" step="any" required />
+			<b-form-input v-model.number="maxSpeed" v-preset="presetDrive.max_speed" title="Maximum allowed speed (M203)" :min="drive.instant_dv" type="number" step="any" required></b-form-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="drive.acceleration" v-preset="presetDrive.acceleration" title="Drive acceleration (M201)" min="1" type="number" step="any" required />
+			<b-form-input v-model.number="acceleration" v-preset="presetDrive.acceleration" title="Drive acceleration (M201)" min="1" type="number" step="any" required></b-form-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="drive.current" v-preset="presetDrive.current" title="Motor current (M906)" min="300" :max="board.motorLimitCurrent" type="number" step="any" required />
-				<span v-if="drive.current >= board.motorWarningCurrent" v-b-tooltip.hover title="Your specified motor current exceeds the safe range. You may have to use extra cooling to prevent damage of your stepper drivers!" class="text-warning small-text"><font-awesome-icon icon="exclamation-triangle" /> <u class="ml-1">Warning!</u></span>
+			<b-form-input v-model.number="current" v-preset="presetDrive.current" title="Motor current (M906)" min="300" :max="board.motorLimitCurrent" type="number" step="any" required></b-form-input>
+			<span v-if="current >= board.motorWarningCurrent" v-b-tooltip.hover title="Your specified motor current exceeds the safe range. You may have to use extra cooling to prevent damage of your stepper drivers!" class="text-warning small-text">
+				<font-awesome-icon icon="exclamation-triangle"></font-awesome-icon> <u class="ml-1">Warning!</u>
+			</span>
 		</td>
-		<td>
-			<b-select v-model.number="drive.driver" :options="drivers" v-preset="index" title="Motor driver (M584)" />
+		<td v-show="template.firmware < 3">
+			<b-select v-model.number="driver" :options="drivers" v-preset="index" title="Motor driver (M584)"></b-select>
 		</td>
 	</tr>
 </template>
 
 <script>
 'use strict';
+
+import { mapState, mapMutations } from 'vuex'
 
 import MotorsStepsPerMmInput from './MotorsStepsPerMmInput.vue'
 
@@ -96,32 +100,96 @@ export default {
 		'steps-per-mm-input': MotorsStepsPerMmInput
 	},
 	computed: {
+		...mapState(['board', 'preset', 'template']),
+		drive() { return this.template.drives[this.index]; },
+		presetDrive() { return this.preset.drives[Math.min(this.index, this.preset.drives.length - 1)]; },
+		direction: {
+			get() { return this.drive.direction == 1; },
+			set(value) {
+				this.updateDrive({
+					drive: this.index,
+					direction: value
+				});
+			}
+		},
 		microsteppingOption: {
-			get() {
-				return this.drive.microstepping + (this.drive.microstepping_interpolation ? "_i" : "");
-			},
+			get() { return this.drive.microstepping + (this.drive.microstepping_interpolation ? '_i' : ''); },
 			set(value) {
 				const values = value.split('_');
-				this.drive.microstepping = parseInt(values[0]);
-				this.drive.microstepping_interpolation = values.length > 1;
+				this.updateDrive({
+					drive: this.index,
+					microstepping: parseInt(values[0]),
+					interpolated: values.length > 1
+				});
+			}
+		},
+		presetMicrosteppingOption() { return this.presetDrive.microstepping + (this.presetDrive.microstepping_interpolation ? '_i' : ''); },
+		instantDv: {
+			get() { return this.drive.instant_dv; },
+			set(value) {
+				this.updateDrive({
+					drive: this.index,
+					instantDv: value
+				});
+			}
+		},
+		maxSpeed: {
+			get() { return this.drive.max_speed; },
+			set(value) {
+				this.updateDrive({
+					drive: this.index,
+					maxSpeed: value
+				});
+			}
+		},
+		acceleration: {
+			get() { return this.drive.acceleration; },
+			set(value) {
+				this.updateDrive({
+					drive: this.index,
+					acceleration: value
+				});
+			}
+		},
+		current: {
+			get() { return this.drive.current; },
+			set(value) {
+				this.updateDrive({
+					drive: this.index,
+					current: value
+				});
+			}
+		},
+		driver: {
+			get() { return this.drive.driver; },
+			set(value) {
+				this.updateDrive({
+					drive: this.index,
+					driver: value
+				});
 			}
 		}
 	},
 	methods: {
+		...mapMutations(['updateDrive']),
 		getDriveCaption(drive) {
 			switch (drive) {
-				case 0: return "X";
-				case 1: return "Y";
-				case 2: return "Z";
-				default: return "E" + (drive - 3);
+				case 0: return 'X';
+				case 1: return 'Y';
+				case 2: return 'Z';
+				default: return 'E' + (drive - 3);
 			}
 		}
 	},
 	props: {
-		index: Number,
-		drive: Object,
-		presetDrive: Object,
-		drivers: Array
+		index: {
+			type: Number,
+			required: true
+		},
+		drivers: {
+			type: Array,
+			required: true
+		}
 	}
 }
 </script>
