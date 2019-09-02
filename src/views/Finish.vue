@@ -16,7 +16,7 @@ import { mapState, mapGetters, mapMutations } from 'vuex'
 import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
 
 export default {
-	computed: mapFields(['custom_settings'])
+	computed: mapFields({'custom_settings': 'template.custom_settings'})
 }
 </script>
 
