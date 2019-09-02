@@ -32,12 +32,12 @@ M584 <%- util.makeDriveString('driver', 1, 0) %> ; set drive mapping
 <%	if (board.microstepping) {
 		const nonInterpolatedDrives = util.makeDriveString('microstepping', 1, 0, (drive) => !drive.microstepping_interpolation);
 		if (nonInterpolatedDrives !== '') { -%>
-M350<%- nonInterpolatedDrives %> I0 ; configure microstepping without interpolation
+M350 <%- nonInterpolatedDrives %> I0 ; configure microstepping without interpolation
 <%		}
 
 		const interpolatedDrives = util.makeDriveString('microstepping', 1, 0, (drive) => drive.microstepping_interpolation);
 		if (interpolatedDrives !== '') { -%>
-M350<%- interpolatedDrives %> I1 ; configure microstepping with interpolation
+M350 <%- interpolatedDrives %> I1 ; configure microstepping with interpolation
 <%		}
 	} -%>
 M92 <%- util.makeDriveString('steps_per_mm', 1) %> ; set steps per mm
@@ -84,13 +84,13 @@ M574<%- activeLowSwitches %> S0 ; set active low and disabled endstops
 	if (activeHighSwitches !== '') { -%>
 M574 <%- activeHighSwitches %> S1 ; set active high endstops
 <%	}
-	const sensorlessEndstops = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 3 && index < 3);
+	const sensorlessEndstops = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 4 && index < 3);
 	if (sensorlessEndstops !== '') { -%>
 M574 <%- sensorlessEndstops %> S3 ; set endstops controlled by motor stall detection
 <%	} -%>
 
 ; Z-Probe
-<%	const zProbeSwitches = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 2 && index < 3);
+<%	const zProbeSwitches = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 3 && index < 3);
 	if (zProbeSwitches !== '') { -%>
 M574 <%- zProbeSwitches %> S2 ; set endstops controlled by probe
 <%	}
