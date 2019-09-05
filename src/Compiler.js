@@ -128,7 +128,7 @@ export default {
 				if (condition === undefined || condition(template.drives[1], 1)) {
 					result += ' Y' + (template.drives[1][property] * factor).toFixed(precision);
 				}
-				if (condition === undefined || condition(template.drives[2]), 2) {
+				if (condition === undefined || condition(template.drives[2], 2)) {
 					result += ' Z' + (template.drives[2][property] * factor).toFixed(precision);
 				}
 				for (let i = 3; i < template.drives.length; i++) {

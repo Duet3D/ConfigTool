@@ -23,6 +23,32 @@ M911 S<%- template.auto_save.save_threshold -%> R<%- template.auto_save.resume_t
 ; automatic saving on power loss is not configured
 <%	} -%>
 
+; Network
+<%	if (template.network.enabled) { -%>
+<%		if (template.network.password !== '') { -%>
+M551 P"<%- template.network.password %>" ; set password
+<%		}
+		if (template.network.hasOwnProperty('mac_address') && template.network.mac_address !== '') { -%>
+M540 P<%- template.network.mac_address %> ; set custom MAC address
+<%		}
+		if (template.board.startsWith('duetwifi')) { -%>
+M552 S1 ; enable network
+<%		} else {
+			if (template.network.dhcp) { -%>
+M552 P0.0.0.0 S1 ; enable network and acquire dynamic address via DHCP
+<%			} else { -%>
+M552 P<%- template.network.ip %> S1 ; enable network and set IP address
+M553 P<%- template.network.netmask %> ; set netmask
+M554 P<%- template.network.gateway %> ; set gateway
+<%			}
+		} -%>
+M586 P0 S<%- template.network.protocols.http ? '1' : '0' -%> ; <%- template.network.protocols.http ? 'enable' : 'disable' -%> HTTP
+M586 P1 S<%- template.network.protocols.ftp ? '1' : '0' -%> ; <%- template.network.protocols.ftp ? 'enable' : 'disable' -%> FTP
+M586 P2 S<%- template.network.protocols.telnet ? '1' : '0' -%> ; <%- template.network.protocols.telnet ? 'enable' : 'disable' -%> Telnet
+<%	} else if (!template.board.startsWith('duetwifi')) { -%>
+M552 S0 ; disable network
+<%	} -%>
+
 ; Drives
 <%	template.drives.forEach(function(drive, i) {
 -%>
@@ -205,33 +231,7 @@ G10 P<%- tool.number %> R0 S0 ; set initial tool <%- tool.number %> active and s
 M568 P<%- tool.number %> S1 ; enable mixing for tool <%- tool.number %>
 M567 P<%- tool.number %> E<%- tool.mix_ratio.join(':') %> ; set mixing ratios for tool <%- tool.number %>
 <%		}
-	}); -%>
-
-; Network
-<%	if (template.network.enabled) { -%>
-<%		if (template.network.password !== '') { -%>
-M551 P"<%- template.network.password %>" ; set password
-<%		}
-		if (template.network.hasOwnProperty('mac_address') && template.network.mac_address !== '') { -%>
-M540 P<%- template.network.mac_address %> ; set custom MAC address
-<%		}
-		if (template.board.startsWith('duetwifi')) { -%>
-M552 S1 ; enable network
-<%		} else {
-			if (template.network.dhcp) { -%>
-M552 P0.0.0.0 S1 ; enable network and acquire dynamic address via DHCP
-<%			} else { -%>
-M552 P<%- template.network.ip %> S1 ; enable network and set IP address
-M553 P<%- template.network.netmask %> ; set netmask
-M554 P<%- template.network.gateway %> ; set gateway
-<%			}
-		} -%>
-M586 P0 S<%- template.network.protocols.http ? '1' : '0' -%> ; <%- template.network.protocols.http ? 'enable' : 'disable' -%> HTTP
-M586 P1 S<%- template.network.protocols.ftp ? '1' : '0' -%> ; <%- template.network.protocols.ftp ? 'enable' : 'disable' -%> FTP
-M586 P2 S<%- template.network.protocols.telnet ? '1' : '0' -%> ; <%- template.network.protocols.telnet ? 'enable' : 'disable' -%> Telnet
-<%	} else if (!template.board.startsWith('duetwifi')) { -%>
-M552 S0 ; disable network
-<%	}
+	});
 
 	if (template.custom_settings.trim() !== '') { -%>
 
