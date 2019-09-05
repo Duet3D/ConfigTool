@@ -18,7 +18,7 @@ M667 S<%- sParam %> ; select CoreXY mode
 <% }
 if (template.auto_save.enabled) {
 	const gcodes_to_run = template.auto_save.gcodes_to_run.replace(/'/g, '\'\''); -%>
-M911 S<%- template.auto_save.save_threshold -%> R<%- template.auto_save.resume_threshold -%> P'<%- gcodes_to_run -%>' ; set voltage thresholds and actions to run on power loss
+M911 S<%- template.auto_save.save_threshold -%> R<%- template.auto_save.resume_threshold -%> P"<%- gcodes_to_run -%>" ; set voltage thresholds and actions to run on power loss
 <%	} else { -%>
 ; automatic saving on power loss is not configured
 <%	} -%>
