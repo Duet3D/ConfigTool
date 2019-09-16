@@ -19,6 +19,10 @@
 					<b-form-radio value="fisher">RepRapPro Fisher</b-form-radio>
 				</b-form-radio-group>
 
+				<b-form-radio-group v-model="selectedMachine" name="machine" stacked class="mb-3">
+					<b-form-radio value="ender3pro">Creality Ender 3 Pro</b-form-radio>
+				</b-form-radio-group>
+
 				<p>The following machine templates were contributed by users and have not been throughly tested:</p>
 
 				<b-form-radio-group v-model="selectedMachine" name="machine" stacked class="mb-3">

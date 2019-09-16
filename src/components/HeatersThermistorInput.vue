@@ -150,8 +150,8 @@ export default {
 			parameters,
 			sensorPreset: 'custom',
 			sensorPresets: [
-				{ text: 'EPCOS B57863S0103F040 (RepRapPro beds)', value: { thermistor: 10000, beta: 3988, c: 0 } },
-				{ text: 'EPCOS B57560G1104F', value: { thermistor: 10000, beta: 4092, c: 0 } },
+				{ text: 'EPCOS B57863S0103F040 (10k, RepRapPro beds)', value: { thermistor: 10000, beta: 3988, c: 0 } },
+				{ text: 'EPCOS B57560G1104F (100k)', value: { thermistor: 100000, beta: 4092, c: 0 } },
 				{ text: 'Hisens 3950 1% up to 300°C (Simple ONE and All In ONE hot ends)', value: { thermistor: 10000, beta: 4100, c: 0 } },
 				{ text: 'Honeywell 135-104QAD-J01 (RepRapPro hot ends)', value: { thermistor: 100000, beta: 4138, c: 0 } },
 				{ text: 'QWG-104F-3950 (QU-BD silicone bed)', value: { thermistor: 100000, beta: 3950, c: 0 } },

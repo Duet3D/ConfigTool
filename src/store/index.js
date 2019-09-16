@@ -228,7 +228,7 @@ export default new Vuex.Store({
 			// Cannot use Z probe as endstop type if there is none
 			if (type === 'noprobe') {
 				state.template.drives.forEach(function(drive) {
-					if (drive.endstop_type === 2) {
+					if (drive.endstop_type === 3) {
 						drive.endstop_type = 0;
 					}
 				});

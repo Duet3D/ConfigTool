@@ -122,7 +122,7 @@ export default {
 		fans() {
 			const fans = [];
 			this.template.fans.forEach(function(fan, index) {
-				if (!fan.thermostatic_control) {
+				if (!fan.thermostatic) {
 					fans.push({
 						text: `FAN${index}`,
 						value: index
