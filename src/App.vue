@@ -89,7 +89,7 @@ input::-webkit-inner-spin-button {
 <script>
 'use strict';
 
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import saveAs from 'file-saver'
 
 import Compiler from './Compiler.js'
@@ -110,6 +110,7 @@ export default {
 		}
 	},
 	methods: {
+		...mapMutations(['setTemplate']),
 		goToPreviousPage() {
 			const currentPageIndex = this.$router.options.routes.findIndex(route => route.path === this.$route.path);
 			if (currentPageIndex > 0) {
@@ -197,6 +198,11 @@ export default {
 				next(false);
 			}
 		});
+
+		if (window.jsonTemplate) {
+			this.setTemplate({ name: 'existing', data: window.jsonTemplate });
+			this.$router.push('/General');
+		}
 	}
 }
 </script>

@@ -36,14 +36,14 @@ M558 P1 ; set probe to unmodulated mode (required for RRP 4-wire probe)
 	if (template.drives[b].endstop_location == 1) { travelToB *= -1; } 
 
 	if (template.geometry.type.startsWith('core')) { -%>
-G1 S1 <%- axes[a] + travelToA %> <%- axes[b] %><%- travelToB %> F<%- template.homing_speed_fast * 60 %> ; move quickly to <%- axes[a] %> or <%- axes[b] %> endstop and stop there (first pass)
+G1 S1 <%- axes[a] + travelToA %> <%- axes[b] %><%- travelToB %> F<%- ((a !== 2) ? template.homing_speed_fast : template.homing_speed_slow) * 60 %> ; move quickly to <%- axes[a] %> or <%- axes[b] %> endstop and stop there (first pass)
 G1 S1 <%- axes[a] + travelToA %> ; home <%- axes[a] %> axis
 G1 S1 <%- axes[b] + travelToB %> ; home <%- axes[b] %> axis
 G1 <%- axes[a] + travelBackA %> <%- axes[b] + travelBackB %> F<%- template.travel_speed * 60 %> ; go back a few mm
 G1 S1 <%- axes[a] + travelToA %> F<%- template.homing_speed_slow * 60 %> ; move slowly to <%- axes[a] %> axis endstop once more (second pass)
 G1 S1 <%- axes[b] + travelToB %> ; then move slowly to <%- axes[b] %> axis endstop
 <%	} else { -%>
-G1 S1 X<%- travelToA %> Y<%- travelToB %> F<%- template.homing_speed_fast * 60 %> ; move quickly to X and Y axis endstops and stop there (first pass)
+G1 S1 X<%- travelToA %> Y<%- travelToB %> F<%- ((b !== 2) ? template.homing_speed_fast : template.homing_speed_slow) * 60 %> ; move quickly to X and Y axis endstops and stop there (first pass)
 G1 X<%- travelBackA %> Y<%- travelBackB %> F<%- template.travel_speed * 60 %> ; go back a few mm
 G1 S1 X<%- travelToA %> Y<%- travelToB %> F<%- template.homing_speed_slow * 60 %> ; move slowly to X and Y axis endstops once more (second pass)
 <%	}
@@ -62,7 +62,7 @@ G1 S2 Z<%- template.z_dive_height %> F<%- template.travel_speed * 60 %> ; lift Z
 			travelCDirection = 'down';
 			travelToC *= -1;
 		} -%>
-G1 S1 <%- axes[c] + travelToC %> F<%- template.homing_speed_fast * 60 %> ; move <%- axes[c] %> <%- travelCDirection %> stopping at the endstop
+G1 S1 <%- axes[c] + travelToC %> F<%- ((c !== 2) ? template.homing_speed_fast : template.homing_speed_slow) * 60 %> ; move <%- axes[c] %> <%- travelCDirection %> stopping at the endstop
 G90 ; absolute positioning
 <%		if (c == 2) { -%>
 G92 <%- axes[c] + template.geometry.mins[c] %> ; set <%- axes[c] %> to axis minimum (you may want to adjust this)
