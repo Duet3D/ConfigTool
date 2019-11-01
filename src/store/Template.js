@@ -1,13 +1,16 @@
 'use strict';
 
 import Boards from './Boards.js'
+import ExpansionBoards from './ExpansionBoards.js'
 
 export default {
 	// Returns a copy of the default config template
 	getDefaultTemplate() {
 		return {
 			board: 'duetwifi10',
+			expansion_boards: [],
 			firmware: 2.03,
+			standalone: true,
 			nvram: false,
 			auto_save: {
 				enabled: false,
@@ -48,9 +51,11 @@ export default {
 					max_speed: 100,
 					acceleration: 500,
 					current: 800,
-					driver: 0,
+					driver: 0,					// v1-2 only
+					driver_v3: '0.0',			// v3+
+					endstop_pin: 'xstop',		// v3+
 					endstop_type: 1,
-					endstop_location: 1
+					endstop_location: 1,
 				},
 				{
 					direction: 1,
@@ -61,7 +66,9 @@ export default {
 					max_speed: 100,
 					acceleration: 500,
 					current: 800,
-					driver: 1,
+					driver: 1,					// v1-2 only
+					driver_v3: '0.1',			// v3+
+					endstop_pin: 'ystop',		// v3+
 					endstop_type: 1,
 					endstop_location: 1
 				},
@@ -74,7 +81,10 @@ export default {
 					max_speed: 3,
 					acceleration: 20,
 					current: 800,
-					driver: 2,
+					driver: 2,					// v1-2 only
+					driver_v3: '0.2',			// v3+
+					endstop_pin: null,			// v3+
+					endstop: null,
 					endstop_type: 3,
 					endstop_location: 1
 				},
@@ -87,7 +97,8 @@ export default {
 					max_speed: 20,
 					acceleration: 250,
 					current: 800,
-					driver: 3
+					driver: 3,					// v1-2 only
+					driver_v3: '0.3'			// v3+
 				}
 			],
 			idle: {
@@ -110,19 +121,22 @@ export default {
 				speed: 2,
 				deploy: false,
 				points: [],
-				pwm_channel: 3,
-				pwm_inverted: true
+				pwm_channel: 3,					// v1-2 only
+				pwm_inverted: true,				// v1-2 only
+				pwm_pin: null,					// v3+
+				input_pin: 'zprobe.in',			// v3+
+				modulation_pin: 'zprobe.mod'	// v3+
 			},
 			bed_is_nozzle: false,
 			bed: {
 				present: true,
-				heater: 0,
-				use_pid: false
+				use_pid: false,
+				heater: 0
 			},
 			chamber: {
 				present: false,
-				heater: 2,
 				use_pid: false,
+				heater: 2
 			},
 			heaters: [
 				{
@@ -134,7 +148,11 @@ export default {
 					a: 0.0005717725,
 					b: 0.0002416626,
 					c: 0,
-					channel: 0
+					channel: 0,					// v1-2 only
+					sensor: 0,					// v1-2 only
+					output_pin: 'bedheat',		// v3+
+					sensor_type: 'thermistor',	// v3+
+					sensor_pin: 'bedtemp'		// v3+
 				},
 				{
 					temp_limit: 280,
@@ -145,7 +163,11 @@ export default {
 					a: 0.0005717725,
 					b: 0.0002416626,
 					c: 0,
-					channel: 1
+					channel: 1,					// v1-2 only
+					sensor: 1,					// v1-2 only
+					output_pin: 'e0heat',		// v3+
+					sensor_type: 'thermistor',	// v3+
+					sensor_pin: 'e0temp'		// v3+
 				}
 			],
 			num_nozzles: 1,
@@ -167,8 +189,8 @@ export default {
 			compensation_x_offset: 15,
 			compensation_y_offset: 15,
 			peripheral_points: 3,
-			halfway_points: 0,
-			calibration_factors: 3,
+			halfway_points: 3,
+			calibration_factors: 6,
 			probe_radius: 85,
 			mesh: {
 				x_min: 15,
@@ -209,24 +231,227 @@ export default {
 				{
 					name: '',
 					value: 0,
-					inverted: false,
+					inverted: false,			// v1-2 only
 					frequency: 500,
 					thermostatic: false,
 					heaters: [],
-					trigger_temperature: 45
+					trigger_temperature: 45,
+					output_pin: 'fan0'			// v3+
 				},
 				{
 					name: '',
 					value: 100,
-					inverted: false,
+					inverted: false,			// v1-2 only
 					frequency: 500,
 					thermostatic: true,
 					heaters: [1],
-					trigger_temperature: 45
+					trigger_temperature: 45,
+					output_pin: 'fan1'			// v3+
 				}
 			],
 			custom_settings: ''
 		}
+	},
+
+	isSamePin(a, b) {
+		let strippedA = '', strippedB = '';
+		if (a) {
+			for (let i = 0; i < a.length; i++) {
+				if (a[i] !== '!' && a[i] !== '^') {
+					strippedA += a[i];
+				}
+			}
+		}
+		if (b) {
+			for (let i = 0; i < b.length; i++) {
+				if (b[i] !== '!' && b[i] !== '^') {
+					strippedB += b[i];
+				}
+			}
+		}
+		return (strippedA === strippedB) || ('0.' + strippedA === strippedB) || (strippedA === '0.' + strippedB);
+	},
+	isPinBlocked(template, pin) {
+		const isSamePin = this.isSamePin;
+		return (template.drives.some(item => item.endstop_pin && isSamePin(item.endstop_pin, pin)) ||
+			template.fans.some(fan => isSamePin(fan.output_pin, pin)) ||
+			template.heaters.some(heater => isSamePin(heater.output_pin, pin) || isSamePin(heater.sensor_pin, pin)) ||
+			isSamePin(template.probe.input_pin, pin) ||
+			isSamePin(template.probe.modulation_pin, pin) ||
+			isSamePin(template.probe.pwm_pin, pin));
+	},
+	getPins(template, board, name, selectedPin, mandatory, inputMode) {
+		const options = [], items = board[name];
+		if (!mandatory) {
+			options.push({
+				text: '(not assigned)',
+				value: null,
+				disabled: false
+			});
+		}
+
+		let index = 0;
+		for (let i = 0; i < items.length; i++) {
+			if (inputMode == undefined || template.board !== 'duet3' || board.gpioPorts[i].indexOf(inputMode ? 'in' : 'out') !== -1) {
+				const disabled = !this.isSamePin(selectedPin, items[i]) && this.isPinBlocked(template, items[i]);
+				options.push({
+					text: items[i],
+					value: items[i],
+					disabled
+				});
+				options.push({
+					text: items[i] + ' (inverted)',
+					value: '!' + items[i],
+					disabled
+				});
+				if (inputMode) {
+					options.push({
+						text: items[i] + ' (pull-up)',
+						value: '^' + items[i],
+						disabled
+					});
+					options.push({
+						text: items[i] + ' (inverted, pull-up)',
+						value: '!^' + items[i],
+						disabled
+					});
+				}
+			}
+		}
+		for (let i = 0; i < template.expansion_boards.length; i++) {
+			const expansionBoard = ExpansionBoards[template.expansion_boards[i]];
+			const expansionItems = expansionBoard[name];
+			for (let k = 0; k < expansionItems.length; k++) {
+				if (inputMode === undefined || template.board !== 'duet3' || expansionItems[k].indexOf(inputMode ? 'in' : 'out') !== -1) {
+					const text = (template.board === 'duet3') ? `Board ${i + 1} - ${expansionItems[k]}` : expansionItems[k];
+					const value = (template.board === 'duet3') ? `${i + 1}.${expansionItems[k]}` : expansionItems[k];
+					const disabled = !this.isSamePin(selectedPin, value) && this.isPinBlocked(template, value);
+					options.push({
+						text,
+						value,
+						disabled
+					});
+					options.push({
+						text: text + ' (inverted)',
+						value: '!' + value,
+						disabled
+					});
+					if (inputMode) {
+						options.push({
+							text: text + ' (pull-up)',
+							value: '^' + value,
+							disabled
+						});
+						options.push({
+							text: text + ' (inverted, pull-up)',
+							value: '!^' + value,
+							disabled
+						});
+					}
+				}
+			}
+		}
+
+		return options;
+	},
+	isValidPin(template, pin, optional) {
+		if (!pin && optional) {
+			return true;
+		}
+
+		const board = Boards.getBoard(template.board);
+		if (Boards.isValidPin(board, pin, (template.board === 'duet3') ? 0 : undefined)) {
+			return true;
+		}
+
+		return template.expansion_boards.some(function(name, index) {
+			const expansionBoard = ExpansionBoards[name];
+			return Boards.isValidPin(expansionBoard, pin, (template.board === 'duet3') ? index + 1 : undefined);
+		});
+	},
+	validatePins(template) {
+		if (template.firmware < 3) {
+			return true;
+		}
+
+		let isValid = true;
+		const isValidPin = this.isValidPin;
+		template.drives.forEach(function(drive) {
+			if (drive.hasOwnProperty('endstop_pin') && !isValidPin(template, drive.endstop_pin, true)) {
+				drive.endstop_pin = null;
+				if (drive.endstop_type === 1 || drive.endstop_type === 2) {
+					drive.endstop_type = 0;
+				}
+				isValid = false;
+			}
+		});
+		template.fans.forEach(function(fan) {
+			if (!isValidPin(template, fan.output_pin, false)) {
+				fan.output_pin = null;
+				isValid = false;
+			}
+		});
+		template.heaters.forEach(function(heater) {
+			if (!isValidPin(template, heater.output_pin, false)) {
+				heater.output_pin = null;
+				isValid = false;
+			}
+			if (!isValidPin(template, heater.sensor_pin, false)) {
+				heater.sensor_pin = null;
+				heater.sensor_type = null;
+				isValid = false;
+			}
+		});
+		if (!isValidPin(template, template.probe.input_pin, template.probe.type === 'noprobe')) {
+			template.probe.input_pin = null;
+			isValid = false;
+		}
+		if (!isValidPin(template, template.probe.modulation_pin, template.probe.type !== 'modulated')) {
+			template.probe.modulation_pin = null;
+			isValid = false;
+		}
+		if (!isValidPin(template, template.probe.pwm_pin, template.probe.type !== 'bltouch')) {
+			template.probe.pwm_pin = null;
+			isValid = false;
+		}
+
+		if ((template.probe.input_pin === null) ||
+			(template.probe.modulation_pin === null && template.probe.type === 'modulated') ||
+			(template.probe.pwm_pin === null && template.probe.type === 'bltouch')) {
+			template.probe.type = 'noprobe';
+			template.drives.forEach(function(drive) {
+				if (drive.endstop_type === 3) {
+					drive.endstop_type = 0;
+				}
+			});
+		}
+
+		return isValid;
+	},
+
+	getMaxDrives(template) {
+		let maxDrives = Boards.getBoard(template.board).numDrives;
+		template.expansion_boards.forEach(function(item) {
+			const expansionBoard = ExpansionBoards[item];
+			maxDrives += expansionBoard.numDrives;
+		});
+		return maxDrives;
+	},
+	getMaxHeaters(template) {
+		let maxHeaters = Boards.getBoard(template.board).heaterPorts.length;
+		template.expansion_boards.forEach(function(item) {
+			const expansionBoard = ExpansionBoards[item];
+			maxHeaters += expansionBoard.heaterPorts.length;
+		});
+		return maxHeaters;
+	},
+	getMaxFans(template) {
+		let maxFans = Boards.getBoard(template.board).fanPorts.length;
+		template.expansion_boards.forEach(function(item) {
+			const expansionBoard = ExpansionBoards[item];
+			maxFans += expansionBoard.fanPorts.length;
+		});
+		return maxFans;
 	},
 
 	fixFields(obj, preset) {
@@ -241,6 +466,8 @@ export default {
 									this.fixFields(obj[key][i], presetItem);
 								} else if (presetItem instanceof Number && obj[key][i] instanceof String) {
 									obj[key][i] = parseFloat(obj[key][i]);
+								} else if (presetItem instanceof String && obj[key][i] instanceof Number) {
+									obj[key][i] = obj[key][i].toString();
 								}
 							}
 						}
@@ -256,6 +483,8 @@ export default {
 				}
 			} else if (obj.hasOwnProperty(key) && preset[key] instanceof Number && obj[key] instanceof String) {
 				obj[key] = parseFloat(obj[key]);
+			} else if (obj.hasOwnProperty(key) && preset[key] instanceof String && obj[key] instanceof Number) {
+				obj[key] = obj[key].toString();
 			} else if (!obj.hasOwnProperty(key) || typeof preset[key] !== typeof obj[key]) {
 				obj[key] = preset[key];
 			}
@@ -270,12 +499,40 @@ export default {
 
 	// Add missing and remove obsolete fields from template
 	update(template) {
+		// Add RRFv3 fields
+		if (template.drives) {
+			template.drives.forEach(function(drive, index) {
+				if (index < 3 && !drive.hasOwnProperty('endstop')) {
+					drive.endstop = index;
+				}
+			});
+		}
+		if (template.heaters) {
+			template.heaters.forEach(function(heater) {
+				if (!heater.hasOwnProperty('sensor')) {
+					heater.sensor = heater.channel;
+				}
+			});
+		}
+
 		// Add missing, delete obsolete and fix remaining fields
 		this.fixFields(template, this.getDefaultTemplate());
 
-		// General
-		const board = Boards.getBoard(template.board);
+		// IO Mapping
+		const board = Boards.getBoard(template.board), maxDrives = this.getMaxDrives(template);
+		if (template.drives.length > maxDrives) {
+			if (template.expansion_boards.length === 0 && board.expansionBoards.length > 0) {
+				// Add new expansion board
+				template.expansion_boards.push(board.expansionBoards[board.expansionBoards.length - 1]);
+			} else {
+				// Too many drives. Delete obsolete items
+				while (template.drives.length > maxDrives) {
+					template.drives.pop();
+				}
+			}
+		}
 
+		// General
 		if (template.firmware < 1.21) {
 			// Firmware versions older than 1.21 are no longer supported
 			template.firmware = 1.21;
@@ -283,19 +540,10 @@ export default {
 
 		template.auto_save.enabled = template.auto_save.enabled && board.hasPowerFailureDetection;
 
-		// Motors
-		while (template.drives.length > board.maxDrives) {
-			template.drives.pop();
-		}
-
 		// Endstops
 		template.probe.deploy = template.probe.deploy || (template.probe.type === 'bltouch');
 
 		template.drives.forEach(function(drive, index) {
-			if (drive.driver >= board.maxDrives) {
-				drive.driver = index;
-			}
-
 			if ((drive.endstop_type == 3 && template.probe.type === 'noprobe') ||
 				(drive.endstop_type == 4 && !board.hasMotorLoadDetection)) {
 				drive.endstop_type = 2;
@@ -334,9 +582,7 @@ export default {
 				if (heater.hasOwnProperty('b')) {
 					delete heater.b;
 				}
-				if (!heater.hasOwnProperty('c')) {
-					heater.c = 0.0;
-				}
+				// c is added before we get here
 			}
 		});
 
@@ -437,65 +683,118 @@ export default {
 		return obj;
 	},
 
-	// Update heater configuration
+	// Update drives and heater configurations
 	fixNozzles(template, preset) {
-		let configuredHeaters = 0, configuredNozzles = 0;
-		for (let index = 0; index < Boards.getBoard(template.board).maxHeaters; index++) {
-			const isSpecialHeater = (template.bed.present && template.bed.heater === index) ||
-				(template.chamber.present && template.chamber.heater === index);
-			const skipHeater = (index === 0 && !template.bed_is_nozzle && !isSpecialHeater) ||
-				(configuredNozzles >= template.num_nozzles && !isSpecialHeater) ||
-				(template.probe.type === 'bltouch' && template.probe.pwm_channel === index);
+		const maxHeaters = this.getMaxHeaters(template);
+		while (template.heaters.length > maxHeaters) {
+			template.heaters.pop();
+		}
 
-			let heater;
-			if (template.heaters.length < index + 1 || template.heaters[index] === null) {
-				// Add missing heater
-				if (skipHeater) {
+		const maxDrives = this.getMaxDrives(template);
+		while (template.drives.length > maxDrives) {
+			template.drives.pop();
+		}
+
+		if (template.firmware < 3) {
+			let configuredHeaters = 0, configuredNozzles = 0;
+			for (let index = 0; index < maxHeaters; index++) {
+				const isSlowHeater = (template.bed.present && template.bed.heater === index) ||
+					(template.chamber.present && template.chamber.heater === index);
+				const skipHeater = (configuredNozzles >= template.num_nozzles && !isSlowHeater) ||
+					(index === 0 && !template.bed_is_nozzle && !isSlowHeater) ||
+					(template.probe.type === 'bltouch' && template.probe.pwm_channel === index);
+
+				let heater;
+				if (template.heaters.length < index + 1 || template.heaters[index] === null) {
+					// Add missing heater
+					if (skipHeater) {
+						heater = null;
+					} else {
+						if (isSlowHeater) {
+							heater = Object.assign({}, preset.heaters[0]);
+						} else {
+							const presetIndex = Math.min(preset.heaters.length - 1, 1);
+							heater = Object.assign({}, preset.heaters[presetIndex]);
+						}
+						heater.channel = index;
+						heater.output_pin = null;
+						heater.sensor_pin = null;
+						heater.sensor_type = null;
+					}
+
+					if (template.heaters.length < index + 1) {
+						template.heaters.push(heater);
+					} else {
+						template.heaters[index] = heater;
+					}
+				} else if (skipHeater) {
+					// Remove obsolete heater
+					template.heaters[index] = null;
 					heater = null;
 				} else {
-					if (isSpecialHeater) {
-						heater = Object.assign({}, preset.heaters[0]);
-					} else {
-						const presetIndex = Math.min(preset.heaters.length - 1, 1);
-						heater = Object.assign({}, preset.heaters[presetIndex]);
-					}
-					heater.channel = index;
+					// Get existing heater
+					heater = template.heaters[index];
 				}
 
-				if (template.heaters.length < index + 1) {
-					template.heaters.push(heater);
-				} else {
-					template.heaters[index] = heater;
+				if (heater) {
+					configuredHeaters++;
+					if (template.bed.present && template.bed.heater === index) {
+						if (!template.bed.use_pid) {
+							heater.scale_factor = 100;
+						}
+					} else if (template.chamber.present && template.chamber.heater === index) {
+						if (!template.bed.use_pid) {
+							heater.scale_factor = 100;
+						}
+					} else {
+						configuredNozzles++;
+					}
 				}
-			} else if (skipHeater) {
-				// Remove obsolete heater
-				template.heaters[index] = null;
-				heater = null;
-			} else {
-				// Get existing heater
-				heater = template.heaters[index];
 			}
 
-			if (heater) {
-				configuredHeaters++;
-				if (template.bed.present && template.bed.heater === index) {
-					if (!template.bed.use_pid) {
-						heater.scale_factor = 100;
-					}
-				} else if (template.chamber.present && template.chamber.heater === index) {
-					if (!template.bed.use_pid) {
-						heater.scale_factor = 100;
-					}
+			let index = template.heaters.length - 1;
+			while (index > 0 && !template.heaters[index]) {
+				template.heaters.pop();
+				index--;
+			}
+		} else {
+			let numHeaters = template.num_nozzles;
+			if (template.bed.present) {
+				numHeaters++;
+			}
+			if (template.chamber.present) {
+				numHeaters++;
+			}
+			numHeaters = Math.min(numHeaters, this.getMaxHeaters(template));
+
+			for (let i = template.heaters.length; i < numHeaters; i++) {
+				let heater;
+				if ((template.bed.present && template.bed.heater === i) ||
+					(template.chamber.present && template.chamber.heater === i)) {
+					heater = Object.assign({}, preset.heaters[0]);
 				} else {
-					configuredNozzles++;
+					const presetIndex = Math.min(preset.heaters.length - 1, 1);
+					heater = Object.assign({}, preset.heaters[presetIndex]);
 				}
+				heater.channel = i;
+				heater.output_pin = null;
+				heater.sensor_pin = null;
+				heater.sensor_type = null;
+				template.heaters.push(heater);
+			}
+
+			while (template.heaters.length > numHeaters) {
+				template.heaters.pop();
 			}
 		}
 
-		let index = template.heaters.length - 1;
-		while (index > 0 && !template.heaters[index]) {
-			template.heaters.pop();
-			index--;
+		if (template.bed.present && template.bed.heater >= template.heaters.length) {
+			template.bed.present = false;
+			this.fixNozzles(template);
+		}
+		if (template.chamber.present && template.chamber.heater >= template.heaters.length) {
+			template.chamber.present = false;
+			this.fixNozzles(template);
 		}
 	},
 

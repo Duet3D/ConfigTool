@@ -56,7 +56,6 @@
 <script>
 'use strict';
 
-import axios from 'axios'
 import { mapState, mapMutations } from 'vuex'
 
 import { version } from '../../package.json'
@@ -94,16 +93,22 @@ export default {
 					});
 				} else {
 					// Load the machine template from the server
-					axios
-						.get(`machines/${value}.json`)
-						.then(response => {
-							this.setTemplate({ name: value, data: response.data });
-						})
-						.catch(e => {
+					const xhr = new XMLHttpRequest(), that = this;
+					xhr.open('GET', `machines/${value}.json`, true);
+					xhr.responseType = 'json';
+					xhr.onload = function() {
+						if (xhr.status >= 200 && xhr.status < 300) {
+							that.setTemplate({ name: value, data: xhr.response });
+						} else {
 							this.setTemplate({ name: 'custom' });
-							console.log(e);
-							alert('Failed to load template from server:\n\n' + e)
-						});
+							alert(`Failed to load template from server:\n\n${xhr.status} ${xhr.statusText}`);
+						}
+					}
+					xhr.onerror = function() {
+						this.setTemplate({ name: 'custom' });
+						alert('Failed to load template from server:\n\nNetwork error');
+					};
+					xhr.send(null);
 				}
 			}
 		}

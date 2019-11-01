@@ -10,32 +10,33 @@
 							<option value="duetwifi10">Duet 2 WiFi</option>
 							<option value="duetethernet10">Duet 2 Ethernet</option>
 							<option value="duetm10">Duet 2 Maestro</option>
-							<option value="duet3" disabled>Duet 3 (coming soon)</option>
+							<option value="duet3">Duet 3</option>
 						</b-form-select>
 					</b-form-group>
 				</b-col>
 
 				<b-col>
 					<b-form-group label="Firmware version:">
-						<b-form-select :value="template.firmware" @change="setFirmware($event)" v-preset="preset.firmware" title="Version of the firmware running on your board">
+						<b-form-select :value="template.firmware" @change="setFirmware($event)" :disabled="template.board === 'duet3' || template.board.startsWith('duet0')" v-preset="preset.firmware" title="Version of the firmware running on your board">
 							<option :value="1.16" disabled>1.16 or older (no longer supported)</option>
 							<option :value="1.17" disabled>1.17 to 1.19 (no longer supported)</option>
 							<option :value="1.2" disabled>1.20 (no longer supported)</option>
 							<option :value="1.21">1.21</option>
-							<option :value="2">2.00</option>
-							<option :value="2.03">2.03</option>
-							<option :value="3" disabled>3.xx (coming soon)</option>
+							<option :value="2">2.0</option>
+							<option :value="2.03">2.03 (stable)</option>
+							<option :value="3">3.0 or later (beta)</option>
 						</b-form-select>
 					</b-form-group>
 				</b-col>
 
-				<b-col>
+				<b-col v-if="template.standalone">
 					<b-form-group label="Printer Name:">
 						<b-form-input v-model.trim="name" v-preset="preset.network.name" title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local" maxlength="40" type="text" required></b-form-input>
 					</b-form-group>
 				</b-col>
 			</b-form-row>
 
+			<b-form-checkbox v-if="template.board === 'duet3'" v-model="standalone" v-preset.left title="Run RepRapFirmware in stand-alone mode without an attached single-board computer">Run in standalone mode without SBC</b-form-checkbox>
 			<b-form-checkbox v-model="nvram" v-preset.left title="Load saved configuration parameters on start-up (M501)">Read config-override.g file at end of startup process</b-form-checkbox>
 			<b-form-checkbox v-if="board.hasPowerFailureDetection" v-model="autoSaveEnabled" v-preset.left="preset.auto_save.enabled" title="Store the last valid print parameters on the SD card when a power failure occurs (M911)">Save print state on power failure</b-form-checkbox>
 			<div v-show="autoSaveEnabled" class="mt-3 pl-4">
@@ -176,7 +177,7 @@
 <script>
 'use strict';
 
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
 
 import GeneralGeometryForm from '../components/GeneralGeometryForm.vue'
@@ -191,6 +192,7 @@ export default {
 		...mapState(['board', 'preset', 'template']),
 		...mapFields({
 			name: 'template.network.name',
+			standalone: 'template.standalone',
 			nvram: 'template.nvram',
 			autoSaveEnabled: 'template.auto_save.enabled',
 			autoSaveThreshold: 'template.auto_save.save_threshold',
@@ -221,7 +223,8 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations(['setBoard', 'setBoardSeriesResistor', 'setFirmware', 'setGeometry', 'setPrintRadius']),
+		...mapActions(['setBoard']),
+		...mapMutations(['setFirmware', 'setBoardSeriesResistor', 'setGeometry', 'setPrintRadius']),
 		setSelectedBoard(value) {
 			this.setBoard(value);
 			if (value === 'duet06') {

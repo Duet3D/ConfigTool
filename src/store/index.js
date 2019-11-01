@@ -16,27 +16,44 @@ export default new Vuex.Store({
 		machine: 'custom',												// Selected template name
 		preset: Template.getDefaultTemplate(),							// Preset of the loaded machine (machine defaults)
 		customTemplate: Template.getDefaultTemplate(),					// Properties of the custom config template (if machine is not 'custom')
-		template: Template.getDefaultTemplate()							// Properties of the template being edited
+		template: Template.getDefaultTemplate(),						// Properties of the template being edited
+		addRRF: true,
+		addDWC: true
 	},
 	getters: {
 		getField,
 
-		canAddExtruder(state) { return state.template.drives.length < state.board.maxDrives; },
+		canAddExpansionBoard(state) { return state.template.expansion_boards.length < state.board.maxExpansionBoards; },
+
+		canAddExtruder(state) { return state.template.drives.length < Template.getMaxDrives(state.template); },
 		canRemoveExtruder(state) { return state.template.drives.length > 3; },
 
 		canAddNozzle(state) {
-			const maxNozzles = state.board.maxHeaters -
+			const maxNozzles = Template.getMaxHeaters(state.template) -
 				(state.template.bed.present ? 1 : 0) -
 				(state.template.chamber.present ? 1 : 0) -
-				((state.template.probe.type === 'bltouch' && state.template.probe.pwm_channel < state.board.maxHeaters) ? 1 : 0);
+				((state.template.probe.type === 'bltouch' && state.template.probe.pwm_channel < state.board.heaterPorts.length) ? 1 : 0);
 			return state.template.num_nozzles < maxNozzles;
 		},
 		canRemoveNozzle(state) { return state.template.num_nozzles > 0; },
 
 		canRemoveTool(state) { return state.template.tools.length > 0; },
 
-		canAddFan(state) { return state.template.fans.length < state.board.maxFans; },
+		canAddFan(state) { return state.template.fans.length < Template.getMaxFans(state.template); },
 		canRemoveFan(state) { return state.template.fans.length > 0; }
+	},
+	actions: {
+		setBoard({ commit }, board) {
+			commit('setBoard', board);
+
+			if (board === 'duet06' || board === 'duet085') {
+				// RRFv2 isn't supported on Duet 0.6/0.8.5
+				commit('setFirmware', 1.21);
+			} else if (board === 'duet3') {
+				// RRFv3 is required for the Duet 3
+				commit('setFirmware', 3);
+			}
+		}
 	},
 	mutations: {
 		updateField,
@@ -98,9 +115,18 @@ export default new Vuex.Store({
 				}
 			});
 
+			// Don't load DWC on the Duet 3 in SBC mode
+			if (board === 'duet3') {
+				state.template.standalone = false;
+				state.addDWC = false;
+			} else {
+				state.template.standalone = true;
+			}
+
 			// Update board
 			state.board = newBoard;
 			state.template.board = board;
+			Template.validatePins(state.template);
 		},
 		setBoardSeriesResistor(state, value) {
 			state.board.seriesResistor = value;
@@ -121,7 +147,12 @@ export default new Vuex.Store({
 			if (firmware < 2.01) {
 				state.template.fans.forEach((fan) => fan.name = '');
 			}
+			if (firmware >= 3) {
+				state.template.bed_is_nozzle = false;
+			}
 			state.template.firmware = firmware;
+			Template.fixNozzles(state.template, state.preset);
+			Template.validatePins(state.template);
 		},
 		setGeometry(state, geometry) {
 			state.template.geometry.type = geometry;
@@ -171,6 +202,38 @@ export default new Vuex.Store({
 				});
 			}
 		},
+
+		addExpansionBoard(state, boardName) {
+			let id = 1;
+			for (let i = 1; i < 16; i++) {
+				if (!state.template.expansion_boards.some(board => board.id === i)) {
+					id = i;
+					break;
+				}
+			}
+
+			state.template.expansion_boards.push(boardName);
+		},
+		removeExpansionBoard(state, index) {
+			state.template.expansion_boards.splice(index, 1);
+			Template.fixNozzles(state.template);
+			Template.validatePins(state.template);
+		},
+
+		addExtruder(state) {
+			const drive = Object.assign({}, (state.template.drives.length > 3)
+				? state.template.drives[state.template.drives.length - 1]
+					: state.preset.drives[state.preset.drives.length - 1]);
+			drive.driver = state.template.drives.length;
+			if (!state.board.microstepping) {
+				drive.microstepping = 16;
+				drive.microstepping_interpolation = false;
+			}
+			state.template.drives.push(drive);
+		},
+		removeExtruder(state) {
+			state.template.drives.pop();
+		},
 		setAxisMinimum(state, { axis, value }) {
 			if (axis === 0 && state.template.mesh.x_min == state.template.geometry.mins[0] + state.template.compensation_x_offset) {
 				state.template.mesh.x_min = value + state.template.compensation_x_offset;
@@ -188,22 +251,7 @@ export default new Vuex.Store({
 			}
 			state.template.geometry.print_radius = radius;
 		},
-
-		addExtruder(state) {
-			const drive = Object.assign({}, (state.template.drives.length > 3)
-				? state.template.drives[state.template.drives.length - 1]
-					: state.preset.drives[state.preset.drives.length - 1]);
-			drive.driver = state.template.drives.length;
-			if (!state.board.microstepping) {
-				drive.microstepping = 16;
-				drive.microstepping_interpolation = false;
-			}
-			state.template.drives.push(drive);
-		},
-		removeExtruder(state) {
-			state.template.drives.pop();
-		},
-		updateDrive(state, { drive, forwards, microstepping, interpolated, stepsPerMm, instantDv, maxSpeed, acceleration, current, driver, et, el }) {
+		updateDrive(state, { drive, forwards, microstepping, interpolated, stepsPerMm, instantDv, maxSpeed, acceleration, current, driver, et, el, ep }) {
 			if (forwards !== undefined) { state.template.drives[drive].direction = forwards ? 1 : 0; }
 			if (microstepping !== undefined) { state.template.drives[drive].microstepping = microstepping; }
 			if (interpolated !== undefined) { state.template.drives[drive].microstepping_interpolation = interpolated; }
@@ -215,6 +263,12 @@ export default new Vuex.Store({
 			if (driver !== undefined) { state.template.drives[drive].driver = driver; }
 			if (et !== undefined) { state.template.drives[drive].endstop_type = et; }
 			if (el !== undefined) { state.template.drives[drive].endstop_location = el; }
+			if (ep !== undefined) {
+				state.template.drives[drive].endstop_pin = ep;
+				if (state.template.firmware >= 3 && (state.template.drives[drive].endstop_type === 2 || state.template.drives[drive].endstop_type === 3)) {
+					state.template.drives[drive].endstop_type = 0;
+				}
+			}
 		},
 
 		setProbeType(state, type) {
@@ -234,7 +288,34 @@ export default new Vuex.Store({
 				});
 			}
 
+			// BLTouch requires deploy/retractprobe.g
+			if (type === 'bltouch') {
+				state.template.probe.deploy = true;
+			} else if (state.template.probe.type === 'bltouch') {
+				state.template.probe.deploy = state.preset.probe.deploy;
+			}
+
 			state.template.probe.type = type;
+		},
+		setProbePin(state, { inputPin, modulationPin, pwmPin }) {
+			if (inputPin !== undefined) {
+				state.template.probe.input_pin = inputPin;
+				if (inputPin === null) {
+					state.template.probe.type = 'noprobe';
+				}
+			}
+			if (modulationPin !== undefined) {
+				state.template.probe.modulation_pin = modulationPin;
+				if (modulationPin === null && state.template.probe.type === 'modulated') {
+					state.template.probe.type = 'noprobe';
+				}
+			}
+			if (pwmPin !== undefined) {
+				state.template.probe.pwm_pin = pwmPin;
+				if (pwmPin === null && state.template.probe.type === 'bltouch') {
+					state.template.probe.type = 'noprobe';
+				}
+			}
 		},
 
 		addNozzle(state) {
@@ -281,13 +362,16 @@ export default new Vuex.Store({
 			if (heater !== undefined) { state.template.chamber.heater = heater; }
 			Template.fixNozzles(state.template, state.preset);
 		},
-		updateHeater(state, { heater, tempLimit, pwmLimit, thermistor, beta, c, channel }) {
+		updateHeater(state, { heater, tempLimit, pwmLimit, thermistor, beta, c, channel, output_pin, sensor_pin, sensor_type }) {
 			if (tempLimit !== undefined) { state.template.heaters[heater].temp_limit = tempLimit; }
 			if (pwmLimit !== undefined) { state.template.heaters[heater].scale_factor = pwmLimit; }
 			if (thermistor !== undefined) { state.template.heaters[heater].thermistor = thermistor; }
 			if (beta !== undefined) { state.template.heaters[heater].beta = beta; }
 			if (c !== undefined) { state.template.heaters[heater].c = c; }
 			if (channel !== undefined) { state.template.heaters[heater].channel = channel; }
+			if (output_pin !== undefined) { state.template.heaters[heater].output_pin = output_pin; }
+			if (sensor_pin !== undefined) { state.template.heaters[heater].sensor_pin = sensor_pin; }
+			if (sensor_type !== undefined) { state.template.heaters[heater].sensor_type = sensor_type; }
 			Template.fixNozzles(state.template, state.preset);
 		},
 
@@ -302,6 +386,7 @@ export default new Vuex.Store({
 					}
 				});
 			}
+			fan.output_pin = null;
 			state.template.fans.push(fan);
 		},
 		removeFan(state) {

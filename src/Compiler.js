@@ -1,6 +1,5 @@
 'use strict';
 
-import axios from 'axios'
 import { render } from 'ejs'
 import JSZip from 'jszip'
 
@@ -47,10 +46,29 @@ export default {
 		return newResult;
 	},
 
+	downloadFile(filename, responseType, accept) {
+		return new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.open('GET', filename, true);
+			xhr.responseType = responseType;
+			if (accept) {
+				xhr.setRequestHeader('Accept', accept);
+			}
+			xhr.onload = function() {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					resolve(xhr.response);
+				} else {
+					reject(`${xhr.status} ${xhr.statusText}`);
+				}
+			};
+			xhr.onerror = () => reject('Network error');
+			xhr.send(null);
+		});
+	},
+
 	async compileFile(filename, options) {
-		let content = await axios.get(filename, { responseType: 'text' });
-		content = render(content.data, options);
-		return content;
+		const fileContent = await this.downloadFile(filename, 'text');
+		return render(fileContent, options);
 	},
 
 	async compileTemplate(filename, template, board) {
@@ -73,7 +91,7 @@ export default {
 		return this.alignComments(content);
 	},
 
-	async compileZIP(filenames, template, board) {
+	async compileZIP(filenames, template, board, rrfFile, iapFile, dwcFile) {
 		let zip = new JSZip();
 		zip.file('sys/config.json', JSON.stringify(template));
 
@@ -89,7 +107,7 @@ export default {
 		}
 
 		// Generate /sys directory
-		for(let i = 0; i < filenames.length; i++) {
+		for (let i = 0; i < filenames.length; i++) {
 			try {
 				const content = await this.compileTemplate(filenames[i], template, board);
 				zip.file('sys/' + filenames[i], content);
@@ -98,7 +116,34 @@ export default {
 			}
 		}
 
-		// TODO: Perhaps add DWC here?
+		// Add RRF+IAP files
+		if (rrfFile) {
+			try {
+				zip.file('sys/' + rrfFile.name);
+			} catch (e) {
+				throw `Failed to create ${rrfFile.name}: ${e}`
+			}
+		}
+		if (iapFile) {
+			try {
+				zip.file('sys/' + iapFile.name);
+			} catch (e) {
+				throw `Failed to create ${rrfFile.name}: ${e}`
+			}
+		}
+
+		// Add DWC
+		if (dwcFile) {
+			try {
+				const dwcZIP = new JSZip();
+				dwcZIP.load(dwcFile);
+				dwcZIP.forEach(function(relativePath, zipEntry) {
+					zip.file('www/' + relativePath + '/' + zipEntry.name, zipEntry);
+				});
+			} catch (e) {
+				throw `Failed to integrate DWC bundle: ${e}`
+			}
+		}
 
 		// Generate final ZIP when all files have been generated
 		return await zip.generateAsync({ type: 'blob' });
@@ -114,29 +159,37 @@ export default {
 					case 1.17: return '1.17 to 1.19';
 					case 1.20: return '1.20';
 					case 1.21: return '1.21';
-					case 2: return '2.xx';
-					case 3: return '3.xx';
+					case 2: return '2.00';
+					case 2.03: return '2.03';
+					case 3: return '3';
 				}
 				return template.firmware.toString();
+			},
+
+			formatValue(value, factor, precision) {
+				if (isNumber(value)) {
+					return (value * factor).toFixed(precision);
+				}
+				return value;
 			},
 
 			makeDriveString(property, factor, precision = 2, condition) {
 				let result = '';
 				if (condition === undefined || condition(template.drives[0], 0)) {
-					result += ' X' + (template.drives[0][property] * factor).toFixed(precision);
+					result += ' X' + this.formatValue(template.drives[0][property], factor, precision);
 				}
 				if (condition === undefined || condition(template.drives[1], 1)) {
-					result += ' Y' + (template.drives[1][property] * factor).toFixed(precision);
+					result += ' Y' + this.formatValue(template.drives[1][property], factor, precision);
 				}
 				if (condition === undefined || condition(template.drives[2], 2)) {
-					result += ' Z' + (template.drives[2][property] * factor).toFixed(precision);
+					result += ' Z' + this.formatValue(template.drives[2][property], factor, precision);
 				}
 				for (let i = 3; i < template.drives.length; i++) {
 					if (condition === undefined || condition(template.drives[i], i)) {
-						if (i == 3) {
-							result += ' E' + (template.drives[i][property] * factor).toFixed(precision);
+						if (i === 3) {
+							result += ' E' + this.formatValue(template.drives[i][property], factor, precision);
 						} else {
-							result += ':' + (template.drives[i][property] * factor).toFixed(precision);
+							result += ':' + this.formatValue(template.drives[i][property], factor, precision);
 						}
 					}
 				}

@@ -6,7 +6,7 @@
 ; General preferences
 G90 ; send absolute coordinates...
 M83 ; ...but relative extruder moves
-M550 P"<%- template.network.name %>" ; set printer name
+M550 P"<%- template.standalone ? template.network.name : 'Duet 3' %>" ; set printer name
 <%	if (template.geometry.type === 'delta') { -%>
 M665 R<%- template.geometry.delta_radius %> L<%- template.geometry.rod_length %> B<%- template.geometry.print_radius %> H<%- template.geometry.homed_height %> ; Set delta radius, diagonal rod length, printable radius and homed height
 M666 X0 Y0 Z0 ; put your endstop adjustments here, or let auto calibration find them
@@ -15,44 +15,47 @@ M666 X0 Y0 Z0 ; put your endstop adjustments here, or let auto calibration find 
 		if (template.geometry.type === 'corexz') { sParam = 2; }
 		if (template.geometry.type === 'coreyz') { sParam = 3; } %>
 M667 S<%- sParam %> ; select CoreXY mode
-<% }
-   if (template.display.type) {
+<%	}
+	if (template.display.type) {
 -%>
 M918 P<%- template.display.type %> E<%- template.display.encoder_steps + ((template.firmware >= 2.03) ? ` F${template.display.spi_frequency}` : '') %> ; configure direct-connect display
-<% } -%>
+<%	}
+
+	if (template.standalone) {
+-%>
 
 ; Network
-<%	if (template.network.enabled) { -%>
-<%		if (template.network.password !== '') { -%>
+<%		if (template.network.enabled) { -%>
+<%			if (template.network.password !== '') { -%>
 M551 P"<%- template.network.password %>" ; set password
-<%		}
-		if (template.network.hasOwnProperty('mac_address') && template.network.mac_address !== '') { -%>
+<%			}
+			if (template.network.hasOwnProperty('mac_address') && template.network.mac_address !== '') { -%>
 M540 P<%- template.network.mac_address %> ; set custom MAC address
-<%		}
-		if (template.board.startsWith('duetwifi')) { -%>
+<%			}
+			if (template.board.startsWith('duetwifi')) { -%>
 M552 S1 ; enable network
-<%		} else {
-			if (template.network.dhcp) { -%>
+<%			} else if (template.network.dhcp) { -%>
 M552 P0.0.0.0 S1 ; enable network and acquire dynamic address via DHCP
 <%			} else { -%>
 M552 P<%- template.network.ip %> S1 ; enable network and set IP address
 M553 P<%- template.network.netmask %> ; set netmask
 M554 P<%- template.network.gateway %> ; set gateway
-<%			}
-		} -%>
+<%			} -%>
 M586 P0 S<%- template.network.protocols.http ? '1' : '0' -%> ; <%- template.network.protocols.http ? 'enable' : 'disable' -%> HTTP
 M586 P1 S<%- template.network.protocols.ftp ? '1' : '0' -%> ; <%- template.network.protocols.ftp ? 'enable' : 'disable' -%> FTP
 M586 P2 S<%- template.network.protocols.telnet ? '1' : '0' -%> ; <%- template.network.protocols.telnet ? 'enable' : 'disable' -%> Telnet
-<%	} else if (!template.board.startsWith('duetwifi')) { -%>
+<%		} else if (!template.board.startsWith('duetwifi')) { -%>
 M552 S0 ; disable network
-<%	} -%>
+<%		}
+	} -%>
 
 ; Drives
 <%	template.drives.forEach(function(drive, i) {
+		const driver = (template.firmware >= 3) ? drive.driver_v3 : drive.driver;
 -%>
-M569 P<%- drive.driver %> S<%- drive.direction %> ; physical drive <%- drive.driver %> goes <%- (drive.direction == 0) ? "backwards" : "forwards" %>
+M569 P<%- driver %> S<%- drive.direction %> ; physical drive <%- driver %> goes <%- (drive.direction === 0) ? 'backwards' : 'forwards' %>
 <%	}); -%>
-M584 <%- util.makeDriveString('driver', 1, 0) %> ; set drive mapping
+M584 <%- util.makeDriveString(template.firmware >= 3 ? 'driver_v3' : 'driver', 1, 0) %> ; set drive mapping
 <%	if (board.microstepping) {
 		const nonInterpolatedDrives = util.makeDriveString('microstepping', 1, 0, (drive) => !drive.microstepping_interpolation);
 		if (nonInterpolatedDrives !== '') { -%>
@@ -85,46 +88,85 @@ M208 X<%- template.geometry.maxes[0] %> Y<%- template.geometry.maxes[1] %> Z<%- 
 <%	} -%>
 
 ; Endstops
-<%	let activeLowSwitches = '';
-	if (template.drives[0].endstop_type === 0) {
-		activeLowSwitches += ' X0';
-	} else if (template.drives[0].endstop_type === 2) {
-		activeLowSwitches += ' X' + template.drives[0].endstop_location;
-	}
-	if (template.drives[1].endstop_type === 0) {
-		activeLowSwitches += ' Y0';
-	} else if (template.drives[1].endstop_type === 2) {
-		activeLowSwitches += ' Y' + template.drives[1].endstop_location;
-	}
-	if (template.drives[2].endstop_type === 0) {
-		activeLowSwitches += ' Z0';
-	} else if (template.drives[2].endstop_type === 2) {
-		activeLowSwitches += ' Z' + template.drives[2].endstop_location;
-	}
-	if (activeLowSwitches !== '') { -%>
+<%	if (template.firmware >= 3) {
+		let endstopsConfigured = false;
+		for (let axis = 0; axis < 3; axis++) {
+			const drive = template.drives[axis];
+			if (drive.endstop_type > 0) {
+				endstopsConfigured = true;
+				const end = (drive.endstop_location === 1) ? 'low' : 'high';
+				let type = 'unknown', sParam = 0;
+				switch (drive.endstop_type) {
+					case 1:
+						type = 'active-high';
+						sParam = 1;
+						break;
+					case 2:
+						type = 'active-low';
+						sParam = 0;
+						break;
+					case 3:
+						type = 'Z-probe';
+						sParam = 2;
+						break;
+					case 4:
+						type = 'sensorless';
+						sParam = 3;
+						break;
+				} -%>
+M574 <%- 'XYZ'[axis] %><%- drive.endstop_location %> S<%- sParam %><%- (drive.endstop_type < 3) ? ` P"${drive.endstop_pin}"` : '' %> ; configure <%- type %> endstop for <%- end %> end on <%- 'XYZ'[axis] %><%- (drive.endstop_type < 3) ? ` via pin ${drive.endstop_pin}` : '' %>
+<%			}
+		}
+		if (!endstopsConfigured) { -%>
+; WARNING: No endstops configured
+<%		}
+	} else {
+		let activeLowSwitches = '';
+		if (template.drives[0].endstop_type === 0) {
+			activeLowSwitches += ' X0';
+		} else if (template.drives[0].endstop_type === 2) {
+			activeLowSwitches += ' X' + template.drives[0].endstop_location;
+		}
+		if (template.drives[1].endstop_type === 0) {
+			activeLowSwitches += ' Y0';
+		} else if (template.drives[1].endstop_type === 2) {
+			activeLowSwitches += ' Y' + template.drives[1].endstop_location;
+		}
+		if (template.drives[2].endstop_type === 0) {
+			activeLowSwitches += ' Z0';
+		} else if (template.drives[2].endstop_type === 2) {
+			activeLowSwitches += ' Z' + template.drives[2].endstop_location;
+		}
+		if (activeLowSwitches !== '') { -%>
 M574<%- activeLowSwitches %> S0 ; set active low and disabled endstops
-<%	}
-	const activeHighSwitches = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 1 && index < 3);
-	if (activeHighSwitches !== '') { -%>
+<%		}
+		const activeHighSwitches = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 1 && index < 3);
+		if (activeHighSwitches !== '') { -%>
 M574 <%- activeHighSwitches %> S1 ; set active high endstops
-<%	}
-	const sensorlessEndstops = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 4 && index < 3);
-	if (sensorlessEndstops !== '') { -%>
+<%		}
+		const sensorlessEndstops = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 4 && index < 3);
+		if (sensorlessEndstops !== '') { -%>
 M574 <%- sensorlessEndstops %> S3 ; set endstops controlled by motor stall detection
-<%	} -%>
+<%		}
+		const zProbeSwitches = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 3 && index < 3);
+		if (zProbeSwitches !== '') { -%>
+M574 <%- zProbeSwitches %> S2 ; set endstops controlled by probe
+<%		}
+	} -%>
 
 ; Z-Probe
-<%	const zProbeSwitches = util.makeDriveString('endstop_location', 1, 0, (drive, index) => drive.endstop_type === 3 && index < 3);
-	if (zProbeSwitches !== '') { -%>
-M574 <%- zProbeSwitches %> S2 ; set endstops controlled by probe
-<%	}
-	if (template.probe.type === 'noprobe') { -%>
+<%	if (template.probe.type === 'noprobe') { -%>
 M558 P0 H<%- template.z_dive_height %> F<%- template.probe.speed * 60 %> T<%- template.travel_speed * 60 %> ; disable Z probe but set dive height, probe speed and travel speed
 <%	} else {
-		if (template.probe.type === 'bltouch' && !template.board.startsWith('duetm')) { -%>
+		if (template.firmware < 3) {
+			if (template.probe.type === 'bltouch' && !template.board.startsWith('duetm')) { -%>
 M307 H<%- template.probe.pwm_channel %> A-1 C-1 D-1 ; disable heater on PWM channel for BLTouch
+<%			}
+		} else if (template.probe.type === 'bltouch') { -%>
+M950 S0 C"<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
 <%		}
-		let zProbeType = 0;
+
+		let zProbeType = 0, cArg = '';
 		switch (template.probe.type) {
 			case 'switch':
 				zProbeType = (template.geometry.type === 'delta') ? 4 : 5;
@@ -141,8 +183,16 @@ M307 H<%- template.probe.pwm_channel %> A-1 C-1 D-1 ; disable heater on PWM chan
 			case 'bltouch':
 				zProbeType = 9;
 				break;
-		} -%>
-M558 P<%- zProbeType %> H<%- template.z_dive_height %> F<%- template.probe.speed * 60 %> T<%- template.travel_speed * 60 %> ; set Z probe type to <%- template.probe.type %> and the dive height + speeds
+		}
+		if (template.firmware >= 3 && template.probe.input_pin) {
+			if (template.probe.modulation_pin) {
+				cArg = ` C"${template.probe.input_pin}+${template.probe.modulation_pin}"`;
+			} else {
+				cArg = ` C"${template.probe.input_pin}"`;
+			}
+		}
+	-%>
+M558 P<%- zProbeType %><%- cArg %> H<%- template.z_dive_height %> F<%- template.probe.speed * 60 %> T<%- template.travel_speed * 60 %> ; set Z probe type to <%- template.probe.type %> and the dive height + speeds
 <%		if (template.geometry.low_dive_height) { -%>
 M558 H30 ;*** Remove this line after delta calibration has been done and new delta parameters have been saved
 <%		} -%>
@@ -158,54 +208,110 @@ M557 X<%- template.mesh.x_min %>:<%- template.mesh.x_max %> Y<%- template.mesh.y
 <%	} -%>
 
 ; Heaters
-<%	if (!template.bed.present) { -%>
-M140 H-1 ; disable heated bed
-<%	} else {
-		if (template.bed.heater !== 0) { -%>
-M140 H<%- template.bed.heater %> ; remap heated bed to heater <%- template.bed.heater %>
+<%	if (template.firmware >= 3) {
+		if (!template.bed.present && template.board !== 'duet3') { -%>
+M140 H-1 ; disable heated bed (overrides default heater mapping)
 <%		}
-		if (template.bed.use_pid) { -%>
-M307 H<%- template.bed.heater %> B0 S<%- (template.heaters[template.bed.heater].scale_factor / 100).toFixed(2) %> ; disable bang-bang mode for the bed heater and set PWM limit
-<%		} else if (template.bed.heater !== 0) { -%>
-M307 H<%- template.bed.heater %> B1 S<%- (template.heaters[template.bed.heater].scale_factor / 100).toFixed(2) %> ; enable bang-bang mode for the bed heater and set PWM limit
-<%		}
-	}
 
-	if (template.chamber.present) {
-		if (template.chamber.heater !== 0) { -%>
-M141 H<%- template.chamber.heater %> ; assign chamber heater to heater <%- template.bed.heater %>
-<%		} else if (template.chamber.heater === 0 && template.bed.use_pid) { -%>
-M307 H<%- template.chamber.heater %> B0 S<%- (template.heaters[template.chamber.heater].scale_factor / 100).toFixed(2) %> ; disable bang-bang mode for the bed heater and set PWM limit
-<%		} else if (template.chamber.heater !== 0) { -%>
-M307 H<%- template.chamber.heater %> B0 S<%- (template.heaters[template.chamber.heater].scale_factor / 100).toFixed(2) %> ; enable bang-bang mode for the bed heater and set PWM limit
-<%		}
-	}
-
-	template.heaters.forEach(function(heater, i) {
-		if (heater !== null) {
-			if (i !== (template.bed.present ? template.bed.heater : -1) &&
-				i !== (template.chamber.present ? template.chamber.heater : -1) &&
-				heater.scale_factor !== 100) { -%>
-M301 H<%- i %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; set heater <%- i %> PWM limit to <%- heater.scale_factor %>%
-<%			}
-			if (heater.channel < 100) { -%>
-M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta + ((heater.c === 0) ? 0 : ' C' + heater.c.toExponential(6)) %> R<%- heater.series %><%- (heater.channel != i) ? ' X' + heater.channel : '' %> ; set thermistor + ADC parameters for heater <%- i %><%- (heater.channel !== i) ? ' and remap it to channel ' + heater.channel : '' %>
-<%			} else if (heater.channel >= 200 && heater.channel < 250) { -%>
-M305 P<%- i %> X<%- heater.channel %> ; configure PT100 for heater <%- i %>
-<%			} else if (heater.channel >= 500 && heater.channel < 550) { -%>
-M305 P<%- i %> X<%- heater.channel %> R<%- heater.series %> ; configure PT1000 for heater <%- i %>
-<%			} else { -%>
-M305 P<%- i %> X<%- heater.channel %> ; configure thermocouple for heater <%- i %>
-<%			} -%>
+		template.heaters.forEach(function(heater, i) {
+			let extraArgs = '', extraComment = '';
+			switch (heater.sensor_type) {
+				case 'thermistor':
+					extraArgs = ` T${heater.thermistor} B${heater.beta}`;
+					if (heater.c > 0) {
+						extraArgs += ` C${heater.c}`;
+					}
+					extraComment = `as thermistor on pin ${heater.sensor_pin}`;
+					break;
+				case 'pt100':
+					extraComment = `as PT100 on pin ${heater.sensor_pin}`;
+					break;
+				case 'pt1000':
+					extraArgs = ` R${heater.series}`;
+					extraComment = `as PT1000 on pin ${heater.sensor_pin}`;
+					break;
+				default:
+					extraComment = `as thermocouple via CS pin ${heater.sensor_pin}`;
+					break;
+			}
+			let heaterType = 'nozzle';
+			if (template.bed.present && template.bed.heater === i) {
+				heaterType = 'bed';
+			} else if (template.chamber.present && template.chamber.heater === i) {
+				heaterType = 'chamber';
+			} -%>
+M308 S<%- i %> P"<%- heater.sensor_pin %>" Y"<%- heater.sensor_type %>"<%- extraArgs %> ; configure sensor <%- i %> <%- extraComment %>
+M950 H<%- i %> C"<%- heater.output_pin %>" T<%- i %> ; create <%- heaterType %> heater output on <%- heater.output_pin %> and map it to sensor <%- i %>
 M143 H<%- i %> S<%- heater.temp_limit %> ; set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
-<%		}
-	}); -%>
+<%			if (heaterType === 'bed' && (i !== 0 || template.board === 'duet3')) { -%>
+M307 H<%- i %> B<%- template.bed.use_pid ? 0 : 1 %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; <%- template.bed.use_pid ? 'disable' : 'enable' %> bang-bang mode for the bed heater and set PWM limit
+M140 H<%- i %> ; map heated bed to heater <%- i %>
+<%
+			} else if (heaterType === 'chamber') { -%>
+M307 H<%- i %> B<%- template.chamber.use_pid ? 0 : 1 %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; <%- template.chamber.use_pid ? 'disable' : 'enable' %> bang-bang mode for the chamber heater and set PWM limit
+M141 H<%- i %> ; map chamber to heater <%- template.chamber.heater %>
+<%			} else { -%>
+M307 H<%- i %> B0 S<%- (heater.scale_factor / 100).toFixed(2) %> ; disable bang-bang mode for the nozzle heater and set PWM limit
+<%			}
+		});
+	} else {
+		if (!template.bed.present) { -%>
+M140 H-1 ; disable heated bed
+<%		} else {
+			if (template.bed.heater !== 0) { -%>
+M140 H<%- template.bed.heater %> ; remap heated bed to heater <%- template.bed.heater %>
+<%			}
+			if (template.bed.use_pid) { -%>
+M307 H<%- template.bed.heater %> B0 S<%- (template.heaters[template.bed.heater].scale_factor / 100).toFixed(2) %> ; disable bang-bang mode for the bed heater and set PWM limit
+<%			} else if (template.bed.heater !== 0) { -%>
+M307 H<%- template.bed.heater %> B1 S<%- (template.heaters[template.bed.heater].scale_factor / 100).toFixed(2) %> ; enable bang-bang mode for the bed heater and set PWM limit
+<%			}
+		}
+
+		if (template.chamber.present) {
+			if (template.chamber.heater !== 0) { -%>
+M141 H<%- template.chamber.heater %> ; assign chamber heater to heater <%- template.chamber.heater %>
+<%			} else if (template.chamber.heater === 0 && template.bed.use_pid) { -%>
+M307 H<%- template.chamber.heater %> B0 S<%- (template.heaters[template.chamber.heater].scale_factor / 100).toFixed(2) %> ; disable bang-bang mode for the bed heater and set PWM limit
+<%			} else if (template.chamber.heater !== 0) { -%>
+M307 H<%- template.chamber.heater %> B0 S<%- (template.heaters[template.chamber.heater].scale_factor / 100).toFixed(2) %> ; enable bang-bang mode for the bed heater and set PWM limit
+<%			}
+		}
+
+		template.heaters.forEach(function(heater, i) {
+			if (heater !== null) {
+				if (i !== (template.bed.present ? template.bed.heater : -1) &&
+					i !== (template.chamber.present ? template.chamber.heater : -1) &&
+					heater.scale_factor !== 100) { -%>
+M301 H<%- i %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; set heater <%- i %> PWM limit to <%- heater.scale_factor %>%
+<%				}
+				if (heater.channel < 100) { -%>
+M305 P<%- i %> T<%- heater.thermistor %> B<%- heater.beta + ((heater.c === 0) ? 0 : ' C' + heater.c.toExponential(6)) %> R<%- heater.series %><%- (heater.channel != i) ? ' X' + heater.channel : '' %> ; set thermistor + ADC parameters for heater <%- i %><%- (heater.channel !== i) ? ' and remap it to channel ' + heater.channel : '' %>
+<%				} else if (heater.channel >= 200 && heater.channel < 250) { -%>
+M305 P<%- i %> X<%- heater.channel %> ; configure PT100 for heater <%- i %>
+<%				} else if (heater.channel >= 500 && heater.channel < 550) { -%>
+M305 P<%- i %> X<%- heater.channel %> R<%- heater.series %> ; configure PT1000 for heater <%- i %>
+<%				} else { -%>
+M305 P<%- i %> X<%- heater.channel %> ; configure thermocouple for heater <%- i %>
+<%				} -%>
+M143 H<%- i %> S<%- heater.temp_limit %> ; set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
+<%			}
+		});
+	} -%>
 
 ; Fans
-<%	template.fans.forEach(function(fan, fanNumber) {
-		const thermostaticOptions = (fan.thermostatic) ? 'H' + fan.heaters.join(':') + ' T' + fan.trigger_temperature : 'H-1'; -%>
+<%	if (template.firmware >= 3) {
+		template.fans.forEach(function(fan, fanNumber) {
+			const thermostaticOptions = (fan.thermostatic) ? 'H' + fan.heaters.join(':') + ' T' + fan.trigger_temperature : 'H-1'; -%>
+M950 F<%- fanNumber %> C"<%- fan.output_pin %>" Q<%- fan.frequency %> ; create fan <%- fanNumber %> on pin <%- fan.output_pin %> and set its frequency
+M106 P<%- fanNumber %><%- (fan.name !== '') ? ` C"${fan.name}"` : '' %> S<%- fan.value / 100 %> <%- thermostaticOptions %> ; set fan <%- fanNumber %> <%- (fan.name !== '') ? 'name and ' : '' %>value. Thermostatic control is turned <%- fan.thermostatic ? 'on' : 'off' %>
+<%		});
+	} else {
+		template.fans.forEach(function(fan, fanNumber) {
+			const thermostaticOptions = (fan.thermostatic) ? 'H' + fan.heaters.join(':') + ' T' + fan.trigger_temperature : 'H-1'; -%>
 M106 P<%- fanNumber %><%- (fan.name !== '') ? ` C"${fan.name}"` : '' %> S<%- fan.value / 100 %> I<%- fan.inverted ? 1 : 0 %> F<%- fan.frequency %> <%- thermostaticOptions %> ; set fan <%- fanNumber %><%- (fan.name !== '') ? ' name,' : '' %> value, PWM signal inversion and frequency. Thermostatic control is turned <%- fan.thermostatic ? 'on' : 'off' %>
-<%	}); -%>
+<%		});
+	}-%>
 
 ; Tools
 <%	let toolParams;

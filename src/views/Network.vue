@@ -1,22 +1,22 @@
 <template>
 	<b-container>
-		<b-card header="Network Settings">
+		<b-card v-if="template.standalone" header="Network Settings">
 			<b-form-checkbox v-model="networkEnabled" v-preset.left="preset.network.enabled" title="Check this to enable networking features (M552 S1)">Enable Network</b-form-checkbox>
 			<div v-show="networkEnabled" class="pl-4">
 				<b-form-row class="mt-3">
 					<b-col>
-						<b-form-group label="Machine Password:">
+						<b-form-group label="Password for the web interface (HTTP), FTP, and Telnet:">
 							<b-form-input v-model.trim="password" v-b-tooltip.hover title="Optional password to protect your printer from others on your local network (M551)" maxlength="64" placeholder="reprap" type="text"></b-form-input>
 						</b-form-group>
 					</b-col>
 
 					<template v-if="board.hasWiFi && template.firmware >= 3">
-						<b-col>
+						<b-col cols="auto">
 							<b-form-group label="WiFi Access Point Name:">
 								<b-form-input v-model.trim="ssid" v-b-tooltip.hover title="Name of the SSID to connect to. Alternatively, you can connect manually via M587" maxlength="32" placeholder="configure manually" type="text"></b-form-input>
 							</b-form-group>
 						</b-col>
-						<b-col>
+						<b-col cols="auto">
 							<b-form-group label="WiFi Password:">
 								<b-form-input v-model.trim="ssidPassword" v-b-tooltip.hover title="Corresponding password of your SSID" maxlength="64" placeholder="none" type="text"></b-form-input>
 							</b-form-group>
@@ -49,7 +49,7 @@
 					</b-col>
 				</b-form-row>
 
-				<b-checkbox v-model="http" v-preset.left="preset.network.protocols.http" title="Enable HyperText Transmission Protocol to provide access to the web interface" class="mt-3">Enable HTTP (required for Duet Web Control)</b-checkbox>
+				<b-checkbox v-model="http" v-preset.left="preset.network.protocols.http" title="Enable HyperText Transmission Protocol to provide access to the web interface" class="mt-3">Enable HTTP (required for the web interface)</b-checkbox>
 				<b-checkbox v-model="ftp" v-preset.left="preset.network.protocols.ftp" title="Enable File Transmission Protocol. Be aware that RepRapFirmware only supports one concurrent connection!">Enable FTP</b-checkbox>
 				<b-checkbox v-model="telnet" v-preset.left="preset.network.protocols.telnet" title="Enable Telnet. Be aware that RepRapFirmware only supports one concurrent connection!">Enable Telnet</b-checkbox>
 			</div>

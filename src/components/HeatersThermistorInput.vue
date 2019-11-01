@@ -1,11 +1,17 @@
+<style scoped>
+.min-popover-width {
+	min-width: 390px;
+}
+</style>
+
 <template>
 	<div>
 		<b-input-group :append="unit" v-if="unit !== undefined">
-			<b-form-input ref="inputUnit" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
+			<b-form-input :id="id" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 		</b-input-group>
-		<b-form-input v-else ref="inputUnitless" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
+		<b-form-input v-else :id="id" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 
-		<b-popover :target="inputElement" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" triggers="focus" @show="onShow">
+		<b-popover :target="id" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" custom-class="min-popover-width" triggers="focus" @show="onShow">
 			<b-form-group label="Thermistor Preset:">
 				<b-select v-model="sensorPreset" :options="sensorPresets"></b-select>
 			</b-form-group>
@@ -87,6 +93,8 @@ const parameters = {
 }
 let hadInput = false
 
+let idCounter = 0;
+
 export default {
 	computed: {
 		...mapState(['template']),
@@ -147,6 +155,7 @@ export default {
 	},
 	data() {
 		return {
+			id: `thermistorInput${idCounter++}`,
 			parameters,
 			sensorPreset: 'custom',
 			sensorPresets: [
@@ -175,10 +184,6 @@ export default {
 			});
 			this.popoverShown = false;
 		},
-		inputElement() {
-			// This must remain a method!
-			return (this.unit == undefined) ? this.$refs.inputUnitless : this.$refs.inputUnit;
-		},
 		onShow(e) {
 			if (!hadInput) {
 				this.sensorPreset = 'custom';
@@ -191,8 +196,6 @@ export default {
 					}
 				}
 			}
-
-			e.relatedTarget.style.maxWidth = '390px';
 		}
 	},
 	props: {

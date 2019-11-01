@@ -35,10 +35,11 @@
 					<b-col>
 						<b-form-group label="Number of Calibration Factors:">
 							<b-select v-model.number="calibrationFactors" v-preset="preset.calibration_factors" title="Number of adjustment factors used for auto-calibration">
-								<option value="3">3</option>
-								<option value="6" :disabled="template.peripheral_points + template.halfway_points < 6">6</option>
-								<option value="10" :disabled="template.peripheral_points + template.halfway_points < 10">10</option>
-								<option value="12" :disabled="template.peripheral_points + template.halfway_points < 12">12</option>
+								<option value="4">4</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
 							</b-select>
 						</b-form-group>
 					</b-col>

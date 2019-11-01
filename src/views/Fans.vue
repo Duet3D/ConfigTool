@@ -11,9 +11,9 @@ td {
 <template>
 	<b-container>
 		<b-card no-body class="mt-3">
-			<template slot="header">
+			<template #header>
 				<span class="mt-2">Cooling Fans</span>
-				<b-button-group class="float-right">
+				<b-button-group v-if="template.firmware < 3" class="float-right">
 					<b-button size="sm" variant="success" :disabled="!canAddFan" @click="addFan()">
 						<font-awesome-icon icon="plus"></font-awesome-icon> Add Fan
 					</b-button>
@@ -27,7 +27,7 @@ td {
 				<thead>
 					<th>Name</th>
 					<th>Speed (%)</th>
-					<th>Inverted</th>
+					<th v-if="template.firmware < 3">Inverted</th>
 					<th>Frequency (Hz)</th>
 					<th>Thermostatic Control</th>
 					<th>Monitored Heaters</th>
@@ -41,7 +41,7 @@ td {
 						<td>
 							<b-form-input v-model.number="fan.value" v-preset="getFanPreset(index).value" title="Initial value of this fan when turned on" min="0" max="100" type="number" step="any" required class="fan-value"></b-form-input>
 						</td>
-						<td>
+						<td v-if="template.firmware < 3">
 							<b-form-radio-group buttons button-variant="outline-primary" v-model="fan.inverted" v-preset="getFanPreset(index).inverted" title="Invert fan PWM signal (required for 4-pin PWM cooling fans)" :name="'fan-inverted-' + index">
 								<b-form-radio :value="true">Yes</b-form-radio>
 								<b-form-radio :value="false">No</b-form-radio>

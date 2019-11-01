@@ -82,7 +82,7 @@ tr > td:last-child > select {
 				<font-awesome-icon icon="exclamation-triangle"></font-awesome-icon> <u class="ml-1">Warning!</u>
 			</span>
 		</td>
-		<td v-show="template.firmware < 3">
+		<td v-if="template.firmware < 3">
 			<b-select v-model.number="driver" :options="drivers" v-preset="index" title="Motor driver (M584)"></b-select>
 		</td>
 	</tr>

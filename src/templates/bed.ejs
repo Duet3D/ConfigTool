@@ -7,7 +7,7 @@ M561 ; clear any bed transform
 G28 ; home all <%- (template.geometry.type == 'delta') ? 'towers' : 'axes' %>
 <%	}
 	if (template.probe.deploy && template.firmware < 1.21) { -%>
-M98 Pdeployprobe.g ; deploy mechanical Z probe
+M98 P"deployprobe.g" ; deploy mechanical Z probe
 <%	}
 	if (template.probe.points.length > 0) {
 		if (template.geometry.type == 'delta') { -%>
@@ -27,6 +27,6 @@ G30 P<%- index %> X<%- point.x %> Y<%- point.y %> H<%- point.z %> Z-99999<%- (in
 G29 ; probe the bed and enable compensation
 <%	}
 	if (template.probe.deploy && template.firmware < 1.21) { -%>
-M98 Pretractprobe.g ; retract mechanical Z probe
+M98 P"retractprobe.g" ; retract mechanical Z probe
 <%	} -%>
 

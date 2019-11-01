@@ -1,3 +1,7 @@
+'use strict'
+
+import Template from './Template.js'
+
 export default {
 	getBoards: () => [
 		{
@@ -8,17 +12,23 @@ export default {
 			seriesResistor: 4700,
 			microstepping: false,
 			microsteppingInterpolation: false,
-			maxDrives: 8,
-			maxHeaters: 6,
-			maxThermistors: 6,
-			maxRtdBoards: 4,
-			maxFans: 1,
+			numDrives: 4,
+			heaterPorts: ['bedheat', 'e0heat'],
+			fanPorts: ['fan0'],
+			gpioPorts: ['xstop', 'ystop', 'zstop', 'e0stop'],
+			analogPorts: ['bedtemp', 'e0temp'],
+			pwmPorts: ['bedheat', 'e0heat', 'fan0'],
+			spiCsPorts: ['spi.cs1', 'spi.cs2', 'spi.cs3', 'spi.cs4'],
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: false,
 			hasMotorLoadDetection: false,
 			supportsDisplay: false,
-			supports12864: false
+			supports12864: false,
+			firmwareFile: 'RepRapFirmware.bin',
+			iapFile: 'iap.bin',
+			expansionBoards: [],
+			maxExpansionBoards: 0
 		},
 		{
 			name: 'duet085',
@@ -28,17 +38,23 @@ export default {
 			seriesResistor: 4700,
 			microstepping: false,
 			microsteppingInterpolation: false,
-			maxDrives: 9,
-			maxHeaters: 6,
-			maxThermistors: 6,
-			maxRtdBoards: 4,
-			maxFans: 2,
+			numDrives: 5,
+			heaterPorts: ['bedheat', 'e0heat', 'e1heat'],
+			fanPorts: ['fan0', 'fan1'],
+			gpioPorts: ['xstop', 'ystop', 'zstop', 'e0stop', 'e1stop'],
+			analogPorts: ['bedtemp', 'e0temp', 'e1temp', 'zprobe.in'],
+			pwmPorts: ['bedheat', 'e0heat', 'e1heat', 'fan0', 'fan1'],
+			spiCsPorts: ['spi.cs1', 'spi.cs2', 'spi.cs3', 'spi.cs4'],
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: false,
 			hasMotorLoadDetection: false,
 			supportsDisplay: false,
-			supports12864: false
+			supports12864: false,
+			firmwareFile: 'RepRapFirmware.bin',
+			iapFile: 'iap.bin',
+			expansionBoards: [],
+			maxExpansionBoards: 0
 		},
 		{
 			name: 'duetwifi10',
@@ -48,17 +64,23 @@ export default {
 			seriesResistor: 4700,
 			microstepping: true,
 			microsteppingInterpolation: false,
-			maxDrives: 10,
-			maxHeaters: 8,
-			maxThermistors: 8,
-			maxRtdBoards: 8,
-			maxFans: 3,
+			numDrives: 5,
+			heaterPorts: ['bedheat', 'e0heat', 'e1heat'],
+			fanPorts: ['fan0', 'fan1', 'fan2'],
+			gpioPorts: ['xstop', 'ystop', 'zstop', 'e0stop', 'e1stop', 'zprobe.mod', 'pson'],
+			analogPorts: ['bedtemp', 'e0temp', 'e1temp', 'zprobe.in'],
+			pwmPorts: ['bedheat', 'e0heat', 'e1heat', 'fan0', 'fan1', 'fan2'],
+			spiCsPorts: ['spi.cs1', 'spi.cs2', 'spi.cs3', 'spi.cs4'],
 			hasEthernet: false,
 			hasWiFi: true,
 			hasPowerFailureDetection: true,
 			hasMotorLoadDetection: true,
 			supportsDisplay: false,
-			supports12864: false
+			supports12864: false,
+			firmwareFile: 'Duet2CombinedFirmware.bin',
+			iapFile: 'iap4e.bin',
+			expansionBoards: ['Duex 2', 'Duex 5'],
+			maxExpansionBoards: 1
 		},
 		{
 			name: 'duetethernet10',
@@ -68,17 +90,23 @@ export default {
 			seriesResistor: 4700,
 			microstepping: true,
 			microsteppingInterpolation: false,
-			maxDrives: 10,
-			maxHeaters: 8,
-			maxThermistors: 8,
-			maxRtdBoards: 8,
-			maxFans: 3,
+			numDrives: 5,
+			heaterPorts: ['bedheat', 'e0heat', 'e1heat'],
+			fanPorts: ['fan0', 'fan1', 'fan2'],
+			gpioPorts: ['xstop', 'ystop', 'zstop', 'e0stop', 'e1stop', 'zprobe.mod', 'pson'],
+			analogPorts: ['bedtemp', 'e0temp', 'e1temp', 'zprobe.in'],
+			pwmPorts: ['bedheat', 'e0heat', 'e1heat', 'fan0', 'fan1', 'fan2'],
+			spiCsPorts: ['spi.cs1', 'spi.cs2', 'spi.cs3', 'spi.cs4'],
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: true,
 			hasMotorLoadDetection: true,
 			supportsDisplay: false,
-			supports12864: false
+			supports12864: false,
+			firmwareFile: 'Duet2CombinedFirmware.bin',
+			iapFile: 'iap4e.bin',
+			expansionBoards: ['Duex 2', 'Duex 5'],
+			maxExpansionBoards: 1
 		},
 		{
 			name: 'duetm10',
@@ -88,17 +116,49 @@ export default {
 			seriesResistor: 2200,
 			microstepping: true,
 			microsteppingInterpolation: true,
-			maxDrives: 7,
-			maxHeaters: 3,
-			maxThermistors: 4,
-			maxRtdBoards: 4,
-			maxFans: 3,
+			numDrives: 5,
+			heaterPorts: ['bedheat', 'e0heat', 'e1heat'],
+			fanPorts: ['fan0', 'fan1', 'fan2'],
+			gpioPorts: ['xstop', 'ystop', 'zstop', 'e0stop', 'e1stop', 'zprobe.mod', 'pson'],
+			analogPorts: ['bedtemp', 'e0temp', 'e1temp', 'ctemp', 'zprobe.in'],
+			pwmPorts: ['bedheat', 'e0heat', 'e1heat', 'fan0', 'fan1', 'fan2'],
+			spiCsPorts: ['spi.cs1', 'spi.cs2'],
 			hasEthernet: true,
 			hasWiFi: false,
 			hasPowerFailureDetection: true,
 			hasMotorLoadDetection: true,
 			supportsDisplay: true,
-			supports12864: true
+			supports12864: true,
+			firmwareFile: 'DuetMaestroFirmware.bin',
+			iapFile: 'iap4s.bin',
+			expansionBoards: ['Dual Stepper Driver Expansion Module'],
+			maxExpansionBoards: 1
+		},
+		{
+			name: 'duet3',
+			caption: 'Duet 3',
+			motorWarningCurrent: 2400,
+			motorLimitCurrent: 6300,
+			seriesResistor: 2200,
+			microstepping: true,
+			microsteppingInterpolation: true,
+			numDrives: 6,
+			heaterPorts: ['out0', 'out1', 'out2'],
+			fanPorts: ['out3', 'out4', 'out5', 'out6', 'out7', 'out8', 'out9'],
+			gpioPorts: ['io0.in', 'io1.in', 'io2.in', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io7.in', 'io8.in', 'io0.out', 'io1.out', 'io2.out', 'io3.out', 'io4.out', 'io5.out', 'io6.out', 'io7.out', 'io8.out', 'io4.tacho', 'io5.tacho', 'io6.tacho', 'pson'],
+			analogPorts: ['temp0', 'temp1', 'temp2', 'temp3', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io7.in'],
+			pwmPorts: ['out0', 'out1', 'out2'],
+			spiCsPorts: ['spi.cs1', 'spi.cs2', 'spi.cs3', 'spi.cs4'],
+			hasEthernet: true,
+			hasWiFi: false,
+			hasPowerFailureDetection: true,
+			hasMotorLoadDetection: true,
+			supportsDisplay: false,
+			supports12864: false,
+			firmwareFile: 'Duet3Firmware_MB6HC.bin',
+			iapFile: null,
+			expansionBoards: ['EXP3HC'],
+			maxExpansionBoards: 6
 		}
 	],
 
@@ -110,5 +170,15 @@ export default {
 			}
 		}
 		throw 'Invalid board';
+	},
+
+	isValidPin(board, pin, boardId) {
+		const pinTypes = ['heaterPorts', 'fanPorts', 'gpioPorts', 'analogPorts', 'pwmPorts', 'spiCsPorts'];
+		return pinTypes.some(function(pinType) {
+			return board[pinType].some(function(boardPort) {
+				return ((!boardId && Template.isSamePin(pin, boardPort)) ||
+						(boardId !== undefined && Template.isSamePin(pin, `${boardId}.${boardPort}`)));
+			});
+		});
 	}
 }

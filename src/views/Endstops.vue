@@ -30,16 +30,16 @@ label.btn {
 							{{ ['X', 'Y', 'Z'][i] }}
 						</td>
 						<td>
-							<b-form-radio-group buttons button-variant="outline-primary" :checked="template.drives[i].endstop_type" v-preset="template.drives[i].endstop_type" @change="updateDrive({ drive: i, et: $event })" title="Endstop type of this axis" :name="'endstopType' + i" class="w-100">
-								<b-form-radio :value="0" class="w-100" v-b-tooltip.hover title="Manual homing via G92">None</b-form-radio>
-								<b-form-radio :value="1" class="w-100" v-b-tooltip.hover title="Endstop switch pulls signal from GND to +3.3V when triggered (normally-closed switch)">Active&nbsp;high&nbsp;(NC)</b-form-radio>
-								<b-form-radio :value="2" class="w-100" v-b-tooltip.hover title="Endstop switch pulls signal from +3.3V to GND when triggered (normally-open switch)">Active&nbsp;low&nbsp;(NO)</b-form-radio>
-								<b-form-radio :value="3" class="w-100" :disabled="template.probe.type === 'noprobe'" v-b-tooltip.hover title="Z-Probe is used">Z-Probe</b-form-radio>
-								<b-form-radio :value="4" class="w-100" :disabled="!board.hasMotorLoadDetection" v-b-tooltip.hover title="Motor stall detection of the stepper drivers">Sensorless</b-form-radio>
+							<b-form-radio-group buttons button-variant="outline-primary" :checked="template.drives[i].endstop_type" @change="updateDrive({ drive: i, et: $event })" v-preset.left="preset.drives[i].endstop_type" title="Endstop type of this axis" :name="'endstopType' + i" class="w-100">
+								<b-form-radio :value="0" class="w-100" v-b-tooltip.bottom title="Manual homing via G92">None</b-form-radio>
+								<b-form-radio :value="1" :disabled="template.firmware >= 3 && !template.drives[i].endstop_pin" class="w-100" v-b-tooltip.bottom title="Endstop switch pulls signal from GND to +3.3V when triggered (normally-closed switch)">Active&nbsp;high&nbsp;(NC)</b-form-radio>
+								<b-form-radio :value="2" :disabled="template.firmware >= 3 && !template.drives[i].endstop_pin" class="w-100" v-b-tooltip.bottom title="Endstop switch pulls signal from +3.3V to GND when triggered (normally-open switch)">Active&nbsp;low&nbsp;(NO)</b-form-radio>
+								<b-form-radio :value="3" class="w-100" :disabled="template.probe.type === 'noprobe'" v-b-tooltip.bottom title="Z-Probe is used">Z-Probe</b-form-radio>
+								<b-form-radio :value="4" class="w-100" :disabled="!board.hasMotorLoadDetection" v-b-tooltip.bottom title="Motor stall detection of the stepper drivers">Sensorless</b-form-radio>
 							</b-form-radio-group>
 						</td>
 						<td>
-							<b-form-radio-group buttons button-variant="outline-primary" :checked="template.drives[i].endstop_location" v-preset="template.drives[i].endstop_location" @change="updateDrive({ drive: i, el: $event })" title="Endstop location of this axis" :name="'endstopLocation' + i" class="w-100">
+							<b-form-radio-group buttons button-variant="outline-primary" :checked="template.drives[i].endstop_location" v-preset.right="preset.drives[i].endstop_location" @change="updateDrive({ drive: i, el: $event })" title="Endstop location of this axis" :name="'endstopLocation' + i" class="w-100">
 								<b-form-radio :value="1" class="w-100" :disabled="template.geometry.type == 'delta'">Low end</b-form-radio>
 								<b-form-radio :value="2" class="w-100">High end</b-form-radio>
 							</b-form-radio-group>
@@ -86,7 +86,7 @@ label.btn {
 					<b-tab title="No Z Probe" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'noprobe' }" value="noprobe">
 						No Z-probe is installed. The distance between the nozzle and the bed must be manually determined.
 					</b-tab>
-					<b-tab title="Switch" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'switch' }" value="switch">
+					<b-tab title="Switch" :disabled="template.firmware >= 3 && !template.probe.input_pin" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'switch' }" value="switch">
 						<z-probe-values></z-probe-values>
 						A switch is used to determine the distance between nozzle and bed.
 
@@ -99,15 +99,15 @@ label.btn {
 							<span>This switch must be connected to the Z probe terminal and <strong>not</strong> to the Z endstop switch terminal!</span>
 						</template>
 					</b-tab>
-					<b-tab title="Unmodulated or Smart IR Probe" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'unmodulated' }" value="unmodulated">
+					<b-tab title="Unmodulated or Smart IR Probe" :disabled="template.firmware >= 3 && !template.probe.input_pin" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'unmodulated' }" value="unmodulated">
 						<z-probe-values></z-probe-values>
 						An umodulated Z-probe is used to determine the distance between nozzle and bed (without trigger signal)
 					</b-tab>
-					<b-tab title="Simple Modulated IR Probe" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'modulated' }" value="modulated">
+					<b-tab title="Simple Modulated IR Probe" :disabled="template.firmware >= 3 && (!template.probe.input_pin || !template.probe.modulation_pin)" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'modulated' }" value="modulated">
 						<z-probe-values></z-probe-values>
 						A modulated Z-probe is used to determine the distance between nozzle and bed (with trigger signal)
 					</b-tab>
-					<b-tab title="Smart Effector or Piezo" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'effector' }" value="effector">
+					<b-tab title="Smart Effector or Piezo" :disabled="template.firmware >= 3 && (!template.probe.input_pin || !template.probe.modulation_pin)" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'effector' }" value="effector">
 						<z-probe-values>
 							<b-col>
 								<b-form-group label="Recovery Time">
@@ -120,9 +120,9 @@ label.btn {
 
 						Official <a href="https://www.duet3d.com/DeltaSmartEffector" target="_blank">Duet3D Smart Effector</a> for Delta printers (also see <a href="https://www.duet3d.com/wiki/Smart_effector_and_carriage_adapters_for_delta_printer" target="_blank">Duet3D Wiki</a>)
 					</b-tab>
-					<b-tab title="BLTouch" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'bltouch' }" value="bltouch">
+					<b-tab title="BLTouch" :disabled="template.firmware >= 3 && (!template.probe.input_pin || !template.probe.pwm_pin)" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'bltouch' }" value="bltouch">
 						<z-probe-values :hide-value="true">
-							<b-col>
+							<b-col v-if="template.firmware < 3">
 								<b-form-group label="Servo Control Channel:">
 									<b-select v-model="pwmChannel" v-preset="pwmChannelPreset" title="PWM channel to control the BLTouch probe with">
 										<optgroup v-if="pwmChannels.constructor === Object" v-for="(group, name) in pwmChannels" :label="name" :key="name">

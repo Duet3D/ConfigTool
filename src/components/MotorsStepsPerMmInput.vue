@@ -6,8 +6,8 @@
 
 <template>
 	<div>
-		<b-form-input ref="stepsPerMm" v-model.number="stepsPerMm" v-preset="presetDrive.steps_per_mm" title="Motor steps per mm (M92)" min="1" type="number" step="any" required></b-form-input>
-		<b-popover :target="inputElement" :show.sync="popoverShown" placement="right" title="Calculate steps per mm" triggers="focus">
+		<b-form-input :id="id" v-model.number="stepsPerMm" v-preset="presetDrive.steps_per_mm" title="Motor steps per mm (M92)" min="1" type="number" step="any" required></b-form-input>
+		<b-popover :target="id" :show.sync="popoverShown" placement="right" title="Calculate steps per mm" triggers="focus">
 			<b-form>
 				<b-form-group label="Motor step angle:">
 					<b-select v-model.number="stepAngle">
@@ -116,6 +116,8 @@
 
 import { mapState, mapMutations } from 'vuex'
 
+let idCounter = 0;
+
 export default {
 	computed: {
 		...mapState(['preset', 'template']),
@@ -182,6 +184,7 @@ export default {
 	},
 	data() {
 		return {
+			id: `stepsPerMmInput${idCounter++}`,
 			popoverShown: false,
 			stepAngle: 1.8,
 			driveType: (this.index < 2) ? 'belt' : ((this.index === 2) ? 'leadscrew' : 'extruder'),
@@ -227,10 +230,6 @@ export default {
 		apply() {
 			this.stepsPerMm = parseFloat(this.calculatedSteps.toFixed(2));
 			this.popoverShown = false;
-		},
-		inputElement() {
-			// This must remain a method!
-			return this.$refs.stepsPerMm;
 		}
 	},
 	props: {

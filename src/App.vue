@@ -7,6 +7,10 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
+
+.b-tooltip {
+	pointer-events: none;
+}
 </style>
 
 <template>
@@ -16,7 +20,7 @@ input::-webkit-inner-spin-button {
 				<b-navbar-nav>
 					<b-nav-item to="Start" :active="$route.path === '/Start'">Start</b-nav-item>
 					<b-nav-item to="General" :active="$route.path === '/General'">General</b-nav-item>
-					<b-nav-item to="Mapping" :active="$route.path === '/Mapping'" v-show="$route.path === '/Mapping' || template.firmware >= 3">I/O Mapping</b-nav-item>
+					<b-nav-item to="Mapping" :active="$route.path === '/Mapping'">I/O Mapping</b-nav-item>
 					<b-nav-item to="Motors" :active="$route.path === '/Motors'">Motors</b-nav-item>
 					<b-nav-item to="Endstops" :active="$route.path === '/Endstops'">Endstops</b-nav-item>
 					<b-nav-item to="Heaters" :active="$route.path === '/Heaters'">Heaters</b-nav-item>
@@ -24,7 +28,7 @@ input::-webkit-inner-spin-button {
 					<b-nav-item to="Tools" :active="$route.path === '/Tools'">Tools</b-nav-item>
 					<b-nav-item to="Compensation" :active="$route.path === '/Compensation'">Compensation</b-nav-item>
 					<b-nav-item to="Display" :active="$route.path === '/Display'" v-show="$route.path === '/Display' || board.supportsDisplay">Display</b-nav-item>
-					<b-nav-item to="Network" :active="$route.path === '/Network'">Network</b-nav-item>
+					<b-nav-item to="Network" :active="$route.path === '/Network'" v-show="$route.path === '/Network' || template.standalone">Network</b-nav-item>
 					<b-nav-item to="Finish" :active="$route.path === '/Finish'">Finish</b-nav-item>
 				</b-navbar-nav>
 			</b-container>
@@ -59,9 +63,37 @@ input::-webkit-inner-spin-button {
 			<h5>Please fix them before you continue.</h5>
 		</b-modal>
 
-		<b-modal ref="finishModal" size="lg" title="Configuration Ready" @show="finishShow">
-			<p>The following system files will be generated:</p>
+		<b-modal ref="ioErrorModal" :ok-only="true" title="Invalid I/O Mapping">
+			<h4>Your configuration contains errors.</h4>
+			<h5>Check the I/O Mapping page before you continue.</h5>
+		</b-modal>
 
+		<b-modal ref="finishModal" size="lg" title="Configuration Ready" @show="finishShow">
+			<template v-if="dwcLink || iapLink || rrfLink">
+				<p>Put the RepRapFirmware files in the /sys directory and extract Duet Web Control bundle to the /www directory of your SD card. If you are using Duet Web Control, upload those files on the Settings page.</p>
+				<b-card bg-variant="light" class="mb-3">
+					<ul class="pl-4 mb-0">
+						<li v-show="iapLink">
+							<a :href="iapLink" target="_blank">
+								RepRapFirmware IAP utility for firmware updates
+							</a>
+						</li>
+						<li v-show="rrfLink">
+							<a :href="rrfLink" target="_blank">
+								RepRapFirmware {{ rrfVersion }}
+							</a>
+						</li>
+						<li v-show="dwcLink">
+							<a :href="dwcLink" target="_blank">
+								Duet Web Control {{ dwcVersion }}
+							</a>
+						</li>
+						</li>
+					</ul>
+				</b-card>
+			</template>
+
+			<p>The following system files will be generated:</p>
 			<b-card ref="finishFiles" bg-variant="light" class="mb-3">
 				<span v-if="files.length == 0" v-html="message"></span>
 				<ul v-else class="pl-4 mb-0">
@@ -71,7 +103,7 @@ input::-webkit-inner-spin-button {
 				</ul>
 			</b-card>
 
-			<p>If you are using Duet Web Control, you can upload the generated ZIP file <u>without extracting</u> on the Settings page. Otherwise you can unzip the contents of this file directly on your SD card.</p>
+			<p>If you are using Duet Web Control, you can upload the ZIP file(s) <u>without extracting</u> on the Settings page. Otherwise you can extract the contents of this configuration bundle directly to the root of your SD card.</p>
 			<p>See <a href="https://duet3d.com/wiki/SD_card_folder_structure" target="_blank">this page</a> for further information about the purpose of these files.</p>
 
 			<template slot="modal-footer">
@@ -90,14 +122,16 @@ input::-webkit-inner-spin-button {
 'use strict';
 
 import { mapState, mapMutations } from 'vuex'
+import { mapFields } from 'vuex-map-fields'
 import saveAs from 'file-saver'
 
 import Compiler from './Compiler.js'
 import { goToNextPage, goToPreviousPage } from './Router.js'
+import Template from './store/Template.js'
 
 export default {
 	computed: {
-		...mapState(['board', 'template']),
+		...mapState(['board', 'template', 'addDWC', 'addRRF']),
 		isFirstPage() { return this.$route.path === '/Start'; },
 		isLastPage() { return this.$route.path === '/Finish'; }
 	},
@@ -107,32 +141,49 @@ export default {
 			files: [],
 			generatingZIP: false,
 			message: 'Loading...',
+			rrfVersion: null,
+			rrfLink: null,
+			rrfFile: null,
+			iapLink: null,
+			iapFile: null,
+			dwcVersion: null,
+			dwcLink: null,
+			dwcFile: null
 		}
 	},
 	methods: {
 		...mapMutations(['setTemplate']),
 		goToPreviousPage() {
-			const currentPageIndex = this.$router.options.routes.findIndex(route => route.path === this.$route.path);
-			if (currentPageIndex > 0) {
-				let prevPage = this.$router.options.routes[currentPageIndex - 1];
-				if ((prevPage.path === '/Mapping' && this.template.firmware < 3) ||
-					(prevPage.path === '/Display' && !this.board.supportsDisplay)) {
-					prevPage = this.$router.options.routes[currentPageIndex - 2];
+			let pageIndex = this.$router.options.routes.findIndex(route => route.path === this.$route.path);
+			if (pageIndex > 0) {
+				let prevPage = this.$router.options.routes[--pageIndex];
+				if (prevPage.path === '/Network' && !this.template.standalone) {
+					prevPage = this.$router.options.routes[--pageIndex];
+				}
+				if (prevPage.path === '/Display' && !this.board.supportsDisplay) {
+					prevPage = this.$router.options.routes[--pageIndex];
 				}
 				this.$router.push(prevPage);
 			}
 		},
 		goToNextPage() {
-			const currentPageIndex = this.$router.options.routes.findIndex(route => route.path === this.$route.path);
-			if (currentPageIndex + 2 < this.$router.options.routes.length) {
-				let nextPage = this.$router.options.routes[currentPageIndex + 1];
-				if ((nextPage.path === '/Mapping' && this.template.firmware < 3) ||
-					(nextPage.path === '/Display' && !this.board.supportsDisplay)) {
-					nextPage = this.$router.options.routes[currentPageIndex + 2];
+			let pageIndex = this.$router.options.routes.findIndex(route => route.path === this.$route.path);
+			if (pageIndex + 2 < this.$router.options.routes.length) {
+				let nextPage = this.$router.options.routes[++pageIndex];
+				if (nextPage.path === '/Display' && !this.board.supportsDisplay) {
+					nextPage = this.$router.options.routes[++pageIndex];
+				}
+				if (nextPage.path === '/Network' && !this.template.standalone) {
+					nextPage = this.$router.options.routes[++pageIndex];
 				}
 				this.$router.push(nextPage);
 			} else if (this.$refs.mainForm && this.$refs.mainForm.checkValidity() && this.$refs.mainForm.querySelector('.is-invalid') === null) {
-				this.$refs.finishModal.show();
+				const templateCopy = JSON.parse(JSON.stringify(this.$store.state.template));
+				if (Template.validatePins(templateCopy)) {
+					this.$refs.finishModal.show();
+				} else {
+					this.$refs.ioErrorModal.show();
+				}
 			} else {
 				this.$refs.errorModal.show();
 			}
@@ -142,10 +193,94 @@ export default {
 		},
 
 		async finishShow() {
+			this.rrfVersion = this.rrfLink = this.rrfFile = null;
+			this.iapLink = this.iapFile = null;
+			this.dwcVersion = this.dwcLink = this.dwcFile = null;
+
 			this.message = 'Loading...';
 			this.files = [];
 			this.configLink = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.template));
 
+			// Load latest stable RRF version from GitHub
+			if (this.addRRF && this.template.standalone) {
+				try {
+					// Get GitHub list of releases and assets. Do NOT get drafts and prereleases
+					const releaseInfo = await Compiler.downloadFile('https://api.github.com/repos/dc42/RepRapFirmware/releases', 'json');
+					const firmware = this.template.firmware;
+					let latestRelease, latestReleaseDate = 0;
+					releaseInfo.forEach(function(item) {
+						if (!item.draft && !item.prerelease && (!latestReleaseDate || item.created_at > latestReleaseDate)) {
+							if ((firmware < 2 && item.name.indexOf('1.') !== -1) ||
+								(firmware >= 2 && firmware < 3 && item.name.indexOf('2.') !== -1) ||
+								(firmware >= 3 && item.name.indexOf('3.') !== -1)) {
+								latestReleaseDate = item.created_at;
+								latestRelease = item;
+							}
+						}
+					});
+
+					// Attempt to download the required files (IAP+RRF)
+					if (latestRelease) {
+						const iapFile = (this.template.board === 'duet3') ? (this.template.standalone ? 'Duet3iap_sd_MB6HC.bin' : null) : this.board.iapFile;
+						for (let i = 0; i < latestRelease.assets.length; i++) {
+							const item = latestRelease.assets[i];
+							try {
+								if (item.name === this.board.firmwareFile) {
+									this.rrfVersion = latestRelease.tag_name;
+									this.rrfLink = item.browser_download_url;
+									this.rrfFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
+								}
+								if (item.name === iapFile) {
+									this.iapLink = item.browser_download_url;
+									this.iapFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
+								}
+							} catch (e) {
+								// GitHub cloud servers do not provide CORS headers so the download (probably) fails
+							}
+						}
+					} else {
+						throw 'Could not find suitable RepRapFirmware version on GitHub';
+					}
+				} catch (e) {
+					console.warn(`Failed to load RRF from GitHub: ${e}`);
+				}
+			}
+
+			// Load DWC from the server
+			if (this.addDWC && this.template.standalone) {
+				try {
+					// Get GitHub list of releases and assets. Do NOT get drafts and prereleases
+					const releaseInfo = await Compiler.downloadFile('https://api.github.com/repos/chrishamm/DuetWebControl/releases', 'json');
+					let latestRelease, latestReleaseDate = 0;
+					releaseInfo.forEach(function(item) {
+						if (!item.draft && !item.prerelease && (!latestReleaseDate || item.created_at > latestReleaseDate)) {
+							latestRelease = item;
+							latestReleaseDate = item.created_at;
+						}
+					});
+
+					// Attempt to download the required files (IAP+RRF)
+					if (latestRelease) {
+						for (let i = 0; i < latestRelease.assets.length; i++) {
+							const item = latestRelease.assets[i];
+							try {
+								if (item.name.indexOf('SD') !== -1) {
+									this.dwcVersion = latestRelease.tag_name;
+									this.dwcLink = item.browser_download_url;
+									this.dwcFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
+									break;
+								}
+							} catch (e) {
+								// GitHub cloud servers do not provide CORS headers so the download (probably) fails
+							}
+						}
+					}
+				} catch (e) {
+					console.warn(`Failed to load DWC from GitHub: ${e}`);
+				}
+			}
+
+			// Generate config files
 			try {
 				const output = await Compiler.compileFile('templates/files.ejs', { template: this.template });
 				this.files = output.trim().split('\n');
@@ -157,7 +292,7 @@ export default {
 			this.generatingZIP = true;
 
 			try {
-				const zip = await Compiler.compileZIP(this.files, this.template, this.board);
+				const zip = await Compiler.compileZIP(this.files, this.template, this.board, this.rrfFile, this.iapFile, this.dwcFile);
 				if (Compiler.canDownloadFiles) {
 					saveAs(zip, 'config.zip');
 				} else {
@@ -191,7 +326,8 @@ export default {
 		const form = this.$refs.mainForm;
 		const errorModal = this.$refs.errorModal;
 		this.$router.beforeEach((to, from, next) => {
-			if (form.checkValidity() && form.querySelector('.is-invalid') === null) {
+			if (from.path === '/Mapping' || (form.checkValidity() && form.querySelector('.is-invalid') === null)) {
+				// Show error dialog for every page but IO Mapping - there is a discrete check for it anyway
 				next();
 			} else {
 				errorModal.show();

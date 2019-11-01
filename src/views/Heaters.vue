@@ -23,45 +23,55 @@ select {
 <template>
 	<b-container>
 		<b-card header="General Heater Settings">
-			<b-checkbox v-model="bedPresent" v-preset.left="preset.bed.present" title="Enable the heated bed">Heated Bed</b-checkbox>
-			<b-form-row v-show="bedPresent" class="mt-3 pl-4">
-				<b-col>
-					<b-form-group label="Bed Heater Output:">
-						<b-select v-model.number="bedHeater" v-preset="preset.bed.heater" title="Output channel for the heated bed" :options="bedHeaters"></b-select>
-					</b-form-group>
+			<b-row>
+				<b-col :cols="template.firmware < 3 ? 12 : 6">
+					<b-checkbox v-model="bedPresent" :disabled="template.firmware >= 3" v-preset.left="preset.bed.present" title="Enable the heated bed">Heated Bed</b-checkbox>
+					<b-form-row v-show="bedPresent" class="mt-3 pl-4">
+						<b-col v-if="template.firmware < 3">
+							<b-form-group label="Bed Heater Output:">
+								<b-select v-model.number="bedHeater" v-preset="preset.bed.heater" title="Output channel for the heated bed" :options="bedHeaters"></b-select>
+							</b-form-group>
+						</b-col>
+						<b-col cols="auto">
+							<b-form-group label="Control Method:">
+								<b-form-radio-group buttons button-variant="outline-primary" v-model="bedPid" v-preset="preset.bed.use_pid" title="Control method for the bed heater" name="bedPid">
+									<b-form-radio :value="true">PID</b-form-radio>
+									<b-form-radio :value="false">Bang-Bang</b-form-radio>
+								</b-form-radio-group>
+							</b-form-group>
+						</b-col>
+					</b-form-row>
 				</b-col>
-				<b-col cols="auto">
-					<b-form-group label="Control Method:">
-						<b-form-radio-group buttons button-variant="outline-primary" v-model="bedPid" v-preset="preset.bed.use_pid" title="Control method for the bed heater" name="bedPid">
-							<b-form-radio :value="true">PID</b-form-radio>
-							<b-form-radio :value="false">Bang-Bang</b-form-radio>
-						</b-form-radio-group>
-					</b-form-group>
+
+				<b-col v-if="template.firmware < 3" cols="12">
+					<b-checkbox v-model="bedIsNozzle" v-preset.left="preset.bed_is_nozzle" title="Check this if you want to connect the first nozzle heater to the hot bed terminal">Assign Bed Heater to First Nozzle</b-checkbox>
 				</b-col>
-			</b-form-row>
-			<b-checkbox v-model="bedIsNozzle" v-preset.left="preset.bed_is_nozzle" title="Check this if you want to connect the first nozzle heater to the hot bed terminal">Assign Bed Heater to First Nozzle</b-checkbox>
-			<b-checkbox v-model="chamberPresent" v-preset.left="preset.chamber.present" title="Enable a heated chamber">Heated Chamber</b-checkbox>
-			<b-form-row v-show="chamberPresent" class="mt-3 pl-4">
-				<b-col>
-					<b-form-group label="Chamber Heater Output:">
-						<b-select v-model.number="chamberHeater" v-preset title="Output channel for the heated chamber" :options="chamberHeaters"></b-select>
-					</b-form-group>
+
+				<b-col :cols="template.firmware < 3 ? 12 : 6">
+					<b-checkbox v-model="chamberPresent" :disabled="template.firmware >= 3" v-preset.left="preset.chamber.present" title="Enable a heated chamber">Heated Chamber</b-checkbox>
+					<b-form-row v-show="chamberPresent" class="mt-3 pl-4">
+						<b-col v-if="template.firmware < 3">
+							<b-form-group label="Chamber Heater Output:">
+								<b-select v-model.number="chamberHeater" v-preset title="Output channel for the heated chamber" :options="chamberHeaters"></b-select>
+							</b-form-group>
+						</b-col>
+						<b-col cols="auto">
+							<b-form-group label="Control Method:">
+								<b-form-radio-group buttons button-variant="outline-primary" v-model="chamberPid" v-preset="preset.chamber.use_pid" title="Control method for the chamber heater" name="chamberPid">
+									<b-form-radio :value="true">PID</b-form-radio>
+									<b-form-radio :value="false">Bang-Bang</b-form-radio>
+								</b-form-radio-group>
+							</b-form-group>
+						</b-col>
+					</b-form-row>
 				</b-col>
-				<b-col cols="auto">
-					<b-form-group label="Control Method:">
-						<b-form-radio-group buttons button-variant="outline-primary" v-model="chamberPid" v-preset="preset.chamber.use_pid" title="Control method for the chamber heater" name="chamberPid">
-							<b-form-radio :value="true">PID</b-form-radio>
-							<b-form-radio :value="false">Bang-Bang</b-form-radio>
-						</b-form-radio-group>
-					</b-form-group>
-				</b-col>
-			</b-form-row>
+			</b-row>
 		</b-card>
 
 		<b-card no-body class="mt-3">
-			<template slot="header">
+			<template #header>
 				<span class="mt-2">Heater Configuration</span>
-				<b-button-group class="float-right">
+				<b-button-group v-if="template.firmware < 3" class="float-right">
 					<b-button size="sm" variant="success" :disabled="!canAddNozzle" @click="addNozzle()">
 						<font-awesome-icon icon="plus"></font-awesome-icon> Add Nozzle
 					</b-button>
@@ -70,6 +80,7 @@ select {
 					</b-button>
 				</b-button-group>
 			</template>
+
 			<table class="table mb-0 table-heaters">
 				<thead>
 					<th>Heater</th>
@@ -79,12 +90,12 @@ select {
 					<th>R25</th>
 					<th>β</th>
 					<th>C</th>
-					<th>Sensor Channel</th>
+					<th v-if="template.firmware < 3">Sensor Channel</th>
 				</thead>
 				<tbody>
-					<tr v-for="(heater, index) in template.heaters" v-if="heater != null">
+					<tr v-for="(heater, index) in template.heaters" :key="index" v-if="heater != null">
 						<td>
-							{{ (index === 0) ? 'Bed' : `E${index - 1}` }}
+							{{ (template.firmware < 3) ? ((index === 0) ? 'Bed' : `E${index - 1}`) : index }}
 						</td>
 						<td>
 							{{ (template.bed.present && template.bed.heater === index) ? 'Heated&nbsp;Bed'
@@ -110,12 +121,8 @@ select {
 						<td>
 							<thermistor-input :index="index" :preset-heater="getPresetHeater(index)" title="C coefficient of the Steinhart-Hart equation. May be used to improve the β model parameters too" parameter="c"></thermistor-input>
 						</td>
-						<td>
-							<b-select :value="heater.channel" @change="updateHeater({ heater: index, channel: parseInt($event) })" v-preset="getPresetHeaterIndex(index)" title="Assigned sensor channel for this heater">
-								<optgroup v-for="(group, name) in sensors" :label="name">
-									<option v-for="option in group" :value="option.value" v-text="option.text"></option>
-								</optgroup>
-							</b-select>
+						<td v-if="template.firmware < 3">
+							<sensor-input :index="index" v-preset="index"></sensor-input>
 						</td>
 					</tr>
 				</tbody>
@@ -131,10 +138,14 @@ import { mapState, mapGetters, mapMutations } from 'vuex'
 import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
 
 import ThermistorInput from '../components/HeatersThermistorInput.vue'
+import SensorInput from '../components/HeatersSensorInput.vue'
+
+import Template from '../store/Template.js'
 
 export default {
 	components: {
-		'thermistor-input': ThermistorInput
+		'thermistor-input': ThermistorInput,
+		'sensor-input': SensorInput
 	},
 	computed: {
 		...mapState(['board', 'preset', 'template']),
@@ -146,7 +157,7 @@ export default {
 		...mapMultiRowFields(['template.heaters']),
 		bedHeaters() {
 			const heaters = [];
-			for(let i = 0; i < this.board.maxHeaters; i++) {
+			for(let i = 0; i < Template.getMaxHeaters(this.template); i++) {
 				const isDisabled = ((i === 0 && this.template.bed_is_nozzle) ||
 									(this.template.chamber.present && this.template.chamber.heater === i) ||
 									(this.template.probe.type === 'bltouch' && this.template.probe.pwm_channel === i));
@@ -172,7 +183,7 @@ export default {
 		},
 		chamberHeaters() {
 			const heaters = [];
-			for(let i = 0; i < this.board.maxHeaters; i++) {
+			for(let i = 0; i < Template.getMaxHeaters(this.template); i++) {
 				const isDisabled = ((i === 0 && this.template.bed_is_nozzle) ||
 									(this.template.bed.present && this.template.bed.heater === i) ||
 									(this.template.probe.type === 'bltouch' && this.template.probe.pwm_channel === i));
@@ -191,36 +202,6 @@ export default {
 		chamberHeater: {
 			get() { return this.template.chamber.heater; },
 			set(value) { this.updateChamber({ heater: value }); }
-		},
-		sensors() {
-			const sensors = {
-				'Thermistors': [],
-				'PT1000': [],
-				'MAX31855 (K-Type Thermocouple)': [],
-				'MAX31856 (K-Type Thermocouple)': [],
-				'MAX31865 (PT100)': []
-			};
-
-			for (let i = 0; i < this.board.maxThermistors; i++) {
-				if (i === 0) {
-					sensors.Thermistors.push({ value: 0, text: 'Bed Thermistor' });
-					sensors.PT1000.push({ value: 500, text: 'PT1000 on Bed Input' });
-				} else if (i === 3 && this.board.name === 'duetm10') {
-					sensors.Thermistors.push({ value: 3, text: 'C Thermistor' });
-					sensors.PT1000.push({ value: 503, text: 'PT1000 on C Input' });
-				} else {
-					sensors.Thermistors.push({ value: i, text: `E${i - 1} Thermistor` });
-					sensors.PT1000.push({ value: 500 + i, text: `PT1000 on E${i - 1} Input` });
-				}
-			}
-
-			for (let i = 0; i < this.board.maxRtdBoards; i++) {
-				sensors['MAX31855 (K-Type Thermocouple)'].push({ value: 100 + i, text: `MAX31855 on CS${i + 1}` });
-				sensors['MAX31856 (K-Type Thermocouple)'].push({ value: 150 + i, text: `MAX31856 on CS${i + 1}` });
-				sensors['MAX31865 (PT100)'].push({ value: 200 + i, text: `MAX31865 on CS${i + 1}` });
-			}
-
-			return sensors;
 		}
 	},
 	methods: {
