@@ -124,7 +124,7 @@ label.btn {
 						<z-probe-values :hide-value="true">
 							<b-col v-if="template.firmware < 3">
 								<b-form-group label="Servo Control Channel:">
-									<b-select v-model="pwmChannel" v-preset="pwmChannelPreset" title="PWM channel to control the BLTouch probe with">
+									<b-select v-model="pwmChannel" v-b-tooltip.hover title="PWM channel to control the BLTouch probe with">
 										<optgroup v-if="pwmChannels.constructor === Object" v-for="(group, name) in pwmChannels" :label="name" :key="name">
 											<option v-for="(item, index) in group" :value="item.value" v-text="item.text" :key="index"></option>
 										</optgroup>
@@ -151,6 +151,7 @@ import { mapState, mapMutations } from 'vuex'
 import { mapFields } from 'vuex-map-fields'
 
 import ZProbeValues from '../components/EndstopsZProbeValues.vue'
+import Template from '../store/Template.js'
 
 const probeTypes = ['noprobe', 'switch', 'unmodulated', 'modulated', 'effector', 'bltouch'];
 
@@ -167,15 +168,15 @@ export default {
 			probeDeploy: 'template.probe.deploy'
 		}),
 		pwmChannel: {
-			get() {
-				return {
-					channel: this.template.probe.pwm_channel,
-					inverted: this.template.probe.pwm_inverted
-				};
-			},
+			get() { return (this.template.probe.pwm_inverted ? '!' : '') + this.template.probe.pwm_channel; },
 			set(value) {
-				this.template.probe.pwm_channel = value.channel;
-				this.template.probe.pwm_inverted = value.inverted;
+				let inverted = false;
+				if (value.startsWith('!')) {
+					inverted = true;
+					value = value.substring(1);
+				}
+				this.template.probe.pwm_channel = value;
+				this.template.probe.pwm_inverted = inverted;
 			}
 		},
 		pwmChannels() {
@@ -183,23 +184,23 @@ export default {
 			if (this.template.board.startsWith('duetm')) {
 				heaterChannels.push({
 					text: 'Z Probe MOD',
-					value: { channel: 64, inverted: false }
+					value: '64'
 				});
 			} else {
-				for(let i = 0; i < this.board.maxHeaters; i++) {
-					const heaterAssigned = (this.template.heaters.length > i) && (this.template.heaters[i] !== null);
+				for(let i = 0; i < 8; i++) {
+					const disabled = (this.template.heaters.length > i) && (this.template.heaters[i] !== null);
 					heaterChannels.push({
 						text: (i == 0) ? 'Bed Channel' : `E${i - 1} Channel`,
-						value: { channel: i, inverted: true },
-						disabled: heaterAssigned
+						value: '!' + i,
+						disabled
 					});
 
 					if (this.template.board.startsWith('duetethernet') || this.template.board.startsWith('duetwifi')) {
 						if (i > 2) {
 							pwmChannels.push({
 								text: `PWM${i - 2}`,
-								value: { channel: i, inverted: false },
-								disabled: heaterAssigned
+								value: i,
+								disabled
 							});
 						}
 					}
@@ -214,18 +215,12 @@ export default {
 			}
 			return heaterChannels;
 		},
-		pwmChannelPreset() {
+		/*pwmChannelPreset() {
 			if (this.template.board.startsWith('duetm')) {
-				return {
-					channel: 64,
-					inverted: false
-				};
+				return '64';
 			}
-			return {
-				channel: this.preset.probe.pwm_channel,
-				inverted: this.preset.probe.pwm_inverted
-			};
-		},
+			return (this.preset.probe.pwm_inverted ? '!' : '') + this.preset.probe.pwm_channel;
+		},*/
 		probeType: {
 			get() {
 				const probeType = this.template.probe.type;
