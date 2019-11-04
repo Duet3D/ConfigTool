@@ -3,6 +3,8 @@
 import { render } from 'ejs'
 import JSZip from 'jszip'
 
+import Boards from './store/Boards.js'
+
 import { version } from '../package.json'
 
 export default {
@@ -191,6 +193,32 @@ export default {
 						} else {
 							result += ':' + this.formatValue(template.drives[i][property], factor, precision);
 						}
+					}
+				}
+				return result.substr(1);
+			},
+
+			formatDriver(drive) {
+				if (template.firmware >= 3) {
+					if (template.board === 'duet3' || drive.driver_v3.indexOf('.') === -1) {
+						return drive.driver_v3;
+					}
+					const driveIndex = parseInt(drive.driver_v3.split('.')[1]);
+					return (drive.driver_v3.indexOf('1.') !== -1) ? driveIndex + Boards.getBoard(template.board).numDrives : driveIndex;
+				}
+				return drive.driver;
+			},
+
+			makeDriverString() {
+				let result = '';
+				result += ' X' + this.formatDriver(template.drives[0]);
+				result += ' Y' + this.formatDriver(template.drives[1]);
+				result += ' Z' + this.formatDriver(template.drives[2]);
+				for (let i = 3; i < template.drives.length; i++) {
+					if (i === 3) {
+						result += ' E' + this.formatDriver(template.drives[3]);
+					} else {
+						result += ':' + this.formatDriver(template.drives[i]);
 					}
 				}
 				return result.substr(1);

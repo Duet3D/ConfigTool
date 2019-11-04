@@ -51,11 +51,11 @@ M552 S0 ; disable network
 
 ; Drives
 <%	template.drives.forEach(function(drive, i) {
-		const driver = (template.firmware >= 3) ? drive.driver_v3 : drive.driver;
+		const driver = util.formatDriver(drive);
 -%>
 M569 P<%- driver %> S<%- drive.direction %> ; physical drive <%- driver %> goes <%- (drive.direction === 0) ? 'backwards' : 'forwards' %>
 <%	}); -%>
-M584 <%- util.makeDriveString(template.firmware >= 3 ? 'driver_v3' : 'driver', 1, 0) %> ; set drive mapping
+M584 <%- util.makeDriverString() %> ; set drive mapping
 <%	if (board.microstepping) {
 		const nonInterpolatedDrives = util.makeDriveString('microstepping', 1, 0, (drive) => !drive.microstepping_interpolation);
 		if (nonInterpolatedDrives !== '') { -%>

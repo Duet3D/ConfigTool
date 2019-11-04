@@ -89,6 +89,9 @@ export default new Vuex.Store({
 		setBoard(state, board) {
 			const newBoard = Boards.getBoard(board);
 
+			// Delete unsupported expansion boards
+			state.template.expansion_boards = state.template.expansion_boards.filter(eb => newBoard.expansionBoards.indexOf(eb) !== -1);
+
 			// Update microstepping if applicable
 			if ((state.board.microstepping != newBoard.microstepping)  ||
 				(state.board.microsteppingInterpolation != newBoard.microsteppingInterpolation)) {
