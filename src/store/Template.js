@@ -509,7 +509,7 @@ export default {
 		}
 		if (template.heaters) {
 			template.heaters.forEach(function(heater) {
-				if (!heater.hasOwnProperty('sensor')) {
+				if (heater && !heater.hasOwnProperty('sensor')) {
 					heater.sensor = heater.channel;
 				}
 			});
