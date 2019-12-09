@@ -5,10 +5,8 @@
 G91 ; relative positioning
 <%	const axes = ['X', 'Y', 'Z'], sOrH = template.firmware >= 2.03 ? 'H' : 'S';
 	let a = 0, b = 1, c = 2; // Home all the axes in the order ABC
-	if (template.geometry.type.startsWith('core')) {
-		if (template.geometry.type == 'corexz') {
-			a = 0; b = 2; c = 1;
-		} // coreyz is no longer supported
+	if (template.geometry.type == 'corexz') {
+		a = 0; b = 2; c = 1;
 	}
 
 	if (c == 2) { -%>
@@ -59,7 +57,7 @@ G1 <%- sOrH %>2 Z<%- template.z_dive_height %> F<%- template.travel_speed * 60 %
 G1 <%- sOrH %>1 <%- axes[c] + travelToC %> F<%- ((c !== 2) ? template.homing_speed_fast : template.homing_speed_slow) * 60 %> ; move <%- axes[c] %> <%- travelCDirection %> stopping at the endstop
 G90 ; absolute positioning
 <%		if (c == 2) { -%>
-G92 <%- axes[c] + template.geometry.mins[c] %> ; set <%- axes[c] %> to axis minimum (you may want to adjust this)
+G92 <%- axes[c] + ((template.drives[c].endstop_location === 1) ? template.geometry.mins[c] : template.geometry.maxes[c]) %> ; set <%- axes[c] %> position to axis <%- (template.drives[c].endstop_location === 1) ? 'minimum' : 'maximum' %> (you may want to adjust this)
 <%		}
 	} else { -%>
 G90 ; absolute positioning

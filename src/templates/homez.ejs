@@ -13,7 +13,7 @@ G1 <%- sOrH %>2 Z<%- template.z_dive_height %> F<%- template.travel_speed * 60 %
 			travelToZ *= -1;
 		} -%>
 G1 <%- sOrH %>1 Z<%- travelToZ %> F<%- template.homing_speed_fast * 60 %> ; move Z <%- travelZDirection %> until the endstop is triggered
-G92 Z<%- template.geometry.mins[2] %> ; set Z position to axis minimum (you may want to adjust this)
+G92 Z<%- (template.drives[2].endstop_location === 1) ? template.geometry.mins[2] : template.geometry.maxes[2] %> ; set Z position to axis <%- (template.drives[2].endstop_location === 1) ? 'minimum' : 'maximum' %> (you may want to adjust this)
 <%	} else { -%>
 G90 ; absolute positioning
 G1 <%- sOrH %>2 X<%- util.getFirstProbePoint(0) - template.probe.x_offset %> Y<%- util.getFirstProbePoint(1) - template.probe.y_offset %> F<%- template.travel_speed * 60 %> ; go to first probe point

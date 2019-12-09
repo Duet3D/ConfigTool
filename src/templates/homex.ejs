@@ -18,7 +18,11 @@ M98 P"deployprobe.g" ; deploy mechanical Z probe
 		travelBack *= -1;
 	} -%>
 G1 <%- sOrH %>1 X<%- travelTo %> F<%- template.homing_speed_fast * 60 %> ; move quickly to X axis endstop and stop there (first pass)
+<%	if (template.geometry.type.startsWith('core')) { -%>
+G1 X<%- travelBack %> F<%- template.travel_speed * 60 %> ; go back a few mm
+<%	} else { -%>
 G1 <%- sOrH %>2 X<%- travelBack %> F<%- template.travel_speed * 60 %> ; go back a few mm
+<% } -%>
 G1 <%- sOrH %>1 X<%- travelTo %> F<%- template.homing_speed_slow * 60 %> ; move slowly to X axis endstop once more (second pass)
 <%	if (template.drives[0].endstop_type == 3) {
 		if (template.probe.deploy && template.firmware < 1.21) { -%>

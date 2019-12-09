@@ -46,7 +46,7 @@ tr > td:last-child {
 							<b-form-input v-model="tool.name" placeholder="optional" type="text"></b-form-input>
 						</td>
 						<td class="pt-3">
-							<b-form-checkbox-group v-if="extruders.length !== 0" buttons button-variant="outline-primary" size="sm" :name="'tool-extruders-' + index" v-model="tool.extruders" :options="extruders"></b-form-checkbox-group>
+							<b-form-checkbox-group v-if="extruders.length !== 0" buttons button-variant="outline-primary" size="sm" :name="'tool-extruders-' + index" :checked="tool.extruders" @input="setToolExtruders({ index, extruders: $event })" :options="extruders"></b-form-checkbox-group>
 							<span v-else class="text-muted">n/a</span>
 						</td>
 						<td v-show="mixingToolsConfigured" class="pt-3">

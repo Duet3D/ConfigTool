@@ -124,7 +124,7 @@
 									Fan {{ index }}
 								</b-td>
 								<b-td>
-									<b-select :value="fan.output_pin" @change="fan.output_pin = $event" :state="(fan.output_pin === null) ? false : undefined" size="sm" :options="getPins('fanPorts', fan.output_pin, true)"></b-select>
+									<b-select :value="fan.output_pin" @change="updateFan({ fan: index, output_pin: $event })" :state="(fan.output_pin === null) ? false : undefined" size="sm" :options="getPins('fanPorts', fan.output_pin, true)"></b-select>
 								</b-td>
 							</b-tr>
 						</b-tbody>
@@ -212,7 +212,7 @@
 									PWM Control Channel (BLTouch only)
 								</b-td>
 								<b-td>
-									<b-select :value="template.probe.pwm_pin" @change="setProbePin({ pwmPin: $event })" size="sm" :options="getPins('pwmPorts', template.probe.pwm_pin, false)"></b-select>
+									<b-select :value="template.probe.pwm_pin" @change="setProbePin({ pwmPin: $event })" size="sm" :options="getPwmPins(template.probe.pwm_pin, false)"></b-select>
 								</b-td>
 							</b-tr>
 						</b-tbody>
@@ -258,7 +258,7 @@ export default {
 			'addExpansionBoard', 'removeExpansionBoard',
 			'addExtruder', 'removeExtruder', 'updateDrive',
 			'addNozzle', 'removeNozzle', 'updateBed', 'updateChamber', 'updateHeater',
-			'addFan', 'removeFan',
+			'addFan', 'removeFan', 'updateFan',
 			'setProbePin'
 		]),
 		getBoardProp(boardName, propName) {
@@ -270,6 +270,12 @@ export default {
 		},
 		getPins(name, pin, mandatory, inputMode) {
 			return Template.getPins(this.template, this.board, name, pin, mandatory, inputMode);
+		},
+		getPwmPins(pin, mandatory, inputMode) {
+			const heaterPins = Template.getPins(this.template, this.board, 'heaterPorts', pin, mandatory, inputMode);
+			const fanPorts = Template.getPins(this.template, this.board, 'fanPorts', pin, true, inputMode);
+			const pwmPorts = Template.getPins(this.template, this.board, 'pwmPorts', pin, true, inputMode);
+			return heaterPins.concat(fanPorts).concat(pwmPorts);
 		},
 
 		getDriveCaption(drive) {

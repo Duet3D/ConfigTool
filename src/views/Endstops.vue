@@ -165,18 +165,24 @@ export default {
 			probeXOffset: 'template.probe.x_offset',
 			probeYOffset: 'template.probe.y_offset',
 			probeSpeed: 'template.probe.speed',
-			probeDeploy: 'template.probe.deploy'
+			probeDeploy: 'template.probe.deploy',
+			probePwmChannel: 'template.probe.pwm_channel',
+			probePwmInverted: 'template.probe.pwm_inverted'
 		}),
 		pwmChannel: {
-			get() { return (this.template.probe.pwm_inverted ? '!' : '') + this.template.probe.pwm_channel; },
+			get() {
+				return (this.probePwmInverted ? '!' : '') + this.probePwmChannel;
+			},
 			set(value) {
+				console.log(value);
+
 				let inverted = false;
 				if (value.startsWith('!')) {
 					inverted = true;
 					value = value.substring(1);
 				}
-				this.template.probe.pwm_channel = value;
-				this.template.probe.pwm_inverted = inverted;
+				this.probePwmChannel = value;
+				this.probePwmInverted = inverted;
 			}
 		},
 		pwmChannels() {
@@ -199,7 +205,7 @@ export default {
 						if (i > 2) {
 							pwmChannels.push({
 								text: `PWM${i - 2}`,
-								value: i,
+								value: i.toString(),
 								disabled
 							});
 						}

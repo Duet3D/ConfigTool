@@ -207,13 +207,12 @@ export default {
 					// Get GitHub list of releases and assets. Do NOT get drafts and prereleases
 					const releaseInfo = await Compiler.downloadFile('https://api.github.com/repos/dc42/RepRapFirmware/releases', 'json');
 					const firmware = this.template.firmware;
-					let latestRelease, latestReleaseDate = 0;
+					let latestRelease = null;
 					releaseInfo.forEach(function(item) {
-						if (!item.draft && !item.prerelease && (!latestReleaseDate || item.created_at > latestReleaseDate)) {
+						if (!item.draft && !item.prerelease && (!latestRelease || item.created_at > latestRelease.created_at)) {
 							if ((firmware < 2 && item.name.indexOf('1.') !== -1) ||
 								(firmware >= 2 && firmware < 3 && item.name.indexOf('2.') !== -1) ||
 								(firmware >= 3 && item.name.indexOf('3.') !== -1)) {
-								latestReleaseDate = item.created_at;
 								latestRelease = item;
 							}
 						}
@@ -230,7 +229,7 @@ export default {
 									this.rrfLink = item.browser_download_url;
 									this.rrfFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
 								}
-								if (item.name === iapFile) {
+								else if (item.name === iapFile) {
 									this.iapLink = item.browser_download_url;
 									this.iapFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
 								}
@@ -251,11 +250,10 @@ export default {
 				try {
 					// Get GitHub list of releases and assets. Do NOT get drafts and prereleases
 					const releaseInfo = await Compiler.downloadFile('https://api.github.com/repos/chrishamm/DuetWebControl/releases', 'json');
-					let latestRelease, latestReleaseDate = 0;
+					let latestRelease = null;
 					releaseInfo.forEach(function(item) {
-						if (!item.draft && !item.prerelease && (!latestReleaseDate || item.created_at > latestReleaseDate)) {
+						if (!item.draft && !item.prerelease && (!latestRelease || item.created_at > latestRelease.created_at)) {
 							latestRelease = item;
-							latestReleaseDate = item.created_at;
 						}
 					});
 

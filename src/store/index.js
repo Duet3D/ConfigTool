@@ -395,6 +395,9 @@ export default new Vuex.Store({
 		removeFan(state) {
 			state.template.fans.pop();
 		},
+		updateFan(state, { fan, output_pin }) {
+			if (output_pin !== undefined) { state.template.fans[fan].output_pin = output_pin; }
+		},
 
 		addTool(state) {
 			const tool = Object.assign({}, state.preset.tools[0]);
