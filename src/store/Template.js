@@ -485,7 +485,7 @@ export default {
 				obj[key] = parseFloat(obj[key]);
 			} else if (obj.hasOwnProperty(key) && preset[key] instanceof String && obj[key] instanceof Number) {
 				obj[key] = obj[key].toString();
-			} else if (!obj.hasOwnProperty(key) || typeof preset[key] !== typeof obj[key]) {
+			} else if (!obj.hasOwnProperty(key) || (typeof preset[key] !== typeof obj[key] && preset[key] !== null)) {
 				obj[key] = preset[key];
 			}
 		}
@@ -674,7 +674,7 @@ export default {
 				}
 			} else if (template.hasOwnProperty(key) && typeof preset[key] === typeof template[key]) {
 				obj[key] = template[key];
-			} else if (template.hasOwnProperty(key) && preset[key].constructor instanceof Number && template[key].constructor instanceof String) {
+			} else if (template.hasOwnProperty(key) && typeof preset[key] === Number && typeof template[key] === String) {
 				obj[key] = parseFloat(template[key]);
 			} else {
 				obj[key] = preset[key];

@@ -61,7 +61,7 @@ G92 <%- axes[c] + ((template.drives[c].endstop_location === 1) ? template.geomet
 <%		}
 	} else { -%>
 G90 ; absolute positioning
-G1 <%- sOrH %>2 X<%- util.getFirstProbePoint(0) - template.probe.x_offset %> Y<%- util.getFirstProbePoint(1) - template.probe.y_offset %> F<%- template.travel_speed * 60 %> ; go to first bed probe point and home Z
+G1 X<%- util.getFirstProbePoint(0) - template.probe.x_offset %> Y<%- util.getFirstProbePoint(1) - template.probe.y_offset %> F<%- template.travel_speed * 60 %> ; go to first bed probe point and home Z
 G30 ; home Z by probing the bed
 <%	}
 
@@ -69,7 +69,7 @@ G30 ; home Z by probing the bed
 
 ; Uncomment the following lines to lift Z after probing
 ;G91 ; relative positioning
-;G1 S2 Z<%- template.z_dive_height %> F<%- template.travel_speed %> ; lift Z relative to current position
+;G1 Z<%- template.z_dive_height %> F<%- template.travel_speed %> ; lift Z relative to current position
 ;G90 ; absolute positioning
 
 <%	}

@@ -31,7 +31,7 @@ export default {
 			if (this.template.firmware < 3) {
 				return this.template.heaters[this.index].channel;
 			}
-			return this.template.heaters[this.index].sensor_type + '-' + this.template.heaters[this.index].sensor_pin;
+			return `${this.template.heaters[this.index].sensor_type}/${this.template.heaters[this.index].sensor_pin}`;
 		},
 		isValid() {
 			if ((this.template.firmware >= 3) && (this.template.heaters[this.index].sensor_type === null || this.template.heaters[this.index].sensor_pin === null)) {
@@ -55,12 +55,12 @@ export default {
 					const disabled = !Template.isSamePin(selectedPort, port) && Template.isPinBlocked(this.template, port);
 					sensors.Thermistors.push({
 						text: port,
-						value: `thermistor-${port}`,
+						value: `thermistor/${port}`,
 						disabled
 					});
 					sensors.PT1000.push({
 						text: `PT1000 on ${port}`,
-						value: `pt1000-${port}`,
+						value: `pt1000/${port}`,
 						disabled
 					});
 				}
@@ -70,17 +70,17 @@ export default {
 					const disabled = !Template.isSamePin(selectedPort, port) && Template.isPinBlocked(this.template, port);
 					sensors['MAX31855 (K-Type Thermocouple)'].push({
 						text: `MAX31855 on ${port}`,
-						value: `max31855-${port}`,
+						value: `thermocouple-max31855/${port}`,
 						disabled
 					});
 					sensors['MAX31856 (K-Type Thermocouple)'].push({
 						text: `MAX31856 on ${port}`,
-						value: `max31856-${port}`,
+						value: `thermocouple-max31856/${port}`,
 						disabled
 					});
 					sensors['MAX31865 (PT100)'].push({
 						text: `MAX31865 on ${port}`,
-						value: `rtdmax31865-${port}`,
+						value: `rtd-max31865/${port}`,
 						disabled
 					});
 				}
@@ -95,12 +95,12 @@ export default {
 						const disabled = !Template.isSamePin(selectedPort, port) && Template.isPinBlocked(this.template, port);
 						sensors.Thermistors.push({
 							text: prefix + port,
-							value: `thermistor-${port}`,
+							value: `thermistor/${port}`,
 							disabled
 						});
 						sensors.PT1000.push({
 							text: prefix + `PT1000 on ${port}`,
-							value: `pt1000-${port}`,
+							value: `pt1000/${port}`,
 							disabled
 						});
 					}
@@ -110,17 +110,17 @@ export default {
 						const disabled = !Template.isSamePin(selectedPort, port) && Template.isPinBlocked(this.template, port);
 						sensors['MAX31855 (K-Type Thermocouple)'].push({
 							text: prefix + `MAX31855 on ${expansionBoard.spiCsPorts[k]}`,
-							value: `max31855-${port}`,
+							value: `thermocouple-max31855/${port}`,
 							disabled
 						});
 						sensors['MAX31856 (K-Type Thermocouple)'].push({
 							text: prefix + `MAX31856 on ${expansionBoard.spiCsPorts[k]}`,
-							value: `max31856-${port}`,
+							value: `thermocouple-max31856/${port}`,
 							disabled
 						});
 						sensors['MAX31865 (PT100)'].push({
 							text: prefix + `MAX31865 on ${expansionBoard.spiCsPorts[k]}`,
-							value: `rtdmax31865-${port}`,
+							value: `rtd-max31865/${port}`,
 							disabled
 						});
 					}
@@ -172,7 +172,7 @@ export default {
 			if (this.template.firmware < 3) {
 				this.updateHeater({ heater: this.index, channel: parseInt(value) })
 			} else if (value) {
-				const vals = value.split('-');
+				const vals = value.split('/');
 				this.updateHeater({ heater: this.index, sensor_type: vals[0], sensor_pin: vals[1] });
 			}
 		}

@@ -23,8 +23,8 @@
 							<option :value="1.2" disabled>1.20 (no longer supported)</option>
 							<option :value="1.21">1.21</option>
 							<option :value="2">2.0</option>
-							<option :value="2.03">2.03 to 2.05 (stable)</option>
-							<option :value="3">3.0 or later (beta)</option>
+							<option :value="2.03">2.03 to 2.05</option>
+							<option :value="3">3.0 or later (stable)</option>
 						</b-form-select>
 					</b-form-group>
 				</b-col>
