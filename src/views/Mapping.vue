@@ -212,7 +212,7 @@
 									PWM Control Channel (BLTouch only)
 								</b-td>
 								<b-td>
-									<b-select :value="template.probe.pwm_pin" @change="setProbePin({ pwmPin: $event })" size="sm" :options="getPwmPins(template.probe.pwm_pin, false)"></b-select>
+									<b-select :value="template.probe.pwm_pin" @change="setProbePin({ pwmPin: $event })" size="sm" :options="getPins('pwmPorts', template.probe.pwm_pin, false)"></b-select>
 								</b-td>
 							</b-tr>
 						</b-tbody>
@@ -268,16 +268,9 @@ export default {
 			}
 			return board[propName];
 		},
-		getPins(name, pin, mandatory, inputMode) {
-			return Template.getPins(this.template, this.board, name, pin, mandatory, inputMode);
+		getPins(name, selectedPin, mandatory, inputMode) {
+			return Template.getPins(this.template, this.board, name, selectedPin, mandatory, inputMode);
 		},
-		getPwmPins(pin, mandatory, inputMode) {
-			const heaterPins = Template.getPins(this.template, this.board, 'heaterPorts', pin, mandatory, inputMode);
-			const fanPorts = Template.getPins(this.template, this.board, 'fanPorts', pin, true, inputMode);
-			const pwmPorts = Template.getPins(this.template, this.board, 'pwmPorts', pin, true, inputMode);
-			return heaterPins.concat(fanPorts).concat(pwmPorts);
-		},
-
 		getDriveCaption(drive) {
 			switch (drive) {
 				case 0: return 'X';

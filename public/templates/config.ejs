@@ -162,9 +162,13 @@ M558 P0 H<%- template.z_dive_height %> F<%- template.probe.speed * 60 %> T<%- te
 			if (template.probe.type === 'bltouch' && !template.board.startsWith('duetm')) { -%>
 M307 H<%- template.probe.pwm_channel %> A-1 C-1 D-1 ; disable heater on PWM channel for BLTouch
 <%			}
-		} else if (template.probe.type === 'bltouch') { -%>
+		} else if (template.probe.type === 'bltouch') {
+			if (template.board.startsWith('duetm')) { -%>
+M950 S0 C"^<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
+<%			} else { -%>
 M950 S0 C"<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
-<%		}
+<%			}
+		}
 
 		let zProbeType = 0, cArg = '';
 		switch (template.probe.type) {

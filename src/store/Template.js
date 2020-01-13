@@ -292,7 +292,8 @@ export default {
 
 		let index = 0;
 		for (let i = 0; i < items.length; i++) {
-			if (inputMode == undefined || template.board !== 'duet3' || board.gpioPorts[i].indexOf(inputMode ? 'in' : 'out') !== -1) {
+			if ((template.board !== 'duet3' || inputMode == undefined || items[i].indexOf(inputMode ? 'in' : 'out') !== -1) &&
+				(name !== 'pwmPorts' || items[i].indexOf('exp') === -1 || template.expansion_boards.length === 0)) {
 				const disabled = !this.isSamePin(selectedPin, items[i]) && this.isPinBlocked(template, items[i]);
 				options.push({
 					text: items[i],

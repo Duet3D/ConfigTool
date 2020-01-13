@@ -48,7 +48,7 @@ export default {
 			};
 
 			if (this.template.firmware >= 3) {
-				const selectedPort = this.value ? this.value.split('-')[1] : null;
+				const selectedPort = this.value ? this.value.split('/')[1] : null;
 
 				for (let i = 0; i < this.board.analogPorts.length; i++) {
 					const port = this.board.analogPorts[i];
