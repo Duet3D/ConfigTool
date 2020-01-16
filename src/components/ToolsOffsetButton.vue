@@ -3,7 +3,7 @@
 		<b-button :id="'offset' + index" size="sm" variant="primary" class="mt-1">
 			<font-awesome-icon icon="edit"></font-awesome-icon> Edit
 		</b-button>
-		<b-popover :target="'offset' + index" ref="popover" placement="topleft" :show.sync="popoverShown" title="Edit Tool Offsets" triggers="focus">
+		<b-popover :target="'offset' + index" ref="popover" placement="topleft" :show.sync="popoverShown" title="Edit Tool Offsets" triggers="click">
 			<b-form-group label-cols="3" label="X Offset:">
 				<b-input-group append="mm">
 					<b-form-input v-model.number="xOffset" type="number" step="any" required></b-form-input>

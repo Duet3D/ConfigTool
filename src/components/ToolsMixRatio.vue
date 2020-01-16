@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<b-button :id="id" size="sm" variant="primary">{{ tool.mix_ratio.join(":") }}</b-button>
-		<b-popover :target="id" placement="topleft" :show.sync="popoverShown" title="Set Mix Ratio" triggers="focus">
+		<b-popover :target="id" placement="topleft" :show.sync="popoverShown" title="Set Mix Ratio" triggers="click">
 			<b-row align-v="center">
 				<b-col cols="8">
 					<b-row v-for="(mix, idx) in tool.mix_ratio" :key="idx" class="mb-2">
