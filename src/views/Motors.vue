@@ -9,7 +9,8 @@
 				<thead>
 					<th>Drive</th>
 					<th>Direction</th>
-					<th>Microstepping (interpolation)</th>
+					<!--th>Microstepping (interpolation)</th-->
+					<th v-show="board.stepperDriver==''">Driver</th>
 					<th>Steps per mm</th>
 					<th>Max. Speed Change&nbsp;(mm/s)</th>
 					<th>Max. Speed (mm/s)</th>
@@ -40,7 +41,8 @@
 				<thead>
 					<th>Drive</th>
 					<th>Direction</th>
-					<th>Microstepping (interpolation)</th>
+					<!--th>Microstepping (interpolation)</th-->
+					<th v-show="board.stepperDriver==''">Driver</th>
 					<th>Steps per mm</th>
 					<th>Max. Speed Change (mm/s)</th>
 					<th>Max. Speed (mm/s)</th>

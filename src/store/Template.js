@@ -7,9 +7,9 @@ export default {
 	// Returns a copy of the default config template
 	getDefaultTemplate() {
 		return {
-			board: 'duetwifi10',
+			board: 'smoothieboard',
 			expansion_boards: [],
-			firmware: 2.03,
+			firmware: 3.00,
 			standalone: true,
 			nvram: false,
 			auto_save: {
@@ -25,6 +25,10 @@ export default {
 				menus: [{ name: 'main', value: '' }],
 				images: []
 			},
+            externalSDCard: {
+                present: false,
+                spi_frequency: 4000000
+            },
 			geometry: {
 				type: 'cartesian',
 
@@ -56,6 +60,8 @@ export default {
 					endstop_pin: 'xstop',		// v3+
 					endstop_type: 1,
 					endstop_location: 1,
+                    stepperDriver: "",
+                    stepperDriverTimings: "",
 				},
 				{
 					direction: 1,
@@ -70,7 +76,10 @@ export default {
 					driver_v3: '0.1',			// v3+
 					endstop_pin: 'ystop',		// v3+
 					endstop_type: 1,
-					endstop_location: 1
+					endstop_location: 1,
+                     stepperDriver: "",
+                    stepperDriverTimings: "",
+
 				},
 				{
 					direction: 1,
@@ -86,7 +95,10 @@ export default {
 					endstop_pin: null,			// v3+
 					endstop: null,
 					endstop_type: 3,
-					endstop_location: 1
+					endstop_location: 1,
+                     stepperDriver: "",
+                    stepperDriverTimings: "",
+
 				},
 				{
 					direction: 1,
@@ -98,7 +110,10 @@ export default {
 					acceleration: 250,
 					current: 800,
 					driver: 3,					// v1-2 only
-					driver_v3: '0.3'			// v3+
+					driver_v3: '0.3',			// v3+
+                    stepperDriver: "",
+                    stepperDriverTimings: "",
+
 				}
 			],
 			idle: {
@@ -211,8 +226,8 @@ export default {
 				]
 			},
 			network: {
-				enabled: true,
-				mac_address: '',
+				enabled: false,
+				mac_address: '00:1F:11:02:04:20',
 				name: 'My Printer',
 				password: '',
 				ssid: '',
@@ -238,16 +253,6 @@ export default {
 					trigger_temperature: 45,
 					output_pin: 'fan0'			// v3+
 				},
-				{
-					name: '',
-					value: 100,
-					inverted: false,			// v1-2 only
-					frequency: 500,
-					thermostatic: true,
-					heaters: [1],
-					trigger_temperature: 45,
-					output_pin: 'fan1'			// v3+
-				}
 			],
 			custom_settings: ''
 		}

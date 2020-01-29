@@ -5,12 +5,15 @@
 				<b-col>
 					<b-form-group label="Board:">
 						<b-form-select :value="template.board" @change="setSelectedBoard($event)" v-preset="preset.board" title="Board on which the firmware runs">
-							<option value="duet06">Duet 0.6</option>
-							<option value="duet085">Duet 0.8.5</option>
+							<option value="smoothieboard">Smoothieboard</option>
+							<option value="biquskr_1.3">SKR 1.3</option>
+							<option value="mkssbase_1.3">MKS SBase 1.3</option>
+							<option value="rearm">ReArm</option>
+							<!--option value="duet085">Duet 0.8.5</option>
 							<option value="duetwifi10">Duet 2 WiFi</option>
 							<option value="duetethernet10">Duet 2 Ethernet</option>
 							<option value="duetm10">Duet 2 Maestro</option>
-							<option value="duet3">Duet 3</option>
+							<option value="duet3">Duet 3</option-->
 						</b-form-select>
 					</b-form-group>
 				</b-col>
@@ -18,12 +21,12 @@
 				<b-col>
 					<b-form-group label="Firmware version:">
 						<b-form-select :value="template.firmware" @change="setFirmware($event)" :disabled="template.board === 'duet3' || template.board.startsWith('duet0')" v-preset="preset.firmware" title="Version of the firmware running on your board">
-							<option :value="1.16" disabled>1.16 or older (no longer supported)</option>
+							<!--option :value="1.16" disabled>1.16 or older (no longer supported)</option>
 							<option :value="1.17" disabled>1.17 to 1.19 (no longer supported)</option>
 							<option :value="1.2" disabled>1.20 (no longer supported)</option>
 							<option :value="1.21">1.21</option>
 							<option :value="2">2.0</option>
-							<option :value="2.03">2.03 to 2.05 (stable)</option>
+							<option :value="2.03">2.03 to 2.05 (stable)</option-->
 							<option :value="3">3.0 or later (beta)</option>
 						</b-form-select>
 					</b-form-group>

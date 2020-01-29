@@ -87,7 +87,13 @@ export default {
 		} else if (filename.startsWith('tpost')) {
 			targetFilename = 'templates/tpost.ejs';
 			options.index = parseInt(filename.match('tpost(\\d+).g')[1]);
-		}
+		} else if (filename.startsWith("board")) {
+            targetFilename = "templates/board.ejs";
+            //dont align comments for Board.txt
+            const content = await this.compileFile(targetFilename, options);
+            return content;
+
+        }
 
 		const content = await this.compileFile(targetFilename, options);
 		return this.alignComments(content);
@@ -229,7 +235,18 @@ export default {
 					return (axis == 0) ? template.mesh.x_min : template.mesh.y_min;
 				}
 				return (axis == 0) ? template.probe.points[0].x : template.probe.points[0].y;
-			}
+			},
+            
+            //turns an array into a comma seperated string
+            makePlainArrayString(arr){
+                let result = "";
+                for(var i=0; i<arr.length; i++){
+                    result += arr[i];
+                    if(i != arr.length-1) result +=", ";
+                }
+                return result;
+            },
+
 		}
 	}
 }

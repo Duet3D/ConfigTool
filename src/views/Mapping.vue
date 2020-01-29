@@ -196,7 +196,7 @@
 									Input Pin
 								</b-td>
 								<b-td>
-									<b-select :value="template.probe.input_pin" @change="setProbePin({ inputPin: $event })" size="sm" :options="getPins('analogPorts', template.probe.input_pin, false)"></b-select>
+									<b-select :value="template.probe.input_pin" @change="setProbePin({ inputPin: $event })" size="sm" :options="getPins('gpioPorts', template.probe.input_pin, false)"></b-select>
 								</b-td>
 							</b-tr>
 							<b-tr>

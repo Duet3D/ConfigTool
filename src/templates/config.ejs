@@ -52,8 +52,20 @@ M552 S0 ; disable network
 ; Drives
 <%	template.drives.forEach(function(drive, i) {
 		const driver = util.formatDriver(drive);
+
+		//lpc
+		var stepperDriver = "";
+		var stepperDriverTimings = "";
+		if(board.stepperDriver == undefined || board.stepperDriver != ""){
+			//has built in drivers, use presets
+			stepperDriver = board.stepperDriver;
+			stepperDriverTimings = board.stepperDriverTimings;
+		} else {
+			stepperDriver = drive.stepperDriver;
+			stepperDriverTimings = drive.stepperDriverTimings;
+		}
 -%>
-M569 P<%- driver %> S<%- drive.direction %> ; physical drive <%- driver %> goes <%- (drive.direction === 0) ? 'backwards' : 'forwards' %>
+M569 P<%- driver %> S<%- drive.direction %> <%- (stepperDriver != "")?"T"+stepperDriverTimings:"" %> ; physical drive <%- driver %> goes <%- (drive.direction === 0) ? 'backwards' : 'forwards' %> using <%- (stepperDriver != "")?stepperDriver:"default" %> driver timings
 <%	}); -%>
 M584 <%- util.makeDriverString() %> ; set drive mapping
 <%	if (board.microstepping) {

@@ -17,8 +17,8 @@ export default new Vuex.Store({
 		preset: Template.getDefaultTemplate(),							// Preset of the loaded machine (machine defaults)
 		customTemplate: Template.getDefaultTemplate(),					// Properties of the custom config template (if machine is not 'custom')
 		template: Template.getDefaultTemplate(),						// Properties of the template being edited
-		addRRF: true,
-		addDWC: true
+		addRRF: false,
+		addDWC: false
 	},
 	getters: {
 		getField,
@@ -254,7 +254,7 @@ export default new Vuex.Store({
 			}
 			state.template.geometry.print_radius = radius;
 		},
-		updateDrive(state, { drive, forwards, microstepping, interpolated, stepsPerMm, instantDv, maxSpeed, acceleration, current, driver, et, el, ep }) {
+		updateDrive(state, { drive, forwards, microstepping, interpolated, stepsPerMm, instantDv, maxSpeed, acceleration, current, driver, et, el, ep, stepperDriver, stepperDriverTimings }) {
 			if (forwards !== undefined) { state.template.drives[drive].direction = forwards ? 1 : 0; }
 			if (microstepping !== undefined) { state.template.drives[drive].microstepping = microstepping; }
 			if (interpolated !== undefined) { state.template.drives[drive].microstepping_interpolation = interpolated; }
@@ -272,6 +272,10 @@ export default new Vuex.Store({
 					state.template.drives[drive].endstop_type = 0;
 				}
 			}
+            if (stepperDriver !== undefined) { state.template.drives[drive].stepperDriver = stepperDriver; }
+            if (stepperDriverTimings !== undefined) { state.template.drives[drive].stepperDriverTimings = stepperDriverTimings; }
+
+                              
 		},
 
 		setProbeType(state, type) {

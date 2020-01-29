@@ -41,7 +41,16 @@ tr > td:last-child > select {
 				<option :value="true">Forwards</option>
 			</b-select>
 		</td>
-		<td :class="{ 'reduce-padding' : drive.microstepping_interpolation }">
+		<td v-show="board.stepperDriver==''">
+			<b-select v-model="driverOption" v-preset title="Stepper Driver">
+				<option v-for="(value, name) in stepperDriverTimings" v-bind:key="name" v-bind:value="name">{{name}}</option>
+			</b-select> 
+			
+			<b-form-group label="Stepper Timings:" v-show="drive.stepperDriver == 'Custom'">
+				<timing-input :drive="drive" :index="index"/>
+			</b-form-group>
+		</td>
+		<!--td :class="{ 'reduce-padding' : drive.microstepping_interpolation }">
 			<b-select v-model="microsteppingOption" v-preset="presetMicrosteppingOption" title="Microstepping value (M350)" :disabled="!board.microstepping">
 				<option value="1">x1</option>
 				<option v-if="board.microsteppingInterpolation" value="1_i" class="hidden">x1 (on)</option>
@@ -63,7 +72,7 @@ tr > td:last-child > select {
 			</b-select>
 			<br>
 			<span v-if="drive.microstepping_interpolation" class="small-text">interpolated to x256</span>
-		</td>
+		</td-->
 		<td>
 			<steps-per-mm-input :index="index" :drive="drive" :preset-drive="presetDrive"></steps-per-mm-input>
 		</td>
@@ -94,10 +103,27 @@ tr > td:last-child > select {
 import { mapState, mapMutations } from 'vuex'
 
 import MotorsStepsPerMmInput from './MotorsStepsPerMmInput.vue'
+import StepperTimingInput from '../components/StepperTimingInput.vue'
 
 export default {
+	data() {
+		return {
+			stepperDriverTimings: {
+				"DRV8825": "1.9:1.9:0.65:0.65",
+				"A4988": "1.0:1.0:0.2:0.2",
+				"A4982": "1.0:1.0:0.2:0.2",
+				"A5984": "1.0:1.0:0.4:0.4",
+				"TMC220x": "0.1:0.1:0.02:0.02",
+				"TMC222x": "0.1:0.1:0.02:0.02",
+				"THB6128": "0.5:0.5:0.5:0.5",
+				"Custom": "1.0:1.0:0.4:0.4",
+			},
+		}
+	},
 	components: {
-		'steps-per-mm-input': MotorsStepsPerMmInput
+		'steps-per-mm-input': MotorsStepsPerMmInput,
+		'timing-input': StepperTimingInput
+
 	},
 	computed: {
 		...mapState(['board', 'preset', 'template']),
@@ -109,6 +135,19 @@ export default {
 				this.updateDrive({
 					drive: this.index,
 					direction: value
+				});
+			}
+		},
+		driverOption: {
+			get() {
+				return this.drive.stepperDriver;
+			},
+			set(value) {	
+				this.updateDrive({
+					drive: this.index,
+					stepperDriver: value,
+					stepperDriverTimings: this.stepperDriverTimings[value]
+
 				});
 			}
 		},

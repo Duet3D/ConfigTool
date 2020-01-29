@@ -1,6 +1,6 @@
 <template>
 	<b-container>
-		<b-card v-if="template.standalone" header="Network Settings">
+		<b-card v-if="template.standalone && board.hasEthernet" header="Network Settings">
 			<b-form-checkbox v-model="networkEnabled" v-preset.left="preset.network.enabled" title="Check this to enable networking features (M552 S1)">Enable Network</b-form-checkbox>
 			<div v-show="networkEnabled" class="pl-4">
 				<b-form-row class="mt-3">
@@ -50,8 +50,8 @@
 				</b-form-row>
 
 				<b-checkbox v-model="http" v-preset.left="preset.network.protocols.http" title="Enable HyperText Transmission Protocol to provide access to the web interface" class="mt-3">Enable HTTP (required for the web interface)</b-checkbox>
-				<b-checkbox v-model="ftp" v-preset.left="preset.network.protocols.ftp" title="Enable File Transmission Protocol. Be aware that RepRapFirmware only supports one concurrent connection!">Enable FTP</b-checkbox>
-				<b-checkbox v-model="telnet" v-preset.left="preset.network.protocols.telnet" title="Enable Telnet. Be aware that RepRapFirmware only supports one concurrent connection!">Enable Telnet</b-checkbox>
+				<!--b-checkbox v-model="ftp" v-preset.left="preset.network.protocols.ftp" title="Enable File Transmission Protocol. Be aware that RepRapFirmware only supports one concurrent connection!">Enable FTP</b-checkbox>
+				<b-checkbox v-model="telnet" v-preset.left="preset.network.protocols.telnet" title="Enable Telnet. Be aware that RepRapFirmware only supports one concurrent connection!">Enable Telnet</b-checkbox-->
 			</div>
 		</b-card>
 	</b-container>
