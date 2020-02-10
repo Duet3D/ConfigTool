@@ -1,7 +1,7 @@
 <template>
 	<b-container>
 		<div class="text-center">
-			<h2 class="mb-4">Welcome to the RepRapFirmware Configuration Tool</h2>
+			<h2 class="mb-4">Welcome to the RepRapFirmware Configuration Tool (for LPC1768/1769 based boards)</h2>
 			<h4 class="text-muted mb-5">Please follow this wizard to obtain an individual configuration bundle for your printer</h4>
 		</div>
 
@@ -42,8 +42,6 @@
 		</b-card>
 
 		<div class="text-center mt-4">
-			<span class="text-muted">Note: If you encounter problems, please report your problems on <a href="https://github.com/chrishamm/configtool" target="_blank">GitHub</a>.
-				<br>
 				Some configuration options may not be available yet. In this case please refer to the <a href="https://duet3d.dozuki.com" target="_blank">Duet3D wiki</a>.</span>
 			<br><br>
 			<span class="text-muted">This web app is fully open-source and licensed under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>. Version {{ version }}</span>

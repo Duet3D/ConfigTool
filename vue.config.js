@@ -2,7 +2,7 @@ const path = require("path")
 const CopyWebpackPlugin = require("copy-webpack-plugin")
 
 module.exports = {
-	//baseUrl: process.env.NODE_ENV === 'production' ? '/configtool/' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? '/LPCConfigurator/' : '/',
 	configureWebpack: {
 		devServer: {
 			contentBase: path.join(__dirname, 'dist')
