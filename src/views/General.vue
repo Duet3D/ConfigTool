@@ -6,7 +6,11 @@
 					<b-form-group label="Board:">
 						<b-form-select :value="template.board" @change="setSelectedBoard($event)" v-preset="preset.board" title="Board on which the firmware runs">
 							<option value="smoothieboard">Smoothieboard</option>
-							<option value="biquskr_1.3">SKR 1.3</option>
+							<option value="biquskr_1.1">SKR v1.1</option>
+							<option value="biquskr_1.3">SKR v1.3</option>
+							<option value="biquskr_1.4">SKR v1.4</option>
+							<option value="azsmz">Azsmz Mini</option>
+							<option value="azteegX5_1.1">Azteeg X5 Mini v1.1</option>
 							<option value="mkssbase_1.3">MKS SBase 1.3</option>
 							<option value="rearm">ReArm</option>
 							<!--option value="duet085">Duet 0.8.5</option>
