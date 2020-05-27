@@ -40,5 +40,15 @@ export default {
 		pwmPorts: ['out0', 'out1', 'out2', 'out3', 'out4', 'out5', 'out6'],
 		spiCsPorts: [],
 		maxRtdBoards: 2
+	},
+	'TOOL1LC': {
+		numDrives: 1,
+		heaterPorts: ['out0'],
+		fanPorts: ['out1', 'out2'],
+		gpioPorts: ['io0.out', 'io0.in', 'io1.out', 'io1.in'],
+		analogPorts: ['temp0', 'temp1'],
+		pwmPorts: ['out0'],
+		spiCsPorts: [],
+		maxRtdBoards: 0
 	}
 }

@@ -348,6 +348,11 @@ export default new Vuex.Store({
 			if (present !== undefined) { state.template.bed.present = present; }
 			if (heater !== undefined) { state.template.bed.heater = heater; }
 			if (isNozzle !== undefined) {
+				if (!state.template.bed_is_nozzle && isNozzle) {
+					state.template.num_nozzles++;
+				} else if (state.template.bed_is_nozzle && !isNozzle) {
+					state.template.num_nozzles--;
+				}
 				state.template.bed_is_nozzle = isNozzle;
 				if (isNozzle) {
 					if (state.template.bed.heater === 0) {

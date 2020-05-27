@@ -353,22 +353,22 @@ export default {
 		setHeaterType(index, type) {
 			if (type === 0) {
 				if (!this.template.bed.present) {
-					this.updateBed({ present: true, heater: index });
+					this.updateBed({ present: true, heater: index, isNozzle: false });
 				} else {
 					this.updateBed({ heater: index });
 				}
 			} else if (this.template.bed.present && this.template.bed.heater === index) {
-				this.updateBed({ present: false });
+				this.updateBed({ present: false, isNozzle: type === 2 });
 			}
 
 			if (type === 1) {
 				if (!this.template.chamber.present) {
-					this.updateChamber({ present: true, heater: index });
+					this.updateChamber({ present: true, heater: index, isNozzle: false });
 				} else {
 					this.updateChamber({ heater: index });
 				}
 			} else if (this.template.chamber.present && this.template.chamber.heater === index) {
-				this.updateChamber({ present: false });
+				this.updateChamber({ present: false, isNozzle: type === 2 });
 			}
 		}
 	}

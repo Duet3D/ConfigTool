@@ -32,8 +32,10 @@ label.btn {
 						<td>
 							<b-form-radio-group buttons button-variant="outline-primary" :checked="template.drives[i].endstop_type" @change="updateDrive({ drive: i, et: $event })" v-preset.left="preset.drives[i].endstop_type" title="Endstop type of this axis" :name="'endstopType' + i" class="w-100">
 								<b-form-radio :value="0" class="w-100" v-b-tooltip.bottom title="Manual homing via G92">None</b-form-radio>
-								<b-form-radio :value="1" :disabled="template.firmware >= 3 && !template.drives[i].endstop_pin" class="w-100" v-b-tooltip.bottom title="Endstop switch pulls signal from GND to +3.3V when triggered (normally-closed switch)">Active&nbsp;high&nbsp;(NC)</b-form-radio>
-								<b-form-radio :value="2" :disabled="template.firmware >= 3 && !template.drives[i].endstop_pin" class="w-100" v-b-tooltip.bottom title="Endstop switch pulls signal from +3.3V to GND when triggered (normally-open switch)">Active&nbsp;low&nbsp;(NO)</b-form-radio>
+								<b-form-radio :value="1" :disabled="template.firmware >= 3 && !template.drives[i].endstop_pin" class="w-100" v-b-tooltip.bottom title="Endstop switch pulls signal from GND to +3.3V when triggered (normally-closed switch)">
+									{{ template.firmware >= 3 ? 'Switch' : 'Active&nbsp;high&nbsp;(NC)' }}
+								</b-form-radio>
+								<b-form-radio v-show="template.firmware < 3" :value="2" class="w-100" v-b-tooltip.bottom title="Endstop switch pulls signal from +3.3V to GND when triggered (normally-open switch)">Active&nbsp;low&nbsp;(NO)</b-form-radio>
 								<b-form-radio :value="3" class="w-100" :disabled="template.probe.type === 'noprobe'" v-b-tooltip.bottom title="Z-Probe is used">Z-Probe</b-form-radio>
 								<b-form-radio :value="4" class="w-100" :disabled="!board.hasMotorLoadDetection" v-b-tooltip.bottom title="Motor stall detection of the stepper drivers">Sensorless</b-form-radio>
 							</b-form-radio-group>

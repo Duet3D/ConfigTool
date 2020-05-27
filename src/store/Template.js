@@ -9,7 +9,7 @@ export default {
 		return {
 			board: 'duetwifi10',
 			expansion_boards: [],
-			firmware: 2.03,
+			firmware: 3.00,
 			standalone: true,
 			nvram: false,
 			auto_save: {
@@ -545,8 +545,16 @@ export default {
 		template.probe.deploy = template.probe.deploy || (template.probe.type === 'bltouch');
 
 		template.drives.forEach(function(drive, index) {
-			if ((drive.endstop_type == 3 && template.probe.type === 'noprobe') ||
-				(drive.endstop_type == 4 && !board.hasMotorLoadDetection)) {
+			if ((drive.endstop_type === 3 && template.probe.type === 'noprobe') ||
+				(drive.endstop_type === 4 && !board.hasMotorLoadDetection)) {
+				drive.endstop_type = 2;
+			}
+			if (template.firmware >= 3 && drive.endstop_type === 2) {
+				drive.endstop_type = 1;
+				if (drive.endstop_pin && !drive.endstop_pin.startsWith('!')) {
+					drive.endstop_pin = '!' + drive.endstop_pin;
+				}
+			} else if (template.firmware < 3 && drive.endstop_type === 1 && drive.endstop_pin && drive.endstop_pin.startsWith('!')) {
 				drive.endstop_type = 2;
 			}
 		});
