@@ -14,12 +14,12 @@ M666 X0 Y0 Z0 ; put your endstop adjustments here, or let auto calibration find 
 		let sParam = 1;
 		if (template.geometry.type === 'corexz') { sParam = 2; }
 		if (template.geometry.type === 'coreyz') { sParam = 3; }
-		if (template.firmware < 2.03) { %>
+		if (template.firmware < 2.03) { -%>
 M667 S<%- sParam %> ; select CoreXY mode
-<%		}
-	} else { -%>
+<%		} else { -%>
 M669 K<%- sParam %> ; select CoreXY mode
-<%	}
+<%		}
+	}
 	if (template.display.type) { -%>
 M918 P<%- template.display.type %> E<%- template.display.encoder_steps + ((template.firmware >= 2.03) ? ` F${template.display.spi_frequency}` : '') %> ; configure direct-connect display
 <%	}
