@@ -175,7 +175,7 @@ export default {
 			radius: 'template.mesh.radius',
 			spacing: 'template.mesh.spacing',
 			orthogonalCompensation: 'template.orthogonal.compensation',
-			orthogonalHeight: 'preset.orthogonal.height'
+			orthogonalHeight: 'template.orthogonal.height'
 		}),
 		...mapMultiRowFields({
 			probePoints: 'template.probe.points'

@@ -194,6 +194,8 @@ M950 S0 C"<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
 		if (template.firmware >= 3 && template.probe.input_pin) {
 			if (template.probe.modulation_pin) {
 				cArg = ` C"${template.probe.input_pin}+${template.probe.modulation_pin}"`;
+			} else if (template.probe.type === 'bltouch') {
+				cArg = ` C"^${template.probe.input_pin}"`;
 			} else {
 				cArg = ` C"${template.probe.input_pin}"`;
 			}

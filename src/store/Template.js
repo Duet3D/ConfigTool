@@ -125,7 +125,7 @@ export default {
 				pwm_inverted: true,				// v1-2 only
 				pwm_pin: null,					// v3+
 				input_pin: 'zprobe.in',			// v3+
-				modulation_pin: 'zprobe.mod'	// v3+
+				modulation_pin: null			// v3+
 			},
 			bed_is_nozzle: false,
 			bed: {
@@ -300,20 +300,26 @@ export default {
 					value: items[i],
 					disabled
 				});
-				options.push({
-					text: items[i] + ' (inverted)',
-					value: '!' + items[i],
-					disabled
-				});
 				if (inputMode) {
+					options.push({
+						text: items[i] + ' (active-low)',
+						value: '!' + items[i],
+						disabled
+					});
 					options.push({
 						text: items[i] + ' (pull-up)',
 						value: '^' + items[i],
 						disabled
 					});
 					options.push({
-						text: items[i] + ' (inverted, pull-up)',
+						text: items[i] + ' (active-low, pull-up)',
 						value: '!^' + items[i],
+						disabled
+					});
+				} else {
+					options.push({
+						text: items[i] + ' (inverted)',
+						value: '!' + items[i],
 						disabled
 					});
 				}

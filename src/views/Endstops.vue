@@ -140,9 +140,12 @@ label.btn {
 						<span>Make sure you change it to use +3.3V instead of +5V before you connect it or you risk damaging your board!</span>
 					</b-tab>
 				</b-tabs>
+
+				<b-alert :show="template.firmware >= 3 && (!template.probe.input_pin || !template.probe.pwm_pin)" class="mb-0">
+					<strong>Note:</strong> You must specify an input and a PWM control pin on the <router-link to="/Mapping">I/O Mapping</router-link> page if you want to configure a BLTouch probe.
+				</b-alert>
 			</b-card>
 		</b-card>
-
 	</b-container>
 </template>
 
