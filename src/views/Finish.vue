@@ -15,6 +15,7 @@ textarea {
 		</b-card>
 
 		<b-card header="Miscellaneous" class="mt-3">
+			<b-checkbox v-model="panelDue" class="mb-3">Enable support for PanelDue</b-checkbox>
 			<label for="custom_settings">Custom Settings for config.g:</label>
 			<label class="float-right"><a href="https://duet3d.com/wiki/G-code" target="_blank">Full list of all available G-codes</a></label>
 			<b-form-textarea id="custom_settings" v-model="customSettings" rows="4" max-rows="8" @keydown.tab.exact.prevent="onTextareaTab"></b-form-textarea>
@@ -30,10 +31,11 @@ import { mapFields, mapMultiRowFields } from 'vuex-map-fields'
 
 export default {
 	computed: mapFields({
-		customSettings: 'template.custom_settings',
-		standalone: 'template.standalone',
 		addDWC: 'addDWC',
-		addRRF: 'addRRF'
+		addRRF: 'addRRF',
+		panelDue: 'template.panelDue',
+		customSettings: 'template.custom_settings',
+		standalone: 'template.standalone'
 	}),
 	methods: {
 		onTextareaTab(e) {

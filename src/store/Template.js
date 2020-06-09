@@ -25,6 +25,7 @@ export default {
 				menus: [{ name: 'main', value: '' }],
 				images: []
 			},
+			panelDue: false,
 			geometry: {
 				type: 'cartesian',
 
@@ -316,7 +317,7 @@ export default {
 						value: '!^' + items[i],
 						disabled
 					});
-				} else {
+				} else if (name !== 'pwmPorts') {
 					options.push({
 						text: items[i] + ' (inverted)',
 						value: '!' + items[i],
