@@ -140,7 +140,7 @@
 							<b-button size="sm" variant="success" :disabled="!canAddNozzle" @click="addNozzle()">
 								<font-awesome-icon icon="plus"></font-awesome-icon>
 							</b-button>
-							<b-button size="sm" variant="danger" :disabled="!canRemoveNozzle" @click="removeNozzle()">
+							<b-button size="sm" variant="danger" :disabled="!canRemoveHeater" @click="removeHeater()">
 								<font-awesome-icon icon="minus"></font-awesome-icon>
 							</b-button>
 						</b-button-group>
@@ -245,6 +245,9 @@ export default {
 		}),
 		...mapGetters(['canAddExpansionBoard', 'canAddExtruder', 'canRemoveExtruder', 'canAddNozzle', 'canRemoveNozzle', 'canAddFan', 'canRemoveFan']),
 		...mapMultiRowFields(['template.drives', 'template.heaters', 'template.fans']),
+		canRemoveHeater() {
+			return this.canRemoveNozzle || this.template.bed.present || this.template.chamber.present;
+		},
 		heaterTypes() {
 			return [
 				{ text: 'Bed', value: 0 },
@@ -341,6 +344,15 @@ export default {
 			}
 		},
 
+		removeHeater() {
+			if (this.template.bed.present && this.template.bed.heater === this.template.heaters.length - 1) {
+				this.updateBed({ present: false });
+			} else if (this.template.chamber.present && this.template.chamber.heater === this.template.heaters.length - 1) {
+				this.updateChamber({ present: false });
+			} else {
+				this.removeNozzle();
+			}
+		},
 		getHeaterType(index) {
 			if (this.template.bed.present && this.template.bed.heater === index) {
 				return 0;

@@ -91,6 +91,10 @@ label.btn {
 					<b-tab title="Switch" :disabled="template.firmware >= 3 && !template.probe.input_pin" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'switch' }" value="switch">
 						<z-probe-values></z-probe-values>
 						A switch is used to determine the distance between nozzle and bed.
+						<template v-if="template.firmware >= 3">
+							<br>
+							If you are not using an active-high switch, you have to invert the Z-probe port on the <router-link to="Mapping">I/O Mapping</router-link> page.
+						</template>
 
 						<template v-if="template.geometry.type === 'delta'">
 							<br><br>

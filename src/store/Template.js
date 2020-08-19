@@ -77,7 +77,7 @@ export default {
 					direction: 1,
 					microstepping: 16,
 					microstepping_interpolation: true,
-					steps_per_mm: 4000,
+					steps_per_mm: 400,
 					instant_dv: 0.2,
 					max_speed: 3,
 					acceleration: 20,
@@ -340,7 +340,7 @@ export default {
 						disabled
 					});
 					options.push({
-						text: text + ' (inverted)',
+						text: text + ' (active-low)',
 						value: '!' + value,
 						disabled
 					});
@@ -351,7 +351,7 @@ export default {
 							disabled
 						});
 						options.push({
-							text: text + ' (inverted, pull-up)',
+							text: text + ' (active-low, pull-up)',
 							value: '!^' + value,
 							disabled
 						});
