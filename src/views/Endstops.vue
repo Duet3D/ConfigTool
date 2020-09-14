@@ -100,7 +100,7 @@ label.btn {
 							<br><br>
 							<span>This switch must be connected to the E0 endstop terminal!</span>
 						</template>
-						<template v-else>
+						<template v-else-if="template.firmware < 3" >
 							<br><br>
 							<span>This switch must be connected to the Z probe terminal and <strong>not</strong> to the Z endstop switch terminal!</span>
 						</template>
