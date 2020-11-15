@@ -187,7 +187,7 @@ export default new Vuex.Store({
 			} else {
 				state.template.drives.forEach(function(drive, index) {
 					if (drive.steps_per_mm === (index < 3) ? 80 : 663) { drive.steps_per_mm = (index < 2) ? 80 : ((index === 2) ? 400 : 420); };
-					if (drive.instant_dv === 20) { drive.instant_dv = (index < 2) ? 15 : ((index === 2) ? 0.2 : 2); }
+					if (drive.instant_dv === 20) { drive.instant_dv = (index < 2) ? 15 : ((index === 2) ? 1 : 2); }
 					if (drive.max_speed === (index < 3) ? 300 : 20) { drive.max_speed = (index < 2) ? 100 : ((index === 2) ? 3 : 20); }
 					if (drive.acceleration === 1000) { drive.acceleration = (index < 2) ? 500 : ((index === 2) ? 20 : 250); }
 					if (drive.current === (index < 3) ? 1000 : 800) { drive.current = 800; }
@@ -198,7 +198,7 @@ export default new Vuex.Store({
 
 				state.preset.drives.forEach(function(drive, index) {
 					drive.steps_per_mm = (index < 2) ? 80 : ((index === 2) ? 400 : 420);
-					drive.instant_dv = (index < 2) ? 15 : ((index === 2) ? 0.2 : 2);
+					drive.instant_dv = (index < 2) ? 15 : ((index === 2) ? 1 : 2);
 					drive.max_speed = (index < 2) ? 100 : ((index === 2) ? 3 : 20);
 					drive.acceleration = (index < 2) ? 500 : ((index === 2) ? 20 : 250);
 					drive.current = 800;
