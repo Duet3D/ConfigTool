@@ -78,7 +78,7 @@ export default {
 					microstepping: 16,
 					microstepping_interpolation: true,
 					steps_per_mm: 400,
-					instant_dv: 0.2,
+					instant_dv: 1,
 					max_speed: 3,
 					acceleration: 20,
 					current: 800,
