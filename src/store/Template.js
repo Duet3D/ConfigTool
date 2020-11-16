@@ -294,7 +294,7 @@ export default {
 		// Main board
 		let index = 0;
 		for (let i = 0; i < pins.length; i++) {
-			if ((template.board !== 'duet3' || inputMode == undefined || pins[i].indexOf(inputMode ? 'in' : 'out') !== -1) &&
+			if ((!template.board.startsWith('duet3') || inputMode == undefined || pins[i].indexOf(inputMode ? 'in' : 'out') !== -1) &&
 				(name !== 'pwmPorts' || pins[i].indexOf('exp') === -1 || template.expansion_boards.length === 0)) {
 				const disabled = !this.isSamePin(selectedPin, pins[i]) && this.isPinBlocked(template, pins[i]);
 				options.push({
@@ -335,9 +335,9 @@ export default {
 			const canAddress = expansionBoard.isToolBoard ? toolIndex++ : expIndex++;
 			const expansionPins = expansionBoard[name];
 			for (let k = 0; k < expansionPins.length; k++) {
-				if (inputMode === undefined || template.board !== 'duet3' || expansionPins[k].indexOf(inputMode ? 'in' : 'out') !== -1) {
-					const text = (template.board === 'duet3') ? `Board ${canAddress} - ${expansionPins[k]}` : expansionPins[k];
-					const value = (template.board === 'duet3') ? `${canAddress}.${expansionPins[k]}` : expansionPins[k];
+				if (inputMode === undefined || !template.board.startsWith('duet3') || expansionPins[k].indexOf(inputMode ? 'in' : 'out') !== -1) {
+					const text = template.board.startsWith('duet3') ? `Board ${canAddress} - ${expansionPins[k]}` : expansionPins[k];
+					const value = template.board.startsWith('duet3') ? `${canAddress}.${expansionPins[k]}` : expansionPins[k];
 					const disabled = !this.isSamePin(selectedPin, value) && this.isPinBlocked(template, value);
 					options.push({
 						text,
@@ -373,7 +373,7 @@ export default {
 		}
 
 		const board = Boards.getBoard(template.board);
-		if (Boards.isValidPin(board, pin, (template.board === 'duet3') ? 0 : undefined)) {
+		if (Boards.isValidPin(board, pin, template.board.startsWith('duet3') ? 0 : undefined)) {
 			return true;
 		}
 
@@ -381,7 +381,7 @@ export default {
 		return template.expansion_boards.some(function(name, index) {
 			const expansionBoard = ExpansionBoards[name];
 			const canAddress = expansionBoard.isToolBoard ? toolIndex++ : expIndex++;
-			return Boards.isValidPin(expansionBoard, pin, (template.board === 'duet3') ? canAddress : undefined);
+			return Boards.isValidPin(expansionBoard, pin, template.board.startsWith('duet3') ? canAddress : undefined);
 		});
 	},
 	validatePins(template) {

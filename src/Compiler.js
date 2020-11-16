@@ -204,7 +204,7 @@ export default {
 
 			formatDriver(drive) {
 				if (template.firmware >= 3) {
-					if (template.board === 'duet3' || drive.driver_v3.indexOf('.') === -1) {
+					if (template.board.startsWith('duet3') || drive.driver_v3.indexOf('.') === -1) {
 						return drive.driver_v3;
 					}
 					const driveIndex = parseInt(drive.driver_v3.split('.')[1]);

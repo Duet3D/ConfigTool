@@ -231,7 +231,7 @@ export default {
 						// TODO Add tool/expansion board files
 
 						// Try to download IAP from our own assets
-						const iapFile = (this.template.board !== 'duet3' || this.template.standalone) ? this.board.iapFile : null;
+						const iapFile = (!this.template.board.startsWith('duet3') || this.template.standalone) ? this.board.iapFile : null;
 						try {
 							this.iapFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${iapFile}`, 'blob', 'application/octet-stream');
 							this.iapFile.name = iapFile;

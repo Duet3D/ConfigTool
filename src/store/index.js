@@ -49,8 +49,8 @@ export default new Vuex.Store({
 			if (board === 'duet06' || board === 'duet085') {
 				// RRFv2 isn't supported on Duet 0.6/0.8.5
 				commit('setFirmware', 1.21);
-			} else if (board === 'duet3') {
-				// RRFv3 is required for the Duet 3
+			} else if (board.startsWith('duet3')) {
+				// RRFv3 is required for the Duet 3 series
 				commit('setFirmware', 3);
 			}
 		}
@@ -119,7 +119,7 @@ export default new Vuex.Store({
 			});
 
 			// Don't load DWC on the Duet 3 in SBC mode
-			if (board === 'duet3') {
+			if (board.startsWith('duet3')) {
 				state.template.standalone = false;
 				state.addDWC = false;
 			} else {

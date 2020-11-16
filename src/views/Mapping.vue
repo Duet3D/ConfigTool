@@ -1,4 +1,4 @@
-<style scoped>
+<, truestyle scoped>
 .no-wrap {
 	white-space: nowrap;
 }
@@ -18,7 +18,7 @@
 
 			<b-table-simple v-show="template.expansion_boards.length > 0" striped hover class="mb-0">
 				<b-thead>
-					<b-th v-if="template.board === 'duet3'" class="no-wrap">CAN Address</b-th>
+					<b-th v-if="template.board.startsWith('duet3')" class="no-wrap">CAN Address</b-th>
 					<b-th>Board Name</b-th>
 					<b-th>Drives</b-th>
 					<b-th>Heaters</b-th>
@@ -28,7 +28,7 @@
 				</b-thead>
 				<b-tbody>
 					<b-tr v-for="(expBoard, index) in template.expansion_boards" :key="index">
-						<b-td v-if="template.board === 'duet3'" width="9%">
+						<b-td v-if="template.board.startsWith('duet3')" width="9%">
 							{{ getCanAddress(index) }}
 						</b-td>
 						<b-td width="18%">
@@ -95,7 +95,7 @@
 									<b-select v-model="drive.driver_v3" :state="validateDriver(drive.driver_v3)" size="sm" :options="getDrivers(drive.driver_v3)"></b-select>
 								</b-td>
 								<b-td>
-									<b-select v-if="index < 3" :value="drive.endstop_pin" @change="updateDrive({ drive: index, ep: $event })" size="sm" :options="getPins('gpioPorts', drive.endstop_pin, false, true)"></b-select>
+									<b-select v-if="index < 3" :value="drive.endstop_pin" @change="updateDrive({ drive: index, ep: $event })" :state="isValidPin(drive.endstop_pin, true) && undefined" size="sm" :options="getPins('gpioPorts', drive.endstop_pin, false, true)"></b-select>
 								</b-td>
 							</b-tr>
 						</b-tbody>
@@ -202,7 +202,7 @@
 									Input Pin
 								</b-td>
 								<b-td>
-									<b-select :value="template.probe.input_pin" @change="setProbePin({ inputPin: $event })" size="sm" :options="getPins('analogPorts', template.probe.input_pin, false)"></b-select>
+									<b-select :value="template.probe.input_pin" @change="setProbePin({ inputPin: $event })" :state="isValidPin(template.probe.input_pin, true) && undefined" size="sm" :options="getPins('analogPorts', template.probe.input_pin, false)"></b-select>
 								</b-td>
 							</b-tr>
 							<b-tr>
@@ -210,7 +210,7 @@
 									Modulation Pin
 								</b-td>
 								<b-td>
-									<b-select :value="template.probe.modulation_pin" @change="setProbePin({ modulationPin: $event })" size="sm" :options="getPins('gpioPorts', template.probe.modulation_pin, false, false)"></b-select>
+									<b-select :value="template.probe.modulation_pin" @change="setProbePin({ modulationPin: $event })" :state="isValidPin(template.probe.modulationPin, true) && undefined" size="sm" :options="getPins('gpioPorts', template.probe.modulation_pin, false, false)"></b-select>
 								</b-td>
 							</b-tr>
 							<b-tr>
@@ -218,7 +218,7 @@
 									PWM Control Channel (BLTouch only)
 								</b-td>
 								<b-td>
-									<b-select :value="template.probe.pwm_pin" @change="setProbePin({ pwmPin: $event })" size="sm" :options="getPins('pwmPorts', template.probe.pwm_pin, false)"></b-select>
+									<b-select :value="template.probe.pwm_pin" @change="setProbePin({ pwmPin: $event })" :state="isValidPin(template.probe.pwm_pin, true) && undefined" size="sm" :options="getPins('pwmPorts', template.probe.pwm_pin, false)"></b-select>
 								</b-td>
 							</b-tr>
 						</b-tbody>
@@ -292,6 +292,10 @@ export default {
 		getPins(name, selectedPin, mandatory, inputMode) {
 			return Template.getPins(this.template, this.board, name, selectedPin, mandatory, inputMode);
 		},
+		isValidPin(pinName, optional) {
+			return Template.isValidPin(this.template, pinName, optional);
+		},
+
 		getDriveCaption(drive) {
 			switch (drive) {
 				case 0: return 'X';
@@ -301,7 +305,7 @@ export default {
 			}
 		},
 		getDriverCaption(drive) {
-			if (this.template.board === 'duet3') {
+			if (this.template.board.startsWith('duet3')) {
 				if (drive < this.board.numDrives) {
 					return `Driver ${drive}`;
 				}

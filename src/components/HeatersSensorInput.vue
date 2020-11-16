@@ -89,8 +89,8 @@ export default {
 				for (let i = 0; i < this.template.expansion_boards.length; i++) {
 					const expansionBoard = ExpansionBoards[this.template.expansion_boards[i]];
 					const canAddress = expansionBoard.isToolBoard ? toolIndex++ : expIndex++;
-					const prefix = (this.template.board === 'duet3') ? `Board ${canAddress} - ` : '';
-					const portPrefix = (this.template.board === 'duet3') ? `${canAddress}.` : '';
+					const prefix = this.template.board.startsWith('duet3') ? `Board ${canAddress} - ` : '';
+					const portPrefix = this.template.board.startsWith('duet3') ? `${canAddress}.` : '';
 
 					for (let k = 0; k < expansionBoard.analogPorts.length; k++) {
 						const port = portPrefix + expansionBoard.analogPorts[k];
