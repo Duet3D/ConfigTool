@@ -37,7 +37,7 @@
 			</b-form-row>
 
 			<b-form-checkbox v-if="template.board === 'duet3'" v-model="standalone" v-preset.left title="Run RepRapFirmware in stand-alone mode without an attached single-board computer">Run in standalone mode without SBC</b-form-checkbox>
-			<b-form-checkbox v-model="nvram" v-preset.left title="Load saved configuration parameters on start-up (M501)">Read config-override.g file at end of startup process</b-form-checkbox>
+			<b-form-checkbox v-model="nvram" v-preset.left title="Load saved configuration parameters on start-up (M501)">Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)</b-form-checkbox>
 			<b-form-checkbox v-if="board.hasPowerFailureDetection" v-model="autoSaveEnabled" v-preset.left="preset.auto_save.enabled" title="Store the last valid print parameters on the SD card when a power failure occurs (M911)">Save print state on power failure</b-form-checkbox>
 			<div v-show="autoSaveEnabled" class="mt-3 pl-4">
 				<b-form-row>

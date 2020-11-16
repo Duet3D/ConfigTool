@@ -93,7 +93,7 @@ export default {
 			numDrives: 5,
 			heaterPorts: ['bedheat', 'e0heat', 'e1heat'],
 			fanPorts: ['fan0', 'fan1', 'fan2'],
-			pwmPorts: ['!duex.pwm1', '!duex.pwm2', '!duex.pwm3', '!duex.pwm4', '!duex.pwm5'],
+			pwmPorts: ['exp.heater3', 'exp.heater4', 'exp.heater5', 'exp.heater6', 'exp.heater7'],
 			gpioPorts: ['xstop', 'ystop', 'zstop', 'e0stop', 'e1stop', 'zprobe.mod', 'pson'],
 			analogPorts: ['bedtemp', 'e0temp', 'e1temp', 'zprobe.in'],
 			spiCsPorts: ['spi.cs1', 'spi.cs2', 'spi.cs3', 'spi.cs4'],
@@ -172,12 +172,12 @@ export default {
 		throw 'Invalid board';
 	},
 
-	isValidPin(board, pin, boardId) {
+	isValidPin(board, pin, canAddress) {
 		const pinTypes = ['heaterPorts', 'fanPorts', 'pwmPorts', 'gpioPorts', 'analogPorts', 'spiCsPorts'];
 		return pinTypes.some(function(pinType) {
 			return board[pinType].some(function(boardPort) {
-				return ((!boardId && Template.isSamePin(pin, boardPort)) ||
-						(boardId !== undefined && Template.isSamePin(pin, `${boardId}.${boardPort}`)));
+				return ((!canAddress && Template.isSamePin(pin, boardPort)) ||
+						(canAddress !== undefined && Template.isSamePin(pin, `${canAddress}.${boardPort}`)));
 			});
 		});
 	}

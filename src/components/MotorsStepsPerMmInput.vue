@@ -47,9 +47,9 @@
 							<option value="custom">Custom</option>
 						</b-select>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Pitch:">
+					<b-form-group label-cols="5" label="Lead:">
 						<b-input-group append="mm">
-							<b-form-input v-model.number="leadscrew.pitch" type="number" step="any" required></b-form-input>
+							<b-form-input v-model.number="leadscrew.lead" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
 					<b-form-group label-cols="5" label="Gear ratio:">
@@ -142,7 +142,7 @@ export default {
 				for (let key in this.leadscrew.presets) {
 					for (let i in this.leadscrew.presets[key]) {
 						const preset = this.leadscrew.presets[key][i];
-						if (preset.value == this.leadscrew.pitch) {
+						if (preset.value == this.leadscrew.lead) {
 							return preset.value;
 						}
 					}
@@ -151,7 +151,7 @@ export default {
 			},
 			set(value) {
 				if (value !== 'custom') {
-					this.leadscrew.pitch = value;
+					this.leadscrew.lead = value;
 				}
 			}
 		},
@@ -162,7 +162,7 @@ export default {
 
 				case 'leadscrew': 
 					let leadscrewRatio = this.leadscrew.ratio2 / this.leadscrew.ratio1;
-					return (360.0 * this.drive.microstepping * leadscrewRatio) / (this.leadscrew.pitch * this.stepAngle);
+					return (360.0 * this.drive.microstepping * leadscrewRatio) / (this.leadscrew.lead * this.stepAngle);
 
 				case 'extruder':
 					let gearsRatio = this.extruder.ratio2 / this.extruder.ratio1;
@@ -212,7 +212,7 @@ export default {
 						{ text: 'TR6', value: 6 }
 					]
 				},
-				pitch: 0.8,
+				lead: 0.8,
 				ratio1: 1,
 				ratio2: 1
 			},

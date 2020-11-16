@@ -1,3 +1,9 @@
+<style scoped>
+.no-wrap {
+	white-space: nowrap;
+}
+</style>
+
 <template>
 	<b-container>
 		<b-card no-body>
@@ -12,18 +18,18 @@
 
 			<b-table-simple v-show="template.expansion_boards.length > 0" striped hover class="mb-0">
 				<b-thead>
-					<b-th v-if="template.board === 'duet3'" width="9%">ID</b-th>
-					<b-th width="18%">Board Name</b-th>
-					<b-th width="18%">Drives</b-th>
-					<b-th width="18%">Heaters</b-th>
-					<b-th width="18%">Fans</b-th>
-					<b-th width="18%">GPIO Pins</b-th>
+					<b-th v-if="template.board === 'duet3'" class="no-wrap">CAN Address</b-th>
+					<b-th>Board Name</b-th>
+					<b-th>Drives</b-th>
+					<b-th>Heaters</b-th>
+					<b-th>Fans</b-th>
+					<b-th>GPIO Pins</b-th>
 					<b-th width="1%"></b-th>
 				</b-thead>
 				<b-tbody>
 					<b-tr v-for="(expBoard, index) in template.expansion_boards" :key="index">
 						<b-td v-if="template.board === 'duet3'" width="9%">
-							{{ index + 1 }}
+							{{ getCanAddress(index) }}
 						</b-td>
 						<b-td width="18%">
 							{{ expBoard }}
@@ -264,6 +270,17 @@ export default {
 			'addFan', 'removeFan', 'updateFan',
 			'setProbePin'
 		]),
+		getCanAddress(index) {
+			let expIndex = 1, toolIndex = 121;
+			for (let i = 0; i <= index; i++) {
+				const expansionBoard = ExpansionBoards[this.template.expansion_boards[i]];
+				const canAddress = expansionBoard.isToolBoard ? toolIndex++ : expIndex++;
+				if (i === index) {
+					return canAddress;
+				}
+			}
+			return 'n/a';
+		},
 		getBoardProp(boardName, propName) {
 			const board = ExpansionBoards[boardName];
 			if (board[propName] instanceof Array) {
@@ -271,6 +288,7 @@ export default {
 			}
 			return board[propName];
 		},
+
 		getPins(name, selectedPin, mandatory, inputMode) {
 			return Template.getPins(this.template, this.board, name, selectedPin, mandatory, inputMode);
 		},

@@ -227,11 +227,11 @@ export default {
 								if (item.name === this.board.firmwareFile) {
 									this.rrfVersion = latestRelease.tag_name;
 									this.rrfLink = item.browser_download_url;
-									this.rrfFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
+									this.rrfFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
 								}
 								else if (item.name === iapFile) {
 									this.iapLink = item.browser_download_url;
-									this.iapFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
+									this.iapFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
 								}
 							} catch (e) {
 								// GitHub cloud servers do not provide CORS headers so the download (probably) fails
@@ -241,7 +241,7 @@ export default {
 						throw 'Could not find suitable RepRapFirmware version on GitHub';
 					}
 				} catch (e) {
-					console.warn(`Failed to load RRF from GitHub: ${e}`);
+					console.warn(`Failed to load RRF: ${e}`);
 				}
 			}
 
@@ -265,7 +265,7 @@ export default {
 								if (item.name.indexOf('SD') !== -1) {
 									this.dwcVersion = latestRelease.tag_name;
 									this.dwcLink = item.browser_download_url;
-									this.dwcFile = await Compiler.downloadFile(item.url, 'blob', 'application/octet-stream');
+									this.dwcFile = await Compiler.downloadFile(`assets/DuetWebControl-${latestRelease.tag_name}.zip`, 'blob', 'application/octet-stream');
 									break;
 								}
 							} catch (e) {
@@ -274,7 +274,7 @@ export default {
 						}
 					}
 				} catch (e) {
-					console.warn(`Failed to load DWC from GitHub: ${e}`);
+					console.warn(`Failed to load DWC: ${e}`);
 				}
 			}
 
