@@ -110,7 +110,7 @@ input::-webkit-inner-spin-button {
 				<a :href="configLink" class="btn btn-secondary" download="config.json">
 					<font-awesome-icon icon="save"></font-awesome-icon> Download JSON template
 				</a>
-				<b-button variant="primary" @click="generateZIP" :disabled="generatingZIP">
+				<b-button variant="primary" @click="generateZIP" :disabled="generatingZIP || files.length == 0">
 					<font-awesome-icon :icon="generatingZIP ? 'hourglass' : 'download'"></font-awesome-icon> {{ generatingZIP ? 'Generating ZIP bundle...' : 'Download configuration bundle as ZIP file' }}
 				</b-button>
 			</template>
@@ -220,21 +220,48 @@ export default {
 
 					// Attempt to download the required files (IAP+RRF)
 					if (latestRelease) {
-						const iapFile = (this.template.board === 'duet3') ? (this.template.standalone ? 'Duet3iap_sd_MB6HC.bin' : null) : this.board.iapFile;
+						// Try to download RRF from our own assets
+						try {
+							this.rrfFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${this.board.firmwareFile}`, 'blob', 'application/octet-stream');
+							this.rrfFile.name = this.board.firmwareFile;
+						} catch {
+							this.rrfFile = null;
+						}
+
+						// TODO Add tool/expansion board files
+
+						// Try to download IAP from our own assets
+						const iapFile = (this.template.board !== 'duet3' || this.template.standalone) ? this.board.iapFile : null;
+						try {
+							this.iapFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${iapFile}`, 'blob', 'application/octet-stream');
+							this.iapFile.name = iapFile;
+						} catch {
+							this.iapFile = null;
+						}
+
+						// Fall back to GitHub (although this probably won't work due to their odd CORS restrictions)
 						for (let i = 0; i < latestRelease.assets.length; i++) {
 							const item = latestRelease.assets[i];
+							let rrfLink = null, iapLink = null;
 							try {
-								if (item.name === this.board.firmwareFile) {
+								if (this.rrfFile === null && item.name === this.board.firmwareFile) {
+									rrfLink = item.browser_download_url;
 									this.rrfVersion = latestRelease.tag_name;
-									this.rrfLink = item.browser_download_url;
 									this.rrfFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
+									this.rrfFile.name = item.name;
 								}
-								else if (item.name === iapFile) {
-									this.iapLink = item.browser_download_url;
+								else if (this.iapFile === null && item.name === iapFile) {
+									iapLink = item.browser_download_url;
 									this.iapFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
+									this.iapFile.name = item.name;
 								}
 							} catch (e) {
-								// GitHub cloud servers do not provide CORS headers so the download (probably) fails
+								if (rrfLink && this.rrfFile === null) {
+									this.rrfLink = rrfLink;
+								}
+								if (iapLink && this.iapFile === null) {
+									this.iapLink = iapLink;
+								}
 							}
 						}
 					} else {
@@ -261,15 +288,17 @@ export default {
 					if (latestRelease) {
 						for (let i = 0; i < latestRelease.assets.length; i++) {
 							const item = latestRelease.assets[i];
+
+							let dwcLink = null;
 							try {
 								if (item.name.indexOf('SD') !== -1) {
+									dwcLink = item.browser_download_url;
 									this.dwcVersion = latestRelease.tag_name;
-									this.dwcLink = item.browser_download_url;
 									this.dwcFile = await Compiler.downloadFile(`assets/DuetWebControl-${latestRelease.tag_name}.zip`, 'blob', 'application/octet-stream');
 									break;
 								}
 							} catch (e) {
-								// GitHub cloud servers do not provide CORS headers so the download (probably) fails
+								this.dwcLink = dwcLink;
 							}
 						}
 					}
@@ -298,6 +327,7 @@ export default {
 				}
 			} catch (e) {
 				alert('Failed to generate ZIP bundle:\n\n' + e);
+				throw e;
 			}
 
 			this.generatingZIP = false;

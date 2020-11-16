@@ -78,7 +78,7 @@ export default {
 			supportsDisplay: false,
 			supports12864: false,
 			firmwareFile: 'Duet2CombinedFirmware.bin',
-			iapFile: 'iap4e.bin',
+			iapFile: 'Duet2CombinedIAP.bin',
 			expansionBoards: ['Duex 2', 'Duex 5'],
 			maxExpansionBoards: 1
 		},
@@ -104,7 +104,7 @@ export default {
 			supportsDisplay: false,
 			supports12864: false,
 			firmwareFile: 'Duet2CombinedFirmware.bin',
-			iapFile: 'iap4e.bin',
+			iapFile: 'Duet2CombinedIAP.bin',
 			expansionBoards: ['Duex 2', 'Duex 5'],
 			maxExpansionBoards: 1
 		},
@@ -130,7 +130,7 @@ export default {
 			supportsDisplay: true,
 			supports12864: true,
 			firmwareFile: 'DuetMaestroFirmware.bin',
-			iapFile: 'iap4s.bin',
+			iapFile: 'DuetMaestroIAP.bin',
 			expansionBoards: ['Dual Stepper Driver Expansion Module'],
 			maxExpansionBoards: 1
 		},
@@ -156,7 +156,7 @@ export default {
 			supportsDisplay: false,
 			supports12864: false,
 			firmwareFile: 'Duet3Firmware_MB6HC.bin',
-			iapFile: null,
+			iapFile: 'Duet3_SDiap_MB6HC.bin',
 			expansionBoards: ['EXP3HC', 'TOOL1LC'],
 			maxExpansionBoards: 6
 		}

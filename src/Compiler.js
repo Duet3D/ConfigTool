@@ -121,27 +121,31 @@ export default {
 		// Add RRF+IAP files
 		if (rrfFile) {
 			try {
-				zip.file('sys/' + rrfFile.name);
+				zip.file('sys/' + rrfFile.name, rrfFile);
 			} catch (e) {
-				throw `Failed to create ${rrfFile.name}: ${e}`
+				throw `Failed to integrate ${rrfFile.name}: ${e}`
 			}
 		}
 		if (iapFile) {
 			try {
-				zip.file('sys/' + iapFile.name);
+				zip.file('sys/' + iapFile.name, iapFile);
 			} catch (e) {
-				throw `Failed to create ${rrfFile.name}: ${e}`
+				throw `Failed to integrate ${rrfFile.name}: ${e}`
 			}
 		}
 
 		// Add DWC
 		if (dwcFile) {
 			try {
-				const dwcZIP = new JSZip();
-				dwcZIP.load(dwcFile);
+				const dwcZIP = new JSZip(), promises = [];
+				await dwcZIP.loadAsync(dwcFile);
 				dwcZIP.forEach(function(relativePath, zipEntry) {
-					zip.file('www/' + relativePath + '/' + zipEntry.name, zipEntry);
+					promises.push(zipEntry
+						.async('blob')
+						.then(blob => zip.file('www/' + zipEntry.name, blob))
+					);
 				});
+				await Promise.all(promises);
 			} catch (e) {
 				throw `Failed to integrate DWC bundle: ${e}`
 			}
