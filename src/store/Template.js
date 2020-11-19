@@ -819,6 +819,15 @@ export default {
 			template.chamber.present = false;
 			this.fixNozzles(template);
 		}
+
+		template.tools.forEach(function(tool) {
+			tool.heaters = tool.heaters.filter(heater => {
+				if (heater >= 0 && heater < template.heaters.length) {
+					return template.heaters[heater] !== null;
+				}
+				return false;
+			});
+		});
 	},
 
 	// Recalculate probe points
