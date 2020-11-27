@@ -10,7 +10,7 @@
 							<option value="duetwifi10">Duet 2 WiFi</option>
 							<option value="duetethernet10">Duet 2 Ethernet</option>
 							<option value="duetm10">Duet 2 Maestro</option>
-							<option value="duet3">Duet 3</option>
+							<option value="duet3">Duet 3 MB 6HC</option>
 							<option value="duet3_mini5plus_ethernet">Duet 3 Mini 5+ (Ethernet)</option>
 							<option value="duet3_mini5plus_wifi">Duet 3 Mini 5+ (WiFi)</option>
 						</b-form-select>
