@@ -112,7 +112,7 @@ export default {
 					(this.template.probe.type !== 'bltouch' || this.template.probe.pwm_channel !== index)
 				) {
 					heaters.push({
-						text: (index === 0) ? 'Bed' : `E${index - 1}`,
+						text: (this.template.firmware >= 3) ? `H${index}` : ((index === 0) ? 'Bed' : `E${index - 1}`),
 						value: index
 					});
 				}

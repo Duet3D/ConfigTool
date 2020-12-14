@@ -78,7 +78,7 @@ export default {
 			supportsDisplay: false,
 			supports12864: false,
 			firmwareFile: 'Duet2CombinedFirmware.bin',
-			iapFile: 'iap4e.bin',
+			iapFile: 'Duet2CombinedIAP.bin',
 			expansionBoards: ['Duex 2', 'Duex 5'],
 			maxExpansionBoards: 1
 		},
@@ -93,7 +93,7 @@ export default {
 			numDrives: 5,
 			heaterPorts: ['bedheat', 'e0heat', 'e1heat'],
 			fanPorts: ['fan0', 'fan1', 'fan2'],
-			pwmPorts: ['!duex.pwm1', '!duex.pwm2', '!duex.pwm3', '!duex.pwm4', '!duex.pwm5'],
+			pwmPorts: ['exp.heater3', 'exp.heater4', 'exp.heater5', 'exp.heater6', 'exp.heater7'],
 			gpioPorts: ['xstop', 'ystop', 'zstop', 'e0stop', 'e1stop', 'zprobe.mod', 'pson'],
 			analogPorts: ['bedtemp', 'e0temp', 'e1temp', 'zprobe.in'],
 			spiCsPorts: ['spi.cs1', 'spi.cs2', 'spi.cs3', 'spi.cs4'],
@@ -104,7 +104,7 @@ export default {
 			supportsDisplay: false,
 			supports12864: false,
 			firmwareFile: 'Duet2CombinedFirmware.bin',
-			iapFile: 'iap4e.bin',
+			iapFile: 'Duet2CombinedIAP.bin',
 			expansionBoards: ['Duex 2', 'Duex 5'],
 			maxExpansionBoards: 1
 		},
@@ -130,21 +130,21 @@ export default {
 			supportsDisplay: true,
 			supports12864: true,
 			firmwareFile: 'DuetMaestroFirmware.bin',
-			iapFile: 'iap4s.bin',
+			iapFile: 'DuetMaestroIAP.bin',
 			expansionBoards: ['Dual Stepper Driver Expansion Module'],
 			maxExpansionBoards: 1
 		},
 		{
 			name: 'duet3',
 			caption: 'Duet 3',
-			motorWarningCurrent: 2400,
+			motorWarningCurrent: 4000,
 			motorLimitCurrent: 6300,
 			seriesResistor: 2200,
 			microstepping: true,
 			microsteppingInterpolation: true,
 			numDrives: 6,
-			heaterPorts: ['out0', 'out1', 'out2'],
-			fanPorts: ['out3', 'out4', 'out5', 'out6', 'out7', 'out8', 'out9'],
+			heaterPorts: ['out0', 'out1', 'out2', 'out3'],
+			fanPorts: ['out4', 'out5', 'out6', 'out7', 'out8', 'out9'],
 			pwmPorts: ['io4.out', 'io5.out', 'io7.out'],
 			gpioPorts: ['io0.in', 'io1.in', 'io2.in', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io7.in', 'io8.in', 'io0.out', 'io1.out', 'io2.out', 'io3.out', 'io4.out', 'io5.out', 'io6.out', 'io7.out', 'io8.out', 'io4.tacho', 'io5.tacho', 'io6.tacho', 'pson'],
 			analogPorts: ['temp0', 'temp1', 'temp2', 'temp3', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io7.in'],
@@ -153,12 +153,64 @@ export default {
 			hasWiFi: false,
 			hasPowerFailureDetection: true,
 			hasMotorLoadDetection: true,
-			supportsDisplay: false,
+			supportsDisplay: true,
 			supports12864: false,
 			firmwareFile: 'Duet3Firmware_MB6HC.bin',
-			iapFile: null,
+			iapFile: 'Duet3_SDiap_MB6HC.bin',
 			expansionBoards: ['EXP3HC', 'TOOL1LC'],
 			maxExpansionBoards: 6
+		},
+		{
+			name: 'duet3_mini5plus_ethernet',
+			caption: 'Duet 3 Mini 5+',
+			motorWarningCurrent: 1500,
+			motorLimitCurrent: 2000,
+			seriesResistor: 2200,
+			microstepping: true,
+			microsteppingInterpolation: true,
+			numDrives: 5,
+			heaterPorts: ['out0', 'out1', 'out2'],
+			fanPorts: ['out3', 'out4', 'out5', 'vfd'],
+			pwmPorts: ['io4.out', 'io5.out', 'io7.out'],
+			gpioPorts: ['io0.in', 'io1.in', 'io2.in', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io0.out', 'io1.out', 'io2.out', 'io3.out', 'io4.out', 'out3.tach', 'out4.tach', 'out5.tach', 'pson'],
+			analogPorts: ['temp0', 'temp1', 'temp2', 'io3.in', 'io6.in'],
+			spiCsPorts: ['spi.cs0', 'spi.cs1', 'spi.cs2', 'spi.cs3'],
+			hasEthernet: true,
+			hasWiFi: false,
+			hasPowerFailureDetection: true,
+			hasMotorLoadDetection: true,
+			supportsDisplay: true,
+			supports12864: true,
+			firmwareFile: 'Duet3Firmware_Mini5plus.uf2',
+			iapFile: 'Duet3_SDiap_Mini5plus.bin',
+			expansionBoards: ['EXP3HC', 'TOOL1LC'],
+			maxExpansionBoards: 4
+		},
+		{
+			name: 'duet3_mini5plus_wifi',
+			caption: 'Duet 3 Mini 5+',
+			motorWarningCurrent: 1500,
+			motorLimitCurrent: 2000,
+			seriesResistor: 2200,
+			microstepping: true,
+			microsteppingInterpolation: true,
+			numDrives: 5,
+			heaterPorts: ['out0', 'out1', 'out2'],
+			fanPorts: ['out3', 'out4', 'out5', 'vfd'],
+			pwmPorts: ['io4.out', 'io5.out', 'io7.out'],
+			gpioPorts: ['io0.in', 'io1.in', 'io2.in', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io0.out', 'io1.out', 'io2.out', 'io3.out', 'io4.out', 'out3.tach', 'out4.tach', 'out5.tach', 'pson'],
+			analogPorts: ['temp0', 'temp1', 'temp2', 'io3.in', 'io6.in'],
+			spiCsPorts: ['spi.cs0', 'spi.cs1', 'spi.cs2', 'spi.cs3'],
+			hasEthernet: false,
+			hasWiFi: true,
+			hasPowerFailureDetection: true,
+			hasMotorLoadDetection: true,
+			supportsDisplay: true,
+			supports12864: true,
+			firmwareFile: 'Duet3Firmware_Mini5plus.uf2',
+			iapFile: 'Duet3_SDiap_Mini5plus.bin',
+			expansionBoards: ['EXP3HC', 'TOOL1LC'],
+			maxExpansionBoards: 4
 		}
 	],
 
@@ -172,12 +224,12 @@ export default {
 		throw 'Invalid board';
 	},
 
-	isValidPin(board, pin, boardId) {
+	isValidPin(board, pin, canAddress) {
 		const pinTypes = ['heaterPorts', 'fanPorts', 'pwmPorts', 'gpioPorts', 'analogPorts', 'spiCsPorts'];
 		return pinTypes.some(function(pinType) {
 			return board[pinType].some(function(boardPort) {
-				return ((!boardId && Template.isSamePin(pin, boardPort)) ||
-						(boardId !== undefined && Template.isSamePin(pin, `${boardId}.${boardPort}`)));
+				return ((!canAddress && Template.isSamePin(pin, boardPort)) ||
+						(canAddress !== undefined && Template.isSamePin(pin, `${canAddress}.${boardPort}`)));
 			});
 		});
 	}

@@ -85,21 +85,23 @@ export default {
 					});
 				}
 
+				let expIndex = 1, toolIndex = 121;
 				for (let i = 0; i < this.template.expansion_boards.length; i++) {
 					const expansionBoard = ExpansionBoards[this.template.expansion_boards[i]];
-					const prefix = (this.template.board === 'duet3') ? `Board ${i + 1} - ` : '';
-					const portPrefix = (this.template.board === 'duet3') ? `${i + 1}.` : '';
+					const canAddress = expansionBoard.isToolBoard ? toolIndex++ : expIndex++;
+					const prefix = this.template.board.startsWith('duet3') ? `Board ${canAddress} - ` : '';
+					const portPrefix = this.template.board.startsWith('duet3') ? `${canAddress}.` : '';
 
 					for (let k = 0; k < expansionBoard.analogPorts.length; k++) {
 						const port = portPrefix + expansionBoard.analogPorts[k];
 						const disabled = !Template.isSamePin(selectedPort, port) && Template.isPinBlocked(this.template, port);
 						sensors.Thermistors.push({
-							text: prefix + port,
+							text: prefix + expansionBoard.analogPorts[k],
 							value: `thermistor/${port}`,
 							disabled
 						});
 						sensors.PT1000.push({
-							text: prefix + `PT1000 on ${port}`,
+							text: prefix + `PT1000 on ${expansionBoard.analogPorts[k]}`,
 							value: `pt1000/${port}`,
 							disabled
 						});

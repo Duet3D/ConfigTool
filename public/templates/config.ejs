@@ -254,15 +254,15 @@ M950 H<%- i %> C"<%- heater.output_pin %>" T<%- i %> ; create <%- heaterType %> 
 <%			if (heaterType === 'bed') { -%>
 M307 H<%- i %> B<%- template.bed.use_pid ? 0 : 1 %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; <%- template.bed.use_pid ? 'disable' : 'enable' %> bang-bang mode for the bed heater and set PWM limit
 M140 H<%- i %> ; map heated bed to heater <%- i %>
-M143 H<%- i %> S<%- heater.temp_limit %> ; set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
 <%
 			} else if (heaterType === 'chamber') { -%>
 M307 H<%- i %> B<%- template.chamber.use_pid ? 0 : 1 %> S<%- (heater.scale_factor / 100).toFixed(2) %> ; <%- template.chamber.use_pid ? 'disable' : 'enable' %> bang-bang mode for the chamber heater and set PWM limit
 M141 H<%- i %> ; map chamber to heater <%- template.chamber.heater %>
 <%			} else { -%>
 M307 H<%- i %> B0 S<%- (heater.scale_factor / 100).toFixed(2) %> ; disable bang-bang mode for heater <% i -%> and set PWM limit
-<%			}
-		});
+<%			} -%>
+M143 H<%- i %> S<%- heater.temp_limit %> ; set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
+<%		});
 	} else {
 		if (!template.bed.present) { -%>
 M140 H-1 ; disable heated bed
