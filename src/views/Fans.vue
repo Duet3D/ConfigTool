@@ -12,57 +12,57 @@ td {
 	<b-container>
 		<b-card no-body class="mt-3">
 			<template #header>
-				<span class="mt-2">Cooling Fans</span>
+				<span class="mt-2">{{$t('fans.fans')}}</span>
 				<b-button-group v-if="template.firmware < 3" class="float-right">
 					<b-button size="sm" variant="success" :disabled="!canAddFan" @click="addFan()">
-						<font-awesome-icon icon="plus"></font-awesome-icon> Add Fan
+						<font-awesome-icon icon="plus"></font-awesome-icon> {{$t('fans.addFan')}}
 					</b-button>
 					<b-button size="sm" variant="danger" :disabled="!canRemoveFan" @click="removeFan()">
-						<font-awesome-icon icon="minus"></font-awesome-icon> Remove Fan
+						<font-awesome-icon icon="minus"></font-awesome-icon> {{$t('fans.removeFan')}}
 					</b-button>
 				</b-button-group>
 			</template>
 
 			<table class="table mb-0">
 				<thead>
-					<th>Name</th>
-					<th>Speed (%)</th>
-					<th v-if="template.firmware < 3">Inverted</th>
-					<th>Frequency (Hz)</th>
-					<th>Thermostatic Control</th>
-					<th>Monitored Heaters</th>
-					<th>Thermostatic Mode Trigger Temperature</th>
+					<th>{{$t('fans.name')}}</th>
+					<th>{{$t('fans.speed')}}</th>
+					<th v-if="template.firmware < 3">{{$t('fans.inverted')}}</th>
+					<th>{{$t('fans.frequency')}}</th>
+					<th>{{$t('fans.thermostatic')}}</th>
+					<th>{{$t('fans.monitoredHeaters')}}</th>
+					<th>{{$t('fans.triggerTemp')}}</th>
 				</thead>
 				<tbody>
 					<tr v-for="(fan, index) in fans" :key="index">
 						<td>
-							<b-form-input v-model="fan.name" v-preset="getFanPreset(index).name" :placeholder="`FAN${index}`" title="Custom label for this fan" type="text" :disabled="template.firmware < 2.01"></b-form-input>
+							<b-form-input v-model="fan.name" v-preset="getFanPreset(index).name" :placeholder="`FAN${index}`" :title="$t('fans.nameDescription')" type="text" :disabled="template.firmware < 2.01"></b-form-input>
 						</td>
 						<td>
-							<b-form-input v-model.number="fan.value" v-preset="getFanPreset(index).value" title="Initial value of this fan when turned on" min="0" max="100" type="number" step="any" required class="fan-value"></b-form-input>
+							<b-form-input v-model.number="fan.value" v-preset="getFanPreset(index).value" :title="$t('fans.speedDescription')" min="0" max="100" type="number" step="any" required class="fan-value"></b-form-input>
 						</td>
 						<td v-if="template.firmware < 3">
-							<b-form-radio-group buttons button-variant="outline-primary" v-model="fan.inverted" v-preset="getFanPreset(index).inverted" title="Invert fan PWM signal (required for 4-pin PWM cooling fans)" :name="'fan-inverted-' + index">
+							<b-form-radio-group buttons button-variant="outline-primary" v-model="fan.inverted" v-preset="getFanPreset(index).inverted" :title="$t('fans.invertedDescription')" :name="'fan-inverted-' + index">
 								<b-form-radio :value="true">Yes</b-form-radio>
 								<b-form-radio :value="false">No</b-form-radio>
 							</b-form-radio-group>
 						</td>
 						<td>
-							<b-form-input v-model.number="fan.frequency" v-preset="getFanPreset(index).frequency" title="PWM frequency of this fan. 500Hz works well for normal fans, use 25kHz for 4-pin PWM cooling fans" type="number" min="0" max="65535" step="any" required></b-form-input>
+							<b-form-input v-model.number="fan.frequency" v-preset="getFanPreset(index).frequency" :title="$t('fans.frequencyDescription')" type="number" min="0" max="65535" step="any" required></b-form-input>
 						</td>
 						<td>
-							<b-form-radio-group buttons button-variant="outline-primary" v-model="fan.thermostatic" v-preset="getFanPreset(index).thermostatic" title="Enable thermostatic control for this fan" :name="'fan-thermostatic-' + index">
+							<b-form-radio-group buttons button-variant="outline-primary" v-model="fan.thermostatic" v-preset="getFanPreset(index).thermostatic" :title="$t('fans.thermostaticDescription')" :name="'fan-thermostatic-' + index">
 								<b-form-radio :value="true">Yes</b-form-radio>
 								<b-form-radio :value="false">No</b-form-radio>
 							</b-form-radio-group>
 						</td>
 						<td>
-							<b-form-checkbox-group buttons button-variant="outline-primary" v-model="fan.heaters" v-preset="getFanPreset(index).heaters" title="Heaters to monitor for thermostatic control" :disabled="!fan.thermostatic" :name="'fan-heaters-' + index" :options="heaters"></b-form-checkbox-group>
+							<b-form-checkbox-group buttons button-variant="outline-primary" v-model="fan.heaters" v-preset="getFanPreset(index).heaters" :title="$t('fans.monitoredHeatersDescription')" :disabled="!fan.thermostatic" :name="'fan-heaters-' + index" :options="heaters"></b-form-checkbox-group>
 							<span v-if="heaters.length == 0" class="text-muted">n/a</span>
 						</td>
 						<td>
 							<b-input-group append="C">
-								<b-form-input v-model.number="fan.trigger_temperature" v-preset="getFanPreset(index).trigger_temperature" title="Temperature at which the thermostatically-controlled fan is activated" :disabled="!fan.thermostatic" type="number" min="-273" max="1999" step="any" required></b-form-input>
+								<b-form-input v-model.number="fan.trigger_temperature" v-preset="getFanPreset(index).trigger_temperature" :title="$t('fans.triggerTempDescription')" :disabled="!fan.thermostatic" type="number" min="-273" max="1999" step="any" required></b-form-input>
 							</b-input-group>
 						</td>
 					</tr>

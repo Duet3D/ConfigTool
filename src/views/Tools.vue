@@ -7,9 +7,9 @@ tr > td:last-child {
 
 <template>
 	<b-container>
-		<b-card header="Tool Preferences">
-			<b-checkbox v-model="toolchangeWaitForTemperatures" v-preset.left="preset.toolchange_wait_for_temperatures" title="Generate an M116 code in the tpost macros">Wait for Temperatures to be Reached on Tool Change</b-checkbox>
-			<b-checkbox v-model="generateTCode" v-preset.left="preset.generate_t_code" title="A T-code with the first tool number is generated at the end of config.g">Select the First Tool on Start-Up</b-checkbox>
+		<b-card :header="$t('tools.tool')">
+			<b-checkbox v-model="toolchangeWaitForTemperatures" v-preset.left="preset.toolchange_wait_for_temperatures" :title="$t('tools.M116Description')">{{$t('tools.M116')}}</b-checkbox>
+			<b-checkbox v-model="generateTCode" v-preset.left="preset.generate_t_code" :title="$t('tools.tcodeDescription')">{{$t('tools.tcode')}}</b-checkbox>
 		</b-card>
 
 		<b-card no-body class="mt-3">
