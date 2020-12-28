@@ -18,18 +18,18 @@ input::-webkit-inner-spin-button {
 		<b-navbar toggleable="md" variant="light" class="mb-4">
 			<b-container>
 				<b-navbar-nav>
-					<b-nav-item to="Start" :active="$route.path === '/Start'">Start</b-nav-item>
-					<b-nav-item to="General" :active="$route.path === '/General'">General</b-nav-item>
-					<b-nav-item to="Mapping" :active="$route.path === '/Mapping'">I/O Mapping</b-nav-item>
-					<b-nav-item to="Motors" :active="$route.path === '/Motors'">Motors</b-nav-item>
-					<b-nav-item to="Endstops" :active="$route.path === '/Endstops'">Endstops</b-nav-item>
-					<b-nav-item to="Heaters" :active="$route.path === '/Heaters'">Heaters</b-nav-item>
-					<b-nav-item to="Fans" :active="$route.path === '/Fans'">Fans</b-nav-item>
-					<b-nav-item to="Tools" :active="$route.path === '/Tools'">Tools</b-nav-item>
-					<b-nav-item to="Compensation" :active="$route.path === '/Compensation'">Compensation</b-nav-item>
-					<b-nav-item to="Display" :active="$route.path === '/Display'" v-show="$route.path === '/Display' || board.supportsDisplay">Display</b-nav-item>
-					<b-nav-item to="Network" :active="$route.path === '/Network'" v-show="$route.path === '/Network' || template.standalone">Network</b-nav-item>
-					<b-nav-item to="Finish" :active="$route.path === '/Finish'">Finish</b-nav-item>
+					<b-nav-item to="Start" :active="$route.path === '/Start'">{{$t('start.title')}}</b-nav-item>
+					<b-nav-item to="General" :active="$route.path === '/General'">{{$t('general.title')}}</b-nav-item>
+					<b-nav-item to="Mapping" :active="$route.path === '/Mapping'">{{$t('mapping.title')}}</b-nav-item>
+					<b-nav-item to="Motors" :active="$route.path === '/Motors'">{{$tc('motors.title',2)}}</b-nav-item>
+					<b-nav-item to="Endstops" :active="$route.path === '/Endstops'">{{$tc('endstops.title', 2)}}</b-nav-item>
+					<b-nav-item to="Heaters" :active="$route.path === '/Heaters'">{{$tc('heaters.title',2)}}</b-nav-item>
+					<b-nav-item to="Fans" :active="$route.path === '/Fans'">{{$tc('fans.title',2)}}</b-nav-item>
+					<b-nav-item to="Tools" :active="$route.path === '/Tools'">{{$tc('tools.title',2)}}</b-nav-item>
+					<b-nav-item to="Compensation" :active="$route.path === '/Compensation'">{{$t('compensation.title')}}</b-nav-item>
+					<b-nav-item to="Display" :active="$route.path === '/Display'" v-show="$route.path === '/Display' || board.supportsDisplay">{{$t('display.title')}}</b-nav-item>
+					<b-nav-item to="Network" :active="$route.path === '/Network'" v-show="$route.path === '/Network' || template.standalone">{{$t('network.title')}}</b-nav-item>
+					<b-nav-item to="Finish" :active="$route.path === '/Finish'">{{$t('finish.title')}}</b-nav-item>
 				</b-navbar-nav>
 			</b-container>
 		</b-navbar>

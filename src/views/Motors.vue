@@ -2,20 +2,20 @@
 	<b-container>
 		<b-card no-body>
 			<template slot="header">
-				Axes
+				{{$t('motors.axes')}}
 				<!-- TODO add axis add buttons like for the extruders below -->
 			</template>
 			<table class="table mb-0">
 				<thead>
-					<th>Drive</th>
-					<th>Direction</th>
-					<th>Microstepping (interpolation)</th>
-					<th>Steps per mm</th>
-					<th>Max. Speed Change&nbsp;(mm/s)</th>
-					<th>Max. Speed (mm/s)</th>
-					<th>Acceleration (mm/s²)</th>
-					<th>Motor Current&nbsp;(mA)</th>
-					<th v-show="template.firmware < 3">Motor Driver</th>
+					<th>{{$tc('mapping.drives', 1)}}</th>
+					<th>{{$t('motors.direction')}}</th>
+					<th>{{$t('motors.microstepping')}}</th>
+					<th>{{$t('motors.steps')}}</th>
+					<th>{{$t('motors.maxSpeedChange')}}</th>
+					<th>{{$t('motors.maxSpeed')}}</th>
+					<th>{{$t('motors.acceleration')}}</th>
+					<th>{{$t('motors.current')}}</th>
+					<th v-show="template.firmware < 3">{{$t('motors.motorDriver')}}</th>
 				</thead>
 				<tbody>
 					<drive-row v-for="i in [0, 1, 2]" :key="i" :index="i" :drivers="drivers"></drive-row>
@@ -25,28 +25,28 @@
 
 		<b-card no-body class="mt-3">
 			<template #header>
-				<span class="mt-2">Extruders</span>
+				<span class="mt-2">{{$tc('motors.extruder', 2)}}</span>
 				<b-button-group v-if="template.firmware < 3" class="float-right">
 					<b-button size="sm" variant="success" :disabled="!canAddExtruder" @click="addExtruder">
-						<font-awesome-icon icon="plus"></font-awesome-icon> Add Extruder
+						<font-awesome-icon icon="plus"></font-awesome-icon> {{$t('motors.addExtruder')}}
 					</b-button>
 					<b-button size="sm" variant="danger" :disabled="!canRemoveExtruder" @click="removeExtruder">
-						<font-awesome-icon icon="minus"></font-awesome-icon> Remove Extruder
+						<font-awesome-icon icon="minus"></font-awesome-icon> {{$t('motors.removeExtruder')}}
 					</b-button>
 				</b-button-group>
 			</template>
 
 			<table class="table mb-0">
 				<thead>
-					<th>Drive</th>
-					<th>Direction</th>
-					<th>Microstepping (interpolation)</th>
-					<th>Steps per mm</th>
-					<th>Max. Speed Change (mm/s)</th>
-					<th>Max. Speed (mm/s)</th>
-					<th>Acceleration (mm/s²)</th>
-					<th>Motor Current (mA)</th>
-					<th v-if="template.firmware < 3">Motor Driver</th>
+					<th>{{$tc('mapping.drives', 1)}}</th>
+					<th>{{$t('motors.direction')}}</th>
+					<th>{{$t('motors.microstepping')}}</th>
+					<th>{{$t('motors.steps')}}</th>
+					<th>{{$t('motors.maxSpeedChange')}}</th>
+					<th>{{$t('motors.maxSpeed')}}</th>
+					<th>{{$t('motors.acceleration')}}</th>
+					<th>{{$t('motors.current')}}</th>
+					<th v-show="template.firmware < 3">{{$t('motors.motorDriver')}}</th>
 				</thead>
 				<tbody>
 					<drive-row v-for="i in template.drives.length - 3" :key="i" :index="i + 2" :drivers="drivers"></drive-row>
@@ -54,23 +54,23 @@
 			</table>
 		</b-card>
 
-		<b-card class="mt-3" header="Motor Current Reduction">
+		<b-card class="mt-3" :header="$t('motors.currentReduction')">
 			<b-form-row>
 				<b-col align-self="center">
-					<b-checkbox v-model="idleUsed" v-preset.left="preset.idle.used" title="Disable motors on inactivity">Reduce motor currents when idle</b-checkbox>
+					<b-checkbox v-model="idleUsed" v-preset.left="preset.idle.used" :title="$t('motors.currentReductionBox')">{{$t('motors.currentReductionDescription')}}</b-checkbox>
 				</b-col>
 
 				<b-col>
-					<label for="idleFactor">Idle Current Percentage:</label>
+					<label for="idleFactor">{{$t('motors.idlePercentage')}}</label>
 					<b-input-group append="%">
-						<b-form-input id="idleFactor" v-model.number="idleFactor" v-preset="preset.idle.factor" title="Motor idle current reduction factor (M906)" :disabled="!idleUsed" min="0" max="100" type="number" step="any" required></b-form-input>
+						<b-form-input id="idleFactor" v-model.number="idleFactor" v-preset="preset.idle.factor" :title="$t('motors.idlePercentageDescription')" :disabled="!idleUsed" min="0" max="100" type="number" step="any" required></b-form-input>
 					</b-input-group>
 				</b-col>
 
 				<b-col>
-					<label for="idleTimeout">Idle Timeout:</label>
+					<label for="idleTimeout">{{$t('motors.idleTimeout')}}</label>
 					<b-input-group append="s">
-						<b-form-input id="idleTimeout" v-model.number="idleTimeout" v-preset="preset.idle.timeout" title="Motor idle timeout value (M84)" :disabled="!idleUsed" min="0" type="number" step="any" required></b-form-input>
+						<b-form-input id="idleTimeout" v-model.number="idleTimeout" v-preset="preset.idle.timeout" :title="$t('motors.idleTimeoutDescription')" :disabled="!idleUsed" min="0" type="number" step="any" required></b-form-input>
 					</b-input-group>
 				</b-col>
 			</b-form-row>

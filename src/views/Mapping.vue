@@ -8,7 +8,7 @@
 	<b-container>
 		<b-card no-body>
 			<template #header>
-				<span class="mt-2">Expansion Boards</span>
+				<span class="mt-2">{{$t('mapping.expansionBoard')}}</span>
 				<b-button-group class="float-right">
 					<b-button v-for="board in board.expansionBoards" :key="board" size="sm" variant="success" :disabled="!canAddExpansionBoard" @click="addExpansionBoard(board)">
 						<font-awesome-icon icon="plus"></font-awesome-icon> Add {{ board }}
@@ -18,12 +18,12 @@
 
 			<b-table-simple v-show="template.expansion_boards.length > 0" striped hover class="mb-0">
 				<b-thead>
-					<b-th v-if="template.board.startsWith('duet3')" class="no-wrap">CAN Address</b-th>
-					<b-th>Board Name</b-th>
-					<b-th>Drives</b-th>
-					<b-th>Heaters</b-th>
-					<b-th>Fans</b-th>
-					<b-th>GPIO Pins</b-th>
+					<b-th v-if="template.board.startsWith('duet3')" class="no-wrap">{{$t('mapping.canAddress')}}</b-th>
+					<b-th>{{$t('mapping.boardName')}}</b-th>
+					<b-th>{{$tc('mapping.drives', 2)}}</b-th>
+					<b-th>{{$tc('heaters.title',2)}}</b-th>
+					<b-th>{{$tc('fans.title',2)}}</b-th>
+					<b-th>{{$t('mapping.gpioPins')}}</b-th>
 					<b-th width="1%"></b-th>
 				</b-thead>
 				<b-tbody>
@@ -55,7 +55,7 @@
 				</b-tbody>
 			</b-table-simple>
 			<h3 v-show="template.expansion_boards.length === 0" class="m-4 text-center text-muted">
-				No Expansion Boards configured
+				{{$t('mapping.expansionBoardNone')}}
 			</h3>
 		</b-card>
 
@@ -63,7 +63,7 @@
 			<b-col cols="5">
 				<b-card no-body class="mt-3">
 					<template #header>
-						<span class="mt-2">Drives</span>
+						<span class="mt-2">{{$tc('mapping.drives', 2)}}</span>
 						<b-button-group class="float-right">
 							<b-button size="sm" variant="success" :disabled="!canAddExtruder" @click="addExtruder">
 								<font-awesome-icon icon="plus"></font-awesome-icon>
@@ -77,13 +77,13 @@
 					<b-table-simple striped hover class="mb-0">
 						<b-thead>
 							<b-th>
-								Drive
+								{{$tc('mapping.drives', 1)}}
 							</b-th>
 							<b-th>
-								Driver
+								{{$t('mapping.driver')}}
 							</b-th>
 							<b-th>
-								Endstop Pin
+								{{$t('mapping.endstopPin')}}
 							</b-th>
 						</b-thead>
 						<b-tbody>
@@ -104,7 +104,7 @@
 
 				<b-card no-body class="mt-3">
 					<template #header>
-						<span class="mt-2">Fan Mapping</span>
+						<span class="mt-2">{{$t('mapping.fanMapping')}}</span>
 						<b-button-group class="float-right">
 							<b-button size="sm" variant="success" :disabled="!canAddFan" @click="addFan()">
 								<font-awesome-icon icon="plus"></font-awesome-icon>
@@ -118,10 +118,10 @@
 					<b-table-simple striped hover class="mb-0">
 						<b-thead>
 							<b-th>
-								Fan
+								{{$tc('fans.title',1)}}
 							</b-th>
 							<b-th>
-								Output
+								{{$t('mapping.output')}}
 							</b-th>
 						</b-thead>
 						<b-tbody>
@@ -141,7 +141,7 @@
 			<b-col cols="7">
 				<b-card no-body class="mt-3">
 					<template #header>
-						<span class="mt-2">Heaters</span>
+						<span class="mt-2">{{$tc('heaters.title',2)}}</span>
 						<b-button-group class="float-right">
 							<b-button size="sm" variant="success" :disabled="!canAddNozzle" @click="addNozzle()">
 								<font-awesome-icon icon="plus"></font-awesome-icon>
@@ -155,16 +155,16 @@
 					<b-table-simple striped hover class="mb-0">
 						<b-thead>
 							<b-th>
-								Index
+								{{$t('mapping.index')}}
 							</b-th>
 							<b-th>
-								Type
+								{{$t('mapping.type')}}
 							</b-th>
 							<b-th>
-								Output
+								{{$t('mapping.output')}}
 							</b-th>
 							<b-th>
-								Sensor
+								{{$t('mapping.sensor')}}
 							</b-th>
 						</b-thead>
 						<b-tbody>
@@ -190,16 +190,16 @@
 					<b-table-simple striped hover class="mb-0">
 						<b-thead>
 							<b-th>
-								Pin
+								{{$t('mapping.pin')}}
 							</b-th>
 							<b-th>
-								Assignment
+								{{$t('mapping.assignment')}}
 							</b-th>
 						</b-thead>
 						<b-tbody>
 							<b-tr>
 								<b-td>
-									Input Pin
+									{{$t('mapping.inputPin')}}
 								</b-td>
 								<b-td>
 									<b-select :value="template.probe.input_pin" @change="setProbePin({ inputPin: $event })" :state="isValidPin(template.probe.input_pin, true) && undefined" size="sm" :options="getPins('analogPorts', template.probe.input_pin, false)"></b-select>
@@ -207,7 +207,7 @@
 							</b-tr>
 							<b-tr>
 								<b-td>
-									Modulation Pin
+									{{$t('mapping.modPin')}}
 								</b-td>
 								<b-td>
 									<b-select :value="template.probe.modulation_pin" @change="setProbePin({ modulationPin: $event })" :state="isValidPin(template.probe.modulationPin, true) && undefined" size="sm" :options="getPins('gpioPorts', template.probe.modulation_pin, false, false)"></b-select>
@@ -215,7 +215,7 @@
 							</b-tr>
 							<b-tr>
 								<b-td>
-									PWM Control Channel (BLTouch only)
+									{{$t('mapping.pwmPin')}}
 								</b-td>
 								<b-td>
 									<b-select :value="template.probe.pwm_pin" @change="setProbePin({ pwmPin: $event })" :state="isValidPin(template.probe.pwm_pin, true) && undefined" size="sm" :options="getPins('pwmPorts', template.probe.pwm_pin, false)"></b-select>

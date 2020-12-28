@@ -1,12 +1,12 @@
 <template>
 	<b-container>
 		<div class="text-center">
-			<h2 class="mb-4">Welcome to the RepRapFirmware Configuration Tool</h2>
-			<h4 class="text-muted mb-5">Please follow this wizard to obtain an individual configuration bundle for your printer</h4>
+			<h2 class="mb-4">{{$t('start.welcome')}}</h2>
+			<h4 class="text-muted mb-5">{{$t('start.instructions')}}</h4>
 		</div>
 
 		<b-card bg-variant="light" class="mb-3">
-			<p>If you are using a printer that was originally shipped with RepRapFirmware, you can select a predefined template here:</p>
+			<p>{{$t('start.instructions')}}</p>
 
 			<b-form-group>
 				<b-form-radio-group v-model="selectedMachine" name="machine" stacked class="mb-2">
@@ -23,7 +23,7 @@
 					<b-form-radio value="ender3pro">Creality Ender 3 Pro</b-form-radio>
 				</b-form-radio-group>
 
-				<p>The following machine templates were contributed by users and have not been throughly tested:</p>
+				<p>{{$t('start.contributed')}}</p>
 
 				<b-form-radio-group v-model="selectedMachine" name="machine" stacked class="mb-3">
 					<b-form-radio value="anet-a8">Anet A8</b-form-radio>
@@ -32,21 +32,21 @@
 					<b-form-radio value="wanhao-di3">Wanhao Duplicator i3</b-form-radio>
 				</b-form-radio-group>
 
-				<p>Alternatively, you can create your own individual configuration by creating a new one from scratch or by loading an existing JSON template:</p>
+				<p>{{$t('start.alternative')}}</p>
 
 				<b-form-radio-group v-model="selectedMachine" name="machine" stacked>
-					<b-form-radio value="custom">Custom configuration</b-form-radio>
-					<b-form-radio value="existing">Use existing configuration</b-form-radio>
+					<b-form-radio value="custom">{{$t('start.custom')}}</b-form-radio>
+					<b-form-radio value="existing">{{$t('start.existing')}}</b-form-radio>
 				</b-form-radio-group>
 			</b-form-group>
 		</b-card>
 
 		<div class="text-center mt-4">
-			<span class="text-muted">Note: If you encounter problems, please report your problems on <a href="https://github.com/chrishamm/configtool" target="_blank">GitHub</a>.
+			<span class="text-muted">{{$t('start.note')}}<a href="https://github.com/chrishamm/configtool" target="_blank">GitHub</a>.
 				<br>
-				Some configuration options may not be available yet. In this case please refer to the <a href="https://duet3d.dozuki.com" target="_blank">Duet3D wiki</a>.</span>
+				{{$t('start.options')}}<a href="https://duet3d.dozuki.com" target="_blank">Duet3D wiki</a>.</span>
 			<br><br>
-			<span class="text-muted">This web app is fully open-source and licensed under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>. Version {{ version }}</span>
+			<span class="text-muted">{{$t('start.webapp')}}<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>. Version {{ version }}</span>
 		</div>
 
 		<input ref="inputJsonFile" type="file" accept="application/json" hidden @change="fileSelected"></input>

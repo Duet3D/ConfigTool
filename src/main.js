@@ -14,6 +14,7 @@ import Preset from './directives/Preset.js'
 import Router from './Router.js'
 import store from './store'
 import ValidityIndicator from './mixins/ValidityIndicator.js'
+import i18n from './i18n'
 
 Vue.config.productionTip = false;
 
@@ -27,7 +28,8 @@ window.isNumber = function(value) {
 
 const app = new Vue({
     el: '#app',
-	render: h => h(App),
+    render: h => h(App),
     router: Router,
-	store
+    i18n,
+    store
 });

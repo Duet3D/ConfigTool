@@ -1,10 +1,10 @@
 <template>
 	<b-container>
-		<b-card header="General Preferences">
+		<b-card :header="$t('general.header1')">
 			<b-form-row>
 				<b-col>
-					<b-form-group label="Board:">
-						<b-form-select :value="template.board" @change="setSelectedBoard($event)" v-preset="preset.board" title="Board on which the firmware runs">
+					<b-form-group :label="$t('general.board')">
+						<b-form-select :value="template.board" @change="setSelectedBoard($event)" v-preset="preset.board" :title="$t('general.boardDescription')">
 							<option value="duet06">Duet 0.6</option>
 							<option value="duet085">Duet 0.8.5</option>
 							<option value="duetwifi10">Duet 2 WiFi</option>
@@ -18,8 +18,8 @@
 				</b-col>
 
 				<b-col>
-					<b-form-group label="Firmware version:">
-						<b-form-select :value="template.firmware" @change="setFirmware($event)" :disabled="template.board.startsWith('duet3') || template.board.startsWith('duet0')" v-preset="preset.firmware" title="Version of the firmware running on your board">
+					<b-form-group :label="$t('general.version')">
+						<b-form-select :value="template.firmware" @change="setFirmware($event)" :disabled="template.board.startsWith('duet3') || template.board.startsWith('duet0')" v-preset="preset.firmware" :title="$t('general.versionDescription')">
 							<option :value="1.16" disabled>1.16 or older (no longer supported)</option>
 							<option :value="1.17" disabled>1.17 to 1.19 (no longer supported)</option>
 							<option :value="1.2" disabled>1.20 (no longer supported)</option>
@@ -32,19 +32,19 @@
 				</b-col>
 
 				<b-col v-if="template.standalone">
-					<b-form-group label="Printer Name:">
-						<b-form-input v-model.trim="name" v-preset="preset.network.name" title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local" maxlength="40" type="text" required></b-form-input>
+					<b-form-group :label="$t('general.printerName')">
+						<b-form-input v-model.trim="name" v-preset="preset.network.name" :title="$t('general.printerNameDescription')" maxlength="40" type="text" required></b-form-input>
 					</b-form-group>
 				</b-col>
 			</b-form-row>
 
-			<b-form-checkbox v-if="template.board.startsWith('duet3')" v-model="standalone" v-preset.left title="Run RepRapFirmware in stand-alone mode without an attached single-board computer">Run in standalone mode without SBC</b-form-checkbox>
-			<b-form-checkbox v-model="nvram" v-preset.left title="Load saved configuration parameters on start-up (M501)">Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)</b-form-checkbox>
-			<b-form-checkbox v-if="board.hasPowerFailureDetection" v-model="autoSaveEnabled" v-preset.left="preset.auto_save.enabled" title="Store the last valid print parameters on the SD card when a power failure occurs (M911)">Save print state on power failure</b-form-checkbox>
+			<b-form-checkbox v-if="template.board.startsWith('duet3')" v-model="standalone" v-preset.left :title="$t('general.sbcDescription')">{{$t('general.sbc')}}</b-form-checkbox>
+			<b-form-checkbox v-model="nvram" v-preset.left :title="$t('general.M501Description')">{{$t('general.M501')}}</b-form-checkbox>
+			<b-form-checkbox v-if="board.hasPowerFailureDetection" v-model="autoSaveEnabled" v-preset.left="preset.auto_save.enabled" :title="$t('general.M911Description')">{{$t('general.M911')}}</b-form-checkbox>
 			<div v-show="autoSaveEnabled" class="mt-3 pl-4">
 				<b-form-row>
 					<b-col>
-						<b-form-group label="Auto Save Threshold:">
+						<b-form-group :label="$t('general.autoThreshold')">
 							<b-input-group append="V">
 								<b-form-input v-model.number="autoSaveThreshold" type="number" step="any" required></b-form-input>
 							</b-input-group>
@@ -52,7 +52,7 @@
 					</b-col>
 
 					<b-col>
-						<b-form-group label="Resume Threshold:">
+						<b-form-group :label="$t('general.resumeThreshold')">
 							<b-input-group append="V">
 								<b-form-input v-model.number="autoSaveResumeThreshold" type="number" step="any" required></b-form-input>
 							</b-input-group>
@@ -60,118 +60,118 @@
 					</b-col>
 
 					<b-col cols="6">
-						<b-form-group label="G-Codes to run when Auto-Saving is performed:">
+						<b-form-group :label="$t('general.autoGCode')">
 							<b-form-input v-model.trim="autoSaveGCodes" type="text" required></b-form-input>
 						</b-form-group>
 					</b-col>
 				</b-form-row>
 
-				<span>Important: The file /sys/resurrect-prologue.g must be set up manually for resume to work (see <a href="https://duet3d.dozuki.com/Wiki/Setting_up_to_resume_a_print_after_a_power_failure#Section_Setting_up_the_sys_resurrect_prologue_g_file" target="_blank">Duet3D wiki</a>)</span>
+				<span>{{$t('general.autoImportant')}}<a href="https://duet3d.dozuki.com/Wiki/Setting_up_to_resume_a_print_after_a_power_failure#Section_Setting_up_the_sys_resurrect_prologue_g_file" target="_blank">Duet3D wiki</a>)</span>
 			</div>
 		</b-card>
 
-		<b-card no-body header="Printer Geometry" class="mt-3">
+		<b-card no-body :header="$t('general.geometry')" class="mt-3">
 			<b-tabs card pills v-model="geometry">
 				<b-tab title="Cartesian" :title-link-class="{ 'font-weight-bold' : preset.geometry.type === 'cartesian' }">
 					<geometry-form></geometry-form>
-					<span>This machine uses individual motors to drives each axis</span>
+					<span>{{$t('general.cartesian')}}</span>
 				</b-tab>
 
 				<b-tab title="CoreXY" :title-link-class="{ 'font-weight-bold' : preset.geometry.type === 'corexy' }">
 					<geometry-form></geometry-form>
-					<span>This machine uses coupled motors to position the nozzle on the XY plane</span>
+					<span>{{$t('general.coreXY')}}</span>
 				</b-tab>
 
 				<b-tab title="CoreXZ" :title-link-class="{ 'font-weight-bold' : preset.geometry.type === 'corexz' }">
 					<geometry-form></geometry-form>
-					<span>This machine uses coupled motors to position the nozzle on the XZ plane</span>
+					<span>{{$t('general.coreXZ')}}</span>
 				</b-tab>
 
 				<b-tab title="Delta" :title-link-class="{ 'font-weight-bold' : preset.geometry.type === 'delta' }">
 					<b-form-row>
 						<b-col>
-							<b-form-group label="Delta radius:">
+							<b-form-group :label="$t('general.deltaRadius')">
 								<b-input-group append="mm">
-									<b-form-input v-model.number="deltaRadius" v-preset="preset.geometry.delta_radius" title="Horizontal distance subtended by each rod, measured between joint centres, when the effector is in the centre" :min="printRadius" type="number" step="any" required></b-form-input>
+									<b-form-input v-model.number="deltaRadius" v-preset="preset.geometry.delta_radius" :title="$t('general.deltaRadiusDescription')" :min="printRadius" type="number" step="any" required></b-form-input>
 								</b-input-group>
 							</b-form-group>
-							<b-form-group label="Printable radius:">
+							<b-form-group :label="$t('general.printableRadius')">
 								<b-input-group append="mm">
-									<b-form-input v-model.number="printRadius" v-preset="preset.geometry.print_radius" title="Safe printing radius" min="1" :max="deltaRadius" type="number" step="any" required></b-form-input>
-								</b-input-group>
-							</b-form-group>
-						</b-col>
-						<b-col>
-							<b-form-group label="Minimum Z:">
-								<b-input-group append="mm">
-									<b-form-input v-model.number="zMin" v-preset="preset.geometry.z_min" title="Minimum allowed Z travel" :max="homedHeight" type="number" step="any" required></b-form-input>
-								</b-input-group>
-							</b-form-group>
-							<b-form-group label="Diagonal rod length:">
-								<b-input-group append="mm">
-									<b-form-input v-model.number="rodLength" v-preset="preset.geometry.rod_length" title="Distance between the centre of your towers and the joint at the effector" min="1" type="number" step="any" required></b-form-input>
+									<b-form-input v-model.number="printRadius" v-preset="preset.geometry.print_radius" :title="$t('general.printableRadiusDescription')" min="1" :max="deltaRadius" type="number" step="any" required></b-form-input>
 								</b-input-group>
 							</b-form-group>
 						</b-col>
 						<b-col>
-							<b-form-group label="Homed height:">
+							<b-form-group :label="$t('general.minimumZ')">
 								<b-input-group append="mm">
-									<b-form-input v-model.number="homedHeight" v-preset="preset.geometry.homed_height" title="Maximum build height of your printer" :min="homedHeight" min="1" :max="maxCarriageTravel" type="number" step="any" required></b-form-input>
+									<b-form-input v-model.number="zMin" v-preset="preset.geometry.z_min" :title="$t('general.minimumZDescription')" :max="homedHeight" type="number" step="any" required></b-form-input>
 								</b-input-group>
 							</b-form-group>
-							<b-form-group label="Maximum carriage travel:">
+							<b-form-group :label="$t('general.rodLength')">
 								<b-input-group append="mm">
-									<b-form-input v-model.number="maxCarriageTravel" v-preset="preset.geometry.max_carriage_travel" title="Maximum travel length in Z direction" type="number" required></b-form-input>
+									<b-form-input v-model.number="rodLength" v-preset="preset.geometry.rod_length" :title="$t('general.rodLengthDescription')" min="1" type="number" step="any" required></b-form-input>
+								</b-input-group>
+							</b-form-group>
+						</b-col>
+						<b-col>
+							<b-form-group :label="$t('general.homedHeight')">
+								<b-input-group append="mm">
+									<b-form-input v-model.number="homedHeight" v-preset="preset.geometry.homed_height" :title="$t('general.homedHeightDescription')" :min="homedHeight" min="1" :max="maxCarriageTravel" type="number" step="any" required></b-form-input>
+								</b-input-group>
+							</b-form-group>
+							<b-form-group :label="$t('general.maximumTravel')">
+								<b-input-group append="mm">
+									<b-form-input v-model.number="maxCarriageTravel" v-preset="preset.geometry.max_carriage_travel" :title="$t('general.maximumTravelDescription')" type="number" required></b-form-input>
 								</b-input-group>
 							</b-form-group>
 						</b-col>
 					</b-form-row>
 
-					<span>This machine uses towers to position the nozzle</span>
+					<span>{{$t('general.delta')}}</span>
 				</b-tab>
 			</b-tabs>
 		</b-card>
 
-		<b-card header="Homing Preferences" class="mt-3">
+		<b-card :header="$t('general.homing')" class="mt-3">
 			<b-form-row>
 				<b-col>
-					<b-form-group label="Homing Speed (First Pass):">
+					<b-form-group :label="$t('general.homingFP')">
 						<b-input-group append="mm/s">
-							<b-form-input v-model.number="homingSpeedFast" v-preset="preset.homing_speed_fast" title="Homing is performed in two stages. First pass means the initial homing run" type="number" step="any" required></b-form-input>
+							<b-form-input v-model.number="homingSpeedFast" v-preset="preset.homing_speed_fast" :title="$t('general.mhomingFPDescription')" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
 				</b-col>
 				<b-col>
-					<b-form-group label="Homing Speed (Second Pass):">
+					<b-form-group :label="$t('general.homingSP')">
 						<b-input-group append="mm/s">
-							<b-form-input v-model.number="homingSpeedSlow" v-preset="preset.homing_speed_slow" title="Second pass means the second homing run after the endstops were triggered for the first time" type="number" step="any" required></b-form-input>
+							<b-form-input v-model.number="homingSpeedSlow" v-preset="preset.homing_speed_slow" :title="$t('general.homingSPDescription')" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
 				</b-col>
 				<b-col>
-					<b-form-group label="Travel Speed:">
+					<b-form-group :label="$t('general.travelSpeed')">
 						<b-input-group append="mm/s">
-							<b-form-input v-model.number="travelSpeed" v-preset="preset.travel_speed" title="Speed for travel moves during homing" type="number" step="any" required></b-form-input>
+							<b-form-input v-model.number="travelSpeed" v-preset="preset.travel_speed" :title="$t('general.travelSpeedDescription')" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
 				</b-col>
 				<b-col align-self="center">
-					<b-form-group label="Z Dive Height:">
+					<b-form-group :label="$t('general.diveHeight')">
 						<b-input-group append="mm">
-							<b-form-input v-model.number="zDiveHeight" v-preset="preset.z_dive_height" title="Z lift amount for bed probing and for cartesian homing files" type="number" step="any" required></b-form-input>
+							<b-form-input v-model.number="zDiveHeight" v-preset="preset.z_dive_height" :title="$t('general.diveHeightDescription')" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
 				</b-col>
 			</b-form-row>
 
-			<b-checkbox v-show="template.geometry.type === 'delta'" v-model="slowHoming" v-preset.left="preset.slow_homing" title="Reduce homing speed. Recommended for initial calibration" class="mb-2">Set initial homing speed to 10% for calibration and add a note to homedelta.g</b-checkbox>
-			<b-checkbox v-model="lowDiveHeight" v-preset.left="preset.geometry.low_dive_height" title="Generate an extra M558 code in config.g that you can remove after initial calibration">Set dive height to 30mm for initial calibration</b-checkbox>
+			<b-checkbox v-show="template.geometry.type === 'delta'" v-model="slowHoming" v-preset.left="preset.slow_homing" :title="$t('general.deltaReduced')" class="mb-2">Set initial homing speed to 10% for calibration and add a note to homedelta.g</b-checkbox>
+			<b-checkbox v-model="lowDiveHeight" v-preset.left="preset.geometry.low_dive_height" :title="$t('general.extraM558')">Set dive height to 30mm for initial calibration</b-checkbox>
 		</b-card>
 
 		<b-modal ref="modalDuet06" title="Check your board" size="lg" cancel-title="No" cancel-variant="danger" ok-title="Yes" ok-variant="success" @ok="setBoardSeriesResistor(4700)" @cancel="setBoardSeriesResistor(1000)">
-			<h4>Is your Duet 0.6 board marked with a note saying "4.7K" or was it shipped with an original RepRapPro Ormerod 2?</h4>
+			<h4>{{$t('general.duet06Question')}}</h4>
 			<br>
-			<span class="text-muted">Note: Older Duet 0.6 boards use 1 kΩ series resistors.</span>
+			<span class="text-muted">{{$t('general.duet06Note')}}</span>
 		</b-modal>
 	</b-container>
 </template>

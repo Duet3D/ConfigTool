@@ -22,7 +22,7 @@ select {
 
 <template>
 	<b-container>
-		<b-card header="General Heater Settings">
+		<b-card :header="$t('heaters.general')">
 			<b-row>
 				<b-col :cols="template.firmware < 3 ? 12 : 6">
 					<b-checkbox v-model="bedPresent" :disabled="template.firmware >= 3" v-preset.left="preset.bed.present" title="Enable the heated bed">Heated Bed</b-checkbox>
