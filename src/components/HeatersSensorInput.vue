@@ -1,5 +1,5 @@
 <template>
-	<b-select :value="value" @change="setValue" :state="isValid" :size="size" title="Assigned sensor channel for this heater">
+	<b-select :value="value" @change="setValue" :state="isValid" :size="size" :title="$t('heaters.channel')">
 		<optgroup v-for="(group, name) in sensors" :label="name">
 			<option v-for="option in group" :value="option.value" :disabled="option.disabled" v-text="option.text"></option>
 		</optgroup>

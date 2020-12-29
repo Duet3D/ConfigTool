@@ -36,13 +36,13 @@ tr > td:last-child > select {
 	<tr>
 		<td v-text="getDriveCaption(index)"></td>
 		<td>
-			<b-select :value="direction" @change="updateDrive({ drive: index, forwards: $event })" v-preset="presetDrive.direction" title="Direction of this drive">
-				<option :value="false">Backwards</option>
-				<option :value="true">Forwards</option>
+			<b-select :value="direction" @change="updateDrive({ drive: index, forwards: $event })" v-preset="presetDrive.direction" :title="$t('motors.row.direction')">
+				<option :value="false">{{$t('motors.row.backwards')}}</option>
+				<option :value="true">{{$t('motors.row.forwards')}}</option>
 			</b-select>
 		</td>
 		<td :class="{ 'reduce-padding' : drive.microstepping_interpolation }">
-			<b-select v-model="microsteppingOption" v-preset="presetMicrosteppingOption" title="Microstepping value (M350)" :disabled="!board.microstepping">
+			<b-select v-model="microsteppingOption" v-preset="presetMicrosteppingOption" :title="$t('motors.row.microstepping')" :disabled="!board.microstepping">
 				<option value="1">x1</option>
 				<option v-if="board.microsteppingInterpolation" value="1_i" class="hidden">x1 (on)</option>
 				<option value="2">x2</option>
@@ -62,28 +62,28 @@ tr > td:last-child > select {
 				<option value="256">x256</option>
 			</b-select>
 			<br>
-			<span v-if="drive.microstepping_interpolation" class="small-text">interpolated to x256</span>
+			<span v-if="drive.microstepping_interpolation" class="small-text">{{$t('motors.row.interpolated')}}</span>
 		</td>
 		<td>
 			<steps-per-mm-input :index="index" :drive="drive" :preset-drive="presetDrive"></steps-per-mm-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="instantDv" v-preset="presetDrive.instant_dv" title="Maximum allowed instantenous speed change (M566)" min="0.1" :max="drive.max_speed" type="number" step="any" required></b-form-input>
+			<b-form-input v-model.number="instantDv" v-preset="presetDrive.instant_dv" :title="$t('motors.row.jerk')" min="0.1" :max="drive.max_speed" type="number" step="any" required></b-form-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="maxSpeed" v-preset="presetDrive.max_speed" title="Maximum allowed speed (M203)" :min="drive.instant_dv" type="number" step="any" required></b-form-input>
+			<b-form-input v-model.number="maxSpeed" v-preset="presetDrive.max_speed" :title="$t('motors.row.speed')" :min="drive.instant_dv" type="number" step="any" required></b-form-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="acceleration" v-preset="presetDrive.acceleration" title="Drive acceleration (M201)" min="1" type="number" step="any" required></b-form-input>
+			<b-form-input v-model.number="acceleration" v-preset="presetDrive.acceleration" :title="$t('motors.row.acceleration')" min="1" type="number" step="any" required></b-form-input>
 		</td>
 		<td>
-			<b-form-input v-model.number="current" v-preset="presetDrive.current" title="Motor current (M906)" min="300" :max="board.motorLimitCurrent" type="number" step="any" required></b-form-input>
-			<span v-if="current >= board.motorWarningCurrent" v-b-tooltip.hover title="Your specified motor current exceeds the safe range. You may have to use extra cooling to prevent damage of your stepper drivers!" class="text-warning small-text">
-				<font-awesome-icon icon="exclamation-triangle"></font-awesome-icon> <u class="ml-1">Warning!</u>
+			<b-form-input v-model.number="current" v-preset="presetDrive.current" :title="$t('motors.row.current')" min="300" :max="board.motorLimitCurrent" type="number" step="any" required></b-form-input>
+			<span v-if="current >= board.motorWarningCurrent" v-b-tooltip.hover :title="$t('motors.row.warningText')" class="text-warning small-text">
+				<font-awesome-icon icon="exclamation-triangle"></font-awesome-icon> <u class="ml-1">{{$t('motors.row.warning')}}</u>
 			</span>
 		</td>
 		<td v-if="template.firmware < 3">
-			<b-select v-model.number="driver" :options="drivers" v-preset="index" title="Motor driver (M584)"></b-select>
+			<b-select v-model.number="driver" :options="drivers" v-preset="index" :title="$t('motors.row.driver')"></b-select>
 		</td>
 	</tr>
 </template>

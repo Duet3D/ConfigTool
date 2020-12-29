@@ -1,10 +1,10 @@
 <template>
 	<table class="table table-sm mb-0">
 		<thead>
-			<th class="text-center">Probe&nbsp;Point</th>
-			<th>X Coordinate</th>
-			<th>Y Coordinate</th>
-			<th>Height Correction</th>
+			<th class="text-center">{{$t('compensation.points.probe')}}</th>
+			<th>{{$t('compensation.points.x')}}</th>
+			<th>{{$t('compensation.points.y')}}</th>
+			<th>{{$t('compensation.points.height')}}</th>
 		</thead>
 		<tbody>
 			<tr v-for="(point, index) in value" :key="index">

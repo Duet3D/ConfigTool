@@ -30,6 +30,9 @@ input::-webkit-inner-spin-button {
 					<b-nav-item to="Display" :active="$route.path === '/Display'" v-show="$route.path === '/Display' || board.supportsDisplay">{{$t('display.title')}}</b-nav-item>
 					<b-nav-item to="Network" :active="$route.path === '/Network'" v-show="$route.path === '/Network' || template.standalone">{{$t('network.title')}}</b-nav-item>
 					<b-nav-item to="Finish" :active="$route.path === '/Finish'">{{$t('finish.title')}}</b-nav-item>
+					<ul class="navbar-right">
+						<LocaleSwitcher />
+					</ul>
 				</b-navbar-nav>
 			</b-container>
 		</b-navbar>
@@ -44,7 +47,7 @@ input::-webkit-inner-spin-button {
 			<ul class="pagination float-left">
 				<li class="page-item" :class="{ disabled : isFirstPage }">
 					<b-link class="page-link" href="#" @click.prevent="goToPreviousPage">
-						« Back
+						« {{$t('app.back')}}
 					</b-link>
 				</li>
 			</ul>
@@ -52,25 +55,25 @@ input::-webkit-inner-spin-button {
 			<ul class="pagination float-right">
 				<li class="page-item">
 					<b-link class="page-link" href="#" @click.prevent="goToNextPage">
-						{{ isLastPage ? 'Finish' : 'Next' }} »
+						{{ isLastPage ? $t('finish.title') : $t('app.next') }} »
 					</b-link>
 				</li>
 			</ul>
 		</b-container>
 
-		<b-modal ref="errorModal" :ok-only="true" title="Invalid input" @hidden="highlightErrors">
-			<h4>This page contains errors.</h4>
-			<h5>Please fix them before you continue.</h5>
+		<b-modal ref="errorModal" :ok-only="true" :title="$t('app.invalid')" @hidden="highlightErrors">
+			<h4>{{$t('app.pageError')}}</h4>
+			<h5>{{$t('app.pageErrorFix')}}</h5>
 		</b-modal>
 
-		<b-modal ref="ioErrorModal" :ok-only="true" title="Invalid I/O Mapping">
-			<h4>Your configuration contains errors.</h4>
-			<h5>Check the I/O Mapping page before you continue.</h5>
+		<b-modal ref="ioErrorModal" :ok-only="true" :title="$t('app.invalidIO')">
+			<h4>{{$t('app.configError')}}</h4>
+			<h5>{{$t('app.configErrorFix')}}</h5>
 		</b-modal>
 
-		<b-modal ref="finishModal" size="lg" title="Configuration Ready" @show="finishShow">
+		<b-modal ref="finishModal" size="lg" :title="$t('app.configReady')" @show="finishShow">
 			<template v-if="dwcLink || iapLink || rrfLink">
-				<p>Put the RepRapFirmware files in the /sys directory and extract Duet Web Control bundle to the /www directory of your SD card. If you are using Duet Web Control, upload those files on the Settings page.</p>
+				<p>{{$t('app.configInstructions')}}</p>
 				<b-card bg-variant="light" class="mb-3">
 					<ul class="pl-4 mb-0">
 						<li v-show="iapLink">
@@ -93,7 +96,7 @@ input::-webkit-inner-spin-button {
 				</b-card>
 			</template>
 
-			<p>The following system files will be generated:</p>
+			<p>{{$t('app.individual')}}</p>
 			<b-card ref="finishFiles" bg-variant="light" class="mb-3">
 				<span v-if="files.length == 0" v-html="message"></span>
 				<ul v-else class="pl-4 mb-0">
@@ -103,15 +106,15 @@ input::-webkit-inner-spin-button {
 				</ul>
 			</b-card>
 
-			<p>If you are using Duet Web Control, you can upload the ZIP file(s) <u>without extracting</u> on the Settings page. Otherwise you can extract the contents of this configuration bundle directly to the root of your SD card.</p>
-			<p>See <a href="https://duet3d.com/wiki/SD_card_folder_structure" target="_blank">this page</a> for further information about the purpose of these files.</p>
+			<p>{{$t('app.dwc')}}<u>{{$t('app.dwc1')}}</u>{{$t('app.dwc2')}}</p>
+			<p>{{$t('app.dwc3')}}<a href="https://duet3d.com/wiki/SD_card_folder_structure" target="_blank">{{$t('app.dwc4')}}</a>{{$t('app.dwc5')}}</p>
 
 			<template slot="modal-footer">
 				<a :href="configLink" class="btn btn-secondary" download="config.json">
-					<font-awesome-icon icon="save"></font-awesome-icon> Download JSON template
+					<font-awesome-icon icon="save"></font-awesome-icon> {{$t('app.json')}}
 				</a>
 				<b-button variant="primary" @click="generateZIP" :disabled="generatingZIP || files.length == 0">
-					<font-awesome-icon :icon="generatingZIP ? 'hourglass' : 'download'"></font-awesome-icon> {{ generatingZIP ? 'Generating ZIP bundle...' : 'Download configuration bundle as ZIP file' }}
+					<font-awesome-icon :icon="generatingZIP ? 'hourglass' : 'download'"></font-awesome-icon> {{ generatingZIP ? $t('app.generating') : $t('app.zip') }}
 				</b-button>
 			</template>
 		</b-modal>
@@ -129,7 +132,10 @@ import Compiler from './Compiler.js'
 import { goToNextPage, goToPreviousPage } from './Router.js'
 import Template from './store/Template.js'
 
+import LocaleSwitcher from "@/components/LocaleSwitcher"
+
 export default {
+	components: { LocaleSwitcher },
 	computed: {
 		...mapState(['board', 'template', 'addDWC', 'addRRF']),
 		isFirstPage() { return this.$route.path === '/Start'; },

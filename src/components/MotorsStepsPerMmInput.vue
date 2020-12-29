@@ -6,53 +6,53 @@
 
 <template>
 	<div>
-		<b-form-input :id="id" v-model.number="stepsPerMm" v-preset="presetDrive.steps_per_mm" title="Motor steps per mm (M92)" min="1" type="number" step="any" required></b-form-input>
-		<b-popover :target="id" :show.sync="popoverShown" placement="right" title="Calculate steps per mm" triggers="focus">
+		<b-form-input :id="id" v-model.number="stepsPerMm" v-preset="presetDrive.steps_per_mm" :title="$t('motors.steps.steps')" min="1" type="number" step="any" required></b-form-input>
+		<b-popover :target="id" :show.sync="popoverShown" placement="right" :title="$t('motors.steps.calculate')" triggers="focus">
 			<b-form>
-				<b-form-group label="Motor step angle:">
+				<b-form-group :label="$t('motors.steps.angle')">
 					<b-select v-model.number="stepAngle">
 						<option value="0.9">0.9° (400 steps per rev)</option>
 						<option value="1.8">1.8° (200 steps per rev)</option>
 						<option value="7.5">7.5° (48 steps per rev)</option>
 					</b-select>
 				</b-form-group>
-				<b-form-group v-if="driveType != 'extruder'" label-cols="5" label="Drive type:">
+				<b-form-group v-if="driveType != 'extruder'" label-cols="5" :label="$t('motors.steps.driveType')">
 					<b-select v-model="driveType">
-						<option value="belt">Belt</option>
-						<option value="leadscrew">Leadscrew</option>
+						<option value="belt">{{$t('motors.steps.belt')}}</option>
+						<option value="leadscrew">{{$t('motors.steps.leadscrew')}}</option>
 					</b-select>
 				</b-form-group>
 				<template v-if="driveType == 'belt'">
-					<b-form-group label-cols="5" label="Preset:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.preset')">
 						<b-select v-model="beltPreset">
 							<option v-for="option in belt.presets" :value="option.value" v-text="option.text"></option>
-							<option value="custom">Custom</option>
+							<option value="custom">{{$t('motors.steps.custom')}}</option>
 						</b-select>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Belt pitch:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.beltPitch')">
 						<b-input-group append="mm">
 							<b-form-input v-model.number="belt.pitch" min="0.1" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Pulley teeth:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.pulleyTeeth')">
 						<b-form-input v-model.number="belt.pulleyTeeth" min="1" type="number" step="1" required></b-form-input>
 					</b-form-group>
 				</template>
 				<template v-else-if="driveType == 'leadscrew'">
-					<b-form-group label-cols="5" label="Preset:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.preset')">
 						<b-select v-model="leadscrewPreset">
 							<optgroup v-for="(group, name) in leadscrew.presets" :label="name">
 								<option v-for="option in group" :value="option.value" v-text="option.text"></option>
 							</optgroup>
-							<option value="custom">Custom</option>
+							<option value="custom">{{$t('motors.steps.custom')}}</option>
 						</b-select>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Lead:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.lead')">
 						<b-input-group append="mm">
 							<b-form-input v-model.number="leadscrew.lead" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Gear ratio:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.gear')">
 						<table>
 							<tr>
 								<td>
@@ -67,12 +67,12 @@
 					</b-form-group>
 				</template>
 				<template v-else>
-					<b-form-group label-cols="5" label="Hob diameter:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.hob')">
 						<b-input-group append="mm" class="mt-2">
 							<b-form-input v-model.number="extruder.hob" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Gear ratio:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.gear')">
 						<table>
 							<tr>
 								<td>
@@ -85,26 +85,26 @@
 							</tr>
 						</table>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Amount extruded:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.amount')">
 						<b-input-group append="mm" class="mt-2">
 							<b-form-input v-model.number="extruder.amountExtruded" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
-					<b-form-group label-cols="5" label="Actually extruded:">
+					<b-form-group label-cols="5" :label="$t('motors.steps.actually')">
 						<b-input-group append="mm" class="mt-2">
 							<b-form-input v-model.number="extruder.actuallyExtruded" type="number" step="any" required></b-form-input>
 						</b-input-group>
 					</b-form-group>
 				</template>
 				<b-card bg-variant="light">
-					<p>Resulting steps per mm:</p>
+					<p>{{$t('motors.steps.resulting')}}</p>
 					<h3 :class="{ 'text-danger' : !isValid }">
-						{{ isValid ? calculatedSteps.toFixed(2) : 'error' }}
+						{{ isValid ? calculatedSteps.toFixed(2) : $t('motors.steps.error') }}
 						<b-button size="sm" variant="primary" class="float-right set-button" :disabled="!isValid" @click="apply">
-							<font-awesome-icon icon="check"></font-awesome-icon> Set
+							<font-awesome-icon icon="check"></font-awesome-icon> {{$t('motors.steps.set')}}
 						</b-button>
 					</h3>
-					<span>at x{{ drive.microstepping }} microstepping</span>
+					<span>{{$t('motors.steps.at')}} x{{ drive.microstepping }} {{$t('motors.steps.microstepping')}}</span>
 				</b-card>
 			</b-form>
 		</b-popover>

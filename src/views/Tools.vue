@@ -17,10 +17,10 @@ tr > td:last-child {
 				<span class="mt-2">Tools</span>
 				<b-button-group class="float-right">
 					<b-button size="sm" variant="success" @click="addTool()">
-						<font-awesome-icon icon="plus"></font-awesome-icon> Add Tool
+						<font-awesome-icon icon="plus"></font-awesome-icon> {{$t('tools.addTool')}}
 					</b-button>
 					<b-button size="sm" variant="danger" :disabled="!canRemoveTool" @click="removeTool()">
-						<font-awesome-icon icon="minus"></font-awesome-icon> Remove Tool
+						<font-awesome-icon icon="minus"></font-awesome-icon> {{$t('tools.removeTool')}}
 					</b-button>
 				</b-button-group>
 			</template>
@@ -28,13 +28,13 @@ tr > td:last-child {
 			<table class="table mb-0">
 				<thead>
 					<tr>
-						<th>Number</th>
-						<th>Name</th>
-						<th>Extruders</th>
-						<th v-show="mixingToolsConfigured">Mixing Ratio</th>
-						<th>Heaters</th>
-						<th>Fans</th>
-						<th>XYZ Offsets</th>
+						<th>{{$t('tools.number')}}</th>
+						<th>{{$t('fans.name')}}</th>
+						<th>{{$tc('tools.extruder', 2)}}</th>
+						<th v-show="mixingToolsConfigured">{{$t('tools.mixing')}}</th>
+						<th>{{$tc('heaters.title', 2)}}</th>
+						<th>{{$tc('fans.title', 2)}}</th>
+						<th>{{$t('tools.offsets')}}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -69,7 +69,7 @@ tr > td:last-child {
 			</table>
 		</b-card>
 		<b-alert :show="hasDuplicateToolNumbers" variant="danger">
-			<strong>Error:</strong> Tool numbers must be unique
+			<strong>{{$t('tools.error')}}</strong>{{$t('tools.errorText')}}
 		</b-alert>
 	</b-container>
 </template>

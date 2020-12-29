@@ -1,6 +1,6 @@
 {
   "start": {
-    "welcome": "Welcome to the RepRapFirmware Configuration Tool",
+    "welcome": "Willkommen beim RepRapFirmware-Konfigurationstool",
     "instructions": "Please follow this wizard to obtain an individual configuration bundle for your printer",
     "original": "If you are using a printer that was originally shipped with RepRapFirmware, you can select a predefined template here:",
     "contributed": "The following machine templates were contributed by users and have not been throughly tested:",

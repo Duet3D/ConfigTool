@@ -10,7 +10,7 @@
 					<th>{{$tc('mapping.drives', 1)}}</th>
 					<th>{{$t('motors.direction')}}</th>
 					<th>{{$t('motors.microstepping')}}</th>
-					<th>{{$t('motors.steps')}}</th>
+					<th>{{$t('motors.perMM')}}</th>
 					<th>{{$t('motors.maxSpeedChange')}}</th>
 					<th>{{$t('motors.maxSpeed')}}</th>
 					<th>{{$t('motors.acceleration')}}</th>
@@ -41,7 +41,7 @@
 					<th>{{$tc('mapping.drives', 1)}}</th>
 					<th>{{$t('motors.direction')}}</th>
 					<th>{{$t('motors.microstepping')}}</th>
-					<th>{{$t('motors.steps')}}</th>
+					<th>{{$t('motors.perMM')}}</th>
 					<th>{{$t('motors.maxSpeedChange')}}</th>
 					<th>{{$t('motors.maxSpeed')}}</th>
 					<th>{{$t('motors.acceleration')}}</th>

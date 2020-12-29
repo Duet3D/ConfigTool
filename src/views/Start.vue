@@ -48,9 +48,9 @@
 			<br><br>
 			<span class="text-muted">{{$t('start.webapp')}}<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>. Version {{ version }}</span>
 		</div>
-
 		<input ref="inputJsonFile" type="file" accept="application/json" hidden @change="fileSelected"></input>
 	</b-container>
+	  
 </template>
 
 <script>

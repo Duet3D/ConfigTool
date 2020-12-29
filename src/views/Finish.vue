@@ -9,15 +9,15 @@ textarea {
 
 <template>
 	<b-container>
-		<b-card v-show="standalone" header="Extra Files" class="mt-3">
-			<b-checkbox v-model="addDWC">Get the latest stable Duet Web Control version</b-checkbox>
-			<b-checkbox v-model="addRRF">Get the latest stable RepRapFirmware version</b-checkbox>
+		<b-card v-show="standalone" :header="$t('finish.files')" class="mt-3">
+			<b-checkbox v-model="addDWC">{{$t('finish.dwc')}}</b-checkbox>
+			<b-checkbox v-model="addRRF">{{$t('finish.reprap')}}</b-checkbox>
 		</b-card>
 
-		<b-card header="Miscellaneous" class="mt-3">
-			<b-checkbox v-model="panelDue" class="mb-3">Enable support for PanelDue</b-checkbox>
-			<label for="custom_settings">Custom Settings for config.g:</label>
-			<label class="float-right"><a href="https://duet3d.com/wiki/G-code" target="_blank">Full list of all available G-codes</a></label>
+		<b-card :header="$t('finish.misc')" class="mt-3">
+			<b-checkbox v-model="panelDue" class="mb-3">{{$t('finish.paneldue')}}</b-checkbox>
+			<label for="custom_settings">{{$t('finish.custom')}}</label>
+			<label class="float-right"><a href="https://duet3d.com/wiki/G-code" target="_blank">{{$t('finish.gcodes')}}</a></label>
 			<b-form-textarea id="custom_settings" v-model="customSettings" rows="4" max-rows="8" @keydown.tab.exact.prevent="onTextareaTab"></b-form-textarea>
 		</b-card>
 	</b-container>

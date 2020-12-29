@@ -11,13 +11,13 @@
 		</b-input-group>
 		<b-form-input v-else :id="id" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 
-		<b-popover :target="id" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" custom-class="min-popover-width" triggers="focus" @show="onShow">
-			<b-form-group label="Thermistor Preset:">
+		<b-popover :target="id" :show.sync="popoverShown" placement="right" :title="$t('thermistor.calculate')" custom-class="min-popover-width" triggers="focus" @show="onShow">
+			<b-form-group :label="$t('thermistor.preset')">
 				<b-select v-model="sensorPreset" :options="sensorPresets"></b-select>
 			</b-form-group>
 
 			<b-card v-if="sensorPreset == 'custom'" bg-variant="light">
-				<p>Measure the resistances of your thermistor at three different temperatures and enter your values below:</p>
+				<p>{{$t('thermistor.resistance')}}</p>
 				<b-form-row>
 					<b-col cols="5">
 						<b-form-group label-cols="3" label="T1:">
@@ -54,11 +54,11 @@
 						</b-form-group>
 					</b-col>
 				</b-form-row>
-				<span>The third pair is optional.</span>
+				<span>{{$t('thermistor.optional')}}</span>
 			</b-card>
 
 			<b-card class="mt-3">
-				<h3 class="mb-3">Resulting Coefficients:</h3>
+				<h3 class="mb-3">{{$t('thermistor.results')}}</h3>
 				<b-form-row class="mb-0">
 					<b-col>
 						<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.thermistor)} Ω` : 'error' }} </h4>
@@ -67,7 +67,7 @@
 					</b-col>
 					<b-col cols="auto" align-self="center">
 						<b-button size="sm" variant="primary" :disabled="!isValid" @click="apply">
-							<font-awesome-icon icon="check"></font-awesome-icon> Set
+							<font-awesome-icon icon="check"></font-awesome-icon> {{$t('thermistor.set')}}
 						</b-button>
 					</b-col>
 				</b-form-row>

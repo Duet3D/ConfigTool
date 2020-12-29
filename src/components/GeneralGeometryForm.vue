@@ -1,44 +1,44 @@
 <template>
 	<b-form-row>
 		<b-col>
-			<b-form-group label="X minimum:">
+			<b-form-group :label="$t('general.xMin')">
 				<b-input-group append="mm">
-					<b-form-input v-model.number="xMin" v-preset="preset.geometry.mins[0]" title="Distance between the low X axis end and the bed corner" :max="xMax" type="number" step="any" required></b-form-input>
+					<b-form-input v-model.number="xMin" v-preset="preset.geometry.mins[0]" :title="$t('general.xMinDescription')" :max="xMax" type="number" step="any" required></b-form-input>
 				</b-input-group>
 			</b-form-group>
 		</b-col>
 		<b-col class="mr-2">
-			<b-form-group label="X maximum:">
+			<b-form-group :label="$t('general.xMax')">
 				<b-input-group append="mm">
-					<b-form-input v-model.number="xMax" v-preset="preset.geometry.maxes[0]" title="Maximum length of the X axis plus X minimum" :min="xMin" type="number" step="any" required></b-form-input>
+					<b-form-input v-model.number="xMax" v-preset="preset.geometry.maxes[0]" :title="$t('general.xMaxDescription')" :min="xMin" type="number" step="any" required></b-form-input>
 				</b-input-group>
 			</b-form-group>
 		</b-col>
 		<b-col class="ml-1">
-			<b-form-group label="Y minimum:">
+			<b-form-group :label="$t('general.yMin')">
 				<b-input-group append="mm">
-					<b-form-input v-model.number="yMin" v-preset="preset.geometry.mins[1]" title="Distance between the low Y axis end and the bed corner" :max="yMax" type="number" step="any" required></b-form-input>
+					<b-form-input v-model.number="yMin" v-preset="preset.geometry.mins[1]" :title="$t('general.yMinDescription')" :max="yMax" type="number" step="any" required></b-form-input>
 				</b-input-group>
 			</b-form-group>
 		</b-col>
 		<b-col class="mr-1">
-			<b-form-group label="Y maximum:">
+			<b-form-group :label="$t('general.yMax')">
 				<b-input-group append="mm">
-					<b-form-input v-model.number="yMax" v-preset="preset.geometry.maxes[1]" title="Maximum length of the Y axis plus Y minimum" :min="yMin" type="number" step="any" required></b-form-input>
+					<b-form-input v-model.number="yMax" v-preset="preset.geometry.maxes[1]" :title="$t('general.yMaxDescription')" :min="yMin" type="number" step="any" required></b-form-input>
 				</b-input-group>
 			</b-form-group>
 		</b-col>
 		<b-col class="ml-2">
-			<b-form-group label="Z minimum:">
+			<b-form-group :label="$t('general.zMin')">
 				<b-input-group append="mm">
-					<b-form-input v-model.number="zMin" v-preset="preset.geometry.mins[2]" title="Minimum allowed Z position" :max="zMax" type="number" step="any" required></b-form-input>
+					<b-form-input v-model.number="zMin" v-preset="preset.geometry.mins[2]" :title="$t('general.zMinDescription')" :max="zMax" type="number" step="any" required></b-form-input>
 				</b-input-group>
 			</b-form-group>
 		</b-col>
 		<b-col>
-			<b-form-group label="Z maximum:">
+			<b-form-group :label="$t('general.zMax')">
 				<b-input-group append="mm">
-					<b-form-input v-model.number="zMax" v-preset="preset.geometry.maxes[2]" title="Maximum allowed Z position" :min="zMin" type="number" step="any" required></b-form-input>
+					<b-form-input v-model.number="zMax" v-preset="preset.geometry.maxes[2]" :title="$t('general.zMaxDescription')" :min="zMin" type="number" step="any" required></b-form-input>
 				</b-input-group>
 			</b-form-group>
 		</b-col>
