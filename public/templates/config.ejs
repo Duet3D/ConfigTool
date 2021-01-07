@@ -35,7 +35,7 @@ M551 P"<%- template.network.password %>" ; set password
 			if (template.network.hasOwnProperty('mac_address') && template.network.mac_address !== '') { -%>
 M540 P<%- template.network.mac_address %> ; set custom MAC address
 <%			}
-			if (template.board.startsWith('duetwifi')) { -%>
+			if (board.hasWiFi) { -%>
 M552 S1 ; enable network
 <%			} else if (template.network.dhcp) { -%>
 M552 P0.0.0.0 S1 ; enable network and acquire dynamic address via DHCP

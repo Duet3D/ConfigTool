@@ -32,6 +32,8 @@
 </template>
 
 <script>
+'use strict'
+
 export default {
 	computed: {
 		offsetsValid() {
@@ -48,9 +50,9 @@ export default {
 	},
 	methods: {
 		setOffsets() {
-			this.tool.x_offsets = this.xOffset;
-			this.tool.y_offsets = this.yOffset;
-			this.tool.z_offsets = this.zOffset;
+			this.tool.x_offset = this.xOffset;
+			this.tool.y_offset = this.yOffset;
+			this.tool.z_offset = this.zOffset;
 			this.popoverShown = false;
 		}
 	},
@@ -70,9 +72,9 @@ export default {
 		}
 	},
 	watch: {
-		'tool.x_offset'(to) { this.x_offset = to; },
-		'tool.y_offset'(to) { this.y_offset = to; },
-		'tool.z_offset'(to) { this.z_offset = to; }
+		'tool.x_offset'(to) { this.xOffset = to; },
+		'tool.y_offset'(to) { this.yOffset = to; },
+		'tool.z_offset'(to) { this.zOffset = to; }
 	}
 }
 </script>
