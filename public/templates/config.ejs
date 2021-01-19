@@ -176,7 +176,7 @@ M950 S0 C"<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
 		let zProbeType = 0, cArg = '';
 		switch (template.probe.type) {
 			case 'switch':
-				zProbeType = (template.geometry.type === 'delta') ? 4 : 5;
+				zProbeType = (template.firmware < 3 && template.geometry.type === 'delta') ? 4 : 5;
 				break;
 			case 'unmodulated':
 				zProbeType = 1;
