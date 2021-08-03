@@ -118,14 +118,6 @@ export default new Vuex.Store({
 				}
 			});
 
-			// Don't load DWC on the Duet 3 in SBC mode
-			if (board.startsWith('duet3')) {
-				state.template.standalone = false;
-				state.addDWC = false;
-			} else {
-				state.template.standalone = true;
-			}
-
 			// Update board
 			state.board = newBoard;
 			state.template.board = board;

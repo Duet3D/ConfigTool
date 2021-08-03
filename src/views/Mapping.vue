@@ -311,7 +311,7 @@ export default {
 				}
 				return `Board ${board} - Driver ${driver}`;
 			}
-			return this.getDriveCaption(driver);
+			return this.getDriveCaption((board === 0) ? driver : driver + this.board.numDrives);
 		},
 		getDrivers(drive) {
 			const options = [];

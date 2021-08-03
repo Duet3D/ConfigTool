@@ -2,6 +2,7 @@
 
 export default {
 	'Duex 2': {
+		isCanBoard: false,
 		isToolBoard: false,
 		numDrives: 2,
 		heaterPorts: ['duex.e2heat', 'duex.e3heat'],
@@ -13,6 +14,7 @@ export default {
 		maxRtdBoards: 2
 	},
 	'Duex 5': {
+		isCanBoard: false,
 		isToolBoard: false,
 		numDrives: 5,
 		heaterPorts: ['duex.e2heat', 'duex.e3heat', 'duex.e4heat', 'duex.e5heat', 'duex.e6heat'],
@@ -24,6 +26,7 @@ export default {
 		maxRtdBoards: 2
 	},
 	'Dual Stepper Driver Expansion Module': {
+		isCanBoard: false,
 		isToolBoard: false,
 		numDrives: 2,
 		heaterPorts: [],
@@ -36,6 +39,7 @@ export default {
 		maxRtdBoards: 2
 	},
 	'EXP3HC': {
+		isCanBoard: true,
 		isToolBoard: false,
 		numDrives: 3,
 		heaterPorts: ['out0', 'out1', 'out2'],
@@ -47,12 +51,37 @@ export default {
 		maxRtdBoards: 2
 	},
 	'TOOL1LC': {
+		isCanBoard: true,
 		isToolBoard: true,
 		numDrives: 1,
 		heaterPorts: ['out0'],
 		fanPorts: ['out1', 'out2'],
 		gpioPorts: ['io0.out', 'io0.in', 'io1.out', 'io1.in', 'io2.in', 'out1.tach', 'out2.tach'],
 		analogPorts: ['temp0', 'temp1', 'io0.in'],
+		pwmPorts: ['io0.out'],
+		spiCsPorts: [],
+		maxRtdBoards: 0
+	},
+	'EXP1XD': {
+		isCanBoard: true,
+		isToolBoard: true,
+		numDrives: 1,
+		heaterPorts: [],
+		fanPorts: ['out0', 'out1'],
+		gpioPorts: ['io0.out', 'io0.in', 'io1.in', 'io2.in', 'io2.out'],
+		analogPorts: ['temp0'],
+		pwmPorts: ['io0.out', 'io2.out'],
+		spiCsPorts: [],
+		maxRtdBoards: 0
+	},
+	'EXP1HCL': {
+		isCanBoard: true,
+		isToolBoard: true,
+		numDrives: 1,
+		heaterPorts: [],
+		fanPorts: ['out0', 'out1'],
+		gpioPorts: ['io0.out', 'io0.in', 'io1.out', 'io1.in'],
+		analogPorts: ['temp0'],
 		pwmPorts: ['io0.out'],
 		spiCsPorts: [],
 		maxRtdBoards: 0

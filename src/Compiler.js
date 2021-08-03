@@ -4,6 +4,7 @@ import { render } from 'ejs'
 import JSZip from 'jszip'
 
 import Boards from './store/Boards.js'
+import ExpansionBoards from './store/ExpansionBoards.js'
 
 import { version } from '../package.json'
 
@@ -177,6 +178,10 @@ export default {
 					return (value * factor).toFixed(precision);
 				}
 				return value;
+			},
+
+			hasCanBoards() {
+				return template.expansion_boards.some(board => ExpansionBoards[board].isCanBoard);
 			},
 
 			makeDriveString(property, factor, precision = 2, condition) {

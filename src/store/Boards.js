@@ -157,7 +157,7 @@ export default {
 			supports12864: false,
 			firmwareFile: 'Duet3Firmware_MB6HC.bin',
 			iapFile: 'Duet3_SDiap_MB6HC.bin',
-			expansionBoards: ['EXP3HC', 'TOOL1LC'],
+			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL'],
 			maxExpansionBoards: 6
 		},
 		{
@@ -183,7 +183,7 @@ export default {
 			supports12864: true,
 			firmwareFile: 'Duet3Firmware_Mini5plus.uf2',
 			iapFile: 'Duet3_SDiap_Mini5plus.bin',
-			expansionBoards: ['EXP3HC', 'TOOL1LC'],
+			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL'],
 			maxExpansionBoards: 4
 		},
 		{
@@ -209,7 +209,7 @@ export default {
 			supports12864: true,
 			firmwareFile: 'Duet3Firmware_Mini5plus.uf2',
 			iapFile: 'Duet3_SDiap_Mini5plus.bin',
-			expansionBoards: ['EXP3HC', 'TOOL1LC'],
+			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL'],
 			maxExpansionBoards: 4
 		}
 	],
