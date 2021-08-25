@@ -78,7 +78,7 @@ export default {
 			supportsDisplay: false,
 			supports12864: false,
 			firmwareFile: 'Duet2CombinedFirmware.bin',
-			iapFile: 'Duet2CombinedIAP.bin',
+			iapFile: 'Duet2_SDiap32_WiFiEth.bin',
 			expansionBoards: ['Duex 2', 'Duex 5'],
 			maxExpansionBoards: 1
 		},
@@ -104,7 +104,7 @@ export default {
 			supportsDisplay: false,
 			supports12864: false,
 			firmwareFile: 'Duet2CombinedFirmware.bin',
-			iapFile: 'Duet2CombinedIAP.bin',
+			iapFile: 'Duet2_SDiap32_WiFiEth.bin',
 			expansionBoards: ['Duex 2', 'Duex 5'],
 			maxExpansionBoards: 1
 		},

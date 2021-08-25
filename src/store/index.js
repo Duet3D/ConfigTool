@@ -51,7 +51,7 @@ export default new Vuex.Store({
 				commit('setFirmware', 1.21);
 			} else if (board.startsWith('duet3')) {
 				// RRFv3 is required for the Duet 3 series
-				commit('setFirmware', 3);
+				commit('setFirmware', 3.3);
 			}
 		}
 	},

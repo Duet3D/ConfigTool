@@ -9,7 +9,7 @@ export default {
 		return {
 			board: 'duetwifi10',
 			expansion_boards: [],
-			firmware: 3.00,
+			firmware: 3.3,
 			standalone: true,
 			nvram: false,
 			auto_save: {

@@ -122,14 +122,14 @@ export default {
 		// Add RRF+IAP files
 		if (rrfFile) {
 			try {
-				zip.file('sys/' + rrfFile.name, rrfFile);
+				zip.file((template.firmware >= 3.3 ? 'firmware/' : 'sys/') + rrfFile.name, rrfFile);
 			} catch (e) {
 				throw `Failed to integrate ${rrfFile.name}: ${e}`
 			}
 		}
 		if (iapFile) {
 			try {
-				zip.file('sys/' + iapFile.name, iapFile);
+				zip.file((template.firmware >= 3.3 ? 'firmware/' : 'sys/') + iapFile.name, iapFile);
 			} catch (e) {
 				throw `Failed to integrate ${rrfFile.name}: ${e}`
 			}

@@ -19,14 +19,15 @@
 
 				<b-col>
 					<b-form-group label="Firmware version:">
-						<b-form-select :value="template.firmware" @change="setFirmware($event)" :disabled="template.board.startsWith('duet3') || template.board.startsWith('duet0')" v-preset="preset.firmware" title="Version of the firmware running on your board">
+						<b-form-select :value="template.firmware" @change="setFirmware($event)" :disabled="template.board.startsWith('duet0')" v-preset="preset.firmware" title="Version of the firmware running on your board">
 							<option :value="1.16" disabled>1.16 or older (no longer supported)</option>
 							<option :value="1.17" disabled>1.17 to 1.19 (no longer supported)</option>
 							<option :value="1.2" disabled>1.20 (no longer supported)</option>
-							<option :value="1.21">1.21</option>
-							<option :value="2">2.0</option>
-							<option :value="2.03">2.03 to 2.05</option>
-							<option :value="3">3.0 or later (stable)</option>
+							<option :value="1.21" :disabled="template.board.startsWith('duet3')">1.21</option>
+							<option :value="2" :disabled="template.board.startsWith('duet3')">2.0</option>
+							<option :value="2.03" :disabled="template.board.startsWith('duet3')">2.03 to 2.05</option>
+							<option :value="3">3.0 to 3.2</option>
+							<option :value="3.3">3.3 or later (stable)</option>
 						</b-form-select>
 					</b-form-group>
 				</b-col>
