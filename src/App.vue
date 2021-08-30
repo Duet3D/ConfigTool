@@ -27,7 +27,7 @@ input::-webkit-inner-spin-button {
 					<b-nav-item to="Fans" :active="$route.path === '/Fans'">Fans</b-nav-item>
 					<b-nav-item to="Tools" :active="$route.path === '/Tools'">Tools</b-nav-item>
 					<b-nav-item to="Compensation" :active="$route.path === '/Compensation'">Compensation</b-nav-item>
-					<b-nav-item to="Display" :active="$route.path === '/Display'" v-show="$route.path === '/Display' || board.supportsDisplay">Display</b-nav-item>
+					<b-nav-item to="Display" :active="$route.path === '/Display'" v-show="$route.path === '/Display' || board.supports12864">Display</b-nav-item>
 					<b-nav-item to="Network" :active="$route.path === '/Network'" v-show="$route.path === '/Network' || template.standalone">Network</b-nav-item>
 					<b-nav-item to="Finish" :active="$route.path === '/Finish'">Finish</b-nav-item>
 				</b-navbar-nav>
@@ -160,7 +160,7 @@ export default {
 				if (prevPage.path === '/Network' && !this.template.standalone) {
 					prevPage = this.$router.options.routes[--pageIndex];
 				}
-				if (prevPage.path === '/Display' && !this.board.supportsDisplay) {
+				if (prevPage.path === '/Display' && !this.board.supports12864) {
 					prevPage = this.$router.options.routes[--pageIndex];
 				}
 				this.$router.push(prevPage);
@@ -170,7 +170,7 @@ export default {
 			let pageIndex = this.$router.options.routes.findIndex(route => route.path === this.$route.path);
 			if (pageIndex + 2 < this.$router.options.routes.length) {
 				let nextPage = this.$router.options.routes[++pageIndex];
-				if (nextPage.path === '/Display' && !this.board.supportsDisplay) {
+				if (nextPage.path === '/Display' && !this.board.supports12864) {
 					nextPage = this.$router.options.routes[++pageIndex];
 				}
 				if (nextPage.path === '/Network' && !this.template.standalone) {

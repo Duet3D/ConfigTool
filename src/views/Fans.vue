@@ -87,9 +87,12 @@ export default {
 			const heaters = [];
 			this.template.heaters.forEach(function(heater, index) {
 				if (heater != null) {
-					heaters.push({ text: (index == 0) ? 'Bed' : `E${index - 1}`, value: index });
+					heaters.push({
+						text: (this.template.firmware >= 3) ? `H${index}` : ((index === 0) ? 'Bed' : `E${index - 1}`),
+						value: index
+					});
 				}
-			});
+			}, this);
 			return heaters;
 		}
 	},

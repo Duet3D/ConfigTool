@@ -99,7 +99,10 @@ export default {
 		extruders() {
 			const extruders = [];
 			for (let i = 3; i < this.template.drives.length; i++) {
-				extruders.push({ text: `E${i - 3}`, value: i - 3 });
+				extruders.push({
+					text: `E${i - 3}`,
+					value: i - 3
+				});
 			}
 			return extruders;
 		},
