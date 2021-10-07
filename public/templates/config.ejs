@@ -109,11 +109,11 @@ M208 X<%- template.geometry.maxes[0] %> Y<%- template.geometry.maxes[1] %> Z<%- 
 				let type = 'unknown', sParam = 0;
 				switch (drive.endstop_type) {
 					case 1:
-						type = 'active-high';
+						type = 'switch-type (e.g. microswitch)';
 						sParam = 1;
 						break;
 					case 2:
-						type = 'active-low';
+						type = 'unsupported switch-type';
 						sParam = 0;
 						break;
 					case 3:
