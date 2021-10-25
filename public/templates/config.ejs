@@ -173,13 +173,9 @@ M558 P0 H<%- template.z_dive_height %> F<%- template.probe.speed * 60 %> T<%- te
 			if (template.probe.type === 'bltouch' && !template.board.startsWith('duetm')) { -%>
 M307 H<%- template.probe.pwm_channel %> A-1 C-1 D-1 ; disable heater on PWM channel for BLTouch
 <%			}
-		} else if (template.probe.type === 'bltouch') {
-			if (template.board.startsWith('duetm')) { -%>
-M950 S0 C"^<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
-<%			} else { -%>
+		} else if (template.probe.type === 'bltouch') { -%>
 M950 S0 C"<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
-<%			}
-		}
+<%		}
 
 		let zProbeType = 0, cArg = '';
 		switch (template.probe.type) {
@@ -200,7 +196,7 @@ M950 S0 C"<%- template.probe.pwm_pin %>" ; create servo pin 0 for BLTouch
 				break;
 		}
 		if (template.firmware >= 3 && template.probe.input_pin) {
-			if (template.probe.type === 'switch' || template.probe.type === 'bltouch') {
+			if (template.probe.type === 'switch' || (!template.board.startsWith('duet3') && template.probe.type === 'bltouch')) {
 				cArg = ` C"^${template.probe.input_pin}"`;
 			} else if (template.probe.modulation_pin) {
 				cArg = ` C"${template.probe.input_pin}+${template.probe.modulation_pin}"`;
