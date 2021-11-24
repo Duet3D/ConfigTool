@@ -7,16 +7,16 @@
 <template>
 	<div>
 		<b-input-group :append="unit" v-if="unit !== undefined">
-			<b-form-input :id="id" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
+			<b-form-input ref="input" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 		</b-input-group>
-		<b-form-input v-else :id="id" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
+		<b-form-input v-else ref="input" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 
-		<b-popover :target="id" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" custom-class="min-popover-width" triggers="focus" @show="onShow">
+		<b-popover v-if="$refs.input" :target="$refs.input" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" custom-class="min-popover-width" triggers="focus" @show="onShow">
 			<b-form-group label="Thermistor Preset:">
 				<b-select v-model="sensorPreset" :options="sensorPresets"></b-select>
 			</b-form-group>
 
-			<b-card v-if="sensorPreset == 'custom'" bg-variant="light">
+			<b-card v-if="sensorPreset === 'custom'" bg-variant="light">
 				<p>Measure the resistances of your thermistor at three different temperatures and enter your values below:</p>
 				<b-form-row>
 					<b-col cols="5">
@@ -63,7 +63,7 @@
 					<b-col>
 						<h4 :class="{ 'text-danger' : !isValid }">R25: {{ isValid ? `${Math.round(calculatedParameters.thermistor)} Ω` : 'error' }} </h4>
 						<h4 :class="{ 'text-danger' : !isValid }">β: {{ isValid ? `${(calculatedParameters.b && isThirdPairValid) ? Math.round(1 / calculatedParameters.b) : calculatedParameters.beta} K` : 'error' }} </h4>
-						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }" v-show="template.firmware > 1.16">C: {{ isValid ? (((sensorPreset != 'custom' || isThirdPairValid) && calculatedParameters.c != 0) ? calculatedParameters.c.toExponential(6) : '0') : 'error' }}</h4>
+						<h4 class="mb-0" :class="{ 'text-danger' : !isValid }" v-show="template.firmware > 1.16">C: {{ isValid ? (((sensorPreset !== 'custom' || isThirdPairValid) && calculatedParameters.c !== 0) ? calculatedParameters.c.toExponential(6) : '0') : 'error' }}</h4>
 					</b-col>
 					<b-col cols="auto" align-self="center">
 						<b-button size="sm" variant="primary" :disabled="!isValid" @click="apply">
@@ -92,8 +92,6 @@ const parameters = {
 	r3: ''
 }
 let hadInput = false
-
-let idCounter = 0;
 
 export default {
 	computed: {
@@ -155,7 +153,6 @@ export default {
 	},
 	data() {
 		return {
-			id: `thermistorInput${idCounter++}`,
 			parameters,
 			sensorPreset: 'custom',
 			sensorPresets: [
