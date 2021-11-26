@@ -310,7 +310,7 @@ export default {
 			// Generate config files
 			try {
 				const output = await Compiler.compileFile('templates/files.ejs', { template: this.template });
-				this.files = output.trim().split('\n');
+				this.files = output.trim().split('\n').map(file => file.trim());
 			} catch (e) {
 				this.message = 'Failed to load template from server:<br><br>' + e;
 			}

@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -16,7 +16,7 @@
     "es6-promise": "^4.2.8",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
-    "jszip": "^3.5.0",
+    "jszip": "^3.7.1",
     "vue": "^2.6.12",
     "vue-router": "^3.4.9",
     "vuex": "^3.6.0",

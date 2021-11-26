@@ -15,8 +15,8 @@ export default {
 
 		// Find out how long the maximum command is
 		lines.forEach(function(line) {
-			var index = line.indexOf(';');
-			if (index == 1) {
+			let index = line.indexOf(';');
+			if (index === 1) {
 				index = line.substr(1).indexOf(';') - 1;
 			}
 
@@ -28,13 +28,13 @@ export default {
 		// Align line comments
 		let newResult = '';
 		lines.forEach(function(line) {
-			let index = line.indexOf(';'), startingWithComment = (index == 0);
+			let index = line.indexOf(';'), startingWithComment = (index === 0);
 			if (startingWithComment) {
 				line = line.substr(1);
 				index = line.indexOf(';');
 			}
 
-			if (index == -1) {
+			if (index === -1) {
 				newResult += (startingWithComment ? ';' : '') + line + '\n';
 			} else {
 				let commandPart = (startingWithComment ? ';' : '') + line.substr(0, index - 1);
@@ -110,12 +110,12 @@ export default {
 		}
 
 		// Generate /sys directory
-		for (let i = 0; i < filenames.length; i++) {
+		for (let filename of filenames) {
 			try {
-				const content = await this.compileTemplate(filenames[i], template, board);
-				zip.file('sys/' + filenames[i], content);
+                const content = await this.compileTemplate(filename, template, board);
+                zip.file('sys/' + filename, content);
 			} catch (e) {
-				throw `Failed to create ${filenames[i]}: ${e}`
+				throw `Failed to create ${filename}: ${e}`
 			}
 		}
 
@@ -234,10 +234,10 @@ export default {
 			},
 
 			getFirstProbePoint(axis) {
-				if (template.probe.points == 0) {
-					return (axis == 0) ? template.mesh.x_min : template.mesh.y_min;
+				if (template.probe.points === 0) {
+					return (axis === 0) ? template.mesh.x_min : template.mesh.y_min;
 				}
-				return (axis == 0) ? template.probe.points[0].x : template.probe.points[0].y;
+				return (axis === 0) ? template.probe.points[0].x : template.probe.points[0].y;
 			}
 		}
 	}
