@@ -81,8 +81,6 @@
 
 import { mapState, mapMutations } from 'vuex'
 
-const popoverTemplate = '<div class="popover calc-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
-
 const parameters = {
 	t1: 25,
 	t2: 220,

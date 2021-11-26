@@ -121,7 +121,7 @@ export default {
 				y_offset: 0,
 				speed: 2,
 				deploy: false,
-				points: [],
+				points: [0, 0],
 				pwm_channel: 3,					// v1-2 only
 				pwm_inverted: true,				// v1-2 only
 				pwm_pin: null,					// v3+

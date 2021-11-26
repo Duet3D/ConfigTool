@@ -236,6 +236,7 @@ M140 H-1 ; disable heated bed (overrides default heater mapping)
 					}
 					extraComment = `as thermistor on pin ${heater.sensor_pin}`;
 					break;
+                case 'rtd-max31865':
 				case 'pt100':
 					extraComment = `as PT100 on pin ${heater.sensor_pin}`;
 					break;
