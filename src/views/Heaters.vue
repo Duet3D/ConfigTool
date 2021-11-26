@@ -83,14 +83,16 @@ select {
 
 			<table class="table mb-0 table-heaters">
 				<thead>
-					<th>Heater</th>
-					<th>Type</th>
-					<th>Temp. Limit</th>
-					<th>PWM Limit</th>
-					<th>R25</th>
-					<th>β</th>
-					<th>C</th>
-					<th v-if="template.firmware < 3">Sensor Channel</th>
+					<tr>
+						<th>Heater</th>
+						<th>Type</th>
+						<th>Temp. Limit</th>
+						<th>PWM Limit</th>
+						<th>R25</th>
+						<th>β</th>
+						<th>C</th>
+						<th v-if="template.firmware < 3">Sensor Channel</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="(heater, index) in template.heaters" :key="index" v-if="heater != null">
@@ -214,7 +216,7 @@ export default {
 		},
 		isPwmLimitDisabled(heater) {
 			return ((this.template.bed.present && !this.template.bed.use_pid && this.template.bed.heater === heater) ||
-					(this.template.chamber.present && !this.template.chamber.use_pid && this.template.chamber.heater == heater));
+					(this.template.chamber.present && !this.template.chamber.use_pid && this.template.chamber.heater === heater));
 		}
 	}
 }

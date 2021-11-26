@@ -231,6 +231,9 @@ M140 H-1 ; disable heated bed (overrides default heater mapping)
 			switch (heater.sensor_type) {
 				case 'thermistor':
 					extraArgs = ` T${heater.thermistor} B${heater.beta}`;
+                    if (template.firmware < 3) {
+                        extraArgs = ` R${heater.series}`;
+                    }
 					if (heater.c > 0) {
 						extraArgs += ` C${heater.c}`;
 					}
@@ -241,8 +244,10 @@ M140 H-1 ; disable heated bed (overrides default heater mapping)
 					extraComment = `as PT100 on pin ${heater.sensor_pin}`;
 					break;
 				case 'pt1000':
-					extraArgs = ` R${heater.series}`;
 					extraComment = `as PT1000 on pin ${heater.sensor_pin}`;
+                    if (template.firmware < 3) {
+                        extraArgs = ` R${heater.series}`;
+                    }
 					break;
 				default:
 					extraComment = `as thermocouple via CS pin ${heater.sensor_pin}`;

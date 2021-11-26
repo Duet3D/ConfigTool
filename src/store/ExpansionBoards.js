@@ -22,7 +22,7 @@ export default {
 		gpioPorts: ['exp.e2stop', 'exp.e3stop', 'exp.e4stop', 'exp.e5stop', 'exp.e6stop', 'duex.gp1', 'duex.gp2', 'duex.gp3', 'duex.gp4', 'duex.pwm1', 'duex.pwm2', 'duex.pwm3', 'duex.pwm4', 'duex.pwm5'],
 		analogPorts: ['duex.e2temp', 'duex.e3temp', 'duex.e4temp', 'duex.e5temp', 'duex.e6temp'],
 		pwmPorts: ['duex.e2heat', 'duex.e3heat', 'duex.e4heat', 'duex.e5heat', 'duex.e6heat', 'duex.gp1', 'duex.gp2', 'duex.gp3', 'duex.gp4', 'duex.pwm1', 'duex.pwm2', 'duex.pwm3', 'duex.pwm4', 'duex.pwm5'],
-		spiCsPorts: ['duex.cs5'],
+		spiCsPorts: ['duex.cs5', 'duex.cs6', 'duex.cs7'],
 		maxRtdBoards: 2
 	},
 	'Dual Stepper Driver Expansion Module': {

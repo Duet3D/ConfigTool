@@ -93,11 +93,11 @@ export default new Vuex.Store({
 			state.template.expansion_boards = state.template.expansion_boards.filter(eb => newBoard.expansionBoards.indexOf(eb) !== -1);
 
 			// Update microstepping if applicable
-			if ((state.board.microstepping != newBoard.microstepping)  ||
-				(state.board.microsteppingInterpolation != newBoard.microsteppingInterpolation)) {
+			if ((state.board.microstepping !== newBoard.microstepping)  ||
+				(state.board.microsteppingInterpolation !== newBoard.microsteppingInterpolation)) {
 				state.template.drives.forEach(function(drive) {
 					if (newBoard.microstepping) {
-						drive.microstepping_interpolation = (drive.microstepping == 16) ||
+						drive.microstepping_interpolation = (drive.microstepping === 16) ||
 							(drive.microstepping_interpolation && newBoard.microsteppingInterpolation);
 					} else {
 						drive.microstepping = 16;
@@ -159,10 +159,10 @@ export default new Vuex.Store({
 					if (drive.instant_dv === (index < 2) ? 15 : ((index === 2) ? 0.2 : 2)) { drive.instant_dv = 20; };
 					if (drive.max_speed === (index < 2) ? 100 : ((index === 2) ? 3 : 20)) { drive.max_speed = (index < 3) ? 300 : 20; };
 					if (drive.acceleration === (index < 2) ? 500 : ((index === 2) ? 20 : 250)) { drive.acceleration = 1000; };
-					if (drive.current == 800) { drive.current = (index < 3) ? 1000 : 800; };
+					if (drive.current === 800) { drive.current = (index < 3) ? 1000 : 800; };
 				});
 
-				if (state.template.drives[2].endstop_type == 3) { state.template.drives[2].endstop_type = 1; }
+				if (state.template.drives[2].endstop_type === 3) { state.template.drives[2].endstop_type = 1; }
 				state.preset.drives[2].endstop_type = 1;
 
 				state.preset.drives.forEach(function(drive, index) {
@@ -185,7 +185,7 @@ export default new Vuex.Store({
 					if (drive.current === (index < 3) ? 1000 : 800) { drive.current = 800; }
 				});
 
-				if (state.template.drives[2].endstop_type == 1) { state.template.drives[2].endstop_type = 3; }
+				if (state.template.drives[2].endstop_type === 1) { state.template.drives[2].endstop_type = 3; }
 				state.preset.drives[2].endstop_type = 3;
 
 				state.preset.drives.forEach(function(drive, index) {
@@ -230,9 +230,9 @@ export default new Vuex.Store({
 			state.template.drives.pop();
 		},
 		setAxisMinimum(state, { axis, value }) {
-			if (axis === 0 && state.template.mesh.x_min == state.template.geometry.mins[0] + state.template.compensation_x_offset) {
+			if (axis === 0 && state.template.mesh.x_min === state.template.geometry.mins[0] + state.template.compensation_x_offset) {
 				state.template.mesh.x_min = value + state.template.compensation_x_offset;
-			} else if (axis === 1 && state.template.mesh.y_min == state.template.geometry.mins[1] + state.template.compensation_y_offset) {
+			} else if (axis === 1 && state.template.mesh.y_min === state.template.geometry.mins[1] + state.template.compensation_y_offset) {
 				state.template.mesh.y_min = value + state.template.compensation_y_offset;
 			}
 			state.template.geometry.mins[axis] = value;
@@ -241,7 +241,7 @@ export default new Vuex.Store({
 			state.template.geometry.maxes[axis] = value;
 		},
 		setPrintRadius(state, radius) {
-			if (state.template.probe_radius == state.template.geometry.print_radius) {
+			if (state.template.probe_radius === state.template.geometry.print_radius) {
 				state.template.probe_radius = radius;
 			}
 			state.template.geometry.print_radius = radius;
@@ -268,7 +268,7 @@ export default new Vuex.Store({
 
 		setProbeType(state, type) {
 			// Set default probe speed when switching to/from effector
-			if (type == 'effector') {
+			if (type === 'effector') {
 				state.template.probe.speed = 20;
 			} else if (state.template.probe.type === 'effector') {
 				state.template.probe.speed = state.preset.probe.speed;
@@ -446,11 +446,11 @@ export default new Vuex.Store({
 
 			// Make sure only valid extruders and heaters are assigned
 			const filteredExtruders = tool.extruders.filter((drive) => drive + 3 < state.template.drives.length);
-			if (filteredExtruders.length != tool.extruders.length) {
+			if (filteredExtruders.length !== tool.extruders.length) {
 				tool.extruders = filteredExtruders;
 			}
 
-			const filteredHeaters = tool.heaters.filter(heater => (heater == 0 && state.template.bed_is_nozzle) ||
+			const filteredHeaters = tool.heaters.filter(heater => (heater === 0 && state.template.bed_is_nozzle) ||
 				(heater > 0 && ((!state.template.bed.present || state.template.bed.heater !== heater) &&
 					(!state.template.chamber.present || state.template.chamber.heater !== heater) &&
 					(heater < state.template.heaters.length && state.template.heaters[heater] !== null))));

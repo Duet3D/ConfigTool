@@ -5,17 +5,17 @@
 G91 ; relative positioning
 <%	const axes = ['X', 'Y', 'Z'], sOrH = template.firmware >= 2.03 ? 'H' : 'S';
 	let a = 0, b = 1, c = 2; // Home all the axes in the order ABC
-	if (template.geometry.type == 'corexz') {
+	if (template.geometry.type === 'corexz') {
 		a = 0; b = 2; c = 1;
 	}
 
-	if (c == 2) { -%>
+	if (c === 2) { -%>
 G1 <%- sOrH %>2 Z<%- template.z_dive_height %> F<%- template.travel_speed * 60 %> ; lift Z relative to current position
 <%	}
 
 	let deployProbe = false;
 	for(let i = 0; i < 3; i++) {
-		if (template.drives[i].endstop_type == 3) {
+		if (template.drives[i].endstop_type === 3) {
 			deployProbe = template.probe.deploy;
 			break;
 		}
@@ -25,10 +25,10 @@ M98 P"deployprobe.g" ; deploy mechanical Z probe
 <%	}
 	let travelToA = template.geometry.maxes[a] - template.geometry.mins[a] + 5;
 	let travelToB = template.geometry.maxes[b] - template.geometry.mins[b] + 5;
-	const travelBackA = (template.drives[a].endstop_location == 1) ? 5 : -5;
-	const travelBackB = (template.drives[b].endstop_location == 1) ? 5 : -5;
-	if (template.drives[a].endstop_location == 1) { travelToA *= -1; }
-	if (template.drives[b].endstop_location == 1) { travelToB *= -1; } 
+	const travelBackA = (template.drives[a].endstop_location === 1) ? 5 : -5;
+	const travelBackB = (template.drives[b].endstop_location === 1) ? 5 : -5;
+	if (template.drives[a].endstop_location === 1) { travelToA *= -1; }
+	if (template.drives[b].endstop_location === 1) { travelToB *= -1; }
 
 	if (template.geometry.type.startsWith('core')) { -%>
 G1 <%- sOrH %>1 <%- axes[a] + travelToA %> <%- axes[b] %><%- travelToB %> F<%- ((a !== 2) ? template.homing_speed_fast : template.homing_speed_slow) * 60 %> ; move quickly to <%- axes[a] %> or <%- axes[b] %> endstop and stop there (first pass)
@@ -43,20 +43,20 @@ G1 <%- sOrH %>2 X<%- travelBackA %> Y<%- travelBackB %> F<%- template.travel_spe
 G1 <%- sOrH %>1 X<%- travelToA %> Y<%- travelToB %> F<%- template.homing_speed_slow * 60 %> ; move slowly to X and Y axis endstops once more (second pass)
 <%	}
 
-	if (c != 2) { -%>
+	if (c !== 2) { -%>
 G1 <%- sOrH %>2 Z<%- template.z_dive_height %> F<%- template.travel_speed * 60 %> ; lift Z relative to current position
 <%	}
 
-	if (c != 2 || template.drives[c].endstop_type != 3) {
+	if (c !== 2 || template.drives[c].endstop_type !== 3) {
 		let travelToC = template.geometry.maxes[c] - template.geometry.mins[c] + 5;
 		let travelCDirection = 'up';
-		if (template.drives[c].endstop_location == 1) {
+		if (template.drives[c].endstop_location === 1) {
 			travelCDirection = 'down';
 			travelToC *= -1;
 		} -%>
 G1 <%- sOrH %>1 <%- axes[c] + travelToC %> F<%- ((c !== 2) ? template.homing_speed_fast : template.homing_speed_slow) * 60 %> ; move <%- axes[c] %> <%- travelCDirection %> stopping at the endstop
 G90 ; absolute positioning
-<%		if (c == 2) { -%>
+<%		if (c === 2) { -%>
 G92 <%- axes[c] + ((template.drives[c].endstop_location === 1) ? template.geometry.mins[c] : template.geometry.maxes[c]) %> ; set <%- axes[c] %> position to axis <%- (template.drives[c].endstop_location === 1) ? 'minimum' : 'maximum' %> (you may want to adjust this)
 <%		}
 	} else { -%>
@@ -65,7 +65,7 @@ G1 X<%- util.getFirstProbePoint(0) - template.probe.x_offset %> Y<%- util.getFir
 G30 ; home Z by probing the bed
 <%	}
 
-	if (c == 2) { -%>
+	if (c === 2) { -%>
 
 ; Uncomment the following lines to lift Z after probing
 ;G91 ; relative positioning

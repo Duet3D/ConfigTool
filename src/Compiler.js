@@ -234,7 +234,7 @@ export default {
 			},
 
 			getFirstProbePoint(axis) {
-				if (template.probe.points === 0) {
+				if (template.probe.points.length === 0) {
 					return (axis === 0) ? template.mesh.x_min : template.mesh.y_min;
 				}
 				return (axis === 0) ? template.probe.points[0].x : template.probe.points[0].y;

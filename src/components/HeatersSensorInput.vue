@@ -132,36 +132,85 @@ export default {
 				for (let i = 0; i < this.board.analogPorts.length; i++) {
 					if (this.board.analogPorts[i].indexOf('zprobe') === -1) {
 						if (i === 0) {
-							sensors.Thermistors.push({ value: 0, text: 'Bed Thermistor' });
-							sensors.PT1000.push({ value: 500, text: 'PT1000 on Bed Input' });
+							sensors.Thermistors.push({
+								value: 0,
+								text: 'Bed Thermistor'
+							});
+							sensors.PT1000.push({
+								value: 500,
+								text: 'PT1000 on Bed Input'
+							});
 						} else if (i === 3 && this.board.name === 'duetm10') {
-							sensors.Thermistors.push({ value: 3, text: 'C Thermistor' });
-							sensors.PT1000.push({ value: 503, text: 'PT1000 on C Input' });
+							sensors.Thermistors.push({
+								value: 3,
+								text: 'C Thermistor'
+							});
+							sensors.PT1000.push({
+								value: 503,
+								text: 'PT1000 on C Input'
+							});
 							eIndex++;
 						} else {
-							sensors.Thermistors.push({ value: i, text: `E${i - 1} Thermistor` });
-							sensors.PT1000.push({ value: 500 + i, text: `PT1000 on E${i - 1} Input` });
+							sensors.Thermistors.push({
+								value: i,
+								text: `E${i - 1} Thermistor` });
+							sensors.PT1000.push({
+								value: 500 + i,
+								text: `PT1000 on E${i - 1} Input`
+							});
 							eIndex++;
 						}
 					}
 				}
 
 				for (let i = 0; i < this.board.spiCsPorts.length; i++) {
-					sensors['MAX31855 (K-Type Thermocouple)'].push({ value: 100 + i, text: `MAX31855 on CS${i + 1}` });
-					sensors['MAX31856 (K-Type Thermocouple)'].push({ value: 150 + i, text: `MAX31856 on CS${i + 1}` });
-					sensors['MAX31865 (PT100)'].push({ value: 200 + i, text: `MAX31865 on CS${i + 1}` });
+					sensors['MAX31855 (K-Type Thermocouple)'].push({
+						value: 100 + i,
+						text: `MAX31855 on CS${i + 1}`
+					});
+					sensors['MAX31856 (K-Type Thermocouple)'].push({
+						value: 150 + i,
+						text: `MAX31856 on CS${i + 1}`
+					});
+					sensors['MAX31865 (PT100)'].push({
+						value: 200 + i,
+						text: `MAX31865 on CS${i + 1}`
+					});
 				}
 
+				let spiCsChannel = this.board.spiCsPorts.length;
 				for (let i = 0; i < this.template.expansion_boards.length; i++) {
 					const expansionBoard = ExpansionBoards[this.template.expansion_boards[i]];
 
 					for (let k = 0; k < expansionBoard.analogPorts.length; k++) {
-						sensors.Thermistors.push({ value: eIndex + 1, text: `E${eIndex} Thermistor` });
-						sensors.PT1000.push({ value: 501 + eIndex, text: `PT1000 on E${eIndex} Input` });
+						sensors.Thermistors.push({
+							value: eIndex + 1,
+							text: `E${eIndex} Thermistor`
+						});
+						sensors.PT1000.push({
+							value: 501 + eIndex,
+							text: `PT1000 on E${eIndex} Input`
+						});
 						eIndex++;
 					}
 
-					// SPI channels on expansion boards are not yet suported
+					for (let k = 0; k < expansionBoard.spiCsPorts.length; k++) {
+						sensors['MAX31855 (K-Type Thermocouple)'].push({
+							value: 101 + spiCsChannel,
+							text: `MAX31855 on CS${spiCsChannel + 1}`
+						});
+						sensors['MAX31856 (K-Type Thermocouple)'].push({
+							value: 151 + spiCsChannel,
+							text: `MAX31856 on CS${spiCsChannel + 1}`
+						});
+						sensors['MAX31865 (PT100)'].push({
+							value: 201 + spiCsChannel,
+							text: `MAX31865 on CS${spiCsChannel + 1}`}
+						);
+						spiCsChannel++;
+					}
+
+					// SPI channels on expansion boards are not yet supported
 				}
 			}
 
@@ -172,10 +221,17 @@ export default {
 		...mapMutations(['updateHeater']),
 		setValue(value) {
 			if (this.template.firmware < 3) {
-				this.updateHeater({ heater: this.index, channel: parseInt(value) })
+				this.updateHeater({
+					heater: this.index,
+					channel: parseInt(value)
+				})
 			} else if (value) {
 				const vals = value.split('/');
-				this.updateHeater({ heater: this.index, sensor_type: vals[0], sensor_pin: vals[1] });
+				this.updateHeater({
+					heater: this.index,
+					sensor_type: vals[0],
+					sensor_pin: vals[1]
+				});
 			}
 		}
 	}
