@@ -1,6 +1,7 @@
 # RepRapFirmware Configuration Tool
 
-licensed under the terms of the GPLv3
+Online configuration utility to build RepRapFirmware configuration bundles for Duet3D electronics.
+This project is licensed under the terms of the GPLv3.
 
 ## Description
 
@@ -11,7 +12,7 @@ It is entirely built with
 - EJS
 - JSZip
 
-### Summary
+## Summary
 
 The main entry point is `src/main.js`. This file initialises the app and makes sure that the Start page is loaded using *Vue Router* via `src/Router.js`. The contents of each page can be found in `src/views`.
 Reusable components can be found in `src/components`, custom directives in `src/directives` and machine presets in `src/machines`.
@@ -39,7 +40,11 @@ npm run serve
 npm run build
 ```
 
-### Contributions
+## Contributions
 
 If you wish to enhance this tool, please feel free to do so - generally this is appreciated. However, pull requests will be only accepted if they are clean and match the used coding/markup style.
 
+
+## Bug reports
+
+Please use the [forum](https://forum.duet3d.com) for support requests or the [issues](https://github.com/Duet3D/ConfigTool/issues) page for feature requests and bug reports.
