@@ -17,7 +17,7 @@ textarea {
 		<b-card header="Miscellaneous" class="mt-3">
 			<b-checkbox v-model="panelDue" class="mb-3">Enable support for PanelDue</b-checkbox>
 			<label for="custom_settings">Custom Settings for config.g:</label>
-			<label class="float-right"><a href="https://duet3d.com/wiki/G-code" target="_blank">Full list of all available G-codes</a></label>
+			<label class="float-right"><a href="https://docs.duet3d.com/en/User_manual/Reference/Gcodes" target="_blank">Full list of all available G-codes</a></label>
 			<b-form-textarea id="custom_settings" v-model="customSettings" rows="4" max-rows="8" @keydown.tab.exact.prevent="onTextareaTab"></b-form-textarea>
 		</b-card>
 	</b-container>

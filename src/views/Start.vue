@@ -42,9 +42,9 @@
 		</b-card>
 
 		<div class="text-center mt-4">
-			<span class="text-muted">Note: If you encounter problems, please report your problems on <a href="https://github.com/chrishamm/configtool" target="_blank">GitHub</a>.
+			<span class="text-muted">Note: If you encounter problems, please report your problems on <a href="https://github.com/Duet3D/ConfigTool" target="_blank">GitHub</a>.
 				<br>
-				Some configuration options may not be available yet. In this case please refer to the <a href="https://duet3d.dozuki.com" target="_blank">Duet3D wiki</a>.</span>
+				Some configuration options may not be available yet. In this case please refer to the <a href="https://docs.duet3d.com" target="_blank">Duet3D Documentation site</a>.</span>
 			<br><br>
 			<span class="text-muted">This web app is fully open-source and licensed under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GPLv3</a>. Version {{ version }}</span>
 		</div>

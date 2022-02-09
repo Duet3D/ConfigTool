@@ -52,7 +52,7 @@ label.btn {
 		</b-card>
 
 		<b-alert :show="template.drives.findIndex(drive => drive.endstop_type === 4) !== -1">
-			<strong>Note:</strong> Sensorless homing via motor stall detection requires extra configuration steps. See <a href="https://duet3d.dozuki.com/Wiki/Stall_detection_and_sensorless_homing" target="_blank">Duet3D Wiki</a> for further information.
+			<strong>Note:</strong> Sensorless homing via motor stall detection requires extra configuration steps. See <a href="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Sensors_stall_detection" target="_blank">Duet3D Documentation</a> for further information.
 		</b-alert>
 
 		<b-card class="mt-3" header="Z-Probe">
@@ -124,7 +124,7 @@ label.btn {
 							</b-col>
 						</z-probe-values>
 
-						Official <a href="https://www.duet3d.com/DeltaSmartEffector" target="_blank">Duet3D Smart Effector</a> for Delta printers (also see <a href="https://www.duet3d.com/wiki/Smart_effector_and_carriage_adapters_for_delta_printer" target="_blank">Duet3D Wiki</a>)
+						Official <a href="https://www.duet3d.com/DeltaSmartEffector" target="_blank">Duet3D Smart Effector</a> for Delta printers (also see <a href="https://docs.duet3d.com/en/Duet3D_hardware/Accessories/Smart_Effector" target="_blank">Duet3D Documentation</a>)
 					</b-tab>
 					<b-tab title="BLTouch" :disabled="template.firmware >= 3 && (!template.probe.input_pin || !template.probe.pwm_pin)" :title-link-class="{ 'font-weight-bold' : preset.probe.type === 'bltouch' }" value="bltouch">
 						<z-probe-values :hide-value="true">
@@ -139,7 +139,7 @@ label.btn {
 								</b-form-group>
 							</b-col>
 						</z-probe-values>
-						<span>Use a BLTouch for Z-probing (also see <a href="https://duet3d.dozuki.com/Wiki/Connecting_a_Z_probe#Section_BLTouch" target="_blank">Duet3D wiki</a>)</span>
+						<span>Use a BLTouch for Z-probing (also see <a href="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_connecting#bltouch" target="_blank">Duet3D Documentation</a>)</span>
 						<br><br>
 						<span>Make sure you change it to use +3.3V instead of +5V before you connect it or you risk damaging your board!</span>
 					</b-tab>

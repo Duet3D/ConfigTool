@@ -67,7 +67,7 @@
 					</b-col>
 				</b-form-row>
 
-				<span>Important: The file /sys/resurrect-prologue.g must be set up manually for resume to work (see <a href="https://duet3d.dozuki.com/Wiki/Setting_up_to_resume_a_print_after_a_power_failure#Section_Setting_up_the_sys_resurrect_prologue_g_file" target="_blank">Duet3D wiki</a>)</span>
+				<span>Important: The file /sys/resurrect-prologue.g must be set up manually for resume to work (see <a href="https://docs.duet3d.com/en/User_manual/Tuning/Resume#setting-up-the-sysresurrect-prologueg-file" target="_blank">Duet3D Documentation</a>)</span>
 			</div>
 		</b-card>
 

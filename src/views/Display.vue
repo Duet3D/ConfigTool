@@ -121,7 +121,7 @@
 				<b-card no-body>
 					<template slot="header">
 						<span>Menu Editor</span>
-						<a href="https://duet3d.dozuki.com/Wiki/Duet_2_Maestro_12864_display_menu_system#Section_Menu_files" target="_blank" class="float-right">List of Supported Commands</a>
+						<a href="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Display_12864_menu#menu-files" target="_blank" class="float-right">List of Supported Commands</a>
 					</template> 
 
 					<b-form-textarea v-model="fileContent" :disabled="!selectedMenu" id="editor" rows="4" max-rows="8" @mouseup="updateLineNumber" @keyup="updateLineNumber" @blur="currentLine = -1"></b-form-textarea>
