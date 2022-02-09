@@ -104,7 +104,7 @@ input::-webkit-inner-spin-button {
 			</b-card>
 
 			<p>If you are using Duet Web Control, you can upload the ZIP file(s) <u>without extracting</u> on the Settings page. Otherwise you can extract the contents of this configuration bundle directly to the root of your SD card.</p>
-			<p>See <a href="https://duet3d.com/wiki/SD_card_folder_structure" target="_blank">this page</a> for further information about the purpose of these files.</p>
+			<p>See <a href="https://docs.duet3d.com/en/User_manual/RepRapFirmware/SD_card#sd-card-structure" target="_blank">this page</a> for further information about the purpose of these files.</p>
 
 			<template slot="modal-footer">
 				<a :href="configLink" class="btn btn-secondary" download="config.json">
