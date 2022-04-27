@@ -1,0 +1,8 @@
+{
+  "Creality": {
+	"Ender 3 Pro": "ender3pro.json"
+  },
+  "Others": {
+	"Foobar 3000": "foobar3000.json"
+  }
+}
