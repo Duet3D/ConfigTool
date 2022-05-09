@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, initObject } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, initObject, NetworkInterface } from "@duet3d/objectmodel";
 
 import {
 	Boards,
@@ -71,6 +71,12 @@ export default class ConfigModel extends ObjectModel {
 			const newBoard = new Board();
 			newBoard.update(boardDefinition.objectModelBoard);
 			this.boards.push(newBoard);
+		}
+
+		for (const networkInterfacePreset in boardDefinition.objectModelNetworkInterfaces) {
+			const newNetworkInterface = new NetworkInterface();
+			newNetworkInterface.update(networkInterfacePreset)
+			this.network.interfaces.push(newNetworkInterface);
 		}
 
 		this.refreshDrivers();
@@ -156,7 +162,7 @@ export default class ConfigModel extends ObjectModel {
 	private refreshDrivers(): void {
 		// Get mainboard drivers (including from directly-connected expansion)
 		const driverList: Array<DriverId> = [];
-		const mainboardDefinition = getBoardDefinition(this);
+		const mainboardDefinition = this.boardDefinition;
 		if (mainboardDefinition !== null) {
 			// Add mainboard drivers
 			for (let i = 0; i < mainboardDefinition.numDrivers; i++) {
@@ -251,7 +257,7 @@ export default class ConfigModel extends ObjectModel {
 		const portList: Array<ConfigPort> = [];
 
 		// Add ports from the mainboard
-		const mainboardDefinition = getBoardDefinition(this);
+		const mainboardDefinition = this.boardDefinition;
 		if (mainboardDefinition !== null) {
 			this.addPortsFromBoard(mainboardDefinition, mainboardDefinition.objectModelBoard.canAddress, portList);
 
@@ -299,7 +305,7 @@ export default class ConfigModel extends ObjectModel {
 	 * Fix the virtual expansion boards of a given config model object
 	 */
 	private fixExpansionBoards(): void {
-		switch (getBoardType(this)) {
+		switch (this.boardType) {
 			case BoardType.Duet3Mini5PlusEthernet:
 			case BoardType.Duet3Mini5PlusWiFi:
 				if (this.move.axes.some(axis => axis.drivers.some(driver => driver?.board === 0 && driver?.driver >= 5)) ||

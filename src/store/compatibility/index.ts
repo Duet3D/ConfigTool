@@ -5,13 +5,18 @@ import {
 	AxisLetter,
 	CoreKinematics,
 	DeltaKinematics,
+	DirectDisplay,
 	DriverId,
 	Extruder,
+	Fan,
 	Heater,
-	initObject,
 	KinematicsName,
+	MoveCompensationType, NetworkInterfaceState,
+	NetworkProtocol,
 	Probe,
-	ProbeType
+	ProbeType,
+	Tool,
+	initObject
 } from "@duet3d/objectmodel";
 
 import ConfigModel from "@/store/model";
@@ -29,6 +34,7 @@ import {
 import { LegacyBoardType } from "@/store/compatibility/LegacyBoards";
 import { LegacyExpansionBoardType } from "@/store/compatibility/LegacyExpansionBoards";
 import {
+	ConfigDeltaProbePoint,
 	ConfigDriverEndstop,
 	ConfigDriverEndstopType,
 	ConfigPortType,
@@ -74,6 +80,7 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			model.boardType = BoardType.Duet3Mini5PlusEthernet;
 			break;
 		default:
+			// noinspection JSUnusedLocalSymbols
 			const _exhaustiveCheck: never = boardType;
 			throw new Error(`Unsupported board "${boardType}`);
 	}
@@ -302,22 +309,116 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	}
 
 	// Cooling Fans
+	for (let i = 0; i < input.fans.length; i++) {
+		const legacyFan = input.fans[i];
+		if (legacyFan === null || legacyFan.output_pin === null) {
+			model.fans.push(null);
+		} else {
+			const fan = new Fan();
+			fan.name = legacyFan.name;
+			if (legacyFan.thermostatic) {
+				fan.thermostatic.heaters = legacyFan.heaters;
+				fan.thermostatic.lowTemperature = legacyFan.trigger_temperature;
+			}
+			fan.max = legacyFan.value;
+			model.fans.push(fan);
+			model.configTool.assignPort(legacyFan.output_pin, ConfigPortType.fan, i, legacyFan.frequency);
+		}
+	}
 
 	// Tool Preferences
+	model.configTool.waitForToolTemperatures = input.toolchange_wait_for_temperatures;
+	model.configTool.autoSelectFirstTool = input.generate_t_code;
 
 	// Tools
+	let highestToolNumber = -1;
+	for (const legacyTool of input.tools) {
+		if (legacyTool.number > highestToolNumber) {
+			highestToolNumber = legacyTool.number;
+		}
+	}
+
+	for (let i = 0; i <= highestToolNumber; i++) {
+		const legacyTool = input.tools.find(item => item !== null && item.number === i);
+		if (!legacyTool) {
+			model.tools.push(null);
+		} else {
+			const tool = new Tool();
+			tool.number = i;
+			tool.name = legacyTool.name;
+			tool.extruders = legacyTool.extruders;
+			tool.heaters = legacyTool.heaters;
+			tool.fans = legacyTool.fans;
+			tool.offsets = [legacyTool.x_offset, legacyTool.y_offset, legacyTool.z_offset];
+			model.tools.push(tool);
+		}
+	}
 
 	// Delta Calibration
+	model.configTool.homeBeforeAutoCalibration = input.home_first;
+	for (const legacyProbePoint of input.probe.points) {
+		const probePoint = new ConfigDeltaProbePoint();
+		probePoint.x = legacyProbePoint.x;
+		probePoint.y = legacyProbePoint.y;
+		probePoint.heightCorrection = legacyProbePoint.z;
+		model.configTool.deltaProbePoints.push(probePoint);
+	}
 
 	// Bed Probing for Mesh Bed Compensation
+	model.move.compensation.type = MoveCompensationType.mesh;
+	model.move.compensation.probeGrid.mins = [input.mesh.x_min, input.mesh.y_min];
+	model.move.compensation.probeGrid.maxs = [input.mesh.x_max, input.mesh.y_max];
+	model.move.compensation.probeGrid.radius = input.probe_radius;
+	model.move.compensation.probeGrid.spacings = [input.mesh.spacing, input.mesh.spacing];
 
 	// Orthogonal Axis Compensation
+	model.configTool.skewOffset = input.orthogonal.height;
+	model.move.compensation.skew.tanXY = input.orthogonal.deviations[0] / input.orthogonal.height;
+	model.move.compensation.skew.tanXZ = input.orthogonal.deviations[1] / input.orthogonal.height;
+	model.move.compensation.skew.tanYZ = input.orthogonal.deviations[2] / input.orthogonal.height;
 
 	// Direct-Connect Display
+	const mainboard = model.boards[0];
+	if (mainboard.supportsDirectDisplay && input.display.type !== 0) {
+		mainboard.directDisplay = new DirectDisplay();
+		mainboard.directDisplay.pulsesPerClick = input.display.encoder_steps;
+	}
+	for (const legacyDisplayMenu of input.display.menus) {
+		model.configTool.displayFiles.menus.set(legacyDisplayMenu.name, legacyDisplayMenu.value);
+	}
+	for (const legacyDisplayImage of input.display.images) {
+		model.configTool.displayFiles.images.set(legacyDisplayImage.name, legacyDisplayImage.value);
+	}
 
-	// Network Settings
+	// Network Settings (only applicable in standalone mode)
+	model.configTool.password = input.network.password;
+	model.configTool.wiFi.ssid = input.network.ssid;
+	model.configTool.wiFi.psk = input.network.ssid_password;
+	if (input.network.enabled && input.standalone && model.network.interfaces.length > 0) {
+		const networkInterface = model.network.interfaces[0];
+		networkInterface.state = NetworkInterfaceState.active;
+		if (input.network.dhcp) {
+			networkInterface.configuredIP = "0.0.0.0";
+		} else {
+			networkInterface.configuredIP = input.network.ip;
+			networkInterface.subnet = input.network.netmask;
+			networkInterface.gateway = input.network.gateway;
+		}
+
+		if (input.network.protocols.http) {
+			networkInterface.activeProtocols.add(NetworkProtocol.HTTP);
+		}
+		if (input.network.protocols.ftp) {
+			networkInterface.activeProtocols.add(NetworkProtocol.FTP);
+		}
+		if (input.network.protocols.telnet) {
+			networkInterface.activeProtocols.add(NetworkProtocol.Telnet);
+		}
+	}
 
 	// Miscellaneous
+	model.configTool.panelDue = input.panelDue;
+	model.configTool.customSettings = input.custom_settings;
 
 	return model;
 }

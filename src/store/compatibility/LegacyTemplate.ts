@@ -42,6 +42,7 @@ export interface LegacyDrive {
 export interface LegacyPoint {
 	x: number;
 	y: number;
+	z: number;
 }
 
 export interface LegacyHeater {
@@ -109,7 +110,7 @@ export interface LegacyTemplate {
 		encoder_steps: number;
 		spi_frequency: number;
 		menus: Array<LegacyMenuItem>;
-		images: Array<string>;
+		images: Array<LegacyMenuItem>;
 	},
 	panelDue: boolean;
 	geometry: {
