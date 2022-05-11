@@ -8,8 +8,10 @@ import {
 	type BoardDescriptor
 } from "@/store/Boards";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
-import { ConfigDriver, ConfigPort, ConfigToolModel } from "@/store/model/ConfigToolModel";
 import type { BaseBoard } from "@/store/BaseBoard";
+import { ConfigPort } from "@/store/model/ConfigPort";
+import { ConfigDriver } from "@/store/model/ConfigDriver";
+import { ConfigToolModel } from "@/store/model/ConfigToolModel";
 
 /**
  * Object model tailored for the config tool
@@ -100,11 +102,11 @@ export default class ConfigModel extends ObjectModel {
 			}
 
 			const newExpansionBoard = new Board();
-			newExpansionBoard.update(expansionBoardDefinition);
+			newExpansionBoard.update(expansionBoardDefinition.objectModelBoard);
 			while (this.boards.some(board => board.canAddress === newExpansionBoard.canAddress)) {
 				newExpansionBoard.canAddress!++;
-				this.boards.push(newExpansionBoard);
 			}
+			this.boards.push(newExpansionBoard);
 		}
 
 		this.refreshDrivers();
@@ -116,6 +118,9 @@ export default class ConfigModel extends ObjectModel {
 	 * @param index Index of the board to remove
 	 */
 	removeExpansionBoard(index: number) {
+		if (index === 0) {
+			throw new Error("Cannot remove mainboard as expansion board");
+		}
 		if (this.boards.length === 0) {
 			throw new Error("Cannot remove expansion board before a main board is set");
 		}
@@ -152,6 +157,14 @@ export default class ConfigModel extends ObjectModel {
 	 */
 	validate(): void {
 		this.fixExpansionBoards();
+		this.refreshDrivers();
+		this.refreshPorts();
+	}
+
+	/**
+	 * Initialize this instance. Should be only used for the default template
+	 */
+	init(): void {
 		this.refreshDrivers();
 		this.refreshPorts();
 	}

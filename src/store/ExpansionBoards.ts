@@ -29,7 +29,7 @@ export enum ExpansionBoardType {
 /**
  * Descriptor interface for supported expansion boards
  */
-interface ExpansionBoardDescriptor extends BaseBoard {
+export interface ExpansionBoardDescriptor extends BaseBoard {
 	// still empty
 }
 

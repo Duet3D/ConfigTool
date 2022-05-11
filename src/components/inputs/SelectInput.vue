@@ -1,9 +1,9 @@
 <template>
-	<label :for="id" class="form-label">
+	<label v-if="props.label" :for="id" class="form-label">
 		{{ props.label }}:
 	</label>
-	<select :id="id" class="form-select" :class="validationClass" v-bind="$attrs" v-preset="props.preset"
-	        :value="props.modelValue" @input="onInput" :required="props.required">
+	<select :id="id" class="form-select" :class="validationClass" v-bind="$attrs" v-preset="(props.preset !== undefined) ? JSON.stringify(props.preset) : undefined"
+	        :value="JSON.stringify(props.modelValue)" @input="onInput" :required="props.required">
 		<template v-if="isGrouped">
 			<optgroup v-for="(group, groupTitle) in groups" :disabled="isGroupDisabled(group)" :label="groupTitle">
 				<option v-for="groupItem in group" :disabled="getItemDisabled(groupItem)" :value="getItemValue(groupItem)">
@@ -26,7 +26,7 @@ let numInstances = 0;
 export interface SelectOption {
 	disabled?: boolean,
 	text: string,
-	value: string
+	value: any
 }
 </script>
 
@@ -35,14 +35,16 @@ import { computed } from "vue";
 
 // External interface
 interface SelectProps {
-	label: string,
-	modelValue: string,
+	label?: string,
+	modelValue: any,
 	options: Array<string | SelectOption> | Record<string, Array<string | SelectOption>>,
-	preset: string,
-	required?: boolean
+	preset?: any,
+	required?: boolean,
+	valid?: boolean
 }
 const props = withDefaults(defineProps<SelectProps>(), {
-	required: true
+	required: true,
+	valid: true
 });
 
 const emit = defineEmits<{
@@ -53,24 +55,31 @@ const emit = defineEmits<{
 const id = `select-${++numInstances}`;
 
 const isGrouped = computed(() => !(props.options instanceof Array));
-const groups = props.options as Record<string, Array<string | SelectOption>>, items = props.options as Array<string | SelectOption>;
+const groups = computed(() => props.options as Record<string, Array<string | SelectOption>>);
+const items = computed(() => props.options as Array<string | SelectOption>);
 const isGroupDisabled = (group: Array<string | SelectOption>) => group.every(item => typeof item !== "string" && !!item.disabled);
 
 const getItemDisabled = (item: string | SelectOption) => (typeof item !== "string") && !!item.disabled;
 const getItemText = (item: string | SelectOption) => (typeof item === "string") ? item : item.text;
-const getItemValue = (item: string | SelectOption) => (typeof item === "string") ? item : item.value;
+const getItemValue = (item: string | SelectOption) => JSON.stringify((typeof item === "string") ? item : item.value);
 
 // Validation
 const validationClass = computed<string | null>(() => {
 	if (props.required) {
+		if (props.valid === false) {
+			console.log(props.valid);
+			return "is-invalid";
+		}
+
 		if (!(props.options instanceof Array)) {
 			// Current value must be part of a group item
 			return Object.values(props.options).some(group => group.some(groupItem => {
 				return (typeof groupItem === "string") ? groupItem === props.modelValue : groupItem.value === props.modelValue;
 			})) ? "is-valid" : "is-invalid";
-		} else
-			// Current value must be part of the items
-			return props.options.some(item => typeof item === "string" ? item === props.modelValue : item.value === props.modelValue) ? "is-valid" : "is-invalid";
+		}
+
+		// Current value must be part of the items
+		return props.options.some(item => typeof item === "string" ? item === props.modelValue : item.value === props.modelValue) ? "is-valid" : "is-invalid";
 	}
 	return null;
 })
@@ -78,7 +87,7 @@ const validationClass = computed<string | null>(() => {
 // Update event
 const onInput = (e: Event) => {
 	if (e.target !== null) {
-		emit("update:modelValue", (e.target as HTMLSelectElement).value);
+		emit("update:modelValue", JSON.parse((e.target as HTMLSelectElement).value));
 	}
 };
 </script>

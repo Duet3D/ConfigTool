@@ -4,8 +4,8 @@
 	</label>
 	<div class="input-group">
 		<input :id="id" class="form-control" :class="validationClass" type="text" v-bind="$attrs"
-			   :required="props.required" :min="props.min" :max="props.max" :value="props.modelValue"
-			   :data-unit="unit" v-preset="props.preset"
+			   :required="props.required" :min="props.min" :max="props.max" :step="props.step"
+			   :value="props.modelValue" :data-unit="unit" v-preset="props.preset"
 			   @input="onInput">
 		<span v-if="!!props.unit" class="input-group-text">
 			<slot name="unit">
@@ -29,9 +29,11 @@ interface NumberInputProps {
 	min?: number,
 	max?: number,
 	modelValue: number,
-	preset: number,
+	preset?: number,
 	required?: boolean,
-	unit?: string
+	step?: number,
+	unit?: string,
+	valid?: boolean
 }
 const props = withDefaults(defineProps<NumberInputProps>(), {
 	required: true
@@ -47,7 +49,8 @@ const id = `number-${++numInstances}`;
 // Validation
 const validationClass = computed<string | null>(() => {
 	if (props.required) {
-		return (!isNaN(props.modelValue) && isFinite(props.modelValue) &&
+		return (props.valid !== false &&
+				!isNaN(props.modelValue) && isFinite(props.modelValue) &&
 				(props.min === undefined || props.modelValue >= props.min) &&
 				(props.max === undefined || props.modelValue <= props.max)) ? "is-valid" : "is-invalid";
 	}

@@ -34,13 +34,11 @@ import {
 import { LegacyBoardType } from "@/store/compatibility/LegacyBoards";
 import { LegacyExpansionBoardType } from "@/store/compatibility/LegacyExpansionBoards";
 import {
-	ConfigDeltaProbePoint,
-	ConfigDriverEndstop,
-	ConfigDriverEndstopType,
-	ConfigPortType,
-	ConfigTempSensor,
-	ConfigTempSensorType
+	ConfigDeltaProbePoint
 } from "@/store/model/ConfigToolModel";
+import { ConfigPortType } from "@/store/model/ConfigPort";
+import { ConfigTempSensor, ConfigTempSensorType } from "@/store/model/ConfigTempSensor";
+import { ConfigDriverEndstop, ConfigDriverEndstopType } from "@/store/model/ConfigDriver";
 
 /**
  * Convert a legacy template (configtool < 3.4) to a config model object

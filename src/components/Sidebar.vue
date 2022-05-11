@@ -84,6 +84,7 @@
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li><RouterLink to="/Configuration" class="link-dark rounded">General</RouterLink></li>
 						<li><RouterLink to="/Configuration/Expansion" class="link-dark rounded">Expansion</RouterLink></li>
+						<li><RouterLink to="/Configuration/Drivers" class="link-dark rounded">Drivers</RouterLink></li>
 						<li><RouterLink to="/Configuration/Axes" class="link-dark rounded">Axes</RouterLink></li>
 						<li><RouterLink to="/Configuration/Endstops" class="link-dark rounded">Endstops</RouterLink></li>
 						<li><RouterLink to="/Configuration/ZProbes" class="link-dark rounded">Z-Probes</RouterLink></li>

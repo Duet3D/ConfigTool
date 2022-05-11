@@ -76,6 +76,7 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
+			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_Mini5plus.uf2",
 			iapFileNameSBC: "Duet3_SBCiap32_Mini5plus.bin",
 			iapFileNameSD: "Duet3_SDiap32_Mini5plus.bin",
@@ -143,6 +144,7 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
+			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_Mini5plus.uf2",
 			iapFileNameSBC: "Duet3_SBCiap32_Mini5plus.bin",
 			iapFileNameSD: "Duet3_SDiap32_Mini5plus.bin",
@@ -210,6 +212,7 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
+			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_MB6HC.bin",
 			iapFileNameSBC: "Duet3_SBCiap32_MB6HC.bin",
 			iapFileNameSD: "Duet3_SDiap32_MB6HC.bin",
@@ -273,6 +276,7 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		microstepInterpolations: [],
 
 		objectModelBoard: initObject(Board, {
+			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_MB6XD.bin",
 			iapFileNameSBC: "Duet3_SBCiap32_MB6XD.bin",
 			iapFileNameSD: "Duet3_SDiap32_MB6XD.bin",

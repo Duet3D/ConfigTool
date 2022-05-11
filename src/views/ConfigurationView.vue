@@ -2,6 +2,21 @@
 	<div class="container" ref="content">
 		<general-config />
 		<expansion-config />
+		<drivers-config />
+		<axes-config />
+		<endstops-config />
+		<z-probes-config />
+		<compensation-config />
+		<extruders-config />
+		<spindles-config />
+		<lasers-config />
+		<fans-config />
+		<tools-config />
+		<i-o-config />
+		<servos-config />
+		<network-config />
+		<accessories-config />
+		<miscellaneous-config />
 	</div>
 </template>
 
@@ -12,6 +27,21 @@ import { useRouter } from "vue-router";
 import GeneralConfig from "@/components/configuration/GeneralConfig.vue";
 import ExpansionConfig from "@/components/configuration/ExpansionConfig.vue";
 import { eventOptions } from "@/router";
+import AxesConfig from "@/components/configuration/AxesConfig.vue";
+import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
+import ZProbesConfig from "@/components/configuration/ZProbesConfig.vue";
+import CompensationConfig from "@/components/configuration/CompensationConfig.vue";
+import ExtrudersConfig from "@/components/configuration/ExtrudersConfig.vue";
+import SpindlesConfig from "@/components/configuration/SpindlesConfig.vue";
+import LasersConfig from "@/components/configuration/LasersConfig.vue";
+import FansConfig from "@/components/configuration/FansConfig.vue";
+import ToolsConfig from "@/components/configuration/ToolsConfig.vue";
+import IOConfig from "@/components/configuration/IOConfig.vue";
+import ServosConfig from "@/components/configuration/ServosConfig.vue";
+import NetworkConfig from "@/components/configuration/NetworkConfig.vue";
+import AccessoriesConfig from "@/components/configuration/AccessoriesConfig.vue";
+import MiscellaneousConfig from "@/components/configuration/MiscellaneousConfig.vue";
+import DriversConfig from "@/components/configuration/DriversConfig.vue";
 
 // Scrollspy functionality
 const content = ref(), router = useRouter();

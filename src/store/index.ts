@@ -1,14 +1,54 @@
 import { defineStore } from 'pinia';
-import { initObject, initCollection, Board } from "@duet3d/objectmodel";
+import { Axis, AxisLetter, Board, DriverId, initCollection, initObject, Move } from "@duet3d/objectmodel";
 
 import ConfigModel from "@/store/model";
-import { Boards, BoardType, type BoardDescriptor } from "@/store/Boards";
+import { type BoardDescriptor, Boards, BoardType } from "@/store/Boards";
+import { ConfigDriver } from "@/store/model/ConfigDriver";
+import { ConfigToolModel } from "@/store/model/ConfigToolModel";
 
 const defaultTemplate = initObject(ConfigModel, {
 	boards: initCollection(Board, [
 		Boards[BoardType.Duet3Mini5PlusWiFi].objectModelBoard
-	])
-})
+	]),
+	configTool: initObject(ConfigToolModel, {
+		drivers: initCollection(ConfigDriver, [
+			{
+				axis: AxisLetter.X,
+				id: initObject(DriverId, {
+					board: 0,
+					driver: 0
+				})
+			},
+			{
+				axis: AxisLetter.Y,
+				id: initObject(DriverId, {
+					board: 0,
+					driver: 1
+				})
+			},
+			{
+				axis: AxisLetter.Z,
+				id: initObject(DriverId, {
+					board: 0,
+					driver: 2
+				})
+			}
+		])
+	}),
+	move: initObject(Move, {
+		axes: initCollection(Axis, [
+			{
+				letter: AxisLetter.X
+			},
+			{
+				letter: AxisLetter.Y
+			},
+			{
+				letter: AxisLetter.Z
+			}
+		])
+	})
+});
 
 export const useStore = defineStore({
     id: "model",

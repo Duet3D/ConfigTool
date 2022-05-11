@@ -1,3 +1,9 @@
+$enable-negative-margins: true;
 $offcanvas-horizontal-width: 280px;
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
 
 @import "../node_modules/bootstrap/scss/bootstrap";
