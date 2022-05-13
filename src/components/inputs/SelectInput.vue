@@ -12,7 +12,7 @@
 			</optgroup>
 		</template>
 		<template v-else>
-			<option v-for="item in items" :value="getItemValue(item)">
+			<option v-for="item in items" :disabled="getItemDisabled(item)" :value="getItemValue(item)">
 				{{ getItemText(item) }}
 			</option>
 		</template>

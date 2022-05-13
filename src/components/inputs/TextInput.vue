@@ -19,7 +19,7 @@ import { computed } from "vue";
 interface TextInputProps {
 	label: string,
 	modelValue: string,
-	preset: string,
+	preset?: string | null,
 	maxLength: number,
 	required?: boolean
 }

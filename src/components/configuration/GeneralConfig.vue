@@ -12,22 +12,22 @@
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
-				<check-input v-if="store.supportsSbc" label="Run in standalone mode without SBC (Raspberry Pi)" title="Run RepRapFirmware in stand-alone mode without an attached single-board computer"
+				<check-input v-if="supportsSbcMode" label="Run in standalone mode without SBC (Raspberry Pi)" title="Run RepRapFirmware in stand-alone mode without an attached single-board computer"
 				             v-model="sbcMode" :preset="store.preset.state.dsfVersion !== null" />
 				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)" title="Enable auto-save facility"
 				             v-model="store.data.configTool.configOverride" :preset="store.preset.configTool.configOverride" />
-				<check-input v-if="store.supportsAutoSave" label="Save print state on power failure" title="Store the last valid print parameters on the SD card when a power failure occurs (M911)"
+				<check-input v-if="supportsAutoSave" label="Save print state on power failure" title="Store the last valid print parameters on the SD card when a power failure occurs (M911)"
 				             v-model="store.data.configTool.autoSave.enabled" :preset="store.preset.configTool.autoSave.enabled" />
 				<div v-if="store.data.configTool.autoSave.enabled" class="mt-2 ps-4">
 					<div class="row">
 						<div class="col-3">
 							<number-input label="Auto Save Threshold" title="If the input voltage falls below this value, the print is paused and resume information is saved"
-							              :min="store.minVoltage" :max="store.maxVoltage" :step="0.1" unit="V"
+							              :min="store.data.boardDefinition?.minVoltage" :max="store.data.boardDefinition?.maxVoltage" :step="0.1" unit="V"
 							              v-model="store.data.configTool.autoSave.saveThreshold" :preset="store.preset.configTool.autoSave.saveThreshold" />
 						</div>
 						<div class="col-3">
 							<number-input label="Resume Threshold" title="If the input voltage rises above this value after an under-voltage event, the print is resumed"
-							              :min="store.minVoltage" :max="store.maxVoltage" :step="0.1" unit="V"
+							              :min="store.data.boardDefinition?.minVoltage" :max="store.data.boardDefinition?.maxVoltage" :step="0.1" unit="V"
 							              v-model="store.data.configTool.autoSave.resumeThreshold" :preset="store.preset.configTool.autoSave.resumeThreshold" />
 						</div>
 						<div class="col pe-0">
@@ -52,8 +52,7 @@ import { computed } from "vue";
 import ScrollItem from "@/components/ScrollItem.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
-import SelectInput from "@/components/inputs/SelectInput.vue";
-import type { SelectOption } from "@/components/inputs/SelectInput.vue";
+import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
 
 import { BoardType, UnsupportedBoardType } from "@/store/Boards";
@@ -62,7 +61,6 @@ import { useStore } from "@/store";
 import { version } from "../../../package.json";
 
 const dsfVersion = `${version.split('.')[0]}.${version.split('.')[1]}`;
-
 const store = useStore();
 
 // Board options
@@ -120,8 +118,10 @@ const board = computed({
 const boardPreset = computed(() => store.preset.boardType as string);
 
 // SBC mode
+const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC);
 const sbcMode = computed<boolean>({
-	get() { return store.data.state.dsfVersion !== null; },
+	get() { return !!store.data.state.dsfVersion; },
 	set(value) { store.data.state.dsfVersion = value ? dsfVersion : null; }
 });
+const supportsAutoSave = computed(() => !!store.data.boardDefinition?.objectModelBoard.vIn);
 </script>

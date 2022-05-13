@@ -1,6 +1,6 @@
 import { Board, initObject } from "@duet3d/objectmodel";
 
-import type { BaseBoard } from "@/store/BaseBoard";
+import type { BaseBoardDescriptor } from "@/store/BaseBoard";
 
 /**
  * Expansion boards supported by the config tool.
@@ -29,7 +29,7 @@ export enum ExpansionBoardType {
 /**
  * Descriptor interface for supported expansion boards
  */
-export interface ExpansionBoardDescriptor extends BaseBoard {
+export interface ExpansionBoardDescriptor extends BaseBoardDescriptor {
 	// still empty
 }
 
@@ -48,11 +48,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 		thermistorPorts: ["temp0", "temp1", "temp2"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 4000,
+		motorMaxCurrent: 6000,
 		minVoltage: 12,
 		maxVoltage: 32,
 		numDrivers: 3,
-		numEncoderInputs: 0,
-		numSmartDrivers: 3,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
@@ -75,11 +77,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		thermistorPorts: ["temp0"],
 		microstepInterpolations: [],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: false,
+		motorWarnCurrent: -1,
+		motorMaxCurrent: -1,
 		minVoltage: 12,
 		maxVoltage: 48,
 		numDrivers: 1,
-		numEncoderInputs: 0,
-		numSmartDrivers: 0,
 		objectModelBoard: initObject(Board, {
 			canAddress: 122,
 			firmwareFileName: "Duet3Firmware_EXP1XD.bin",
@@ -99,11 +103,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: [],
 		thermistorPorts: ["temp0"],
 
+		hasClosedLoopDrivers: true,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 4000,
+		motorMaxCurrent: 6000,
 		minVoltage: 12,
 		maxVoltage: 48,
 		numDrivers: 1,
-		numEncoderInputs: 1,
-		numSmartDrivers: 1,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
@@ -125,11 +131,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: [],
 		thermistorPorts: ["temp0"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 1200,
+		motorMaxCurrent: 1600,
 		minVoltage: 12,
 		maxVoltage: 32,
 		numDrivers: 1,
-		numEncoderInputs: 0,
-		numSmartDrivers: 1,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
@@ -151,14 +159,17 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 		thermistorPorts: ["temp0", "temp1", "temp2"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 1500,
+		motorMaxCurrent: 2000,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 7,          // This isn't quite right, but we don't support nested expansion boards
-		numEncoderInputs: 0,
-		numSmartDrivers: 7,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
+			canAddress: 1,
 			maxHeaters: 3,
 			maxMotors: 5,
 			name: "Duet 3 Mini 5+",
@@ -176,14 +187,17 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 		thermistorPorts: ["temp0", "temp1", "temp2", "temp3"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 4000,
+		motorMaxCurrent: 6000,
 		minVoltage: 11,
 		maxVoltage: 32,
 		numDrivers: 6,
-		numEncoderInputs: 0,
-		numSmartDrivers: 6,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
+			canAddress: 1,
 			maxHeaters: 3,
 			maxMotors: 5,
 			name: "Duet 3 MB6HC",
@@ -201,14 +215,17 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 		thermistorPorts: ["temp0", "temp1", "temp2", "temp3"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: false,
+		motorWarnCurrent: -1,
+		motorMaxCurrent: -1,
 		minVoltage: 11,
 		maxVoltage: 30,
 		numDrivers: 6,
-		numEncoderInputs: 0,
-		numSmartDrivers: 0,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
+			canAddress: 1,
 			maxHeaters: 3,
 			maxMotors: 5,
 			shortName: "MB6HC",
@@ -226,11 +243,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: [],
 		thermistorPorts: [],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 1500,
+		motorMaxCurrent: 2000,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 2,
-		numEncoderInputs: 0,
-		numSmartDrivers: 2,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
@@ -248,11 +267,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 		thermistorPorts: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 2000,
+		motorMaxCurrent: 2400,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 5,
 		microstepInterpolations: [16],
 
 		objectModelBoard: initObject(Board, {
@@ -271,11 +292,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 		thermistorPorts: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: false,
+		motorWarnCurrent: -1,
+		motorMaxCurrent: -1,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 0,
 		microstepInterpolations: [],
 
 		objectModelBoard: initObject(Board, {
@@ -294,11 +317,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 		thermistorPorts: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 2000,
+		motorMaxCurrent: 2400,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 2,
-		numEncoderInputs: 0,
-		numSmartDrivers: 2,
 		microstepInterpolations: [],
 
 		objectModelBoard: initObject(Board, {
@@ -317,11 +342,13 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		spiCsPorts: [],
 		thermistorPorts: [],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 1200,
+		motorMaxCurrent: 1600,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 2,
-		numEncoderInputs: 0,
-		numSmartDrivers: 2,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {

@@ -3,11 +3,11 @@
 		{{ props.label }}:
 	</label>
 	<div class="input-group">
-		<input :id="id" class="form-control" :class="validationClass" type="text" v-bind="$attrs"
+		<input :id="id" class="form-control" :class="validationClass" type="number" v-bind="$attrs"
 			   :required="props.required" :min="props.min" :max="props.max" :step="props.step"
 			   :value="props.modelValue" :data-unit="unit" v-preset="props.preset"
-			   @input="onInput">
-		<span v-if="!!props.unit" class="input-group-text">
+			   @input="onInput" @change="onChange">
+		<span v-if="!!props.unit && !props.hideUnit" class="input-group-text">
 			<slot name="unit">
 				{{ props.unit }}
 			</slot>
@@ -25,18 +25,23 @@ import { computed } from "vue";
 
 // External interface
 interface NumberInputProps {
+	hideUnit?: boolean,
 	label?: string,
+	lazy?: boolean,
 	min?: number,
 	max?: number,
 	modelValue: number,
-	preset?: number,
+	preset?: number | null,
 	required?: boolean,
-	step?: number,
+	step?: number | "any",
 	unit?: string,
 	valid?: boolean
 }
 const props = withDefaults(defineProps<NumberInputProps>(), {
-	required: true
+	hideUnit: false,
+	lazy: false,
+	required: true,
+	valid: true
 });
 
 const emit = defineEmits<{
@@ -49,7 +54,7 @@ const id = `number-${++numInstances}`;
 // Validation
 const validationClass = computed<string | null>(() => {
 	if (props.required) {
-		return (props.valid !== false &&
+		return (props.valid &&
 				!isNaN(props.modelValue) && isFinite(props.modelValue) &&
 				(props.min === undefined || props.modelValue >= props.min) &&
 				(props.max === undefined || props.modelValue <= props.max)) ? "is-valid" : "is-invalid";
@@ -58,10 +63,16 @@ const validationClass = computed<string | null>(() => {
 })
 
 // Update event
-const onInput = (e: Event) => {
-	if (e.target !== null) {
+function onInput(e: Event) {
+	if (e.target !== null && !props.lazy) {
 		const value = parseFloat((e.target as HTMLInputElement).value);
 		emit("update:modelValue", value);
 	}
-};
+}
+function onChange(e: Event) {
+	if (e.target !== null && props.lazy) {
+		const value = parseFloat((e.target as HTMLInputElement).value);
+		emit("update:modelValue", value);
+	}
+}
 </script>

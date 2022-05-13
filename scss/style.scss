@@ -1,9 +1,30 @@
 $enable-negative-margins: true;
 $offcanvas-horizontal-width: 280px;
+$popover-max-width: 420px;
+$tooltip-max-width: 220px;
 
-.table th,
+.card-header > a {
+  text-decoration: none;
+}
+
+.table th {
+  padding-left: 0.5rem;
+}
 .table td {
+  padding-left: 0.25rem;
+}
+
+.table th {
   vertical-align: middle;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 @import "../node_modules/bootstrap/scss/bootstrap";

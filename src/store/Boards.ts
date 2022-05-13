@@ -1,6 +1,6 @@
 import { Board, initObject, Limits, MinMaxCurrent, NetworkInterface, NetworkInterfaceType } from "@duet3d/objectmodel";
 
-import type { BaseBoard } from "@/store/BaseBoard";
+import type { BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
 
 import type ConfigModel from "@/store/model";
@@ -34,7 +34,7 @@ export enum UnsupportedBoardType {
 /**
  * Descriptor interface for supported main boards
  */
-export interface BoardDescriptor extends BaseBoard {
+export interface BoardDescriptor extends BaseBoardDescriptor {
 	uartPorts: Array<string>;
 
 	objectModelLimits: Limits;
@@ -68,11 +68,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["temp0", "temp1", "temp2"],
 		uartPorts: ["usb", "io0.in+io0.out", "io1.in+io1.out"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 1500,
+		motorMaxCurrent: 2000,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
@@ -136,11 +138,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["temp0", "temp1", "temp2"],
 		uartPorts: ["usb", "io0.in+io0.out", "io1.in+io1.out"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 1500,
+		motorMaxCurrent: 2000,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
@@ -204,11 +208,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["temp0", "temp1", "temp2", "temp3"],
 		uartPorts: ["usb", "io0.in+io0.out", "io1.in+io1.out"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 4000,
+		motorMaxCurrent: 6000,
 		minVoltage: 11,
 		maxVoltage: 32,
 		numDrivers: 6,
-		numEncoderInputs: 0,
-		numSmartDrivers: 6,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {
@@ -268,11 +274,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["temp0", "temp1", "temp2", "temp3"],
 		uartPorts: ["usb", "io0.in+io0.out", "io1.in+io1.out"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: false,
+		motorWarnCurrent: -1,
+		motorMaxCurrent: -1,
 		minVoltage: 11,
 		maxVoltage: 30,
 		numDrivers: 6,
-		numEncoderInputs: 0,
-		numSmartDrivers: 0,
 		microstepInterpolations: [],
 
 		objectModelBoard: initObject(Board, {
@@ -282,8 +290,8 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 			iapFileNameSD: "Duet3_SDiap32_MB6XD.bin",
 			maxHeaters: 10,
 			maxMotors: 12,
-			shortName: "MB6HC",
-			name: "Duet 3 MB6HC",
+			shortName: "MB6XD",
+			name: "Duet 3 MB6XD",
 			vIn: new MinMaxCurrent()
 		}),
 		objectModelLimits: initObject(Limits, {
@@ -333,11 +341,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["bedtemp", "e0temp", "e1temp"],
 		uartPorts: ["usb", "urxd0+utxd0"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 2000,
+		motorMaxCurrent: 2400,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 5,
 		microstepInterpolations: [16],
 
 		objectModelBoard: initObject(Board, {
@@ -400,11 +410,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["bedtemp", "e0temp", "e1temp"],
 		uartPorts: ["usb", "urxd0+utxd0"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 2000,
+		motorMaxCurrent: 2400,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 5,
 		microstepInterpolations: [16],
 
 		objectModelBoard: initObject(Board, {
@@ -467,11 +479,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["bedtemp", "e0temp", "e1temp"],
 		uartPorts: ["usb", "urxd0+utxd0"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 2000,
+		motorMaxCurrent: 2400,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 5,
 		microstepInterpolations: [16],
 
 		objectModelBoard: initObject(Board, {
@@ -530,11 +544,13 @@ export const Boards: { [Property in BoardType]: BoardDescriptor; } = {
 		thermistorPorts: ["bedtemp", "e0temp", "e1temp", "ctemp"],
 		uartPorts: ["usb", "urxd+utxf"],
 
+		hasClosedLoopDrivers: false,
+		hasSmartDrivers: true,
+		motorWarnCurrent: 1200,
+		motorMaxCurrent: 1600,
 		minVoltage: 11,
 		maxVoltage: 25,
 		numDrivers: 5,
-		numEncoderInputs: 0,
-		numSmartDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 
 		objectModelBoard: initObject(Board, {

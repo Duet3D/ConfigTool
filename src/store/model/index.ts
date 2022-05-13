@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, initObject, NetworkInterface } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, initObject } from "@duet3d/objectmodel";
 
 import {
 	Boards,
@@ -8,7 +8,7 @@ import {
 	type BoardDescriptor
 } from "@/store/Boards";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
-import type { BaseBoard } from "@/store/BaseBoard";
+import type { BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ConfigPort } from "@/store/model/ConfigPort";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
 import { ConfigToolModel } from "@/store/model/ConfigToolModel";
@@ -36,10 +36,22 @@ export default class ConfigModel extends ObjectModel {
 	}
 
 	/**
-	 * Getter for the current main board definition
+	 * Get the board definition exclusively for the mainboard
 	 */
 	get boardDefinition(): BoardDescriptor | null {
 		return getBoardDefinition(this);
+	}
+
+	/**
+	 * Get the board definition for the mainboard or a given CAN board
+	 */
+	getBoardDefinition(canAddress: number | null = null): BaseBoardDescriptor | null {
+		if (!canAddress) {
+			return getBoardDefinition(this);
+		}
+
+		const expansionBoard = this.boards.find(board => board.canAddress === canAddress);
+		return (expansionBoard) ? getExpansionBoardDefinition(expansionBoard) : null;
 	}
 
 	/**
@@ -67,6 +79,9 @@ export default class ConfigModel extends ObjectModel {
 			if (this.boards.length > 1 && boardDefinition.objectModelBoard.canAddress === null) {
 				// New mainboard doesn't support CAN, remove expansion boards
 				this.boards.splice(1);
+			} else if (boardDefinition.objectModelLimits.boards !== null) {
+				// Remove expansion boards that are not supported
+				this.boards.splice(boardDefinition.objectModelLimits.boards);
 			}
 			this.boards[0].update(boardDefinition.objectModelBoard);
 		} else {
@@ -162,25 +177,17 @@ export default class ConfigModel extends ObjectModel {
 	}
 
 	/**
-	 * Initialize this instance. Should be only used for the default template
-	 */
-	init(): void {
-		this.refreshDrivers();
-		this.refreshPorts();
-	}
-
-	/**
 	 * Refresh the driver list and either add new drivers or remove obsolete ones
 	 */
-	private refreshDrivers(): void {
+	refreshDrivers(): void {
 		// Get mainboard drivers (including from directly-connected expansion)
 		const driverList: Array<DriverId> = [];
-		const mainboardDefinition = this.boardDefinition;
+		const mainboardDefinition = this.getBoardDefinition();
 		if (mainboardDefinition !== null) {
 			// Add mainboard drivers
 			for (let i = 0; i < mainboardDefinition.numDrivers; i++) {
 				const driver = new DriverId();
-				driver.board = 0;
+				driver.board = mainboardDefinition.objectModelBoard.canAddress;
 				driver.driver = i;
 				driverList.push(driver);
 			}
@@ -190,7 +197,7 @@ export default class ConfigModel extends ObjectModel {
 				const expansionBoard = ExpansionBoards[this.configTool.expansionBoard];
 				for (let i = 0; i < expansionBoard.numDrivers; i++) {
 					const driver = new DriverId();
-					driver.board = 0;
+					driver.board = mainboardDefinition.objectModelBoard.canAddress;
 					driver.driver = i + mainboardDefinition.numDrivers;
 					driverList.push(driver);
 				}
@@ -214,9 +221,15 @@ export default class ConfigModel extends ObjectModel {
 			}
 		}
 
-		// Add missing drivers
+		// Update or add missing drivers
 		for (const driver of driverList) {
-			if (!this.configTool.drivers.some(configDriver => configDriver.id.board === driver.board && configDriver.id.driver === driver.driver)) {
+			const existingDriver = this.configTool.drivers.find(configDriver => configDriver.id.board === driver.board && configDriver.id.driver === driver.driver)
+			if (existingDriver) {
+				if (existingDriver.microsteppingInterpolated) {
+					const boardDefinition = this.getBoardDefinition(existingDriver.id.board);
+					existingDriver.microsteppingInterpolated = !!boardDefinition && boardDefinition.microstepInterpolations.includes(existingDriver.microstepping);
+				}
+			} else {
 				const configDriver = new ConfigDriver();
 				configDriver.id = driver;
 				this.configTool.drivers.push(configDriver);
@@ -241,7 +254,7 @@ export default class ConfigModel extends ObjectModel {
 	 * @param canAddress CAN address of the board or null if not applicable
 	 * @param to List to add the ports to
 	 */
-	private addPortsFromBoard(boardDefinition: BaseBoard, canAddress: number | null, to: Array<ConfigPort>): void {
+	private addPortsFromBoard(boardDefinition: BaseBoardDescriptor, canAddress: number | null, to: Array<ConfigPort>): void {
 		const addPorts = (portList: Array<string>) => {
 			for (const port of portList) {
 				const newPort = new ConfigPort(port, canAddress), existingPort = to.find(item => item.matches(newPort));
@@ -266,11 +279,11 @@ export default class ConfigModel extends ObjectModel {
 	/**
 	 * Refresh the driver list and either add new drivers or remove obsolete ones
 	 */
-	private refreshPorts(): void {
+	refreshPorts(): void {
 		const portList: Array<ConfigPort> = [];
 
 		// Add ports from the mainboard
-		const mainboardDefinition = this.boardDefinition;
+		const mainboardDefinition = this.getBoardDefinition();
 		if (mainboardDefinition !== null) {
 			this.addPortsFromBoard(mainboardDefinition, mainboardDefinition.objectModelBoard.canAddress, portList);
 

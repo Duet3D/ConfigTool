@@ -18,7 +18,7 @@ let numInstances = 0;
 interface CheckInputProps {
 	label: string,
 	modelValue: boolean,
-	preset: boolean
+	preset?: boolean | null
 };
 const props = defineProps<CheckInputProps>();
 
