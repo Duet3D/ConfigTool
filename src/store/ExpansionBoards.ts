@@ -13,9 +13,9 @@ export enum ExpansionBoardType {
 	EXP1HCL = "Duet 3 Expansion Board 1HCL",
 	TOOL1LC = "Duet 3 Tool Board",
 
-	Duet3Mini = "Duet 3 Mini 5+",
-	Duet3MB6HC = "Duet 3 Main Board 6HC",
-	Duet3MB6XD = "Duet 3 Main Board 6XD",
+	Mini5plus = "Duet 3 Mini 5+",
+	MB6HC = "Duet 3 Main Board 6HC",
+	MB6XD = "Duet 3 Main Board 6XD",
 
 	Duet3Mini2Plus = "Duet 3 Mini 2+",                                              // virtual
 	DueX5 = "DueX 5",                                                               // virtual
@@ -148,7 +148,7 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			shortName: "TOOL1LC"
 		})
 	},
-	[ExpansionBoardType.Duet3Mini]: {
+	[ExpansionBoardType.Mini5plus]: {
 		analogInPorts: ["io3.in"],
 		fanPorts: ["out3", "out4", "out5", "out6+laser+vfd"],
 		fanTachoPorts: ["out3.tach", "out4.tach"],
@@ -176,7 +176,7 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			shortName: "Mini5plus"
 		})
 	},
-	[ExpansionBoardType.Duet3MB6HC]: {
+	[ExpansionBoardType.MB6HC]: {
 		analogInPorts: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
 		fanPorts: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
 		fanTachoPorts: ["out4.tach", "out5.tach", "out6.tach"],
@@ -204,7 +204,7 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			shortName: "MB6HC"
 		})
 	},
-	[ExpansionBoardType.Duet3MB6XD]: {
+	[ExpansionBoardType.MB6XD]: {
 		analogInPorts: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
 		fanPorts: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
 		fanTachoPorts: ["out4.tach", "out5.tach", "out6.tach"],
@@ -228,8 +228,8 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			canAddress: 1,
 			maxHeaters: 3,
 			maxMotors: 5,
-			shortName: "MB6HC",
-			name: "Duet 3 MB6HC",
+			shortName: "MB6XD",
+			name: "Duet 3 MB6XD",
 		})
 	},
 	[ExpansionBoardType.Duet3Mini2Plus]: {
