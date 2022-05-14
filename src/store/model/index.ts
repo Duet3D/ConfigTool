@@ -98,6 +98,7 @@ export default class ConfigModel extends ObjectModel {
 
 		this.refreshDrivers();
 		this.refreshPorts();
+		this.enforceLimits();
 	}
 
 	/**
@@ -174,6 +175,7 @@ export default class ConfigModel extends ObjectModel {
 		this.fixExpansionBoards();
 		this.refreshDrivers();
 		this.refreshPorts();
+		this.enforceLimits();
 	}
 
 	/**
@@ -184,6 +186,21 @@ export default class ConfigModel extends ObjectModel {
 		const driverList: Array<DriverId> = [];
 		const mainboardDefinition = this.getBoardDefinition();
 		if (mainboardDefinition !== null) {
+			// Modify mainboard prefix of existing drivers
+			const newBoard = mainboardDefinition.objectModelBoard.canAddress;
+			for (const axis of this.move.axes) {
+				for (const driver of axis.drivers) {
+					if (!driver.board) {
+						driver.board = newBoard;
+					}
+				}
+			}
+			for (const extruder of this.move.extruders) {
+				if (extruder.driver && !extruder.driver.board) {
+					extruder.driver.board = newBoard;
+				}
+			}
+
 			// Add mainboard drivers
 			for (let i = 0; i < mainboardDefinition.numDrivers; i++) {
 				const driver = new DriverId();
@@ -240,6 +257,21 @@ export default class ConfigModel extends ObjectModel {
 		for (let i = this.configTool.drivers.length - 1; i >= 0; i--) {
 			const existingDriver = this.configTool.drivers[i];
 			if (!driverList.some(driver => driver.board === existingDriver.id.board && driver.driver === existingDriver.id.driver)) {
+				// Remove it from axes and extruders
+				for (const axis of this.move.axes) {
+					for (let i = axis.drivers.length - 1; i >= 0; i--) {
+						if (axis.drivers[i].equals(existingDriver.id)) {
+							axis.drivers.splice(i, 1);
+						}
+					}
+				}
+				for (const extruder of this.move.extruders) {
+					if (extruder.driver && extruder.driver.equals(existingDriver.id)) {
+						extruder.driver = null;
+					}
+				}
+
+				// Remove the driver
 				this.configTool.drivers.splice(i, 1);
 			}
 		}
@@ -366,6 +398,47 @@ export default class ConfigModel extends ObjectModel {
 					}
 				}
 				break;
+		}
+	}
+
+	/**
+	 * Enforce the limits as defined by the limits key
+	 */
+	private enforceLimits(): void {
+		// TODO
+	}
+
+	/**
+	 * Set FFF capability
+	 * @param value True if FFF is supposed to be configured
+	 */
+	setFFF(value: boolean): void {
+		this.configTool.capabilities.fff = value;
+		if (!value) {
+			this.move.extruders.splice(0);
+			this.sensors.filamentMonitors.splice(0);
+		}
+	}
+
+	/**
+	 * Set CNC capability
+	 * @param value True if CNC is supposed to be configured
+	 */
+	setCNC(value: boolean): void {
+		this.configTool.capabilities.cnc = value;
+		if (!value) {
+			this.spindles.splice(0);
+		}
+	}
+
+	/**
+	 * Set Laser capability
+	 * @param value True if Laser is supposed to be configured
+	 */
+	setLaser(value: boolean): void {
+		this.configTool.capabilities.laser = value;
+		if (!value) {
+			this.state.laserPwm = null;
 		}
 	}
 };

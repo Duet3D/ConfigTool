@@ -1,14 +1,14 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
-  '@duet3d/objectmodel': ^3.4.0-b16
+  '@duet3d/objectmodel': ^3.4.0-b17
   '@popperjs/core': ^2.11.5
   '@types/bootstrap': ^5.1.11
   '@types/node': ^17.0.33
   '@vitejs/plugin-vue': ^2.3.3
   '@vue/tsconfig': ^0.1.3
   bootstrap: ^5.1.3
-  bootstrap-icons: ^1.8.1
+  bootstrap-icons: ^1.8.2
   ejs: ^3.1.8
   pinia: ^2.0.14
   sass: ^1.51.0
@@ -19,12 +19,12 @@ specifiers:
   vue-tsc: ^0.34.13
 
 dependencies:
-  '@duet3d/objectmodel': 3.4.0-b16
+  '@duet3d/objectmodel': 3.4.0-b17
   '@popperjs/core': 2.11.5
   bootstrap: 5.1.3_@popperjs+core@2.11.5
-  bootstrap-icons: 1.8.1
+  bootstrap-icons: 1.8.2
   ejs: 3.1.8
-  pinia: 2.0.14_typescript@4.6.4+vue@3.2.33
+  pinia: 2.0.14_ytvqwwdyss532bvoq2clv4ed5m
   vue: 3.2.33
   vue-router: 4.0.15_vue@3.2.33
 
@@ -40,13 +40,26 @@ devDependencies:
 
 packages:
 
+  /@babel/helper-validator-identifier/7.16.7:
+    resolution: {integrity: sha512-hsEnFemeiW4D08A5gUAZxLBTXpZ39P+a+DGDsHw1yxqyQ/jzFEnxf5uTEGp+3bzAbNOxU1paTgYS4ECU/IgfDw==}
+    engines: {node: '>=6.9.0'}
+
   /@babel/parser/7.17.10:
     resolution: {integrity: sha512-n2Q6i+fnJqzOaq2VkdXxy2TCPCWQZHiCo0XqmrCvDWcZQKRyZzYi4Z0yxlBuN0w+r2ZHmre+Q087DSrw3pbJDQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+    dependencies:
+      '@babel/types': 7.17.10
 
-  /@duet3d/objectmodel/3.4.0-b16:
-    resolution: {integrity: sha512-bpAvD0Zf7tlSqylrPMvvvjaE/ls6e3vi0iC9j0eQB/oSxS7W8keI+jBQ6sf3Xt3VMAED0T+lmgoNzRKLAzJi1Q==}
+  /@babel/types/7.17.10:
+    resolution: {integrity: sha512-9O26jG0mBYfGkUYCYZRnBwbVLd1UZOICEr2Em6InB6jVfsAv1GKgwXHmrSg+WFWDmeKTA6vyTZiN8tCSM5Oo3A==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      '@babel/helper-validator-identifier': 7.16.7
+      to-fast-properties: 2.0.0
+
+  /@duet3d/objectmodel/3.4.0-b17:
+    resolution: {integrity: sha512-M7LiDx4L9EV7xkPGZqwYJFmxLF4eI9jKcHqsCCDtkeaAE69ZRT7wye0PKtFHd1j0kRvPY3CgeOmTje268PNk6Q==}
     dev: false
 
   /@popperjs/core/2.11.5:
@@ -233,9 +246,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /bootstrap-icons/1.8.1:
-    resolution: {integrity: sha512-IXUqislddPJfwq6H+2nTkHyr9epO9h6u1AG0OZCx616w+TgzeoCjfmI3qJMQqt1J586gN2IxzB4M99Ip4sTZ1w==}
-    engines: {node: '>=10'}
+  /bootstrap-icons/1.8.2:
+    resolution: {integrity: sha512-jhNjdPzvUqKOr9o0XhCZAZDWVeuOg6mJHtSj2bhiqfamZVg6ekMYNgG7pRY4GItbjIwrTaht3dNbXGbX3eJNLQ==}
     dev: false
 
   /bootstrap/5.1.3_@popperjs+core@2.11.5:
@@ -656,7 +668,7 @@ packages:
     engines: {node: '>=8.6'}
     dev: true
 
-  /pinia/2.0.14_typescript@4.6.4+vue@3.2.33:
+  /pinia/2.0.14_ytvqwwdyss532bvoq2clv4ed5m:
     resolution: {integrity: sha512-0nPuZR4TetT/WcLN+feMSjWJku3SQU7dBbXC6uw+R6FLQJCsg+/0pzXyD82T1FmAYe0lsx+jnEDQ1BLgkRKlxA==}
     peerDependencies:
       '@vue/composition-api': ^1.4.0
@@ -698,8 +710,8 @@ packages:
       supports-preserve-symlinks-flag: 1.0.0
     dev: true
 
-  /rollup/2.72.1:
-    resolution: {integrity: sha512-NTc5UGy/NWFGpSqF1lFY8z9Adri6uhyMLI6LvPAXdBKoPRFhIIiBUpt+Qg2awixqO3xvzSijjhnb4+QEZwJmxA==}
+  /rollup/2.73.0:
+    resolution: {integrity: sha512-h/UngC3S4Zt28mB3g0+2YCMegT5yoftnQplwzPqGZcKvlld5e+kT/QRmJiL+qxGyZKOYpgirWGdLyEO1b0dpLQ==}
     engines: {node: '>=10.0.0'}
     hasBin: true
     optionalDependencies:
@@ -739,6 +751,10 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
+  /to-fast-properties/2.0.0:
+    resolution: {integrity: sha1-3F5pjL0HkmW8c+A3doGk5Og/YW4=}
+    engines: {node: '>=4'}
+
   /to-regex-range/5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
@@ -771,7 +787,7 @@ packages:
       esbuild: 0.14.39
       postcss: 8.4.13
       resolve: 1.22.0
-      rollup: 2.72.1
+      rollup: 2.73.0
       sass: 1.51.0
     optionalDependencies:
       fsevents: 2.3.2

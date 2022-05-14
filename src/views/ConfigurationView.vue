@@ -2,12 +2,13 @@
 	<div class="container" ref="content">
 		<general-config />
 		<expansion-config />
+		<kinematics-config />
 		<drivers-config />
 		<axes-config />
 		<endstops-config />
 		<z-probes-config />
 		<compensation-config />
-		<extruders-config />
+		<extruders-config v-if="store.data.configTool.capabilities.fff" />
 		<spindles-config />
 		<lasers-config />
 		<fans-config />
@@ -26,7 +27,8 @@ import { useRouter } from "vue-router";
 
 import GeneralConfig from "@/components/configuration/GeneralConfig.vue";
 import ExpansionConfig from "@/components/configuration/ExpansionConfig.vue";
-import { eventOptions } from "@/router";
+import KinematicsConfig from "@/components/configuration/KinematicsConfig.vue";
+import DriversConfig from "@/components/configuration/DriversConfig.vue";
 import AxesConfig from "@/components/configuration/AxesConfig.vue";
 import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
 import ZProbesConfig from "@/components/configuration/ZProbesConfig.vue";
@@ -41,18 +43,16 @@ import ServosConfig from "@/components/configuration/ServosConfig.vue";
 import NetworkConfig from "@/components/configuration/NetworkConfig.vue";
 import AccessoriesConfig from "@/components/configuration/AccessoriesConfig.vue";
 import MiscellaneousConfig from "@/components/configuration/MiscellaneousConfig.vue";
-import DriversConfig from "@/components/configuration/DriversConfig.vue";
+
+import { eventOptions } from "@/router";
+import { useStore } from "@/store";
+
+// Visibility of categories
+const store = useStore();
 
 // Scrollspy functionality
 const content = ref(), router = useRouter();
 onMounted(() => {
-	const anchors: Array<HTMLElement> = [];
-	for (let el of content.value.getElementsByTagName("a")) {
-		if (el.dataset["anchor"] === "true") {
-			anchors.push(el);
-		}
-	}
-
 	let debounceTimer = 0;
 	content.value.onscroll = () => {
 		// When the router scrolls an element into view, it takes a moment before this event can be used again
@@ -65,6 +65,14 @@ onMounted(() => {
 				debounceTimer = 0;
 			}, 250);
 			return;
+		}
+
+		// Get the current anchors
+		const anchors: Array<HTMLElement> = [];
+		for (let el of content.value.getElementsByTagName("a")) {
+			if (el.dataset["anchor"] === "true") {
+				anchors.push(el);
+			}
 		}
 
 		// Check which router element is supposed to be active

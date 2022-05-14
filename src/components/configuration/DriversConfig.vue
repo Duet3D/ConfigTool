@@ -1,10 +1,10 @@
 <style>
-.table-smart-drivers th:first-child,
-.table-smart-drivers td:first-child,
-.table-external-drivers th:first-child,
-.table-external-drivers td:first-child,
-.table-closed-loop-drivers th:first-child,
-.table-closed-loop-drivers td:first-child {
+.table-smart-drivers tr > th:first-child,
+.table-smart-drivers tr > td:first-child,
+.table-external-drivers tr > th:first-child,
+.table-external-drivers tr > td:first-child,
+.table-closed-loop-drivers tr > th:first-child,
+.table-closed-loop-drivers tr > td:first-child {
 	text-align: center;
 	vertical-align: middle;
 }
@@ -29,21 +29,23 @@
 
 			<table class="table table-striped table-smart-drivers mb-0">
 				<thead>
-					<th>
-						Driver
-					</th>
-					<th>
-						Direction
-					</th>
-					<th>
-						Mode
-					</th>
-					<th>
-						StealthChop PWM Threshold
-					</th>
-					<th>
-						StallGuard Threshold
-					</th>
+					<tr>
+						<th>
+							Driver
+						</th>
+						<th>
+							Direction
+						</th>
+						<th>
+							Mode
+						</th>
+						<th>
+							StealthChop PWM Threshold
+						</th>
+						<th>
+							StallGuard Threshold
+						</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="driver in smartDrivers">
@@ -84,27 +86,29 @@
 			</div>
 			<table class="table table-striped table-external-drivers mb-0">
 				<thead>
-					<th>
-						Driver
-					</th>
-					<th>
-						Direction
-					</th>
-					<th>
-						Enable Polarity
-					</th>
-					<th>
-						Min. Step Pulse
-					</th>
-					<th>
-						Min. Step Interval
-					</th>
-					<th>
-						Dir. Setup Time
-					</th>
-					<th>
-						Dir. Hold Time
-					</th>
+					<tr>
+						<th>
+							Driver
+						</th>
+						<th>
+							Direction
+						</th>
+						<th>
+							Enable Polarity
+						</th>
+						<th>
+							Min. Step Pulse
+						</th>
+						<th>
+							Min. Step Interval
+						</th>
+						<th>
+							Dir. Setup Time
+						</th>
+						<th>
+							Dir. Hold Time
+						</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="driver in externalDrivers">
@@ -123,22 +127,22 @@
 						</td>
 						<td>
 							<number-input title="Minimum time for each step pulse"
-							              :min="0.1" :step="0.1" unit="µS"
+							              :min="0.1" :step="0.1" unit="µs"
 							              v-model="driver.external.minStepPulse" :preset="5" />
 						</td>
 						<td>
 							<number-input title="Minimum step interval"
-							              :min="0.1" :step="0.1" unit="µS"
+							              :min="0.1" :step="0.1" unit="µs"
 							              v-model="driver.external.minStepInterval" :preset="5" />
 						</td>
 						<td>
 							<number-input title="Time needed to set up the direction pin level"
-							              :min="0" :step="0.1" unit="µS"
+							              :min="0" :step="0.1" unit="µs"
 							              v-model="driver.external.dirSetupTime" :preset="10" />
 						</td>
 						<td>
 							<number-input title="Time to hold the direction pin level"
-							              :min="0" :step="0.1" unit="µS"
+							              :min="0" :step="0.1" unit="µs"
 							              v-model="driver.external.holdTime" :preset="0" />
 						</td>
 					</tr>
@@ -158,15 +162,17 @@
 
 			<table class="table table-striped table-closed-loop-drivers mb-0">
 				<thead>
-					<th>
-						Driver
-					</th>
-					<th>
-						Encoder Type
-					</th>
-					<th>
-						Encoder Counts per Full Step
-					</th>
+					<tr>
+						<th>
+							Driver
+						</th>
+						<th>
+							Encoder Type
+						</th>
+						<th>
+							Encoder Counts per Full Step
+						</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="driver in closedLoopDrivers">
@@ -296,7 +302,7 @@ const polarityOptions: Array<SelectOption> = [
 const closedLoopDrivers = computed(() => {
 	const result = [];
 	for (const driver of store.data.configTool.drivers) {
-		const boardDefinition = store.data.getBoardDefinition(driver.board);
+		const boardDefinition = store.data.getBoardDefinition(driver.id.board);
 		if (boardDefinition?.hasClosedLoopDrivers) {
 			result.push(driver);
 		}

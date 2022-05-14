@@ -66,8 +66,7 @@ const getItemValue = (item: string | SelectOption) => JSON.stringify((typeof ite
 // Validation
 const validationClass = computed<string | null>(() => {
 	if (props.required) {
-		if (props.valid === false) {
-			console.log(props.valid);
+		if (!props.valid) {
 			return "is-invalid";
 		}
 

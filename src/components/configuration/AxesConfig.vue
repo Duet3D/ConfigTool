@@ -1,5 +1,5 @@
 <style scoped>
-.table-microstepping th:first-child,
+.table-microstepping tr > th:first-child,
 .table-microstepping tr > td:first-child {
 	min-width: 5rem;
 	text-align: center;
@@ -25,33 +25,35 @@
 		<template #body>
 			<table class="table table-striped table-microstepping mb-0">
 				<thead>
-					<th>
-						Axis Letter
-					</th>
-					<th>
-						Drivers
-					</th>
-					<th>
-						Microstepping
-					</th>
-					<th>
-						Steps per mm
-					</th>
-					<th>
-						Max. Speed Change (mm/s)
-					</th>
-					<th>
-						Max. Speed (mm/s)
-					</th>
-					<th>
-						Acceleration (mm/s²)
-					</th>
-					<th>
-						Motor Current (mA)
-					</th>
-					<th>
-						<!-- Delete button -->
-					</th>
+					<tr>
+						<th>
+							Axis Letter
+						</th>
+						<th>
+							Drivers
+						</th>
+						<th>
+							Microstepping
+						</th>
+						<th>
+							Steps per mm
+						</th>
+						<th>
+							Max. Speed Change (mm/s)
+						</th>
+						<th>
+							Max. Speed (mm/s)
+						</th>
+						<th>
+							Acceleration (mm/s²)
+						</th>
+						<th>
+							Motor Current (mA)
+						</th>
+						<th>
+							<!-- Delete button -->
+						</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="(axis, index) in store.data.move.axes">

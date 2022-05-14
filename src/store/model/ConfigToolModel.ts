@@ -12,6 +12,12 @@ export class ConfigAutoSaveModel extends ModelObject {
 	saveThreshold: number = 19.8;
 }
 
+export class ConfigCapabilities extends ModelObject {
+	cnc: boolean = false;
+	fff: boolean = true;
+	laser: boolean = false;
+}
+
 export class ConfigDeltaProbePoint extends ModelObject {
 	x: number = 0;
 	y: number = 0;
@@ -33,6 +39,7 @@ export class ConfigToolModel extends ModelObject {
 
 	readonly autoSave: ConfigAutoSaveModel = new ConfigAutoSaveModel();
 	autoSelectFirstTool: boolean = false;
+	readonly capabilities: ConfigCapabilities = new ConfigCapabilities();
 	configOverride: boolean = false;
 	customSettings: string = "";
 	deltaProbePoints: ModelCollection<ConfigDeltaProbePoint> = new ModelCollection(ConfigDeltaProbePoint);

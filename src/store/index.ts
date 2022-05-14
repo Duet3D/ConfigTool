@@ -1,28 +1,26 @@
-import { defineStore } from 'pinia';
 import {
 	Axis,
 	AxisLetter,
 	Board,
+	CoreKinematics,
 	DriverId,
 	Extruder,
+	initCollection,
+	initObject,
+	KinematicsName,
 	Limits,
 	Move,
-	Network,
-	initCollection,
-	initObject
+	Network
 } from "@duet3d/objectmodel";
+import { defineStore } from 'pinia';
 
 import ConfigModel from "@/store/model";
-import { type BoardDescriptor, Boards, BoardType } from "@/store/Boards";
-import { ConfigToolModel } from "@/store/model/ConfigToolModel";
+import { Boards, BoardType } from "@/store/Boards";
 
 const defaultTemplate = initObject(ConfigModel, {
 	boards: initCollection(Board, [
 		Boards[BoardType.Duet3Mini5PlusWiFi].objectModelBoard
 	]),
-	configTool: initObject(ConfigToolModel, {
-
-	}),
 	move: initObject(Move, {
 		axes: initCollection(Axis, [
 			{
@@ -68,7 +66,8 @@ const defaultTemplate = initObject(ConfigModel, {
 					driver: 3
 				})
 			}
-		])
+		]),
+		kinematics: new CoreKinematics(KinematicsName.cartesian)
 	}),
 	limits: initObject(Limits, Boards[BoardType.Duet3Mini5PlusWiFi].objectModelLimits),
 	network: initObject(Network, {

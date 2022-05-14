@@ -26,11 +26,11 @@
 			</div>
 
 			<div class="col mt-3 d-flex justify-content-center">
-				<button type="submit" class="btn btn-outline-success" :disabled="!tpwmthrsValid">
+				<button type="submit" class="btn btn-success" :disabled="!tpwmthrsValid">
 					<i class="bi-check-circle"></i>
 					Apply
 				</button>
-				<button type="button" class="btn btn-outline-danger ms-2" @click="cancel">
+				<button type="button" class="btn btn-danger ms-2" @click="cancel">
 					<i class="bi-x-circle"></i>
 					Cancel
 				</button>

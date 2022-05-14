@@ -43,6 +43,28 @@
 				</div>
 			</div>
 		</div>
+		<div class="row my-1">
+			<div class="col-12">
+				Machine Capabilities:
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4">
+				<check-input label="FFF (3D Printing)" title="Enable FFF printing"
+				             :model-value="store.data.configTool.capabilities.fff" @update:model-value="store.data.setFFF($event)"
+				             :preset="store.preset.configTool.capabilities.fff" />
+			</div>
+			<div class="col-4">
+				<check-input label="CNC (Milling)" title="Enable CNC functionality"
+				             :model-value="store.data.configTool.capabilities.cnc" @update:model-value="store.data.setCNC($event)"
+				             :preset="store.preset.configTool.capabilities.cnc" />
+			</div>
+			<div class="col-4">
+				<check-input label="Laser (Cutting/Etching)" title="Enable Laser functionality"
+				             :model-value="store.data.configTool.capabilities.laser" @update:model-value="store.data.setLaser($event)"
+				             :preset="store.preset.configTool.capabilities.laser" />
+			</div>
+		</div>
 	</scroll-item>
 </template>
 

@@ -84,14 +84,15 @@
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li><RouterLink to="/Configuration" class="link-dark rounded">General</RouterLink></li>
 						<li><RouterLink to="/Configuration/Expansion" class="link-dark rounded">Expansion</RouterLink></li>
+						<li><RouterLink to="/Configuration/Kinematics" class="link-dark rounded">Kinematics</RouterLink></li>
 						<li><RouterLink to="/Configuration/Drivers" class="link-dark rounded">Drivers</RouterLink></li>
 						<li><RouterLink to="/Configuration/Axes" class="link-dark rounded">Axes</RouterLink></li>
 						<li><RouterLink to="/Configuration/Endstops" class="link-dark rounded">Endstops</RouterLink></li>
 						<li><RouterLink to="/Configuration/ZProbes" class="link-dark rounded">Z-Probes</RouterLink></li>
 						<li><RouterLink to="/Configuration/Compensation" class="link-dark rounded">Compensation</RouterLink></li>
-						<li><RouterLink to="/Configuration/Extruders" class="link-dark rounded">Extruders (FFF-only)</RouterLink></li>
-						<li><RouterLink to="/Configuration/Spindles" class="link-dark rounded">Spindles (CNC-only)</RouterLink></li>
-						<li><RouterLink to="/Configuration/Lasers" class="link-dark rounded">Lasers (Laser-only)</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration/Extruders" class="link-dark rounded">Extruders</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.cnc"><RouterLink to="/Configuration/Spindles" class="link-dark rounded">Spindles</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration/Lasers" class="link-dark rounded">Lasers</RouterLink></li>
 						<li><RouterLink to="/Configuration/Fans" class="link-dark rounded">Fans</RouterLink></li>
 						<li><RouterLink to="/Configuration/Tools" class="link-dark rounded">Tools</RouterLink></li>
 						<li><RouterLink to="/Configuration/IO" class="link-dark rounded">I/O Ports</RouterLink></li>
@@ -119,4 +120,8 @@
 
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+
+import { useStore } from "@/store";
+
+const store = useStore();
 </script>
