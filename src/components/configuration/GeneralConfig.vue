@@ -43,7 +43,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="row my-1">
+		<div class="row mt-2 mb-1">
 			<div class="col-12">
 				Machine Capabilities:
 			</div>
