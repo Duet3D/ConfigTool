@@ -1,10 +1,11 @@
 <template>
-	<base-dialog title="Advanced SCARA Kinematics Settings"
+	<base-dialog title="Advanced Polar Kinematics Settings"
 	             :model-value="props.modelValue" @update:model-value="emit('update:modelValue', $event)">
-		<div v-if="deltaKinematics" class="row">
-			TODO:
+		<div v-if="polarKinematics" class="row">
+			<!--
 			Segments per second (because smooth XY motion is approximated by means of segmentation)
 			Minimum segment length (mm) (because smooth XY motion is approximated by means of segmentation)
+			-->
 		</div>
 		<div v-else class="text-danger">
 			error, no delta kinematics selected
@@ -13,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { DeltaKinematics } from "@duet3d/objectmodel";
+import { PolarKinematics } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import BaseDialog from "./BaseDialog.vue";
-import NumberInput from "@/components/inputs/NumberInput.vue";
+//import NumberInput from "@/components/inputs/NumberInput.vue";
 
 import { useStore } from "@/store";
 
@@ -29,5 +30,5 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
-const deltaKinematics = computed(() => (store.data.move.kinematics instanceof DeltaKinematics) ? store.data.move.kinematics : null);
+const polarKinematics = computed(() => (store.data.move.kinematics instanceof PolarKinematics) ? store.data.move.kinematics : null);
 </script>

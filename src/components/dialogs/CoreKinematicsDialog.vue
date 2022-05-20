@@ -26,6 +26,7 @@
 					</tbody>
 				</table>
 			</div>
+			<!-- TODO segmentation -->
 		</div>
 		<div v-else class="text-danger">
 			error, no core kinematics selected

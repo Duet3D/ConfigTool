@@ -1,3 +1,13 @@
+<style scoped>
+#anchors tr > th:first-child {
+	text-align: center;
+}
+#anchors tr > td:first-child {
+	text-align: center;
+	vertical-align: middle;
+}
+</style>
+
 <template>
 	<scroll-item anchor="Kinematics">
 		<template #title>
@@ -56,7 +66,7 @@
 				<div class="col-2">
 					<number-input v-if="getAxis(letter)"
 					              :label="`${letter} minimum`" :title="`Minimum position of the ${letter} axis`"
-					              :max="getAxis(letter).max - 0.01" step="any"
+					              :max="getAxis(letter).max - 0.01" step="any" unit="mm"
 					              v-model="getAxis(letter).min" :preset="getAxisPreset(letter)?.min" />
 					<span v-else class="text-danger is-invalid">
 						missing {{ letter }} axis
@@ -65,23 +75,24 @@
 				<div class="col-2">
 					<number-input v-if="getAxis(letter)"
 					              :label="`${letter} maximum`" :title="`Maximum position of the ${letter} axis`"
-					              :min="getAxis(letter).min + 0.01" step="any"
+					              :min="getAxis(letter).min + 0.01" step="any" unit="mm"
 					              v-model="getAxis(letter).max" :preset="getAxisPreset(letter)?.max" />
+
 				</div>
 			</template>
 		</div>
-		<div v-else-if="isDeltaKinematics" class="row g-3">
+		<div v-else-if="store.data.move.kinematics.name === KinematicsName.delta" class="row g-3">
 			<!-- Delta Kinematics -->
 			<delta-kinematics-dialog v-model="showAdvancedSettings" />
 			<div class="col">
 				<number-input label="Delta radius" title="Horizontal distance subtended by each rod, measured between joint centres, when the effector is in the centre"
-				              :min="deltaKinematics.printRadius" step="any"
+				              :min="deltaKinematics.printRadius" step="any" unit="mm"
 				              v-model="deltaKinematics.deltaRadius" :preset="presetDeltaKinematics?.deltaRadius" />
 			</div>
 			<div class="col">
 				<number-input v-if="getAxis(AxisLetter.Z)"
 				              :label="`${AxisLetter.Z} minimum`" :title="`Minimum position of the ${AxisLetter.Z} axis`"
-				              step="any"
+				              step="any" unit="mm"
 				              v-model="getAxis(AxisLetter.Z).min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
 				<span v-else class="text-danger is-invalid">
 					missing {{ AxisLetter.Z }} axis
@@ -89,30 +100,47 @@
 			</div>
 			<div class="col">
 				<number-input label="Homed height" title="Maximum build height of your printer"
-				              :min="0" step="any"
+				              :min="0" step="any" unit="mm"
 				              v-model="deltaKinematics.homedHeight" :preset="presetDeltaKinematics?.homedHeight" />
 			</div>
 			<div class="col">
 				<number-input label="Printable radius" title="Safe printing radius"
-				              :min="0" :max="deltaKinematics.deltaRadius" step="any"
+				              :min="0" :max="deltaKinematics.deltaRadius" step="any" unit="mm"
 				              v-model="deltaKinematics.printRadius" :preset="presetDeltaKinematics?.printRadius" />
 			</div>
 			<div class="col">
 				<number-input label="Diagonal rod length" title="Distance between the centre of your towers and the joint at the effector"
-				              :min="0" step="any"
+				              :min="0" step="any" unit="mm"
 				              :model-value="avgDeltaRodLength" @update:model-value="setDeltaRodLength($event)" :preset="avgDeltaRodLengthPreset" />
 			</div>
-			Note about flying extruder axis
 		</div>
-		<div v-else-if="store.data.move.kinematics.name === KinematicsName.scara">
+		<div v-else-if="store.data.move.kinematics.name === KinematicsName.rotaryDelta">
+			<!-- Rotary Delta kinematics -->
+			<delta-kinematics-dialog v-model="showAdvancedSettings" />
+			<h4 class="is-invalid text-danger">
+				<i class="bi-exclamation-triangle"></i> unsupported kinematics
+			</h4>
+		</div>
+		<div v-else-if="store.data.move.kinematics.name === KinematicsName.scara" class="row">
+			<!-- SCARA kinematics -->
 			<scara-kinematics-dialog v-model="showAdvancedSettings" />
+			<h4 class="is-invalid text-danger">
+				<i class="bi-exclamation-triangle"></i> unsupported kinematics
+			</h4>
+			<!--
 			Proximal arm length
 			Distal arm length
 			Ground-to-proximal joint minimum and maximum angles
 			Proximal-to-distal joint minimum and maximum angles
+			-->
 		</div>
 		<div v-else-if="store.data.move.kinematics.name === KinematicsName.fiveBarScara">
+			<!-- Five Bar SCARA kinematics -->
 			<scara-kinematics-dialog v-model="showAdvancedSettings" />
+			<h4 class="is-invalid text-danger">
+				<i class="bi-exclamation-triangle"></i> unsupported kinematics
+			</h4>
+			<!--
 			Proximal arm length
 			Distal arm length
 			Ground-to-proximal joint minimum and maximum angles
@@ -123,26 +151,115 @@
 			Proximal arm lengths
 			Degrees of the homing end positions
 			Minimum angle between the distal arms
-			Minimal and maximal angle left and right of the actuators. C
+			Minimal and maximal angle left and right of the actuators
+			-->
 		</div>
 		<div v-else-if="store.data.move.kinematics.name === KinematicsName.hangprinter">
-			X, Y and Z coordinates of the A anchor
-			X, Y and Z coordinates of the B anchor
-			X, Y and Z coordinates of the C anchor
-			Z coordinate of the D anchor (the XY coordinates of the D anchor are 0,0)
-			Printable radius from the origin
+			<!-- Hangprinter kinematics -->
+			<hangprinter-kinematics-dialog v-model="showAdvancedSettings" />
+			<div class="row">
+				<div class="col">
+					<number-input label="Printable radius from the origin" title="Printable radius from the origin of the printer"
+					              :min="0.01" step="any" unit="mm"
+					              v-model="hangprinterKinematics.printRadius" :preset="presetHangprinter?.printRadius" />
+				</div>
+				<div class="col">
+					<number-input v-if="getAxis(AxisLetter.Z)"
+					              :label="`${AxisLetter.Z} minimum`" :title="`Minimum position of the ${AxisLetter.Z} axis`"
+					              :max="getAxis(AxisLetter.Z).max - 0.01" step="any" unit="mm"
+					              v-model="getAxis(AxisLetter.Z).min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
+					<span v-else class="text-danger is-invalid">
+							missing {{ AxisLetter.Z }} axis
+					</span>
+				</div>
+				<div class="col">
+					<number-input v-if="getAxis(AxisLetter.Z)"
+					              :label="`${AxisLetter.Z} maximum`" :title="`Maximum position of the ${AxisLetter.Z} axis`"
+					              :min="getAxis(AxisLetter.Z).min + 0.01" step="any" unit="mm"
+					              v-model="getAxis(AxisLetter.Z).max" :preset="getAxisPreset(AxisLetter.Z)?.max" />
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-12">
+					<label for="anchors" class="mb-1">
+						Anchor coordinates:
+					</label>
+					<table id="anchors" class="table table-bordered table-striped mb-0">
+						<thead>
+							<tr>
+								<th>
+									Anchor
+								</th>
+								<th>
+									X
+								</th>
+								<th>
+									Y
+								</th>
+								<th>
+									Z
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(anchor, index) in ['A', 'B', 'C', 'D']">
+								<td>
+									{{ anchor }}
+								</td>
+								<td>
+									<number-input :title="`X coordinate of the ${anchor} anchor`"
+									              step="any" unit="mm" :disabled="anchor === 'D'"
+									              v-model="hangprinterKinematics.anchors[index][0]" :preset="presetHangprinterKinematics?.anchors[index][0]" />
+								</td>
+								<td>
+									<number-input :title="`Y coordinate of the ${anchor} anchor`"
+									              step="any" unit="mm" :disabled="anchor === 'D'"
+									              v-model="hangprinterKinematics.anchors[index][1]" :preset="presetHangprinterKinematics?.anchors[index][1]" />
+								</td>
+								<td>
+									<number-input :title="`Z coordinate of the ${anchor} anchor`"
+									              step="any" unit="mm"
+									              v-model="hangprinterKinematics.anchors[index][2]" :preset="presetHangprinterKinematics?.anchors[index][2]" />
+								</td>
+								<!--
+								<td>
+									<number-input v-if="getAxis(AxisLetter.Z)"
+									              :title="`Z coordinate of the ${anchor} anchor`"
+									              :min="getAxis(AxisLetter.Z).min" :max="getAxis(AxisLetter.Z).max" step="any" unit="mm"
+									              v-model="hangprinterKinematics.anchors[index][2]" :preset="presetHangprinterKinematics?.anchors[index][2]" />
+									<span v-else class="text-danger is-invalid">
+										missing {{ AxisLetter.Z }} axis
+									</span>
+								</td>
+								-->
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 		<div v-else-if="store.data.move.kinematics.name === KinematicsName.polar">
+			<!-- Polar kinematics -->
+			<polar-kinematics-dialog v-model="showAdvancedSettings" />
+			<h4 class="is-invalid text-danger">
+				<i class="bi-exclamation-triangle"></i> unsupported kinematics
+			</h4>
+			<!--
 			Minimum and maximum radius in mm. If only one value it given it will be used as the maximum radius, and the minimum radius will be assumed to be zero.
 			Radius in mm at which the homing switch is triggered during a homing move. If this parameter is not present, the homing switch is assumed to trigger at the minimum radius.
 			Maximum turntable speed in degrees per second
 			Maximum turntable acceleration in degrees per second per second
+			-->
 		</div>
 	</scroll-item>
 </template>
 
 <script setup lang="ts">
-import { Axis, AxisLetter, CoreKinematics, DeltaKinematics, KinematicsName } from "@duet3d/objectmodel";
+import {
+	Axis,
+	AxisLetter,
+	KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics
+} from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
@@ -153,7 +270,9 @@ import { computed, ref } from "vue";
 import CoreKinematicsDialog from "@/components/dialogs/CoreKinematicsDialog.vue";
 import { type CoreKinematicsTypes, DefaultForwardMatrix, DefaultInverseMatrix } from "@/store/defaults";
 import DeltaKinematicsDialog from "@/components/dialogs/DeltaKinematicsDialog.vue";
+import PolarKinematicsDialog from "@/components/dialogs/PolarKinematicsDialog.vue";
 import ScaraKinematicsDialog from "@/components/dialogs/ScaraKinematicsDialog.vue";
+import HangprinterKinematicsDialog from "@/components/dialogs/HangprinterKinematicsDialog.vue";
 
 const store = useStore();
 
@@ -191,30 +310,37 @@ const KinematicsOptions: Record<string, Array<SelectOption>> = {
 			value: KinematicsName.delta
 		},
 		{
+			disabled: true,
 			text: "Rotary Delta",
 			value: KinematicsName.rotaryDelta
 		}
 	],
-	"Other Kinematics": [
+	"SCARA Kinematics": [
 		{
+			disabled: true,
 			text: "Serial SCARA",
 			value: KinematicsName.scara
 		},
 		{
+			disabled: true,
 			text: "Five Bar Parallel SCARA",
 			value: KinematicsName.fiveBarScara
-		},
+		}
+	],
+	"Other Kinematics": [
 		{
 			text: "Hangprinter",
 			value: KinematicsName.hangprinter
 		},
 		{
+			disabled: true,
 			text: "Polar",
-			value: KinematicsName.polar,
+			value: KinematicsName.polar
 		}
 	]
 };
 
+// General
 function setKinematics(value: KinematicsName) {
 	store.data.update({ move: { kinematics: { name: value } } });
 	if (store.data.move.kinematics instanceof CoreKinematics) {
@@ -225,15 +351,11 @@ function setKinematics(value: KinematicsName) {
 	}
 }
 
-
-const isCoreKinematics = computed(() => store.data.move.kinematics instanceof CoreKinematics);
-const isDeltaKinematics = computed(() => store.data.move.kinematics instanceof DeltaKinematics);
-const deltaKinematics = computed(() => (store.data.move.kinematics instanceof DeltaKinematics) ? store.data.move.kinematics : null);
-const presetDeltaKinematics = computed(() => (store.preset.move.kinematics instanceof DeltaKinematics) ? store.preset.move.kinematics : null);
-
 const showAdvancedSettings = ref(false);
 
 // Core kinematics
+const isCoreKinematics = computed(() => store.data.move.kinematics instanceof CoreKinematics);
+
 function getAxis(letter: AxisLetter): Axis | null {
 	return store.data.move.axes.find(axis => axis.letter === letter) || null;
 }
@@ -243,6 +365,9 @@ function getAxisPreset(letter: AxisLetter): Axis | null {
 }
 
 // Delta kinematics
+const deltaKinematics = computed(() => (store.data.move.kinematics instanceof DeltaKinematics) ? store.data.move.kinematics : null);
+const presetDeltaKinematics = computed(() => (store.preset.move.kinematics instanceof DeltaKinematics) ? store.preset.move.kinematics : null);
+
 const avgDeltaRodLength = computed(() => {
 	let avgLength = 0;
 	if (store.data.move.kinematics instanceof DeltaKinematics && store.data.move.kinematics.towers.length > 0) {
@@ -270,4 +395,16 @@ const avgDeltaRodLengthPreset = computed(() => {
 	}
 	return avgLength;
 });
+
+// SCARA kinematics
+//const scaraKinematics = computed(() => (store.data.move.kinematics instanceof ScaraKinematics) ? store.data.move.kinematics : null);
+//const presetScaraKinematics = computed(() => (store.preset.move.kinematics instanceof ScaraKinematics) ? store.preset.move.kinematics : null);
+
+// Hangprinter kinematics
+const hangprinterKinematics = computed(() => (store.data.move.kinematics instanceof HangprinterKinematics) ? store.data.move.kinematics : null);
+const presetHangprinterKinematics = computed(() => (store.preset.move.kinematics instanceof HangprinterKinematics) ? store.preset.move.kinematics : null);
+
+// Polar kinematics
+//const polarKinematics = computed(() => (store.data.move.kinematics instanceof PolarKinematics) ? store.data.move.kinematics : null);
+//const presetPolarKinematics = computed(() => (store.preset.move.kinematics instanceof PolarKinematics) ? store.preset.move.kinematics : null);
 </script>

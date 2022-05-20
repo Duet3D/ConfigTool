@@ -1,12 +1,6 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, initObject } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, KinematicsName, NetworkInterface } from "@duet3d/objectmodel";
 
-import {
-	Boards,
-	BoardType,
-	getBoardDefinition,
-	getBoardType,
-	type BoardDescriptor
-} from "@/store/Boards";
+import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 import type { BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ConfigPort } from "@/store/model/ConfigPort";
@@ -172,7 +166,7 @@ export default class ConfigModel extends ObjectModel {
 	 * Validate this instance and fix potential incompatibilities
 	 */
 	validate(): void {
-		this.fixExpansionBoards();
+        this.fixExpansionBoards();
 		this.refreshDrivers();
 		this.refreshPorts();
 		this.enforceLimits();

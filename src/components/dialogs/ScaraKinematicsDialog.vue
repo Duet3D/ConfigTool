@@ -1,9 +1,15 @@
 <template>
 	<base-dialog title="Advanced SCARA Kinematics Settings"
 	             :model-value="props.modelValue" @update:model-value="emit('update:modelValue', $event)">
-		<div v-if="deltaKinematics" class="row">
-			TODO: Crosstalk factors (3x), minimum permitted printing radius from the proximal axis, min segment length, max segments per second, XY offsets from proximal joint
+		<div v-if="scaraKinematics" class="row">
+			<!--
+			Crosstalk factors (3x)
+			Minimum permitted printing radius from the proximal axis
+			Minimum segment length
+			Max segments per second
+			XY offsets from proximal joint
 			For Fivebar: define the print area as rectangle
+			-->
 		</div>
 		<div v-else class="text-danger">
 			error, no delta kinematics selected
@@ -12,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { DeltaKinematics } from "@duet3d/objectmodel";
+import { ScaraKinematics } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import BaseDialog from "./BaseDialog.vue";
@@ -28,5 +34,5 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
-const deltaKinematics = computed(() => (store.data.move.kinematics instanceof DeltaKinematics) ? store.data.move.kinematics : null);
+const scaraKinematics = computed(() => (store.data.move.kinematics instanceof ScaraKinematics) ? store.data.move.kinematics : null);
 </script>
