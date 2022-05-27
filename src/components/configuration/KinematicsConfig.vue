@@ -161,7 +161,7 @@
 				<div class="col">
 					<number-input label="Printable radius from the origin" title="Printable radius from the origin of the printer"
 					              :min="0.01" step="any" unit="mm"
-					              v-model="hangprinterKinematics.printRadius" :preset="presetHangprinter?.printRadius" />
+					              v-model="hangprinterKinematics.printRadius" :preset="presetHangprinterKinematics?.printRadius" />
 				</div>
 				<div class="col">
 					<number-input v-if="getAxis(AxisLetter.Z)"

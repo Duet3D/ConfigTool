@@ -5,8 +5,8 @@
 		<kinematics-config />
 		<drivers-config />
 		<axes-config />
-		<endstops-config />
 		<z-probes-config />
+		<endstops-config />
 		<compensation-config />
 		<extruders-config v-if="store.data.configTool.capabilities.fff" />
 		<spindles-config />
@@ -30,8 +30,8 @@ import ExpansionConfig from "@/components/configuration/ExpansionConfig.vue";
 import KinematicsConfig from "@/components/configuration/KinematicsConfig.vue";
 import DriversConfig from "@/components/configuration/DriversConfig.vue";
 import AxesConfig from "@/components/configuration/AxesConfig.vue";
-import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
 import ZProbesConfig from "@/components/configuration/ZProbesConfig.vue";
+import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
 import CompensationConfig from "@/components/configuration/CompensationConfig.vue";
 import ExtrudersConfig from "@/components/configuration/ExtrudersConfig.vue";
 import SpindlesConfig from "@/components/configuration/SpindlesConfig.vue";

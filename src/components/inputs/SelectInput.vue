@@ -2,7 +2,8 @@
 	<label v-if="props.label" :for="id" class="form-label">
 		{{ props.label }}:
 	</label>
-	<select :id="id" class="form-select" :class="validationClass" v-bind="$attrs" v-preset="(props.preset !== undefined) ? JSON.stringify(props.preset) : undefined"
+	<select :id="id" class="form-select" :class="validationClass" v-bind="$attrs"
+	        v-preset="(props.preset !== undefined) ? JSON.stringify(props.preset) : undefined"
 	        :value="JSON.stringify(props.modelValue)" @input="onInput" :required="props.required">
 		<template v-if="isGrouped">
 			<optgroup v-for="(group, groupTitle) in groups" :disabled="isGroupDisabled(group)" :label="groupTitle">
@@ -24,8 +25,19 @@
 let numInstances = 0;
 
 export interface SelectOption {
+	/**
+	 * Whether the option is disabled
+	 */
 	disabled?: boolean,
+
+	/**
+	 * Caption of this item
+	 */
 	text: string,
+
+	/**
+	 * Value of this item. Should not be an object
+	 */
 	value: any
 }
 </script>
@@ -34,21 +46,50 @@ export interface SelectOption {
 import { computed } from "vue";
 
 // External interface
-interface SelectProps {
+interface SelectInputProps {
+	/**
+	 * Optional label next to the control
+	 */
 	label?: string,
+
+	/**
+	 * Current value
+	 */
 	modelValue: any,
+
+	/**
+	 * Options for this select input
+	 */
 	options: Array<string | SelectOption> | Record<string, Array<string | SelectOption>>,
+
+	/**
+	 * Preset value (if applicable)
+	 */
 	preset?: any,
+
+	/**
+	 * Disable this control (defaults to false)
+	 */
+	disabled?: boolean,
+
+	/**
+	 * Enable value checking (enabled by default)
+	 */
 	required?: boolean,
+
+	/**
+	 * Optional validity value (may be overridden if the value is invalid)
+	 */
 	valid?: boolean
 }
-const props = withDefaults(defineProps<SelectProps>(), {
+const props = withDefaults(defineProps<SelectInputProps>(), {
+	disabled: false,
 	required: true,
 	valid: true
 });
 
 const emit = defineEmits<{
-	(e: 'update:modelValue', value: string): void
+	(e: 'update:modelValue', value: any): void
 }>();
 
 // Display converters
@@ -65,7 +106,7 @@ const getItemValue = (item: string | SelectOption) => JSON.stringify((typeof ite
 
 // Validation
 const validationClass = computed<string | null>(() => {
-	if (props.required) {
+	if (!props.disabled && props.required) {
 		if (!props.valid) {
 			return "is-invalid";
 		}

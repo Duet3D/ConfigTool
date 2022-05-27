@@ -3,10 +3,11 @@
 		{{ props.label }}:
 	</label>
 	<div class="input-group">
-		<input :id="id" class="form-control" :class="validationClass" type="number" v-bind="$attrs"
-			   :required="props.required" :min="props.min" :max="props.max" :step="props.step"
-			   :value="props.modelValue" :data-unit="unit" v-preset="props.preset"
-			   @input="onInput" @change="onChange">
+		<input type="number" :id="id" class="form-control" :class="validationClass" v-bind="$attrs"
+		       :min="props.min" :max="props.max" :step="props.step"
+			   :disabled="props.disabled" :required="props.required"
+			   :data-unit="unit" v-preset="props.preset"
+			   :value="props.modelValue" @change="onChange" @input="onInput">
 		<span v-if="!!props.unit && !props.hideUnit" class="input-group-text">
 			<slot name="unit">
 				{{ props.unit }}
@@ -25,23 +26,72 @@ import { computed } from "vue";
 
 // External interface
 interface NumberInputProps {
-	hideUnit?: boolean,
+	/**
+	 * Optional label next to the control
+	 */
 	label?: string,
+
+	/**
+	 * Update value on change, not on input (defaults to false)
+	 */
 	lazy?: boolean,
+
+	/**
+	 * Minimum value
+	 */
 	min?: number,
+
+	/**
+	 * Maximum value
+	 */
 	max?: number,
+
+	/**
+	 * Current value
+	 */
 	modelValue: number,
+
+	/**
+	 * Preset value (if applicable)
+	 */
 	preset?: number | null,
+
+	/**
+	 * Disable this control (defaults to false)
+	 */
+	disabled?: boolean,
+
+	/**
+	 * Enable value checking (enabled by default)
+	 */
 	required?: boolean,
+
+	/**
+	 * Optional validity value (may be overridden if the value is not a number)
+	 */
+	valid?: boolean,
+
+	/**
+	 * Step size (e.g. for up/down controls)
+	 */
 	step?: number | "any",
+
+	/**
+	 * Unit type (e.g. mm)
+	 */
 	unit?: string,
-	valid?: boolean
+
+	/**
+	 * Hide unit suffix from text input but display it in the tooltip
+	 */
+	hideUnit?: boolean
 }
 const props = withDefaults(defineProps<NumberInputProps>(), {
-	hideUnit: false,
 	lazy: false,
+	disabled: false,
 	required: true,
-	valid: true
+	valid: true,
+	hideUnit: false
 });
 
 const emit = defineEmits<{
@@ -53,7 +103,7 @@ const id = `number-${++numInstances}`;
 
 // Validation
 const validationClass = computed<string | null>(() => {
-	if (props.required) {
+	if (!props.disabled && props.required) {
 		return (props.valid &&
 				!isNaN(props.modelValue) && isFinite(props.modelValue) &&
 				(props.min === undefined || props.modelValue >= props.min) &&
@@ -63,14 +113,14 @@ const validationClass = computed<string | null>(() => {
 })
 
 // Update event
-function onInput(e: Event) {
-	if (e.target !== null && !props.lazy) {
+function onChange(e: Event) {
+	if (e.target !== null && props.lazy) {
 		const value = parseFloat((e.target as HTMLInputElement).value);
 		emit("update:modelValue", value);
 	}
 }
-function onChange(e: Event) {
-	if (e.target !== null && props.lazy) {
+function onInput(e: Event) {
+	if (e.target !== null && !props.lazy) {
 		const value = parseFloat((e.target as HTMLInputElement).value);
 		emit("update:modelValue", value);
 	}

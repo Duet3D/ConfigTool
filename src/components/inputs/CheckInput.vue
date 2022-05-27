@@ -16,8 +16,19 @@ let numInstances = 0;
 <script setup lang="ts">
 // External interface
 interface CheckInputProps {
+	/**
+	 * Optional label next to the control
+	 */
 	label: string,
+
+	/**
+	 * Current value
+	 */
 	modelValue: boolean,
+
+	/**
+	 * Preset value (if applicable)
+	 */
 	preset?: boolean | null
 };
 const props = defineProps<CheckInputProps>();

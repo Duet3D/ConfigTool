@@ -1,3 +1,9 @@
+<style scoped>
+.table-can-boards tr > td {
+	vertical-align: middle;
+}
+</style>
+
 <template>
 	<scroll-item anchor="Expansion">
 		<template #title>
@@ -33,7 +39,7 @@
 						<select-input label="CAN Expansion Board" v-model="canExpansionBoardToAdd" :options="canExpansionBoards" :required="false" />
 				</div>
 				<div v-if="supportsCan && configureCan" class="col-auto d-flex align-items-end ps-0">
-					<button class="btn btn-primary" :disabled="canAddCanExpansionBoard" @click="store.data.addExpansionBoard(canExpansionBoardToAdd)">
+					<button class="btn btn-primary" :disabled="!canAddCanExpansionBoard" @click="store.data.addExpansionBoard(canExpansionBoardToAdd)">
 						<i class="bi-plus"></i>
 						Add
 					</button>
@@ -41,7 +47,7 @@
 			</div>
 		</template>
 		<template #append>
-			<table v-if="supportsCan && hasCanBoards" class="table table-striped mt-n1 mb-0">
+			<table v-if="supportsCan && hasCanBoards" class="table table-striped table-can-boards mt-n1 mb-0">
 				<thead>
 					<tr>
 						<th>
@@ -176,7 +182,7 @@ const canExpansionBoards = computed(() => {
 	return result;
 });
 const canExpansionBoardToAdd = ref(Object.keys(ExpansionBoardType).length > 0 ? Object.values(ExpansionBoardType)[0] : "");
-const canAddCanExpansionBoard = computed(() => !canExpansionBoardToAdd || (store.data.limits.boards !== null && store.data.boards.length > store.data.limits.boards));
+const canAddCanExpansionBoard = computed(() => !canExpansionBoardToAdd.value || (store.data.limits.boards !== null && store.data.boards.length > store.data.limits.boards));
 function setCanAddress(canBoard: Board, value: number) {
 	canBoard.canAddress = value;
 	store.data.refreshDrivers();

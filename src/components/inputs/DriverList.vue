@@ -44,6 +44,9 @@ import { computed, onBeforeUnmount, onMounted, type Ref, ref } from "vue";
 import { useStore } from "@/store";
 
 const props = defineProps<{
+	/**
+	 * Driver array to manage
+	 */
 	drivers: Array<DriverId>
 }>();
 

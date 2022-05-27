@@ -24,12 +24,23 @@ let numInstances = 0;
 import { computed } from "vue";
 
 // External interface
-interface NumberInputProps {
+interface RadioInputProps {
+	/**
+	 * Label next to the control
+	 */
 	label: string,
+
+	/**
+	 * First ratio value
+	 */
 	firstRatio: number,
+
+	/**
+	 * Second ratio value
+	 */
 	secondRatio: number
 }
-const props = defineProps<NumberInputProps>();
+const props = defineProps<RadioInputProps>();
 
 const emit = defineEmits<{
 	(e: 'update:firstRatio', value: number): void

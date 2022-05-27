@@ -26,6 +26,7 @@ export class ConfigPort extends ModelObject {
 	 */
 	constructor(value: string = "", canBoard: number | null = null) {
 		super();
+        this.canBoard = canBoard;
 		if (canBoard !== null && canBoard > 0) {
 			this.ports = value.split('+').map(port => `${canBoard}.${port}`);
 		} else {
@@ -34,13 +35,18 @@ export class ConfigPort extends ModelObject {
 		this.rawPorts = this.ports.map(port => stripPort(port));
 	}
 
+    /**
+     * CAN address of these ports
+     */
+    canBoard: number | null = null;
+
 	/**
 	 * Ports with default modifiers (e.g. inversion [!] or pull-up [^])
 	 */
 	ports: Array<string>;
 
 	/**
-	 * Raw port names without modifiers for faster comparisons
+	 * Raw port names without address prefix or modifiers for faster comparisons
 	 */
 	rawPorts: Array<string>;
 
@@ -89,7 +95,7 @@ export class ConfigPort extends ModelObject {
 	}
 
 	/**
-	 * Reference index (e.g. heater number)
+	 * Item index (e.g. heater number)
 	 */
 	index: number = 0;
 

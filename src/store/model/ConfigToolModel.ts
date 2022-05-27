@@ -71,4 +71,20 @@ export class ConfigToolModel extends ModelObject {
 		}
 		throw new Error(`Could not find port ${port}`);
 	}
+
+    getProbesByBoard(board: number | null): Array<number> {
+        const probes: Array<number> = [];
+        for (const port of this.ports) {
+            if ((port.type === ConfigPortType.probeIn || port.type === ConfigPortType.probeMod) &&
+                !probes.includes(port.index)) {
+                probes.push(port.index);
+            }
+        }
+        return probes;
+    }
+
+    getPortsByBoard(board: number | null): Array<ConfigPort> {
+        // TODO
+        return [];
+    }
 }

@@ -1,4 +1,4 @@
-import { AxisLetter, DriverId, ModelObject } from "@duet3d/objectmodel";
+import { AxisLetter, DriverId, EndstopType, ModelObject } from "@duet3d/objectmodel";
 
 export enum ConfigDriverClosedLoopEncoderType {
 	none = 0,
@@ -12,12 +12,6 @@ export class ConfigDriverClosedLoop extends ModelObject {
 	countsPerFullStep: number = 5;
 }
 
-export enum ConfigDriverEndstopType {
-	switch = "switch",
-	probe = "probe",
-	stallDetection = "stallDetection"
-}
-
 export class ConfigDriverExternal extends ModelObject {
 	enablePolarity: boolean = false;
 	minStepPulse: number = 5;
@@ -27,9 +21,10 @@ export class ConfigDriverExternal extends ModelObject {
 }
 
 export class ConfigDriverEndstop extends ModelObject {
-	lowEnd: boolean = true;
+	highEnd: boolean = false;
+    homingSpeeds: Array<number> = [5, 5];
 	port: string | null = null;
-	type: ConfigDriverEndstopType = ConfigDriverEndstopType.switch;
+	type: EndstopType = EndstopType.unknown;
 }
 
 export enum ConfigDriverMode {
@@ -42,7 +37,7 @@ export enum ConfigDriverMode {
 
 export class ConfigDriver extends ModelObject {
 	readonly closedLoop: ConfigDriverClosedLoop = new ConfigDriverClosedLoop();
-	endstop: ConfigDriverEndstop | null = null;
+	endstop: ConfigDriverEndstop | null = null;         // cannot use sensors.endstops[] because this is per driver, not per axis
 	readonly external: ConfigDriverExternal = new ConfigDriverExternal();
 	forwards: boolean = true;
 	id: DriverId = new DriverId();

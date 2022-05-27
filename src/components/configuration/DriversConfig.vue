@@ -187,7 +187,7 @@
 						<td>
 							<number-input title="Encoder counts per full step"
 							              :min="1" :step="1"
-							              :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none" :required="driver.closedLoop.encoderType !== ConfigDriverClosedLoopEncoderType.none"
+							              :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
 							              v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
 						</td>
 					</tr>

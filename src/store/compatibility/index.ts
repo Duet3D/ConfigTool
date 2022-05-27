@@ -1,22 +1,24 @@
 import {
-	AnalogSensor,
-	AnalogSensorType,
-	Axis,
-	AxisLetter,
-	CoreKinematics,
-	DeltaKinematics,
-	DirectDisplay,
-	DriverId,
-	Extruder,
-	Fan,
-	Heater,
-	KinematicsName,
-	MoveCompensationType, NetworkInterfaceState,
-	NetworkProtocol,
-	Probe,
-	ProbeType,
-	Tool,
-	initObject
+    AnalogSensor,
+    AnalogSensorType,
+    Axis,
+    AxisLetter,
+    CoreKinematics,
+    DeltaKinematics,
+    DirectDisplay,
+    DriverId,
+    EndstopType,
+    Extruder,
+    Fan,
+    Heater,
+    initObject,
+    KinematicsName,
+    MoveCompensationType,
+    NetworkInterfaceState,
+    NetworkProtocol,
+    Probe,
+    ProbeType,
+    Tool
 } from "@duet3d/objectmodel";
 
 import ConfigModel from "@/store/model";
@@ -26,19 +28,17 @@ import { ExpansionBoardType } from "@/store/ExpansionBoards";
 
 import type { LegacyTemplate } from "@/store/compatibility/LegacyTemplate";
 import {
-	LegacyEndstopLocation,
-	LegacyEndstopType,
-	LegacyGeometry,
-	LegacyProbeType
+    LegacyEndstopLocation,
+    LegacyEndstopType,
+    LegacyGeometry,
+    LegacyProbeType
 } from "@/store/compatibility/LegacyTemplate";
 import { LegacyBoardType } from "@/store/compatibility/LegacyBoards";
 import { LegacyExpansionBoardType } from "@/store/compatibility/LegacyExpansionBoards";
-import {
-	ConfigDeltaProbePoint
-} from "@/store/model/ConfigToolModel";
+import { ConfigDeltaProbePoint } from "@/store/model/ConfigToolModel";
 import { ConfigPortType } from "@/store/model/ConfigPort";
 import { ConfigTempSensor, ConfigTempSensorType } from "@/store/model/ConfigTempSensor";
-import { ConfigDriverEndstop, ConfigDriverEndstopType } from "@/store/model/ConfigDriver";
+import { ConfigDriverEndstop } from "@/store/model/ConfigDriver";
 
 /**
  * Convert a legacy template (configtool < 3.4) to a config model object
@@ -182,17 +182,17 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			axis.current = legacyDrive.current;
 			if (legacyDrive.endstop_type !== LegacyEndstopType.None) {
 				const configEndstop = new ConfigDriverEndstop();
-				configEndstop.lowEnd = legacyDrive.endstop_location === LegacyEndstopLocation.LowEnd;
+				configEndstop.highEnd = legacyDrive.endstop_location === LegacyEndstopLocation.HighEnd;
 				switch (legacyDrive.endstop_type) {
 					case LegacyEndstopType.Switch:
 					case LegacyEndstopType.Switch_deprecated:
-						configEndstop.type = ConfigDriverEndstopType.switch;
+						configEndstop.type = EndstopType.InputPin;
 						break;
 					case LegacyEndstopType.ZProbe:
-						configEndstop.type = ConfigDriverEndstopType.probe;
+						configEndstop.type = EndstopType.ZProbeAsEndstop;
 						break;
 					case LegacyEndstopType.StallDetection:
-						configEndstop.type = ConfigDriverEndstopType.stallDetection;
+						configEndstop.type = EndstopType.motorStallIndividual;
 						break;
 					default:
 						const _exhaustiveCheck: never = legacyDrive.endstop_type;

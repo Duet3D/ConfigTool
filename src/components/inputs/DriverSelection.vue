@@ -37,6 +37,9 @@ import { computed, onBeforeUnmount, onMounted, type Ref, ref } from "vue";
 import { useStore } from "@/store";
 
 const props = defineProps<{
+	/**
+	 * Current driver selection
+	 */
 	modelValue: DriverId | null
 }>();
 const emit = defineEmits<{

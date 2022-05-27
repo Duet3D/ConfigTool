@@ -27,7 +27,7 @@
 				<thead>
 					<tr>
 						<th>
-							Axis Letter
+							Axis
 						</th>
 						<th>
 							Drivers
@@ -97,7 +97,7 @@
 						<td>
 							<number-input title="Peak current for mapped drivers (not RMS)"
 							              :min="0" :max="getMaxCurrent(axis.drivers)" :step="100" unit="mA" hide-unit
-							              :required="getMaxCurrent(axis.drivers) > 0" :disabled="getMaxCurrent(axis.drivers) <= 0"
+							              :disabled="getMaxCurrent(axis.drivers) <= 0"
 							              v-model="axis.current" :preset="getAxisDefault(index, 'current')" />
 						</td>
 						<td>
@@ -114,7 +114,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Axis, AxisLetter, DriverId } from "@duet3d/objectmodel";
+import { Axis, AxisLetter, DriverId, Endstop } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import StepsPerMmCalculator from "@/components/calculators/StepsPerMmCalculator.vue";
@@ -127,15 +127,30 @@ import { useStore } from "@/store";
 const store = useStore();
 
 // Axis management
-const canAddAxis = computed(() => store.data.move.axes.length < store.data.limits.axes! && store.data.move.axes.length + store.data.move.extruders.length < store.data.limits.axesPlusExtruders!);
+const canAddAxis = computed(() => (store.data.move.axes.length < store.data.limits.axes!) && (store.data.move.axes.length + store.data.move.extruders.length < store.data.limits.axesPlusExtruders!));
 function addAxis() {
+	// Add new axis
 	const axis = new Axis();
-	if (store.preset.move.axes.length > 0) {
+	if (store.preset.move.axes.length > store.data.move.axes.length) {
+		axis.update(store.preset.move.axes[store.data.move.axes.length])
+		if (store.data.move.axes.some(item => item.letter === axis.letter)) {
+			axis.letter = AxisLetter.none;
+		}
+	} else if (store.preset.move.axes.length > 0) {
 		axis.update(store.preset.move.axes[0]);
 		axis.letter = AxisLetter.none;
-		axis.drivers.splice(0);
 	}
+	axis.drivers.splice(0);
 	store.data.move.axes.push(axis);
+
+	// Add corresponding endstop
+	const endstop = new Endstop();
+	if (store.preset.sensors.endstops.length > store.data.sensors.endstops.length) {
+		endstop.update(store.preset.sensors.endstops[store.data.sensors.endstops.length]);
+	} else if (store.preset.sensors.endstops.length > 0) {
+		endstop.update(store.preset.sensors.endstops[0]);
+	}
+	store.data.sensors.endstops.push(endstop);
 }
 
 // Axis letter
