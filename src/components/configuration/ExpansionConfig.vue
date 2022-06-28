@@ -182,18 +182,18 @@ const canExpansionBoards = computed(() => {
 	return result;
 });
 const canExpansionBoardToAdd = ref(Object.keys(ExpansionBoardType).length > 0 ? Object.values(ExpansionBoardType)[0] : "");
-const canAddCanExpansionBoard = computed(() => !canExpansionBoardToAdd.value || (store.data.limits.boards !== null && store.data.boards.length > store.data.limits.boards));
+const canAddCanExpansionBoard = computed(() => canExpansionBoardToAdd.value || (store.data.limits.boards !== null && store.data.boards.length > store.data.limits.boards));
 function setCanAddress(canBoard: Board, value: number) {
 	canBoard.canAddress = value;
 	store.data.refreshDrivers();
 }
 const isCanAddressUnique = (canAddress: number | null) => {
-	let occurences = 0;
+	let occurrences = 0;
 	for (const board of store.data.boards) {
 		if (board.canAddress === canAddress) {
-			occurences++;
+			occurrences++;
 		}
 	}
-	return occurences === 1;
+	return occurrences === 1;
 };
 </script>

@@ -18,78 +18,47 @@
 			</button>
 		</template>
 		<template #body>
-			<table v-if="store.data.sensors.probes.length > 0" class="table table-striped table-probes mb-0">
-				<thead>
-					<tr>
-						<th>
-							Z-Probe
-						</th>
-						<th>
-							Type
-						</th>
-						<th>
-							Input Port
-						</th>
-						<th>
-							Modulation Port
-						</th>
-						<th>
-							Servo Port
-						</th>
-						<th>
-							Dive Height (mm)
-						</th>
-						<th>
+			<div class="card m-2" v-for="(probe, index) in store.data.sensors.probes">
+				<div class="card-header d-flex justify-content-between">
+					Probe #{{ index }}
+					<button class="btn btn-sm btn-danger" @click="store.data.sensors.probes.splice(index, 1)">
+						<i class="bi-trash"></i>
+					</button>
+				</div>
+				<div class="card-body">
+					<form class="row g-3">
+						<div class="col-4">
+							<select-input label="Type" title="Type of this Z-Probe"
+							              :options="ProbeOptions"
+							              :model-value="getProbeType(probe)" :preset="getPresetProbeType(index)" />
+						</div>
+						<template v-if="probe !== null">
+							<div class="col-3">
+								<port-input label="Input Port" title="Input port for this Z-probe" :type="ConfigPortType.probeIn" :index="index" />
+							</div>
+							<div class="col-3">
+								<port-input label="Modulation Port" title="Modulation port for this Z-probe" :type="ConfigPortType.probeMod" :index="index" />
+							</div>
+							<div class="col-2">
+								<port-input label="Servo Port" title="Servo port for this Z-probe" :type="ConfigPortType.servo" :index="index" />
+							</div>
+							<div class="col-2">
+								<number-input label="Dive Height" title="Dive height of the probe"
+								              unit="mm"
+								              v-model="probe.diveHeight" />
+							</div>
 							Probe Speeds
-						</th>
-						<th>
 							Travel Speed
-						</th>
-						<th>
 							Recovery Time
-						</th>
-						<th>
 							Heaters
-						</th>
-						<th>
 							Max Taps
-						</th>
-						<th>
 							Tolerance
-						</th>
-						<th>
-							<!-- Delete button -->
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="(probe, index) in store.data.sensors.probes">
-						<td>
-							{{ index }}
-						</td>
-						<td>
-							<select-input title="Probe type"
-							              :model-value="getProbeType(probe)" @update:model-value="setProbeType(index, $event)"
-							              :options="(index === 0) ? ProbeOptions : ExtraProbeOptions" :preset="getPresetProbeType(index)" />
-						</td>
-						<td>
-							<port-input title="Input port for this Z-probe" :type="ConfigPortType.probeIn" :index="index" />
-						</td>
-						<td>
-							<port-input title="Modulation port for this Z-probe" :type="ConfigPortType.probeMod" :index="index" />
-						</td>
-						<td>
-							<port-input title="Servo port for this Z-probe" :type="ConfigPortType.servo" :index="index" />
-						</td>
-						<td>
-							<button class="btn btn-sm btn-danger mt-1" @click="store.data.sensors.probes.splice(index, 1)">
-								<i class="bi-trash"></i>
-							</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			<div v-else class="alert alert-info mb-0">
+						</template>
+					</form>
+				</div>
+			</div>
+
+			<div v-if="store.data.sensors.probes.length === 0" class="alert alert-info mb-0">
 				<i class="bi-info-circle"></i>
 				No Z-Probes defined
 			</div>
@@ -156,15 +125,15 @@ const ExtraProbeOptions: Array<SelectOption> = [
 		value: ProbeType.blTouch
 	}
 ]
-
 </script>
 
 <script setup lang="ts">
-import { initObject, Probe, ProbeType } from "@duet3d/objectmodel";
+import { initObject, Probe } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
+import ScrollItem from "@/components/ScrollItem.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
