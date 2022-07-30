@@ -136,7 +136,7 @@ export default {
 		},
 		{
 			name: 'duet3',
-			caption: 'Duet 3',
+			caption: 'Duet 3 MB 6HC',
 			motorWarningCurrent: 4000,
 			motorLimitCurrent: 6300,
 			seriesResistor: 2200,
@@ -183,7 +183,7 @@ export default {
 			supports12864: true,
 			firmwareFile: 'Duet3Firmware_Mini5plus.uf2',
 			iapFile: 'Duet3_SDiap_Mini5plus.bin',
-			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL'],
+			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL', 'Dual Stepper Driver Expansion Module'],
 			maxExpansionBoards: 4
 		},
 		{
@@ -209,9 +209,35 @@ export default {
 			supports12864: true,
 			firmwareFile: 'Duet3Firmware_Mini5plus.uf2',
 			iapFile: 'Duet3_SDiap_Mini5plus.bin',
-			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL'],
+			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL', 'Dual Stepper Driver Expansion Module'],
 			maxExpansionBoards: 4
-		}
+		},
+		{
+			name: 'duet3_xd',
+			caption: 'Duet 3 MB 6XD',
+			motorWarningCurrent: 4000,
+			motorLimitCurrent: 6300,
+			seriesResistor: 2200,
+			microstepping: false,
+			microsteppingInterpolation: false,
+			numDrives: 6,
+			heaterPorts: ['out0', 'out1', 'out2', 'out3'],
+			fanPorts: ['out4', 'out5', 'out6', 'out7', 'out8', 'out9'],
+			pwmPorts: ['io4.out', 'io5.out', 'io7.out'],
+			gpioPorts: ['io0.in', 'io1.in', 'io2.in', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io7.in', 'io8.in', 'io0.out', 'io1.out', 'io2.out', 'io3.out', 'io4.out', 'io5.out', 'io6.out', 'io7.out', 'io8.out', 'io4.tacho', 'io5.tacho', 'io6.tacho', 'pson'],
+			analogPorts: ['temp0', 'temp1', 'temp2', 'temp3', 'io3.in', 'io4.in', 'io5.in', 'io6.in', 'io7.in'],
+			spiCsPorts: ['spi.cs0', 'spi.cs1', 'spi.cs2', 'spi.cs3'],
+			hasEthernet: true,
+			hasWiFi: false,
+			hasPowerFailureDetection: true,
+			hasMotorLoadDetection: false,
+			supportsDisplay: true,
+			supports12864: false,
+			firmwareFile: 'Duet3Firmware_MB6XD.bin',
+			iapFile: 'Duet3_SDiap_MB6XD.bin',
+			expansionBoards: ['EXP3HC', 'TOOL1LC', 'EXP1XD', 'EXP1HCL'],
+			maxExpansionBoards: 6
+		},
 	],
 
 	getBoard(boardType) {

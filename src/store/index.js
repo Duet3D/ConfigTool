@@ -23,8 +23,6 @@ export default new Vuex.Store({
 	getters: {
 		getField,
 
-		canAddExpansionBoard(state) { return state.template.expansion_boards.length < state.board.maxExpansionBoards; },
-
 		canAddExtruder(state) { return state.template.drives.length < Template.getMaxDrives(state.template); },
 		canRemoveExtruder(state) { return state.template.drives.length > 3; },
 
@@ -208,6 +206,9 @@ export default new Vuex.Store({
 			}
 
 			state.template.expansion_boards.push(boardName);
+		},
+		canAddExpansionBoard(state, board) {
+			return (state.template.expansion_boards.length < state.board.maxExpansionBoards) && (board !== 'Dual Stepper Driver Expansion Module' || !state.template.expansion_boards.includes('Dual Stepper Driver Expansion Module'));
 		},
 		removeExpansionBoard(state, index) {
 			state.template.expansion_boards.splice(index, 1);

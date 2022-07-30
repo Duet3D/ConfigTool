@@ -10,7 +10,7 @@
 			<template #header>
 				<span class="mt-2">Expansion Boards</span>
 				<b-button-group class="float-right">
-					<b-button v-for="board in board.expansionBoards" :key="board" size="sm" variant="success" :disabled="!canAddExpansionBoard" @click="addExpansionBoard(board)">
+					<b-button v-for="board in board.expansionBoards" :key="board" size="sm" variant="success" :disabled="!canAddExpansionBoard(board)" @click="addExpansionBoard(board)">
 						<font-awesome-icon icon="plus"></font-awesome-icon> Add {{ board }}
 					</b-button>
 				</b-button-group>
@@ -249,7 +249,7 @@ export default {
 			preset: state => state.preset,
 			template: state => state.template
 		}),
-		...mapGetters(['canAddExpansionBoard', 'canAddExtruder', 'canRemoveExtruder', 'canAddNozzle', 'canRemoveNozzle', 'canAddFan', 'canRemoveFan']),
+		...mapGetters(['canAddExtruder', 'canRemoveExtruder', 'canAddNozzle', 'canRemoveNozzle', 'canAddFan', 'canRemoveFan']),
 		...mapMultiRowFields(['template.drives', 'template.heaters', 'template.fans']),
 		canRemoveHeater() {
 			return this.canRemoveNozzle || this.template.bed.present || this.template.chamber.present;
@@ -264,7 +264,7 @@ export default {
 	},
 	methods: {
 		...mapMutations([
-			'addExpansionBoard', 'removeExpansionBoard',
+			'addExpansionBoard', 'canAddExpansionBoard', 'removeExpansionBoard',
 			'addExtruder', 'removeExtruder', 'updateDrive',
 			'addNozzle', 'removeNozzle', 'updateBed', 'updateChamber', 'updateHeater',
 			'addFan', 'removeFan', 'updateFan',

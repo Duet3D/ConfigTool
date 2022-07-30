@@ -13,6 +13,7 @@
 							<option value="duet3">Duet 3 MB 6HC</option>
 							<option value="duet3_mini5plus_ethernet">Duet 3 Mini 5+ (Ethernet)</option>
 							<option value="duet3_mini5plus_wifi">Duet 3 Mini 5+ (WiFi)</option>
+							<option value="duet3_xd">Duet 3 MB 6XD</option>
 						</b-form-select>
 					</b-form-group>
 				</b-col>

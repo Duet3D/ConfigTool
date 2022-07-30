@@ -18,7 +18,7 @@ The main entry point is `src/main.js`. This file initialises the app and makes s
 Reusable components can be found in `src/components`, custom directives in `src/directives` and machine presets in `src/machines`.
 Standard values of the boards and the main outline of the JSON template file can be found in `src/defaults`.
 
-To generate macro files EJS is used. To the `render` funtion of each EJS file the `board` and `template` objects are passed, which are also accessible from every component via `this` in this project. In addition helper methods can be passed as part of the `util` object. The invocation of the EJS render function takes place in `src/Compiler.js`, which is only used from `src/App.vue` at this time.
+To generate macro files EJS is used. To the `render` function of each EJS file the `board` and `template` objects are passed, which are also accessible from every component via `this` in this project. In addition helper methods can be passed as part of the `util` object. The invocation of the EJS render function takes place in `src/Compiler.js`, which is only used from `src/App.vue` at this time.
 
 The main goal of this project compared to the first version is the DRY (don't repeat yourself) concept in order to keep everything as flexible as possible.
 If new options are supposed to be added, the `v-preset` directive can be used to indicate a title and the constraints of an input field as a Bootstrap tooltip and the default value of `preset`. If the `v-model` directive of an input field does not point to `template`, the target preset can be explicitly specified via `v-preset="<object>"`.
