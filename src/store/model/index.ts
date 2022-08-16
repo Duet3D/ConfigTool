@@ -1,6 +1,6 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop } from "@duet3d/objectmodel";
 
-import type { BaseBoardDescriptor } from "@/store/BaseBoard";
+import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 
@@ -277,7 +277,7 @@ export default class ConfigModel extends ObjectModel {
             this.sensors.endstops.splice(this.move.axes.length);
         } else if (this.sensors.endstops.length < this.move.axes.length) {
             for (let i = this.sensors.endstops.length; i < this.move.axes.length; i++) {
-                this.sensors.endstops.push(null);
+                this.sensors.endstops.push(new Endstop());
             }
         }
 	}
@@ -289,9 +289,9 @@ export default class ConfigModel extends ObjectModel {
 	 * @param to List to add the ports to
 	 */
 	private addPortsFromBoard(boardDefinition: BaseBoardDescriptor, canAddress: number | null, to: Array<ConfigPort>): void {
-		const addPorts = (portList: Array<string>) => {
+		const addPorts = (portList: Array<string>, capability: PortType) => {
 			for (const port of portList) {
-				const newPort = new ConfigPort(port, canAddress), existingPort = to.find(item => item.matches(newPort));
+				const newPort = new ConfigPort(port, canAddress, capability), existingPort = to.find(item => item.equals(newPort));
 				if (existingPort) {
 					existingPort.merge(newPort);
 				} else {
@@ -299,15 +299,9 @@ export default class ConfigModel extends ObjectModel {
 				}
 			}
 		}
-		addPorts(boardDefinition.analogInPorts);
-		addPorts(boardDefinition.fanPorts);
-		addPorts(boardDefinition.fanTachoPorts);
-		addPorts(boardDefinition.gpInPorts);
-		addPorts(boardDefinition.gpOutPorts);
-		addPorts(boardDefinition.heaterPorts);
-		addPorts(boardDefinition.pwmPorts);
-		addPorts(boardDefinition.spiCsPorts);
-		addPorts(boardDefinition.thermistorPorts);
+		for (const portType in PortType) {
+			addPorts(boardDefinition.ports[portType as PortType], portType as PortType);
+		}
 	}
 
 	/**
@@ -342,7 +336,7 @@ export default class ConfigModel extends ObjectModel {
 
 		// Update existing port aliases and delete obsolete ones
 		for (let i = this.configTool.ports.length - 1; i >= 0; i--) {
-			const existingPort = this.configTool.ports[i], updatedPort = portList.find(port => port.matches(existingPort));
+			const existingPort = this.configTool.ports[i], updatedPort = portList.find(port => port.equals(existingPort));
 			if (!updatedPort) {
 				this.configTool.ports.splice(i, 1);
 			} else {
@@ -352,7 +346,7 @@ export default class ConfigModel extends ObjectModel {
 
 		// Add missing ports
 		for (const port of portList) {
-			if (!this.configTool.ports.some(existingPort => existingPort.matches(port))) {
+			if (!this.configTool.ports.some(existingPort => existingPort.equals(port))) {
 				this.configTool.ports.push(port);
 			}
 		}

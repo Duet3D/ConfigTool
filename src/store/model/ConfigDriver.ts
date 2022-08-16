@@ -20,13 +20,6 @@ export class ConfigDriverExternal extends ModelObject {
 	holdTime: number = 0;
 }
 
-export class ConfigDriverEndstop extends ModelObject {
-	highEnd: boolean = false;
-    homingSpeeds: Array<number> = [5, 5];
-	port: string | null = null;
-	type: EndstopType = EndstopType.unknown;
-}
-
 export enum ConfigDriverMode {
 	constantOffTime = 0,
 	randomOffTime = 1,
@@ -37,9 +30,9 @@ export enum ConfigDriverMode {
 
 export class ConfigDriver extends ModelObject {
 	readonly closedLoop: ConfigDriverClosedLoop = new ConfigDriverClosedLoop();
-	endstop: ConfigDriverEndstop | null = null;         // cannot use sensors.endstops[] because this is per driver, not per axis
 	readonly external: ConfigDriverExternal = new ConfigDriverExternal();
 	forwards: boolean = true;
+    homingSpeeds: Array<number> = [10, 5];
 	id: DriverId = new DriverId();
 	microstepping: number = 16;
 	microsteppingInterpolated: boolean = true;

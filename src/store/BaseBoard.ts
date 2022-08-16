@@ -4,17 +4,8 @@ import type { Board } from "@duet3d/objectmodel";
  * Basic descriptor interface for supported main or expansion boards
  */
 export interface BaseBoardDescriptor {
-	analogInPorts: Array<string>;
-	fanPorts: Array<string>;
-	fanTachoPorts: Array<string>;
-	gpInPorts: Array<string>;
-	gpOutPorts: Array<string>;
-	heaterPorts: Array<string>;
-	pwmPorts: Array<string>;
-	spiCsPorts: Array<string>;
-	thermistorPorts: Array<string>;
-
 	hasClosedLoopDrivers: boolean;              // TODO add this to object model -> boards
+	hasInputPullUps: boolean;
 	hasSmartDrivers: boolean;                   // TODO add this to object model -> boards
 	motorWarnCurrent: number;
 	motorMaxCurrent: number;
@@ -23,4 +14,21 @@ export interface BaseBoardDescriptor {
 	numDrivers: number;                         // TODO add this to object model -> boards
 	microstepInterpolations: Array<number>;     // TODO add this to object model -> boards
 	objectModelBoard: Board;
+	ports: Record<PortType, Array<string>>;
+}
+
+/**
+ * Enumeration of possible port types
+ */
+export enum PortType {
+	analogIn = "analogIn",
+	fan = "fan",
+	fanTacho = "fanTacho",
+	gpIn = "gpIn",
+	gpOut = "gpOut",
+	heater = "heater",
+	pwm = "pwm",
+	spiCs = "spiCs",
+	thermistor = "thermistor",
+	uart = "uart"
 }

@@ -59,7 +59,7 @@ main > :not(:first-child) {
 
 	<!-- Content -->
 	<main class="container-xxl">
-		<sidebar class="d-none d-md-block" />
+		<Sidebar class="d-none d-md-block" />
 		<RouterView />
 	</main>
 </template>

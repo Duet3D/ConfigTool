@@ -1,9 +1,10 @@
 import { ModelCollection, ModelDictionary, ModelObject } from "@duet3d/objectmodel";
 
-import { ConfigPort, ConfigPortType } from "@/store/model/ConfigPort";
+import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
 import type { ExpansionBoardType } from "@/store/ExpansionBoards";
+import { PortType } from "../BaseBoard";
 
 export class ConfigAutoSaveModel extends ModelObject {
 	enabled: boolean = false;
@@ -58,33 +59,27 @@ export class ConfigToolModel extends ModelObject {
 	waitForToolTemperatures: boolean = true;
 	readonly wiFi: ConfigWiFi = new ConfigWiFi();
 
-	assignPort(port: string, type: ConfigPortType, index: number, frequency: number = 0) {
-		for (const portItem of this.ports) {
-			if (portItem.matches(port)) {
-				portItem.frequency = frequency;
-				portItem.index = index;
-				portItem.inverted = port.includes("!");
-				portItem.pullUp = port.includes("^");
-				portItem.type = type;
-				return;
+	assignPort(port: string, fn: ConfigPortFunction | null, index: number, frequency: number = 0): ConfigPort {
+		for (const item of this.ports) {
+			if (item.equals(port)) {
+				item.function = fn;
+				item.frequency = frequency;
+				item.index = index;
+				item.inverted = port.includes("!");
+				item.pullUp = port.includes("^");
+				return item;
 			}
 		}
 		throw new Error(`Could not find port ${port}`);
 	}
-
-    getProbesByBoard(board: number | null): Array<number> {
-        const probes: Array<number> = [];
+	
+    getProbesByBoard(board: number | null): Set<number> {
+        const probes = new Set<number>();
         for (const port of this.ports) {
-            if ((port.type === ConfigPortType.probeIn || port.type === ConfigPortType.probeMod) &&
-                !probes.includes(port.index)) {
-                probes.push(port.index);
+			if (port.canBoard === board && [ConfigPortFunction.probeIn, ConfigPortFunction.probeMod, ConfigPortFunction.probeServo].includes(port.function!)) {
+                probes.add(port.index);
             }
         }
         return probes;
-    }
-
-    getPortsByBoard(board: number | null): Array<ConfigPort> {
-        // TODO
-        return [];
     }
 }

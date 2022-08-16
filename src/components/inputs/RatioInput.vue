@@ -24,7 +24,7 @@ let numInstances = 0;
 import { computed } from "vue";
 
 // External interface
-interface RadioInputProps {
+interface RatioInputProps {
 	/**
 	 * Label next to the control
 	 */
@@ -40,7 +40,7 @@ interface RadioInputProps {
 	 */
 	secondRatio: number
 }
-const props = defineProps<RadioInputProps>();
+const props = defineProps<RatioInputProps>();
 
 const emit = defineEmits<{
 	(e: 'update:firstRatio', value: number): void

@@ -4,13 +4,16 @@ import {
 	Board,
 	CoreKinematics,
 	DriverId,
+	Endstop,
+	EndstopType,
 	Extruder,
 	initCollection,
 	initObject,
 	KinematicsName,
 	Limits,
 	Move,
-	Network
+	Network,
+	Sensors
 } from "@duet3d/objectmodel";
 import { defineStore } from 'pinia';
 
@@ -72,6 +75,19 @@ const defaultTemplate = initObject(ConfigModel, {
 	limits: initObject(Limits, Boards[BoardType.Duet3Mini5PlusWiFi].objectModelLimits),
 	network: initObject(Network, {
 		name: "Duet 3"
+	}),
+	sensors: initObject(Sensors, {
+		endstops: initCollection(Endstop, [
+			{
+				type: EndstopType.InputPin
+			},
+			{
+				type: EndstopType.InputPin
+			},
+			{
+				type: EndstopType.InputPin
+			}
+		])
 	})
 });
 defaultTemplate.validate();

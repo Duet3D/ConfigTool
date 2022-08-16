@@ -87,13 +87,13 @@
 							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].numDrivers }}
 						</td>
 						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].heaterPorts.length }}
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.heater].length }}
 						</td>
 						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].fanPorts.length }}
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.fan].length }}
 						</td>
 						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].gpInPorts.length }} / {{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].gpOutPorts.length }}
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.gpIn].length }} / {{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.gpOut].length }}
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger" @click="store.data.removeExpansionBoard(index + 1)">
@@ -108,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Board } from "@duet3d/objectmodel";
 import { computed, ref } from "vue";
 
 import ScrollItem from "@/components/ScrollItem.vue";
@@ -115,10 +116,9 @@ import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
-import { ExpansionBoards, ExpansionBoardType } from "@/store/ExpansionBoards";
 import { useStore } from "@/store";
-import type { Board } from "@duet3d/objectmodel";
-import type { BoardDescriptor } from "@/store/Boards";
+import { PortType } from "@/store/BaseBoard";
+import { ExpansionBoards, ExpansionBoardType } from "@/store/ExpansionBoards";
 
 const store = useStore();
 

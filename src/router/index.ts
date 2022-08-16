@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import StartView from "@/views/StartView.vue";
-import TemplatesView from "@/views/TemplatesView.vue";
+import StartView from "../views/StartView.vue";
+import TemplatesView from "../views/TemplatesView.vue";
 
 export const eventOptions = {
 	ignoreScrollHandler: false,

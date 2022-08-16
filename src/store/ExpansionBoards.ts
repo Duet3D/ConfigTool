@@ -1,6 +1,6 @@
 import { Board, initObject } from "@duet3d/objectmodel";
 
-import type { BaseBoardDescriptor } from "@/store/BaseBoard";
+import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 
 /**
  * Expansion boards supported by the config tool.
@@ -36,19 +36,10 @@ export interface ExpansionBoardDescriptor extends BaseBoardDescriptor {
 /**
  * Descriptors for supported expansion boards
  */
-export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoardDescriptor; } = {
+export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescriptor> = {
 	[ExpansionBoardType.EXP3HC]: {
-		analogInPorts: ["io0.in", "io1.in", "io2.in", "io5.in"],
-		fanPorts: ["out3", "out4", "out5", "out6", "out7", "out8"],
-		fanTachoPorts: ["out3.tach", "out4.tach", "out5.tach"],
-		gpInPorts: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in"],
-		gpOutPorts: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out"],
-		heaterPorts: ["out0", "out1", "out2"],
-		pwmPorts: ["io1.out", "io4.out"],
-		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
-		thermistorPorts: ["temp0", "temp1", "temp2"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 4000,
 		motorMaxCurrent: 6000,
@@ -63,47 +54,56 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			maxHeaters: 3,
 			maxMotors: 3,
 			shortName: "EXP3HC"
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: ["io1.in", "io1.in", "io2.in", "io5.in"],
+			[PortType.fan]: ["out2", "out4", "out5", "out6", "out7", "out8"],
+			[PortType.fanTacho]: ["out2.tach", "out4.tach", "out5.tach"],
+			[PortType.gpIn]: ["io1.in", "io2.in", "io3.in", "io4.in", "io5.in"],
+			[PortType.gpOut]: ["io1.out", "io2.out", "io3.out", "io4.out", "io5.out"],
+			[PortType.heater]: ["out-1", "out1", "out2"],
+			[PortType.pwm]: ["io0.out", "io4.out"],
+			[PortType.spiCs]: ["spi.cs-1", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp1", "temp2"],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.EXP1XD]: {
-		analogInPorts: ["io1.in"],
-		fanPorts: ["out0", "out1"],
-		fanTachoPorts: [],
-		gpInPorts: ["io0.in", "io1.in", "io2.in"],
-		gpOutPorts: ["io0.out", "io2.out"],
-		heaterPorts: [],
-		pwmPorts: ["io0.out", "io2.out"],
-		spiCsPorts: [],
-		thermistorPorts: ["temp0"],
-		microstepInterpolations: [],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
 		hasSmartDrivers: false,
 		motorWarnCurrent: -1,
 		motorMaxCurrent: -1,
 		minVoltage: 12,
 		maxVoltage: 48,
 		numDrivers: 1,
+		microstepInterpolations: [],
+
 		objectModelBoard: initObject(Board, {
 			canAddress: 122,
 			firmwareFileName: "Duet3Firmware_EXP1XD.bin",
 			maxHeaters: 0,
 			maxMotors: 1,
 			shortName: "EXP1XD"
-		})
+		}),
+		
+		ports: {
+			[PortType.analogIn]: ["io1.in"],
+			[PortType.fan]: ["out0", "out1"],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in"],
+			[PortType.gpOut]: ["io0.out", "io2.out"],
+			[PortType.heater]: ["out-1", "out1", "out2"],
+			[PortType.pwm]: ["io0.out", "io2.out"],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: ["temp0"],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.EXP1HCL]: {
-		analogInPorts: [],
-		fanPorts: ["out0", "out1"],
-		fanTachoPorts: [],
-		gpInPorts: ["io0.in", "io1.in"],
-		gpOutPorts: ["io0.out", "io1.out"],
-		heaterPorts: [],
-		pwmPorts: ["io0.out"],
-		spiCsPorts: [],
-		thermistorPorts: ["temp0"],
-
 		hasClosedLoopDrivers: true,
+		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 4000,
 		motorMaxCurrent: 6000,
@@ -118,20 +118,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			maxHeaters: 0,
 			maxMotors: 1,
 			shortName: "EXP1HCL"
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: ["out0", "out1"],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: ["io0.in", "io1.in"],
+			[PortType.gpOut]: ["io0.out", "io2.out"],
+			[PortType.heater]: [],
+			[PortType.pwm]: ["io0.out"],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: ["temp0"],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.TOOL1LC]: {
-		analogInPorts: ["io0.in"],
-		fanPorts: ["out1", "out2"],
-		fanTachoPorts: ["out1.tach", "out2.tach"],
-		gpInPorts: ["io0.in", "io1.in", "io2.in"],
-		gpOutPorts: ["io0.out", "io1.out"],
-		heaterPorts: ["out0"],
-		pwmPorts: ["io0.out"],
-		spiCsPorts: [],
-		thermistorPorts: ["temp0"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 1200,
 		motorMaxCurrent: 1600,
@@ -146,20 +150,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			maxHeaters: 0,
 			maxMotors: 1,
 			shortName: "TOOL1LC"
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: ["io0.in"],
+			[PortType.fan]: ["out1", "out2"],
+			[PortType.fanTacho]: ["out1.tach", "out2.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in"],
+			[PortType.gpOut]: ["io0.out", "io1.out"],
+			[PortType.heater]: ["out0"],
+			[PortType.pwm]: ["io0.out"],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: ["temp0"],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.Mini5plus]: {
-		analogInPorts: ["io3.in"],
-		fanPorts: ["out3", "out4", "out5", "out6+laser+vfd"],
-		fanTachoPorts: ["out3.tach", "out4.tach"],
-		gpInPorts: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
-		gpOutPorts: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
-		heaterPorts: ["out0", "out1", "out2"],
-		pwmPorts: ["io1.out", "io2.out", "io3.out"],
-		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
-		thermistorPorts: ["temp0", "temp1", "temp2"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 1500,
 		motorMaxCurrent: 2000,
@@ -174,20 +182,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			maxMotors: 5,
 			name: "Duet 3 Mini 5+",
 			shortName: "Mini5plus"
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: ["io2.in"],
+			[PortType.fan]: ["out2", "out4", "out5", "out6+laser+vfd"],
+			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
+			[PortType.gpIn]: ["io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
+			[PortType.gpOut]: ["io1.out", "io2.out", "io3.out", "io4.out+pson"],
+			[PortType.heater]: ["out1", "out2"],
+			[PortType.pwm]: ["io0.out", "io2.out", "io3.out"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp1", "temp2"],
+			[PortType.uart]: ["usb", "io1.in+io1.out"]
+		},
 	},
 	[ExpansionBoardType.MB6HC]: {
-		analogInPorts: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
-		fanPorts: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
-		fanTachoPorts: ["out4.tach", "out5.tach", "out6.tach"],
-		gpInPorts: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
-		gpOutPorts: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
-		heaterPorts: ["out0", "out1", "out2", "out3"],
-		pwmPorts: ["io4.out", "io5.out", "io7.out"],
-		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
-		thermistorPorts: ["temp0", "temp1", "temp2", "temp3"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 4000,
 		motorMaxCurrent: 6000,
@@ -202,20 +214,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			maxMotors: 5,
 			name: "Duet 3 MB6HC",
 			shortName: "MB6HC"
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
+			[PortType.fan]: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
+			[PortType.fanTacho]: ["out4.tach", "out5.tach", "out6.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
+			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
+			[PortType.heater]: ["out0", "out1", "out2", "out3"],
+			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
+			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
+			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
+		}
 	},
 	[ExpansionBoardType.MB6XD]: {
-		analogInPorts: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
-		fanPorts: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
-		fanTachoPorts: ["out4.tach", "out5.tach", "out6.tach"],
-		gpInPorts: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
-		gpOutPorts: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
-		heaterPorts: ["out0", "out1", "out2", "out3"],
-		pwmPorts: ["io4.out", "io5.out", "io7.out"],
-		spiCsPorts: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
-		thermistorPorts: ["temp0", "temp1", "temp2", "temp3"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
 		hasSmartDrivers: false,
 		motorWarnCurrent: -1,
 		motorMaxCurrent: -1,
@@ -230,20 +246,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 			maxMotors: 5,
 			shortName: "MB6XD",
 			name: "Duet 3 MB6XD",
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
+			[PortType.fan]: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
+			[PortType.fanTacho]: ["out4.tach", "out5.tach", "out6.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
+			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
+			[PortType.heater]: ["out0", "out1", "out2", "out3"],
+			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
+			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
+			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
+		}
 	},
 	[ExpansionBoardType.Duet3Mini2Plus]: {
-		analogInPorts: [],
-		fanPorts: [],
-		fanTachoPorts: [],
-		gpInPorts: [],
-		gpOutPorts: [],
-		heaterPorts: [],
-		pwmPorts: [],
-		spiCsPorts: [],
-		thermistorPorts: [],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 1500,
 		motorMaxCurrent: 2000,
@@ -254,20 +274,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 
 		objectModelBoard: initObject(Board, {
 			maxMotors: 2
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: [],
+			[PortType.gpOut]: [],
+			[PortType.heater]: [],
+			[PortType.pwm]: [],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: [],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.DueX5]: {
-		analogInPorts: [],
-		fanPorts: [],
-		fanTachoPorts: ["duex.pb6"],
-		gpInPorts: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
-		gpOutPorts: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
-		heaterPorts: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
-		pwmPorts: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
-		spiCsPorts: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
-		thermistorPorts: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: false,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 2000,
 		motorMaxCurrent: 2400,
@@ -279,20 +303,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		objectModelBoard: initObject(Board, {
 			maxHeaters: 5,
 			maxMotors: 5
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: ["duex.pb6"],
+			[PortType.gpIn]: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
+			[PortType.gpOut]: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
+			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
+			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
+			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
+			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.Duet2ExpansionBreakout]: {
-		analogInPorts: [],
-		fanPorts: [],
-		fanTachoPorts: ["duex.pb6"],
-		gpInPorts: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
-		gpOutPorts: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
-		heaterPorts: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
-		pwmPorts: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
-		spiCsPorts: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
-		thermistorPorts: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: false,
 		hasSmartDrivers: false,
 		motorWarnCurrent: -1,
 		motorMaxCurrent: -1,
@@ -304,20 +332,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		objectModelBoard: initObject(Board, {
 			maxHeaters: 5,
 			maxMotors: 5
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: ["duex.pb6"],
+			[PortType.gpIn]: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
+			[PortType.gpOut]: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
+			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
+			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
+			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
+			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.DueX2]: {
-		analogInPorts: [],
-		fanPorts: [],
-		fanTachoPorts: ["duex.pb6"],
-		gpInPorts: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
-		gpOutPorts: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
-		heaterPorts: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
-		pwmPorts: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
-		spiCsPorts: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
-		thermistorPorts: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: false,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 2000,
 		motorMaxCurrent: 2400,
@@ -329,20 +361,24 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 		objectModelBoard: initObject(Board, {
 			maxHeaters: 5,
 			maxMotors: 2
-		})
+		}),
+
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: ["duex.pb6"],
+			[PortType.gpIn]: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
+			[PortType.gpOut]: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
+			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
+			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
+			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
+			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
+			[PortType.uart]: []
+		}
 	},
 	[ExpansionBoardType.Duet2Maestro2Plus]: {
-		analogInPorts: [],
-		fanPorts: [],
-		fanTachoPorts: [],
-		gpInPorts: [],
-		gpOutPorts: [],
-		heaterPorts: [],
-		pwmPorts: [],
-		spiCsPorts: [],
-		thermistorPorts: [],
-
 		hasClosedLoopDrivers: false,
+		hasInputPullUps: false,
 		hasSmartDrivers: true,
 		motorWarnCurrent: 1200,
 		motorMaxCurrent: 1600,
@@ -353,8 +389,21 @@ export const ExpansionBoards: { [Property in ExpansionBoardType]: ExpansionBoard
 
 		objectModelBoard: initObject(Board, {
 			maxMotors: 2
-		})
-	},
+		}),
+
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: [],
+			[PortType.gpOut]: [],
+			[PortType.heater]: [],
+			[PortType.pwm]: [],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: [],
+			[PortType.uart]: []
+		}
+	}
 }
 
 /**

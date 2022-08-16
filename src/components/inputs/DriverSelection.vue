@@ -2,7 +2,7 @@
 	<div class="dropdown">
 		<button ref="dropdownButton" class="btn btn-sm text-nowrap dropdown-toggle" :class="(props.modelValue === null) ? ['btn-outline-danger', 'is-invalid'] : 'btn-outline-success'"
 		        :disabled="availableDrivers.length === 0" data-bs-toggle="dropdown" data-bs-auto-close="true"
-		        @click="dropdown.show()">
+		        @click="dropdown?.show()">
 			<template v-if="props.modelValue === null">
 				<i class="bi-exclamation-circle"></i> none
 			</template>

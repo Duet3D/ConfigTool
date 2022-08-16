@@ -1,8 +1,7 @@
 <template>
 	<input ref="input" :id="id" class="form-control" :class="validationClass" type="number" v-bind="$attrs"
-	       :required="props.required" :min="props.min" :max="props.max" :step="props.step"
-	       :value="props.modelValue" :data-unit="unit"
-	       @input="onInput" @change="onChange" @focus="showPopover" @keyup.tab="selectFirstInput">
+		   :required="props.required" :min="props.min" :max="props.max" :step="props.step" :value="props.modelValue"
+		   :data-unit="unit" @input="onInput" @change="onChange" @focus="showPopover" @keyup.tab="selectFirstInput">
 
 	<div class="d-none">
 		<div ref="popoverContent">

@@ -7,6 +7,7 @@ import {
     DeltaKinematics,
     DirectDisplay,
     DriverId,
+    Endstop,
     EndstopType,
     Extruder,
     Fan,
@@ -36,9 +37,8 @@ import {
 import { LegacyBoardType } from "@/store/compatibility/LegacyBoards";
 import { LegacyExpansionBoardType } from "@/store/compatibility/LegacyExpansionBoards";
 import { ConfigDeltaProbePoint } from "@/store/model/ConfigToolModel";
-import { ConfigPortType } from "@/store/model/ConfigPort";
+import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor, ConfigTempSensorType } from "@/store/model/ConfigTempSensor";
-import { ConfigDriverEndstop } from "@/store/model/ConfigDriver";
 
 /**
  * Convert a legacy template (configtool < 3.4) to a config model object
@@ -180,31 +180,32 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			const axis = model.move.axes[i];
 			axis.acceleration = legacyDrive.acceleration;
 			axis.current = legacyDrive.current;
+
+			const endstop = new Endstop();
+			model.sensors.endstops.push(endstop);
+
 			if (legacyDrive.endstop_type !== LegacyEndstopType.None) {
-				const configEndstop = new ConfigDriverEndstop();
-				configEndstop.highEnd = legacyDrive.endstop_location === LegacyEndstopLocation.HighEnd;
+				endstop.highEnd = legacyDrive.endstop_location === LegacyEndstopLocation.HighEnd;
 				switch (legacyDrive.endstop_type) {
 					case LegacyEndstopType.Switch:
 					case LegacyEndstopType.Switch_deprecated:
-						configEndstop.type = EndstopType.InputPin;
+						endstop.type = EndstopType.InputPin;
 						break;
 					case LegacyEndstopType.ZProbe:
-						configEndstop.type = EndstopType.ZProbeAsEndstop;
+						endstop.type = EndstopType.ZProbeAsEndstop;
 						break;
 					case LegacyEndstopType.StallDetection:
-						configEndstop.type = EndstopType.motorStallIndividual;
+						endstop.type = EndstopType.motorStallIndividual;
 						break;
 					default:
 						const _exhaustiveCheck: never = legacyDrive.endstop_type;
 						throw new Error(`Invalid legacy endstop type ${legacyDrive.endstop_type} in driver #${i}`);
 				}
 				if (legacyDrive.endstop_pin !== null) {
-					configEndstop.port = legacyDrive.endstop_pin;
-					model.configTool.assignPort(legacyDrive.endstop_pin, ConfigPortType.endstop, i);
+					model.configTool.assignPort(legacyDrive.endstop_pin, ConfigPortFunction.endstop, i);
 				} else if (legacyDrive.endstop_type === LegacyEndstopType.Switch || legacyDrive.endstop_type === LegacyEndstopType.Switch_deprecated) {
 					throw new Error(`Invalid endstop configuration in driver ${i}`);
 				}
-				driver.endstop = configEndstop;
 			}
 			driver.forwards = legacyDrive.direction;
 			axis.jerk = legacyDrive.instant_dv;
@@ -264,13 +265,13 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	model.sensors.probes.push(new Probe());
 
 	if (input.probe.input_pin !== null) {
-		model.configTool.assignPort(input.probe.input_pin, ConfigPortType.probeIn, 0);
+		model.configTool.assignPort(input.probe.input_pin, ConfigPortFunction.probeIn, 0);
 	}
 	if (input.probe.modulation_pin !== null) {
-		model.configTool.assignPort(input.probe.modulation_pin, ConfigPortType.probeMod, 0);
+		model.configTool.assignPort(input.probe.modulation_pin, ConfigPortFunction.probeMod, 0);
 	}
 	if (input.probe.pwm_pin !== null) {
-		model.configTool.assignPort(input.probe.pwm_pin, ConfigPortType.servo, 0);
+		model.configTool.assignPort(input.probe.pwm_pin, ConfigPortFunction.probeServo, 0);
 	}
 	model.configTool.deployRetractProbe = input.probe.deploy || input.probe.type === LegacyProbeType.BLTouch;
 
@@ -320,7 +321,7 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			}
 			fan.max = legacyFan.value;
 			model.fans.push(fan);
-			model.configTool.assignPort(legacyFan.output_pin, ConfigPortType.fan, i, legacyFan.frequency);
+			model.configTool.assignPort(legacyFan.output_pin, ConfigPortFunction.fan, i, legacyFan.frequency);
 		}
 	}
 

@@ -4,7 +4,7 @@ import type { Directive, DirectiveBinding } from "vue";
 /**
  * Interface for accessing tooltip elements
  */
-interface TooltipElement {
+interface VPresetElement {
 	dataset: { originalTitle: string };
 	title: string;
 	tooltip?: Tooltip;
@@ -105,8 +105,8 @@ function getTitle(binding: DirectiveBinding, el: any): string {
 	return defaultValue ? (title + range !== "" ? `${title}${range}<br>Default Value: ${defaultValue}` : `Default Value: ${defaultValue}`) : `${title}${range}`;
 }
 
-export const VPreset: Directive<Element & TooltipElement> = {
-	mounted(el: Element & TooltipElement, binding: DirectiveBinding): void {
+export const VPreset: Directive<Element & VPresetElement> = {
+	mounted(el: Element & VPresetElement, binding: DirectiveBinding): void {
 		// Delete the default title so the value can be determined from getTitle()
 		el.dataset.originalTitle = el.title;
 		el.title = "";
@@ -118,7 +118,7 @@ export const VPreset: Directive<Element & TooltipElement> = {
 			trigger: "hover"
 		});
 	},
-	beforeUnmount(el: Element & TooltipElement) {
+	beforeUnmount(el: Element & VPresetElement) {
 		if (el.tooltip) {
 			el.tooltip.dispose();
 			el.tooltip = undefined;

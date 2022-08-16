@@ -1,30 +1,36 @@
 import { ModelObject } from "@duet3d/objectmodel";
-import { stripPort } from "@/store/Ports";
+import type { PortType } from "../BaseBoard";
 
-export enum ConfigPortType {
-	free,
-	analog,
-	endstop,
-	fan,
-	fanTacho,
-	gpIn,
-	gpOut,
-	heater,
-	probeIn,
-	probeMod,
-	servo,
-	spiCs,
-	thermistor,
-	uart
+/**
+ * Enumeration of possible configurations for individual ports
+ */
+export enum ConfigPortFunction {
+	endstop = "endstop",
+	fan = "fan",
+	fanTacho = "fanTacho",
+	gpIn = "gpIn",
+	gpOut = "gpOut",
+	heater = "heater",
+	probeIn = "probeIn",
+	probeMod = "probeMod",
+	probeServo = "probeServo",
+	servo = "servo",
+	spiCs = "spiCs",
+	thermistor = "thermistor",
+	uart = "uart"
 }
 
+/**
+ * Representation of an available or mapped port
+ */
 export class ConfigPort extends ModelObject {
 	/**
 	 * Constructor of this class to initialize from port aliases
 	 * @param value Port aliases divided by plus chars
 	 * @param canBoard Optional CAN board address
+	 * @param capability Optional port capability
 	 */
-	constructor(value: string = "", canBoard: number | null = null) {
+	constructor(value: string = "", canBoard: number | null = null, capability: PortType | null = null) {
 		super();
         this.canBoard = canBoard;
 		if (canBoard !== null && canBoard > 0) {
@@ -33,12 +39,20 @@ export class ConfigPort extends ModelObject {
 			this.ports = value.split('+');
 		}
 		this.rawPorts = this.ports.map(port => stripPort(port));
+		if (capability !== null) {
+			this.capabilities.add(capability);
+		}
 	}
+
+	/**
+	 * Capabilities of this port
+	 */
+	capabilities: Set<PortType> = new Set<PortType>();
 
     /**
      * CAN address of these ports
      */
-    canBoard: number | null = null;
+    canBoard: number | null;
 
 	/**
 	 * Ports with default modifiers (e.g. inversion [!] or pull-up [^])
@@ -62,6 +76,8 @@ export class ConfigPort extends ModelObject {
 	 * @param value Port to assign from
 	 */
 	assign(value: ConfigPort) {
+		this.canBoard = value.canBoard;
+		this.capabilities = value.capabilities;
 		this.ports = value.ports;
 		this.rawPorts = value.rawPorts;
 	}
@@ -71,12 +87,36 @@ export class ConfigPort extends ModelObject {
 	 * @param value Value to check
 	 * @returns True if this port contains at least one value
 	 */
-	matches(value: string | ConfigPort) {
+	equals(value: string | ConfigPort) {
 		if (typeof value === "string") {
 			const valuePorts = value.split('+').map(port => stripPort(port));
-			return valuePorts.some(valPort => this.rawPorts.includes(valPort));
+			for (const valuePort of valuePorts) {
+				if (this.rawPorts.includes(valuePort)) {
+					return true;
+				}
+
+				if (!this.canBoard) {
+					const matches = /^(\d+)\.(.+)/.exec(valuePort);
+					if (matches !== null && matches[1] === "0" && this.rawPorts.includes(matches[2])) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
-		return value.rawPorts.some(valPort => this.rawPorts.includes(valPort));
+		return value.rawPorts.some(valuePort => this.rawPorts.includes(valuePort));
+	}
+
+	/**
+	 * Check if the port matches the given expansion/main board
+	 * @param value Board number
+	 * @returns True if both boards are equal
+	 */
+	equalsBoard(value: number | null) {
+		if (!this.canBoard) {
+			return !value;
+		}
+		return this.canBoard === value;
 	}
 
 	/**
@@ -84,6 +124,9 @@ export class ConfigPort extends ModelObject {
 	 * @param value Port to merge
 	 */
 	merge(value: ConfigPort): void {
+		for (const capability of value.capabilities) {
+			this.capabilities.add(capability);
+		}
 		for (let i = 0; i < value.ports.length; i++) {
 			const rawOtherPort = value.rawPorts[i];
 			if (!this.rawPorts.includes(rawOtherPort)) {
@@ -93,6 +136,11 @@ export class ConfigPort extends ModelObject {
 			}
 		}
 	}
+
+	/**
+	 * Current function of this port
+	 */
+	function: ConfigPortFunction | null = null;
 
 	/**
 	 * Item index (e.g. heater number)
@@ -113,11 +161,6 @@ export class ConfigPort extends ModelObject {
 	 * Whether the port has the internal pull-up resistor enabled
 	 */
 	pullUp: boolean = false;
-
-	/**
-	 * State of this port
-	 */
-	type: ConfigPortType = ConfigPortType.free;
 
 	/**
 	 * Convert this instance to a usable port string
@@ -148,4 +191,13 @@ export class ConfigPort extends ModelObject {
 		}
 		return "";
 	}
+}
+
+/**
+ * Strip default modifiers from a given port (aka '!', '^')
+ * @param value Port to strip
+ * @returns Stripped port
+ */
+export function stripPort(value: string): string {
+	return value.replace(/^[!^]+/, "");
 }

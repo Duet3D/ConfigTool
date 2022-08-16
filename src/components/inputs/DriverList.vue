@@ -18,13 +18,13 @@
 		<div class="dropdown">
 			<button ref="dropdownButton" class="btn btn-outline-success btn-sm text-nowrap"
 			        :disabled="availableDrivers.length === 0" data-bs-toggle="dropdown" data-bs-auto-close="true"
-			        @click="dropdown.show()">
+			        @click="dropdown?.show()">
 				<i class="bi-plus"></i>
 			</button>
 
 			<ul class="dropdown-menu">
 				<li v-for="driver in availableDrivers">
-					<a class="dropdown-item" href="#" @click.prevent="props.drivers.push(driver)">
+					<a class="dropdown-item" href="#" @click.prevent="addDriver(driver)">
 						{{ driver }}
 						<span class="text-muted fst-italic ms-3">
 							{{ (driver.board !== null) ? `Board ${driver.board} Driver ${driver.driver}` : `Driver ${driver.driver}` }}
@@ -65,6 +65,11 @@ onBeforeUnmount(() => {
 		dropdown.value = null;
 	}
 });
+
+function addDriver(driver: DriverId) {
+	props.drivers.push(driver);
+	dropdown.value?.hide();
+}
 
 // Driver list
 const availableDrivers = computed(() => {

@@ -7,12 +7,12 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 import App from "./App.vue";
 import VPreset from "./directives/VPreset";
+import VTitle from "./directives/VTitle";
 import router from "./router";
 
-const app = createApp(App);
-
-app.use(createPinia());
-app.directive("preset", VPreset);
-app.use(router);
-
-app.mount("#app");
+createApp(App)
+    .use(createPinia())
+    .directive("preset", VPreset)
+    .directive("title", VTitle)
+    .use(router)
+    .mount("#app");

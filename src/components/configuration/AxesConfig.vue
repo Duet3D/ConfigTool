@@ -1,11 +1,7 @@
 <style scoped>
 .table-microstepping tr > th:first-child,
 .table-microstepping tr > td:first-child {
-	min-width: 5rem;
 	text-align: center;
-}
-.table-microstepping tr > td:nth-child(3) {
-	min-width: 10rem;
 }
 
 .small-text {
@@ -24,6 +20,17 @@
 		</template>
 		<template #body>
 			<table class="table table-striped table-microstepping mb-0">
+				<colgroup>
+					<col style="width: 8%;">
+					<col style="width: 16%;">
+					<col style="width: 15%;">
+					<col style="width: 10%;">
+					<col style="width: 14%;">
+					<col style="width: 12%;">
+					<col style="width: 12%;">
+					<col style="width: 13%;">
+					<col style="width: auto;">
+				</colgroup>
 				<thead>
 					<tr>
 						<th>

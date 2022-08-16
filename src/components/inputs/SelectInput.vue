@@ -2,22 +2,27 @@
 	<label v-if="props.label" :for="id" class="form-label">
 		{{ props.label }}:
 	</label>
-	<select :id="id" class="form-select" :class="validationClass" v-bind="$attrs"
-	        v-preset="(props.preset !== undefined) ? JSON.stringify(props.preset) : undefined"
-	        :value="JSON.stringify(props.modelValue)" @input="onInput" :required="props.required">
-		<template v-if="isGrouped">
-			<optgroup v-for="(group, groupTitle) in groups" :disabled="isGroupDisabled(group)" :label="groupTitle">
-				<option v-for="groupItem in group" :disabled="getItemDisabled(groupItem)" :value="getItemValue(groupItem)">
-					{{ getItemText(groupItem) }}
+	<div class="input-group">
+		<slot name="prepend"></slot>
+		<select :id="id" class="form-select" :class="validationClass" v-bind="$attrs" :disabled="props.disabled"
+				v-preset="(props.preset !== undefined) ? JSON.stringify(props.preset) : undefined"
+				:value="JSON.stringify(props.modelValue)" @input="onInput" :required="props.required">
+			<template v-if="isGrouped">
+				<optgroup v-for="(group, groupTitle) in groups" :disabled="isGroupDisabled(group)" :label="groupTitle">
+					<option v-for="groupItem in group" :disabled="getItemDisabled(groupItem)"
+							:value="getItemValue(groupItem)">
+						{{ getItemText(groupItem) }}
+					</option>
+				</optgroup>
+			</template>
+			<template v-else>
+				<option v-for="item in items" :disabled="getItemDisabled(item)" :value="getItemValue(item)">
+					{{ getItemText(item) }}
 				</option>
-			</optgroup>
-		</template>
-		<template v-else>
-			<option v-for="item in items" :disabled="getItemDisabled(item)" :value="getItemValue(item)">
-				{{ getItemText(item) }}
-			</option>
-		</template>
-	</select>
+			</template>
+		</select>
+		<slot name="append"></slot>
+	</div>
 </template>
 
 <script lang="ts">
@@ -100,9 +105,9 @@ const groups = computed(() => props.options as Record<string, Array<string | Sel
 const items = computed(() => props.options as Array<string | SelectOption>);
 const isGroupDisabled = (group: Array<string | SelectOption>) => group.every(item => typeof item !== "string" && !!item.disabled);
 
-const getItemDisabled = (item: string | SelectOption) => (typeof item !== "string") && !!item.disabled;
-const getItemText = (item: string | SelectOption) => (typeof item === "string") ? item : item.text;
-const getItemValue = (item: string | SelectOption) => JSON.stringify((typeof item === "string") ? item : item.value);
+function getItemDisabled(item: string | SelectOption) { return (typeof item !== "string") && !!item.disabled; }
+function getItemText(item: string | SelectOption) { return (typeof item === "string") ? item : item.text; }
+function getItemValue(item: string | SelectOption) { return JSON.stringify((typeof item === "string") ? item : item.value); }
 
 // Validation
 const validationClass = computed<string | null>(() => {
