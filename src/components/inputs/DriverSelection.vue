@@ -1,28 +1,24 @@
 <template>
-	<div class="dropdown">
-		<button ref="dropdownButton" class="btn btn-sm text-nowrap dropdown-toggle" :class="(props.modelValue === null) ? ['btn-outline-danger', 'is-invalid'] : 'btn-outline-success'"
-		        :disabled="availableDrivers.length === 0" data-bs-toggle="dropdown" data-bs-auto-close="true"
-		        @click="dropdown?.show()">
-			<template v-if="props.modelValue === null">
+	<div class="dropdown" v-title="buttonTitle">
+		<button ref="dropdownButton" class="btn btn-sm text-nowrap dropdown-toggle"
+				:class="(props.modelValue === null) ? ['btn-outline-danger', 'is-invalid'] : 'btn-outline-success'"
+				:disabled="availableDrivers.length === 0" data-bs-toggle="dropdown"
+				data-bs-auto-close="true" @click="dropdown?.show()">
+			<template v-if="!props.modelValue">
 				<i class="bi-exclamation-circle"></i> none
 			</template>
-			<v-else>
+			<template v-else>
 				{{ props.modelValue }}
-			</v-else>
+			</template>
 		</button>
 
 		<ul class="dropdown-menu">
 			<li v-for="driver in availableDrivers">
-				<a class="dropdown-item" href="#" @click.prevent="emit('update:modelValue', driver)">
+				<a class="dropdown-item" href="#" @click.prevent="setDriver(driver)">
 					{{ driver }}
 					<span class="text-muted fst-italic ms-3">
-							{{ (driver.board !== null) ? `Board ${driver.board} Driver ${driver.driver}` : `Driver ${driver.driver}` }}
-						</span>
-				</a>
-			</li>
-			<li>
-				<a class="dropdown-item" href="#" @click.prevent="emit('update:modelValue', null)">
-					None
+						{{ (driver.board !== null) ? `Board ${driver.board} Driver ${driver.driver}` : `Driver ${driver.driver}` }}
+					</span>
 				</a>
 			</li>
 		</ul>
@@ -74,4 +70,16 @@ const availableDrivers = computed(() => {
 	}
 	return driverList;
 });
+
+function buttonTitle() {
+	if (props.modelValue) {
+		return (props.modelValue.board !== null) ? `Board ${props.modelValue.board} Driver ${props.modelValue.driver}` : `Driver ${props.modelValue.driver}`;
+	}
+	return null;
+}
+
+function setDriver(driver: DriverId) {
+	emit('update:modelValue', driver);
+	dropdown.value?.hide();
+}
 </script>

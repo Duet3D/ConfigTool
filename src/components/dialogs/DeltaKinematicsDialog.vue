@@ -1,13 +1,3 @@
-<style scoped>
-.table-advanced-delta tr > th:first-child {
-	text-align: center;
-}
-.table-advanced-delta tr > td:first-child {
-	text-align: center;
-	vertical-align: middle;
-}
-</style>
-
 <template>
 	<base-dialog title="Advanced Delta Kinematics Settings"
 	             :model-value="props.modelValue" @update:model-value="emit('update:modelValue', $event)">
@@ -15,7 +5,7 @@
 			<table class="table table-striped table-bordered table-advanced-delta">
 				<thead>
 					<tr>
-						<th>
+						<th class="text-center">
 							Tower
 						</th>
 						<th>
@@ -28,7 +18,7 @@
 				</thead>
 				<tbody>
 					<tr v-for="(tower, index) in deltaKinematics.towers">
-						<td>
+						<td class="text-center align-middle">
 							{{ getTowerCaption(index) }}
 						</td>
 						<td>

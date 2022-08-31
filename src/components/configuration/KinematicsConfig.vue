@@ -1,13 +1,3 @@
-<style scoped>
-#anchors tr > th:first-child {
-	text-align: center;
-}
-#anchors tr > td:first-child {
-	text-align: center;
-	vertical-align: middle;
-}
-</style>
-
 <template>
 	<scroll-item anchor="Kinematics">
 		<template #title>
@@ -66,8 +56,8 @@
 				<div class="col-2">
 					<number-input v-if="getAxis(letter)"
 					              :label="`${letter} minimum`" :title="`Minimum position of the ${letter} axis`"
-					              :max="getAxis(letter).max - 0.01" step="any" unit="mm"
-					              v-model="getAxis(letter).min" :preset="getAxisPreset(letter)?.min" />
+					              :max="getAxis(letter)!.max - 0.01" step="any" unit="mm"
+					              v-model="getAxis(letter)!.min" :preset="getAxisPreset(letter)?.min" />
 					<span v-else class="text-danger is-invalid">
 						missing {{ letter }} axis
 					</span>
@@ -75,8 +65,8 @@
 				<div class="col-2">
 					<number-input v-if="getAxis(letter)"
 					              :label="`${letter} maximum`" :title="`Maximum position of the ${letter} axis`"
-					              :min="getAxis(letter).min + 0.01" step="any" unit="mm"
-					              v-model="getAxis(letter).max" :preset="getAxisPreset(letter)?.max" />
+					              :min="getAxis(letter)!.min + 0.01" step="any" unit="mm"
+					              v-model="getAxis(letter)!.max" :preset="getAxisPreset(letter)?.max" />
 
 				</div>
 			</template>
@@ -86,14 +76,14 @@
 			<delta-kinematics-dialog v-model="showAdvancedSettings" />
 			<div class="col">
 				<number-input label="Delta radius" title="Horizontal distance subtended by each rod, measured between joint centres, when the effector is in the centre"
-				              :min="deltaKinematics.printRadius" step="any" unit="mm"
-				              v-model="deltaKinematics.deltaRadius" :preset="presetDeltaKinematics?.deltaRadius" />
+				              :min="deltaKinematics!.printRadius" step="any" unit="mm"
+				              v-model="deltaKinematics!.deltaRadius" :preset="presetDeltaKinematics?.deltaRadius" />
 			</div>
 			<div class="col">
 				<number-input v-if="getAxis(AxisLetter.Z)"
 				              :label="`${AxisLetter.Z} minimum`" :title="`Minimum position of the ${AxisLetter.Z} axis`"
 				              step="any" unit="mm"
-				              v-model="getAxis(AxisLetter.Z).min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
+				              v-model="getAxis(AxisLetter.Z)!.min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
 				<span v-else class="text-danger is-invalid">
 					missing {{ AxisLetter.Z }} axis
 				</span>
@@ -101,12 +91,12 @@
 			<div class="col">
 				<number-input label="Homed height" title="Maximum build height of your printer"
 				              :min="0" step="any" unit="mm"
-				              v-model="deltaKinematics.homedHeight" :preset="presetDeltaKinematics?.homedHeight" />
+				              v-model="deltaKinematics!.homedHeight" :preset="presetDeltaKinematics?.homedHeight" />
 			</div>
 			<div class="col">
 				<number-input label="Printable radius" title="Safe printing radius"
-				              :min="0" :max="deltaKinematics.deltaRadius" step="any" unit="mm"
-				              v-model="deltaKinematics.printRadius" :preset="presetDeltaKinematics?.printRadius" />
+				              :min="0" :max="deltaKinematics!.deltaRadius" step="any" unit="mm"
+				              v-model="deltaKinematics!.printRadius" :preset="presetDeltaKinematics?.printRadius" />
 			</div>
 			<div class="col">
 				<number-input label="Diagonal rod length" title="Distance between the centre of your towers and the joint at the effector"
@@ -161,13 +151,13 @@
 				<div class="col">
 					<number-input label="Printable radius from the origin" title="Printable radius from the origin of the printer"
 					              :min="0.01" step="any" unit="mm"
-					              v-model="hangprinterKinematics.printRadius" :preset="presetHangprinterKinematics?.printRadius" />
+					              v-model="hangprinterKinematics!.printRadius" :preset="presetHangprinterKinematics?.printRadius" />
 				</div>
 				<div class="col">
 					<number-input v-if="getAxis(AxisLetter.Z)"
 					              :label="`${AxisLetter.Z} minimum`" :title="`Minimum position of the ${AxisLetter.Z} axis`"
-					              :max="getAxis(AxisLetter.Z).max - 0.01" step="any" unit="mm"
-					              v-model="getAxis(AxisLetter.Z).min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
+					              :max="getAxis(AxisLetter.Z)!.max - 0.01" step="any" unit="mm"
+					              v-model="getAxis(AxisLetter.Z)!.min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
 					<span v-else class="text-danger is-invalid">
 							missing {{ AxisLetter.Z }} axis
 					</span>
@@ -175,8 +165,8 @@
 				<div class="col">
 					<number-input v-if="getAxis(AxisLetter.Z)"
 					              :label="`${AxisLetter.Z} maximum`" :title="`Maximum position of the ${AxisLetter.Z} axis`"
-					              :min="getAxis(AxisLetter.Z).min + 0.01" step="any" unit="mm"
-					              v-model="getAxis(AxisLetter.Z).max" :preset="getAxisPreset(AxisLetter.Z)?.max" />
+					              :min="getAxis(AxisLetter.Z)!.min + 0.01" step="any" unit="mm"
+					              v-model="getAxis(AxisLetter.Z)!.max" :preset="getAxisPreset(AxisLetter.Z)?.max" />
 				</div>
 			</div>
 			<div class="row mt-3">
@@ -187,7 +177,7 @@
 					<table id="anchors" class="table table-bordered table-striped mb-0">
 						<thead>
 							<tr>
-								<th>
+								<th class="text-center">
 									Anchor
 								</th>
 								<th>
@@ -203,23 +193,23 @@
 						</thead>
 						<tbody>
 							<tr v-for="(anchor, index) in ['A', 'B', 'C', 'D']">
-								<td>
+								<td class="text-center align-middle">
 									{{ anchor }}
 								</td>
 								<td>
 									<number-input :title="`X coordinate of the ${anchor} anchor`"
 									              step="any" unit="mm" :disabled="anchor === 'D'"
-									              v-model="hangprinterKinematics.anchors[index][0]" :preset="presetHangprinterKinematics?.anchors[index][0]" />
+									              v-model="hangprinterKinematics!.anchors[index][0]" :preset="presetHangprinterKinematics?.anchors[index][0]" />
 								</td>
 								<td>
 									<number-input :title="`Y coordinate of the ${anchor} anchor`"
 									              step="any" unit="mm" :disabled="anchor === 'D'"
-									              v-model="hangprinterKinematics.anchors[index][1]" :preset="presetHangprinterKinematics?.anchors[index][1]" />
+									              v-model="hangprinterKinematics!.anchors[index][1]" :preset="presetHangprinterKinematics?.anchors[index][1]" />
 								</td>
 								<td>
 									<number-input :title="`Z coordinate of the ${anchor} anchor`"
 									              step="any" unit="mm"
-									              v-model="hangprinterKinematics.anchors[index][2]" :preset="presetHangprinterKinematics?.anchors[index][2]" />
+									              v-model="hangprinterKinematics!.anchors[index][2]" :preset="presetHangprinterKinematics?.anchors[index][2]" />
 								</td>
 								<!--
 								<td>
@@ -258,7 +248,7 @@
 import {
 	Axis,
 	AxisLetter,
-	KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics
+	KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics, EndstopType
 } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
@@ -342,12 +332,129 @@ const KinematicsOptions: Record<string, Array<SelectOption>> = {
 
 // General
 function setKinematics(value: KinematicsName) {
+	let updateKinematics = 
 	store.data.update({ move: { kinematics: { name: value } } });
 	if (store.data.move.kinematics instanceof CoreKinematics) {
+		// Update forward/inverse matrices for core kinematics
 		store.data.move.kinematics.update({
 			forwardMatrix: DefaultForwardMatrix[value as CoreKinematicsTypes],
 			inverseMatrix: DefaultInverseMatrix[value as CoreKinematicsTypes]
 		});
+	}
+
+	// Update defaults
+	if (store.data.move.kinematics instanceof DeltaKinematics) {
+		for (const axis of store.data.move.axes) {
+			if ([AxisLetter.X, AxisLetter.Y].includes(axis.letter)) {
+				if (axis.jerk === 15) { axis.jerk = 20; }
+				if (axis.speed === 100) { axis.speed = 300; }
+				if (axis.acceleration === 500) { axis.acceleration = 1000; }
+			} else if (axis.letter === AxisLetter.Z) {
+				if (axis.stepsPerMm === 400) { axis.stepsPerMm = 80; }
+				if (axis.jerk === 0.2) { axis.jerk = 20; }
+				if (axis.speed === 3) { axis.speed = 300; }
+				if (axis.acceleration == 20) { axis.acceleration = 1000; }
+			}
+		}
+		if (true) {		// TODO if custom preset
+			for (const presetAxis of store.preset.move.axes) {
+				if ([AxisLetter.X, AxisLetter.Y, AxisLetter.Z].includes(presetAxis.letter)) {
+					presetAxis.stepsPerMm = 80;
+					presetAxis.jerk = 20;
+					presetAxis.speed = 300;
+					presetAxis.acceleration = 1000;
+				}
+			}
+		}
+
+		for (const extruder of store.data.move.extruders) {
+			if (extruder.stepsPerMm === 420) { extruder.stepsPerMm = 663; }
+			if (extruder.jerk === 2) { extruder.jerk = 20; }
+			if (extruder.acceleration == 250) { extruder.jerk = 1000; }
+		}
+		if (true) {		// TODO if custom preset
+			for (const presetExtruder of store.preset.move.extruders) {
+				presetExtruder.stepsPerMm = 663;
+				presetExtruder.jerk = 20;
+				presetExtruder.acceleration = 1000;
+			}
+		}
+
+		for (let i = 0; i < store.data.move.axes.length; i++) {
+			if ([AxisLetter.X, AxisLetter.Y, AxisLetter.Z].includes(store.data.move.axes[i].letter)) {
+				const endstop = (i < store.data.sensors.endstops.length) ? store.data.sensors.endstops[i] : null;
+				if (endstop !== null) {
+					endstop.highEnd = true;
+					if (store.data.move.axes[i].letter === AxisLetter.Z && endstop.type === EndstopType.ZProbeAsEndstop) { endstop.type = EndstopType.InputPin; }
+				}
+
+				if (true) {		// TODO if custom preset
+					const presetEndstop = (i < store.preset.sensors.endstops.length) ? store.preset.sensors.endstops[i] : null;
+					if (presetEndstop !== null) {
+						presetEndstop.highEnd = true;
+						presetEndstop.type = EndstopType.InputPin;
+					}
+				}
+			}
+		}
+	} else {
+		for (const axis of store.data.move.axes) {
+			if ([AxisLetter.X, AxisLetter.Y].includes(axis.letter)) {
+				if (axis.jerk === 80) { axis.jerk = 20; }
+				if (axis.speed === 100) { axis.speed = 300; }
+				if (axis.acceleration === 500) { axis.acceleration = 1000; }
+			} else if (axis.letter === AxisLetter.Z) {
+				if (axis.stepsPerMm === 80) { axis.stepsPerMm = 400; }
+				if (axis.jerk === 2) { axis.jerk = 0.2; }
+				if (axis.speed === 300) { axis.speed = 3; }
+				if (axis.acceleration == 1000) { axis.acceleration = 20; }
+			}
+		}
+		if (true) {		// TODO if custom preset
+			for (const presetAxis of store.preset.move.axes) {
+				if ([AxisLetter.X, AxisLetter.Y].includes(presetAxis.letter)) {
+					presetAxis.jerk = 20;
+					presetAxis.speed = 300;
+					presetAxis.acceleration = 1000;
+				} else if (presetAxis.letter === AxisLetter.Z) {
+					presetAxis.stepsPerMm = 400;
+					presetAxis.jerk = 0.2;
+					presetAxis.speed = 3;
+					presetAxis.acceleration = 20;
+				}
+			}
+		}
+
+		for (const extruder of store.data.move.extruders) {
+			if (extruder.stepsPerMm === 663) { extruder.stepsPerMm = 420; }
+			if (extruder.jerk === 20) { extruder.jerk = 2; }
+			if (extruder.acceleration == 1000) { extruder.acceleration = 250; }
+		}
+		if (true) {		// TODO if custom preset
+			for (const presetExtruder of store.preset.move.extruders) {
+				presetExtruder.stepsPerMm = 420;
+				presetExtruder.jerk = 2;
+				presetExtruder.acceleration = 250;
+			}
+		}
+
+		for (let i = 0; i < store.data.move.axes.length; i++) {
+			if ([AxisLetter.X, AxisLetter.Y, AxisLetter.Z].includes(store.data.move.axes[i].letter)) {
+				const endstop = (i < store.data.sensors.endstops.length) ? store.data.sensors.endstops[i] : null;
+				if (endstop !== null) {
+					endstop.highEnd = false;
+					if (store.data.move.axes[i].letter === AxisLetter.Z && endstop.type === EndstopType.InputPin) { endstop.type = EndstopType.ZProbeAsEndstop; }
+				}
+
+				if (true) {		// TODO if custom preset
+					const presetEndstop = (i < store.preset.sensors.endstops.length) ? store.preset.sensors.endstops[i] : null;
+					if (presetEndstop !== null) {
+						presetEndstop.highEnd = false;
+						presetEndstop.type = (store.data.move.axes[i].letter !== AxisLetter.Z) ? EndstopType.InputPin : EndstopType.ZProbeAsEndstop;
+					}
+				}
+			}
+		}
 	}
 }
 

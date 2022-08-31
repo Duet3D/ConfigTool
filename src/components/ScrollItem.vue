@@ -5,6 +5,10 @@
 			<div class="card-header d-flex justify-content-between">
 				<slot name="title">
 					{{ props.title }}
+					<a v-if="props.url && props.urlTitle" :href="props.url" target="_blank">
+						<i class="bi-info-circle"></i>
+						{{ props.urlTitle }}
+					</a>
 				</slot>
 			</div>
 			<slot name="body" />
@@ -22,7 +26,9 @@ import type { Slot, VNode } from "vue";
 
 const props = defineProps<{
 	anchor: string,
-	title?: string
+	title?: string,
+	url?: string
+	urlTitle?: string
 }>();
 
 // Credits go to https://github.com/vuejs/core/issues/4733#issuecomment-1024816095

@@ -9,8 +9,8 @@
 		<endstops-config />
 		<compensation-config />
 		<extruders-config v-if="store.data.configTool.capabilities.fff" />
-		<spindles-config />
-		<lasers-config />
+		<spindles-config v-if="store.data.configTool.capabilities.cnc" />
+		<lasers-config v-if="store.data.configTool.capabilities.laser" />
 		<fans-config />
 		<tools-config />
 		<i-o-config />

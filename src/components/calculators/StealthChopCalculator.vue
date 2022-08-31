@@ -2,6 +2,12 @@
 	<base-calculator ref="calculator" title="Calculate StealthChop PWM Threshold"
 	                 :min="0" :max="1048575" :step="1" :disabled="driver.mode !== ConfigDriverMode.stealthChop" :required="driver.mode === ConfigDriverMode.stealthChop"
 	                 v-model="props.driver.tpwmThreshold" @show="onShow">
+		<template #prepend>
+			  <span class="input-group-text" v-title="'PWM threshold at which the stepper driver changes from StealthChop (quiet) to SpreadCycle (normal)'">
+				<i class="bi bi-calculator"></i>
+			  </span>
+		</template>
+
 		<span class="text-muted">
 			PWM threshold at which the stepper driver changes from StealthChop (quiet) to SpreadCycle (normal)
 		</span>

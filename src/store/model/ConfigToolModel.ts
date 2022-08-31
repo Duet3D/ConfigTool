@@ -1,10 +1,9 @@
-import { ModelCollection, ModelDictionary, ModelObject } from "@duet3d/objectmodel";
+import { initObject, ModelCollection, ModelDictionary, ModelObject } from "@duet3d/objectmodel";
 
 import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
 import type { ExpansionBoardType } from "@/store/ExpansionBoards";
-import { PortType } from "../BaseBoard";
 
 export class ConfigAutoSaveModel extends ModelObject {
 	enabled: boolean = false;
@@ -25,6 +24,68 @@ export class ConfigDeltaProbePoint extends ModelObject {
 	heightCorrection: number = 0;
 }
 
+export class ConfigDeltaProperties extends ModelObject {
+	peripheralPoints: number = 3;
+	halfwayPoints: number = 3;
+	factors: number = 6;
+	probeRadius: number = 85;
+	readonly probePoints: ModelCollection<ConfigDeltaProbePoint> = new ModelCollection(ConfigDeltaProbePoint);
+	homeFirst: boolean = false;
+
+	/**
+	 * Recalculate the Delta probe points
+	 * @param probeOffsetX X offset of the probe
+	 * @param probeOffsetY Y offset of the probe
+	 */
+	calculateProbePoints(probeOffsetX: number, probeOffsetY: number) {
+		// Recalculate and add all probe points
+		// Thanks to dc42 for providing the calculation code (original source from escher3d.com)
+		const prevPoints = this.probePoints.splice(0);
+		for (let i = 0; i < this.peripheralPoints; i++) {
+			let probeX = this.probeRadius * Math.sin((2 * Math.PI * i) / this.peripheralPoints);
+			let probeY = this.probeRadius * Math.cos((2 * Math.PI * i) / this.peripheralPoints);
+			const rad = Math.sqrt(Math.pow(probeX + probeOffsetX, 2) + Math.pow(probeY + probeOffsetY, 2)) + 0.1;
+			if (rad > this.probeRadius) {
+				const factor = this.probeRadius / rad;
+				probeX *= factor;
+				probeY *= factor;
+			}
+			this.probePoints.push(initObject(ConfigDeltaProbePoint, {
+				x: probeX,
+				y: probeY,
+				heightCorrection: (prevPoints.length > i) ? prevPoints[i].heightCorrection : 0
+			}));
+		}
+
+		for (let i = 0; i < this.halfwayPoints; i++) {
+			let probeX = (this.probeRadius / 2) * Math.sin((2 * Math.PI * i) / this.halfwayPoints);
+			let probeY = (this.probeRadius / 2) * Math.cos((2 * Math.PI * i) / this.halfwayPoints);
+			const rad = Math.sqrt(Math.pow(probeX + probeOffsetX, 2) + Math.pow(probeY + probeOffsetY, 2)) + 0.1;
+			if (rad > this.probeRadius / 2) {
+				const factor = (this.probeRadius / 2) / rad;
+				probeX *= factor;
+				probeY *= factor;
+			}
+			this.probePoints.push(initObject(ConfigDeltaProbePoint, {
+				x: probeX,
+				y: probeY,
+				heightCorrection: (prevPoints.length > this.peripheralPoints + i) ? prevPoints[this.peripheralPoints + i].heightCorrection : 0
+			}));
+		}
+
+		this.probePoints.push(initObject(ConfigDeltaProbePoint, {
+			x: 0,
+			y: 0,
+			heightCorrection: 0
+		}));
+
+		for (const point of this.probePoints) {
+			point.x = parseFloat(point.x.toFixed(2));
+			point.y = parseFloat(point.y.toFixed(2));
+		}
+	}
+}
+
 export class ConfigDisplayFiles extends ModelObject {
 	menus: ModelDictionary<string> = new ModelDictionary<string>(true);
 	images: ModelDictionary<string> = new ModelDictionary<string>(true);
@@ -43,7 +104,7 @@ export class ConfigToolModel extends ModelObject {
 	readonly capabilities: ConfigCapabilities = new ConfigCapabilities();
 	configOverride: boolean = false;
 	customSettings: string = "";
-	deltaProbePoints: ModelCollection<ConfigDeltaProbePoint> = new ModelCollection(ConfigDeltaProbePoint);
+	readonly delta: ConfigDeltaProperties = new ConfigDeltaProperties();
 	deployRetractProbe: boolean = false;
 	readonly displayFiles: ConfigDisplayFiles = new ConfigDisplayFiles();
 	readonly drivers: ModelCollection<ConfigDriver> = new ModelCollection(ConfigDriver);
@@ -51,6 +112,7 @@ export class ConfigToolModel extends ModelObject {
 	homeBeforeAutoCalibration: boolean = false;
 	homingSpeedFast: number = 30;
 	homingSpeedSlow: number = 6;
+	orthogonalDistance: number = 85;
 	panelDue: boolean = false;
 	password: string = "";
 	readonly ports: ModelCollection<ConfigPort> = new ModelCollection(ConfigPort);

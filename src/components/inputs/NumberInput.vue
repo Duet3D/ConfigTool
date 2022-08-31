@@ -2,7 +2,7 @@
 	<label v-if="props.label" :for="id" class="form-label">
 		{{ props.label }}:
 	</label>
-	<div class="input-group">
+	<div class="input-group" :class="props.small ? 'input-group-sm' : ''">
 		<input type="number" :id="id" class="form-control" :class="validationClass" v-bind="$attrs"
 		       :min="props.min" :max="props.max" :step="props.step"
 			   :disabled="props.disabled" :required="props.required"
@@ -30,6 +30,11 @@ interface NumberInputProps {
 	 * Optional label next to the control
 	 */
 	label?: string,
+
+	/**
+	 * Make this component small
+	 */
+	small?: boolean,
 
 	/**
 	 * Update value on change, not on input (defaults to false)

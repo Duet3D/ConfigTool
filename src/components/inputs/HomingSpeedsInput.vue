@@ -9,15 +9,15 @@
 			x2
 		</button>
 		<input :id="id" class="form-control" :class="firstValidationClass" type="number" required :min="0.00001"
-			   step="any" :value="speeds.length > 0 ? speeds[0] : NaN"
-			   v-title="probeSpeeds ? 'First speed when probing' : 'First speed when homing'" @input="onFirstInput">
+			   step="any" :value="speeds.length > 0 ? speeds[0] : NaN" v-preset="firstPreset" data-unit="mm/s"
+			   :title="probeSpeeds ? 'First speed when probing' : 'First speed when homing'" @input="onFirstInput">
 		<template v-if="homeTwice">
 			<span class="input-group-text">
 				/
 			</span>
 			<input class="form-control" :class="secondValidationClass" type="number" required :min="0.00001" step="any"
-				   :value="speeds.length > 1 ? speeds[1] : NaN"
-				   v-title="probeSpeeds ? 'Second speed when probing' : 'Second speed when homing'"
+				   :value="speeds.length > 1 ? speeds[1] : NaN" v-preset="secondPreset" data-unit="mm/s"
+				   :title="probeSpeeds ? 'Second speed when probing' : 'Second speed when homing'"
 				   @input="onSecondInput">
 		</template>
 		<span class="input-group-text">
@@ -42,9 +42,14 @@ interface HomingSpeedsInput {
 	probeSpeeds?: boolean;
 
 	/**
-	 * Probe speed values
+	 * Speed values
 	 */
 	speeds: Array<number>,
+
+	/**
+	 * Speed presets
+	 */
+	preset?: Array<number> | null
 }
 const props = withDefaults(defineProps<HomingSpeedsInput>(), {
 	probeSpeeds: false
@@ -66,12 +71,14 @@ const homeTwice = computed<boolean>({
 });
 
 // Validation
+const firstPreset = computed<number | undefined>(() => (props.preset && props.preset.length > 0) ? props.preset![0] : undefined);
 const firstValidationClass = computed<string | null>(() => {
 	return (props.speeds.length > 0 && !isNaN(props.speeds[0]) && isFinite(props.speeds[0]) && props.speeds[0] > 0) ? "is-valid" : "is-invalid";
 });
+const secondPreset = computed<number | undefined>(() => (props.preset && props.preset.length > 1) ? props.preset![1] : firstPreset.value);
 const secondValidationClass = computed<string | null>(() => {
 	return (props.speeds.length > 1 && !isNaN(props.speeds[1]) && isFinite(props.speeds[1]) && props.speeds[1] > 0) ? "is-valid" : "is-invalid";
-})
+});
 
 // Update event
 function onFirstInput(e: Event) {

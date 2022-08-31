@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, DeltaKinematics } from "@duet3d/objectmodel";
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
@@ -233,7 +233,7 @@ export default class ConfigModel extends ObjectModel {
 
 		// Update or add missing drivers
 		for (const driver of driverList) {
-			const existingDriver = this.configTool.drivers.find(configDriver => configDriver.id.board === driver.board && configDriver.id.driver === driver.driver)
+			const existingDriver = this.configTool.drivers.find(configDriver => configDriver.id.equals(driver));
 			if (existingDriver) {
 				if (existingDriver.microsteppingInterpolated) {
 					const boardDefinition = this.getBoardDefinition(existingDriver.id.board);
@@ -469,4 +469,4 @@ export default class ConfigModel extends ObjectModel {
 			this.state.laserPwm = null;
 		}
 	}
-};
+}

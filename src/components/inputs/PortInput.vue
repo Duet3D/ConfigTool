@@ -1,19 +1,15 @@
-<style scoped>
-.btn {
-	width: 2.2rem;
-}
-</style>
-
 <template>
-	<select-input :disabled="disabled" v-model="port" :options="ports" :preset="presetPort" :required="props.required && port === null" class="select-input">
+	<select-input :disabled="disabled" v-model="port" :options="ports" :preset="presetPort"
+				  :required="props.required && port === null" class="select-input" v-bind="$attrs">
 		<template #prepend v-if="port !== null">
-			<button v-if="allowInversion" type="button" class="btn" :class="isInverted ? 'btn-primary' : 'btn-outline-secondary'"
-					v-title="'Invert pin value'" @click="toggleInversion">
-				!
+			<button v-if="allowInversion" type="button" class="btn"
+					:class="isInverted ? 'btn-primary' : 'btn-outline-secondary'" v-title="inversionTitle"
+					@click="toggleInversion">
+				<i class="bi bi-exclamation-lg"></i>
 			</button>
 			<button v-if="allowPullUp" type="button" class="btn" :class="pullUpClass" v-title="pullUpTitle"
 					@click="togglePullUp">
-				^
+				<i class="bi bi-arrow-bar-up"></i>
 			</button>
 		</template>
 	</select-input>
@@ -112,6 +108,7 @@ const port = computed<string | null>({
 
 const allowInversion = computed(() => !disabled.value && (props.function !== ConfigPortFunction.thermistor));
 const isInverted = computed(() => realPort.value?.inverted ?? false);
+const inversionTitle = computed(() => `Change pin signal to ${isInverted.value ? "active high" : "active low"}.` + "<br><br>" + `The current setting is ${isInverted.value ? "active low" : "active high"}`);
 function toggleInversion() {
 	const port = realPort.value;
 	if (port !== null) {
@@ -138,7 +135,6 @@ const allowPullUp = computed(() => {
 	return true;
 });
 
-const isPulledUp = computed(() => realPort.value?.pullUp ?? false);
 const hasInputPullUps = computed(() => {
 	if (realPort.value !== null) {
 		const boardDefinition = store.data.getBoardDefinition();
@@ -146,31 +142,34 @@ const hasInputPullUps = computed(() => {
 	}
 	return false;
 });
+const isPulledUp = computed(() => hasInputPullUps.value || (realPort.value?.pullUp ?? false));
 const pullUpClass = computed(() => {
 	if (hasInputPullUps.value) {
-		return isPulledUp.value ? "btn-warning" : 'btn-outline-warning';
+		return "btn-secondary";
 	}
 	return isPulledUp.value ? "btn-primary" : "btn-outline-secondary";
 });
 const pullUpTitle = computed(() => {
-	let title = "Configure pull-up resistor";
+	let title = "Configure pull-up resistor" + "<br><br>";
 	if (hasInputPullUps.value) {
-		title += "<br><br>";
-		title += "This port already has pull-up resistors for input protection. It is not recommended to configure an extra pull-up resistor because this will increase noise margin";
+		title += "This port has permanent pull-up resistors for input protection, so this setting is not available";
+	} else {
+		title += `Currently the configurable pull-up resistor is turned ${isPulledUp.value ? "on" : "off"}`;
 	}
 	return title;
 });
 function togglePullUp() {
 	const port = realPort.value;
 	if (port !== null) {
-		port.pullUp = !port.pullUp;
+		// Don't allow pull-ups to be enabled if there are persistent pull-ups on this board
+		port.pullUp = !port.pullUp && !hasInputPullUps.value;
 	}
 }
 
-const presetPort = computed<ConfigPort | null>(() => {
+const presetPort = computed<string | null>(() => {
 	for (const port of store.preset.configTool.ports) {
 		if (port.function === props.function && (props.board === undefined || port.equalsBoard(props.board)) && port.index === props.index) {
-			return port;
+			return port.toString();
 		}
 	}
 	return null;

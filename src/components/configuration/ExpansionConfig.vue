@@ -17,6 +17,7 @@
 				Duet 3 Family
 			</a>
 		</template>
+
 		<template v-if="!supportsExpansionBoards && !supportsCan" #body>
 			<div class="alert alert-info mb-0">
 				<i class="bi-info"></i>

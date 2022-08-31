@@ -1,33 +1,23 @@
-<style scoped>
-.table-endstops tr > th:first-child,
-.table-endstops tr > th:nth-child(2) {
-	text-align: center;
-}
-.table-endstops tr > td:first-child,
-.table-endstops tr > td:nth-child(2) {
-	text-align: center;
-	vertical-align: middle;
-}
-</style>
-
 <template>
-	<scroll-item anchor="Endstops" title="Endstops">
+	<scroll-item anchor="Endstops" title="Endstops"
+				 url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Sensors_endstops"
+				 url-title="Connecting Endstops">
 		<template #body>
-			<table class="table table-striped table-endstops mb-0">
+			<table class="table table-striped mb-0">
 				<colgroup>
 					<col style="width: auto;">
 					<col style="width: auto;">
-					<col style="width: 25%;">
-					<col style="width: 20%;">
+					<col style="width: 22%;">
+					<col style="width: 23%;">
 					<col style="width: 20%;">
 					<col style="width: 35%;">
 				</colgroup>
 				<thead>
 					<tr>
-						<th>
+						<th class="text-center">
 							Axis
 						</th>
-						<th>
+						<th class="text-center">
 							Driver
 						</th>
 						<th>
@@ -47,10 +37,10 @@
 				<tbody>
 					<template v-for="(axis, axisIndex) in store.data.move.axes">
 						<tr v-for="(configDriver, configDriverIndex) in getConfigDrivers(axis)">
-							<td>
+							<td class="text-center align-middle">
 								{{ axis.letter }}
 							</td>
-							<td>
+							<td class="text-center align-middle">
 								{{ configDriver.id }}
 							</td>
 							<td>
@@ -63,7 +53,8 @@
 							<td>
 								<port-input :function="ConfigPortFunction.endstop" :board="configDriver.id.board"
 											:index="configDriver.id.driver"
-											:disabled="getEndstopType(axisIndex) !== EndstopType.InputPin" />
+											:disabled="getEndstopType(axisIndex) !== EndstopType.InputPin"
+											title="Input port for this endstop" />
 							</td>
 							<template v-if="(configDriverIndex === 0) && getEndstopType(axisIndex) !== null">
 								<td>
@@ -74,7 +65,8 @@
 												  :preset="getPresetEndstopLocation(axisIndex)" />
 								</td>
 								<td>
-									<homing-speeds-input :speeds="configDriver.homingSpeeds" />
+									<homing-speeds-input :speeds="configDriver.homingSpeeds"
+														 :preset="getPresetHomingSpeeds(axisIndex)" />
 								</td>
 							</template>
 							<template v-else>
@@ -230,5 +222,20 @@ function setEndstopLocation(index: number, highEnd: boolean): void {
 
 function getPresetEndstopLocation(index: number): boolean {
 	return (index < store.preset.sensors.endstops.length && store.preset.sensors.endstops[index] !== null) ? store.preset.sensors.endstops[index]!.highEnd : false;
+}
+
+function getPresetHomingSpeeds(index: number): Array<number> | undefined {
+	const presetAxis = (index < store.preset.move.axes.length && store.preset.move.axes[index] !== null) ? store.preset.move.axes[index] : null;
+	if (presetAxis !== null) {
+		const firstDriver = (presetAxis.drivers.length > 0) ? presetAxis.drivers[0] : null;
+		if (firstDriver) {
+			for (const driver of store.preset.configTool.drivers) {
+				if (driver.id.equals(firstDriver)) {
+					return driver.homingSpeeds;
+				}
+			}
+		}
+	}
+	return undefined;
 }
 </script>

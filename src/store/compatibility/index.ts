@@ -78,7 +78,6 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			model.boardType = BoardType.Duet3Mini5PlusEthernet;
 			break;
 		default:
-			// noinspection JSUnusedLocalSymbols
 			const _exhaustiveCheck: never = boardType;
 			throw new Error(`Unsupported board "${boardType}`);
 	}
@@ -354,13 +353,17 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	}
 
 	// Delta Calibration
+	model.configTool.delta.peripheralPoints = input.peripheral_points;
+	model.configTool.delta.halfwayPoints = input.halfway_points;
+	model.configTool.delta.factors = input.calibration_factors;
+	model.configTool.delta.probeRadius = input.probe_radius;
 	model.configTool.homeBeforeAutoCalibration = input.home_first;
 	for (const legacyProbePoint of input.probe.points) {
 		const probePoint = new ConfigDeltaProbePoint();
 		probePoint.x = legacyProbePoint.x;
 		probePoint.y = legacyProbePoint.y;
 		probePoint.heightCorrection = legacyProbePoint.z;
-		model.configTool.deltaProbePoints.push(probePoint);
+		model.configTool.delta.probePoints.push(probePoint);
 	}
 
 	// Bed Probing for Mesh Bed Compensation

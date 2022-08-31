@@ -10,6 +10,7 @@
 			<i class="bi-exclamation-circle"></i> none
 		</span>
 		<button v-for="(driver, index) in props.drivers" class="btn btn-outline-primary btn-sm text-nowrap"
+				v-title="(driver.board !== null) ? `Board ${driver.board} Driver ${driver.driver}` : `Driver ${driver.driver}`"
 		        @click="props.drivers.splice(index, 1)">
 			{{ driver }}
 			<i class="bi-x"></i>
@@ -17,8 +18,8 @@
 
 		<div class="dropdown">
 			<button ref="dropdownButton" class="btn btn-outline-success btn-sm text-nowrap"
-			        :disabled="availableDrivers.length === 0" data-bs-toggle="dropdown" data-bs-auto-close="true"
-			        @click="dropdown?.show()">
+					:disabled="availableDrivers.length === 0" data-bs-toggle="dropdown" data-bs-auto-close="true"
+					@click="dropdown?.show()">
 				<i class="bi-plus"></i>
 			</button>
 

@@ -1,13 +1,4 @@
 <style>
-.table-smart-drivers tr > th:first-child,
-.table-smart-drivers tr > td:first-child,
-.table-external-drivers tr > th:first-child,
-.table-external-drivers tr > td:first-child,
-.table-closed-loop-drivers tr > th:first-child,
-.table-closed-loop-drivers tr > td:first-child {
-	text-align: center;
-	vertical-align: middle;
-}
 .table-external-drivers input {
 	max-width: 6rem;
 }
@@ -30,7 +21,7 @@
 			<table class="table table-striped table-smart-drivers mb-0">
 				<thead>
 					<tr>
-						<th>
+						<th class="text-center">
 							Driver
 						</th>
 						<th>
@@ -45,11 +36,12 @@
 						<th>
 							StallGuard Threshold
 						</th>
+						<!-- TODO insert motor current + standstill current reduction here -->
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="driver in smartDrivers">
-						<td>
+						<td class="text-center align-middle">
 							{{ driver.id }}
 						</td>
 						<td>
@@ -87,7 +79,7 @@
 			<table class="table table-striped table-external-drivers mb-0">
 				<thead>
 					<tr>
-						<th>
+						<th class="text-center">
 							Driver
 						</th>
 						<th>
@@ -112,7 +104,7 @@
 				</thead>
 				<tbody>
 					<tr v-for="driver in externalDrivers">
-						<td>
+						<td class="text-center align-middle">
 							{{ driver.id }}
 						</td>
 						<td>
@@ -163,7 +155,7 @@
 			<table class="table table-striped table-closed-loop-drivers mb-0">
 				<thead>
 					<tr>
-						<th>
+						<th class="text-center">
 							Driver
 						</th>
 						<th>
@@ -176,7 +168,7 @@
 				</thead>
 				<tbody>
 					<tr v-for="driver in closedLoopDrivers">
-						<td>
+						<td class="text-center align-middle">
 							{{ driver.id }}
 						</td>
 						<td>

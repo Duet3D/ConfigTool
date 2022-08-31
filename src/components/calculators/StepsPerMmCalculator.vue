@@ -1,65 +1,89 @@
 <template>
-	<base-calculator ref="calculator" title="Calculate steps per mm"
-	                 :min="0" step="any"
-	                 v-model="props.axis.stepsPerMm">
+	<base-calculator ref="calculator" title="Calculate steps per mm" :min="0" step="any" v-model="stepsPerMm" @show="onShow" @hide="onHide">
 		<form class="row g-3" @submit.prevent="apply">
 			<template v-if="props.axis">
 				<!-- Axis Inputs -->
 				<div class="col-12">
-					<select-input label="Motor step angle"
-					              :required="false"
-					              v-model="stepAngle" :options="stepAngleOptions" />
+					<select-input label="Motor step angle" :required="false" v-model="stepAngle"
+								  :options="stepAngleOptions" />
 				</div>
 				<div class="col-6">
-					<select-input label="Drive type"
-					              :required="false"
-					              v-model="driveType" :options="driveTypeOptions" />
+					<select-input label="Drive type" :required="false" v-model="driveType"
+								  :options="driveTypeOptions" />
 				</div>
 				<template v-if="driveType === DriveType.belt">
 					<!-- Belt Inputs -->
 					<div class="col-6">
-						<select-input label="Belt preset"
-						              :required="false"
-						              v-model="beltPreset" :options="BeltPresets.map(preset => preset.name)" />
+						<select-input label="Belt preset" :required="false" v-model="beltPreset"
+									  :options="BeltPresets.map(preset => preset.name)" />
 					</div>
 					<div class="col-6">
-						<number-input label="Belt pitch"
-						              :min="0.1" step="any" unit="mm"
-						              v-model="belt.pitch" :preset="BeltPresets.find(preset => preset.name === beltPreset).pitch" />
+						<number-input label="Belt pitch" :min="0.1" step="any" unit="mm" v-model="belt.pitch"
+									  :preset="BeltPresets.find(preset => preset.name === beltPreset)?.pitch" />
 					</div>
 					<div class="col-6">
-						<number-input label="Pulley teeth"
-						              :min="1" :step="1"
-						              v-model="belt.pulleyTeeth" :preset="BeltPresets.find(preset => preset.name === beltPreset).pulleyTeeth" />
+						<number-input label="Pulley teeth" :min="1" :step="1" v-model="belt.pulleyTeeth"
+									  :preset="BeltPresets.find(preset => preset.name === beltPreset)?.pulleyTeeth" />
 					</div>
 				</template>
 				<template v-else>
 					<!-- Leadscrew Inputs -->
 					<div class="col-6">
-						<select-input label="Leadscrew preset"
-						              :required="false"
-						              v-model="leadscrewPreset" :options="leadscrewPresetOptions" />
+						<select-input label="Leadscrew preset" :required="false" v-model="leadscrewPreset"
+									  :options="leadscrewPresetOptions" />
 					</div>
 					<div class="col-6">
-						<number-input label="Lead"
-						              :min="0.01" step="any"
-						              v-model="leadscrew.lead" />
+						<number-input label="Lead" :min="0.01" step="any" v-model="leadscrew.lead" />
 					</div>
 					<div class="col-6">
-						<ratio-input label="Gear ratio"
-						             v-model:first-ratio="leadscrew.ratio1" v-model:second-ratio="leadscrew.ratio2" />
+						<ratio-input label="Gear ratio" v-model:first-ratio="leadscrew.ratio1"
+									 v-model:second-ratio="leadscrew.ratio2" />
 					</div>
 				</template>
 			</template>
 			<template v-else-if="props.extruder">
 				<!-- Extruder inputs -->
-
+				<div :class="extruderPreset.stepsPerMm ? 'col-12' : 'col-4'">
+					<select-input label="Extruder preset" :required="false" v-model="extruderPreset"
+								  :options="extruderPresetOptions" />
+				</div>
+				<template v-if="!extruderPreset.stepsPerMm">
+					<div class="col-8">
+						<select-input label="Motor step angle" :required="false" v-model="stepAngle"
+									  :options="stepAngleOptions" />
+					</div>
+					<div class="col-6">
+						<number-input label="Hob diameter" :min="0.01" step="any" unit="mm"
+									  v-model="extruder.hobDiameter" />
+					</div>
+					<div class="col-6">
+						<ratio-input label="Gear ratio" v-model:first-ratio="extruder.ratio1"
+									 v-model:second-ratio="extruder.ratio2" />
+					</div>
+				</template>
+				<div class="col-6">
+					<number-input label="Amount extruded" :min="0.01" step="any" unit="mm"
+								  v-model="extruder.amountExtruded" />
+				</div>
+				<div class="col-6">
+					<number-input label="Actually extruded" :min="0.01" step="any" unit="mm"
+								  v-model="extruder.actuallyExtruded" />
+				</div>
 			</template>
 
-			<div class="col-12">
+			<div class="col-12 d-flex flex-column">
 				<h4>
-					Resulting steps per mm: <span :class="stepsPerMmValid ? 'text-success' : 'text-danger'" v-text="stepsPerMm"></span>
+					Resulting steps per mm:
+					<span :class="stepsPerMmValid ? 'text-success' : 'text-danger'">
+						{{ stepsPerMmValid ? calculatedStepsPerMm : "error" }}
+					</span>
 				</h4>
+				<span v-if="extruderPreset.stepsPerMm && extruderPreset.stepsPerMm !== calculatedStepsPerMm" class="fs-6">
+					{{ `Preset steps per mm: ${extruderPreset.stepsPerMm}` }}
+				</span>
+				<span v-if="presetStepsPerMm" class="fs-6 mb-2">
+					{{ `Default steps per mm: ${presetStepsPerMm}` }}
+				</span>
 			</div>
 
 			<div class="col mt-3 d-flex justify-content-center">
@@ -77,7 +101,7 @@
 </template>
 
 <script lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue"
 
@@ -226,10 +250,10 @@ for (const category in LeadscrewPresets) {
 }
 
 const leadscrew = reactive({
-	lead: 4,
+	lead: 8,
 	ratio1: 1,
 	ratio2: 1
-})
+});
 
 const leadscrewPreset = computed({
 	get() {
@@ -249,12 +273,88 @@ const leadscrewPreset = computed({
 			}
 		}
 	}
-})
+});
+
+// Extruders
+interface ExtruderPreset {
+	name: string;
+	current: number;			// peak current in mA, not RMS!
+	stepsPerMm: number;
+}
+const ExtruderPresets: Record<string, Array<ExtruderPreset>> = {
+	"E3D": [
+		{
+			name: "Hemera",
+			current: 800,
+			stepsPerMm: 409
+		},
+		{
+			name: "Hemera XS",
+			current: 800,
+			stepsPerMm: 397
+		},
+		{
+			name: "Titan",
+			current: 800,
+			stepsPerMm: 837
+		}
+	],
+	"Dyze Design": [
+		{
+			name: "DyzeXtruder-GT",
+			current: 800,
+			stepsPerMm: 578
+		},
+		{
+			name: "DyzeXtruder Pro",
+			current: 800,
+			stepsPerMm: 582
+		}
+	],
+	"Bondtech": [
+		{
+			name: "Bondtech LGX",
+			current: 550,
+			stepsPerMm: 400
+		},
+		{
+			name: "Bondtech BMG",
+			current: 700,
+			stepsPerMm: 415
+		},
+		{
+			name: "Bondtech LGX Lite",
+			current: 550,
+			stepsPerMm: 562
+		}
+	],
+	"Other": [
+		{
+			name: "Custom",
+			current: 0,
+			stepsPerMm: 0
+		}
+	]
+}
+const extruderPresetOptions: Record<string, Array<SelectOption>> = {};
+for (const category in ExtruderPresets) {
+	extruderPresetOptions[category] = ExtruderPresets[category].map(item => ({
+		text: item.name,
+		value: item
+	}));
+}
+
+const extruder = reactive({
+	hobDiameter: 7,
+	ratio1: 1,
+	ratio2: 3,
+	amountExtruded: 10,
+	actuallyExtruded: 10
+});
 </script>
 
 <script setup lang="ts">
 import { Axis, AxisLetter, DeltaKinematics, Extruder } from "@duet3d/objectmodel";
-import type { Ref } from "vue";
 
 import BaseCalculator from "./BaseCalculator.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue"
@@ -264,28 +364,77 @@ import { useStore } from "@/store";
 
 const props = defineProps<{
 	axis?: Axis
-	extruder?: Extruder
+	extruder?: Extruder,
+	index: number
 }>();
 
 const store = useStore();
 
-const calculator: Ref<typeof BaseCalculator | null> = ref(null);
+const calculator = ref<typeof BaseCalculator | null>(null);
 
 // Axes
 const driveType = ref((store.data.move.kinematics instanceof DeltaKinematics || (!props.axis || props.axis.letter !== AxisLetter.Z)) ? DriveType.belt : DriveType.leadscrew);
 
 // Extruders
+const extruderPreset = ref(ExtruderPresets.Other[0]);
+let current = 800;
+watch(extruderPreset, (value) => {
+	if (value.current && props.extruder) {
+		// Update extruder current when the preset changes
+		props.extruder.current = value.current;
+	}
+});
+function onShow() {
+	if (props.extruder) {
+		current = props.extruder.current;
+
+		for (const category in ExtruderPresets) {
+			for (const preset of ExtruderPresets[category]) {
+				if (props.extruder.stepsPerMm === preset.stepsPerMm && props.extruder.current === preset.current) {
+					extruderPreset.value = preset;
+					return;
+				}
+			}
+		}
+		extruderPreset.value = ExtruderPresets.Other[0];
+	}
+}
+function onHide() {
+	if (props.extruder) {
+		props.extruder.current = current;
+	}
+}
 
 // Global
+const stepsPerMm = computed<number>({
+	get() { return (props.axis?.stepsPerMm ?? props.extruder?.stepsPerMm) ?? 0; },
+	set(value) {
+		if (props.axis) {
+			props.axis.stepsPerMm = value;
+		} else if (props.extruder) {
+			props.extruder.stepsPerMm = value;
+		}
+	}
+});
+const presetStepsPerMm = computed<number | null>(() => {
+	if (props.axis !== undefined && props.index < store.preset.move.axes.length) {
+		return store.preset.move.axes[props.index].stepsPerMm;
+	}
+	if (props.extruder !== undefined && props.index < store.preset.move.extruders.length) {
+		return store.preset.move.extruders[props.index].stepsPerMm;
+	}
+	return null;
+});
+
 function fixPrecision(value: number, maxFractionDigits: number) {
 	return Math.round(value * (10 ** maxFractionDigits)) / (10 ** maxFractionDigits);
 }
-const stepsPerMm = computed(() => {
+
+const calculatedStepsPerMm = computed(() => {
 	if (props.axis) {
 		switch (driveType.value) {
 			case DriveType.belt:
 				return fixPrecision((360 * props.axis.microstepping.value) / (belt.pulleyTeeth * belt.pitch * stepAngle.value), 2);
-				break;
 			case DriveType.leadscrew:
 				const leadscrewRatio = leadscrew.ratio2 / leadscrew.ratio1;
 				return fixPrecision((360.0 * props.axis.microstepping.value * leadscrewRatio) / (leadscrew.lead * stepAngle.value), 2);
@@ -295,19 +444,23 @@ const stepsPerMm = computed(() => {
 		}
 	}
 	if (props.extruder) {
-		// TODO
+		let stepsPerMm = extruderPreset.value.stepsPerMm;
+		if (stepsPerMm <= 0) {
+			const gearsRatio = extruder.ratio2 / extruder.ratio1;
+			stepsPerMm = (360.0 * props.extruder.microstepping.value * gearsRatio) / (extruder.hobDiameter * stepAngle.value * Math.PI);
+		}
+		return fixPrecision(stepsPerMm * (extruder.amountExtruded / extruder.actuallyExtruded), 2);
 	}
 	return NaN;
-})
-const stepsPerMmValid = computed(() => isFinite(stepsPerMm.value));
+});
+const stepsPerMmValid = computed(() => isFinite(calculatedStepsPerMm.value));
 
+// Apply/Cancel
 function apply() {
-	if (props.axis) {
-		props.axis.stepsPerMm = stepsPerMm.value;
+	if (extruderPreset.value.current) {
+		current = extruderPreset.value.current;
 	}
-	if (props.extruder) {
-		props.extruder.stepsPerMm = stepsPerMm.value;
-	}
+	stepsPerMm.value = calculatedStepsPerMm.value;
 	calculator.value?.hide(true);
 }
 

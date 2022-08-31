@@ -1,14 +1,3 @@
-<style scoped>
-.table-microstepping tr > th:first-child,
-.table-microstepping tr > td:first-child {
-	text-align: center;
-}
-
-.small-text {
-	font-size: 0.75rem;
-}
-</style>
-
 <template>
 	<scroll-item anchor="Axes">
 		<template #title>
@@ -19,7 +8,7 @@
 			</button>
 		</template>
 		<template #body>
-			<table class="table table-striped table-microstepping mb-0">
+			<table class="table table-striped table-axes mb-0">
 				<colgroup>
 					<col style="width: 8%;">
 					<col style="width: 16%;">
@@ -33,7 +22,7 @@
 				</colgroup>
 				<thead>
 					<tr>
-						<th>
+						<th class="text-center">
 							Axis
 						</th>
 						<th>
@@ -44,6 +33,9 @@
 						</th>
 						<th>
 							Steps per mm
+							<span class="badge bg-secondary" v-title="'Total microsteps per mm'">
+								<i class="bi bi-calculator"></i>
+							</span>
 						</th>
 						<th>
 							Max. Speed Change (mm/s)
@@ -64,7 +56,7 @@
 				</thead>
 				<tbody>
 					<tr v-for="(axis, index) in store.data.move.axes">
-						<td>
+						<td class="text-center">
 							<div v-if="isPersistentAxis(axis)" class="mt-2">
 								{{ axis.letter }}
 							</div>
@@ -84,7 +76,7 @@
 							</span>
 						</td>
 						<td>
-							<steps-per-mm-calculator :axis="axis" />
+							<steps-per-mm-calculator :axis="axis" :index="index" />
 						</td>
 						<td>
 							<number-input title="Maximum allowed speed for instantaneous direction changes"
@@ -104,7 +96,7 @@
 						<td>
 							<number-input title="Peak current for mapped drivers (not RMS)"
 							              :min="0" :max="getMaxCurrent(axis.drivers)" :step="100" unit="mA" hide-unit
-							              :disabled="getMaxCurrent(axis.drivers) <= 0"
+							              :disabled="getMaxCurrent(axis.drivers)! <= 0"
 							              v-model="axis.current" :preset="getAxisDefault(index, 'current')" />
 						</td>
 						<td>

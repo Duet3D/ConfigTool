@@ -27,4 +27,8 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+.small-text {
+	font-size: 0.75rem;
+}
+
 @import "../node_modules/bootstrap/scss/bootstrap";
