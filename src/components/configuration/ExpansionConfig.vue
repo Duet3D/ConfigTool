@@ -40,7 +40,7 @@
 						<select-input label="CAN Expansion Board" v-model="canExpansionBoardToAdd" :options="canExpansionBoards" :required="false" />
 				</div>
 				<div v-if="supportsCan && configureCan" class="col-auto d-flex align-items-end ps-0">
-					<button class="btn btn-primary" :disabled="!canAddCanExpansionBoard" @click="store.data.addExpansionBoard(canExpansionBoardToAdd)">
+					<button class="btn btn-primary" :disabled="!canAddCanExpansionBoard" @click="store.data.addExpansionBoard(canExpansionBoardToAdd!)">
 						<i class="bi-plus"></i>
 						Add
 					</button>
@@ -82,19 +82,21 @@
 							              :valid="isCanAddressUnique(canBoard.canAddress)" />
 						</td>
 						<td>
-							{{ ExpansionBoardType[canBoard.shortName] }}
+							{{ ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType] }}
 						</td>
 						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].numDrivers }}
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].numDrivers }}
 						</td>
 						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.heater].length }}
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.heater].length }}
 						</td>
 						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.fan].length }}
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.fan].length }}
 						</td>
 						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.gpIn].length }} / {{ ExpansionBoards[ExpansionBoardType[canBoard.shortName]].ports[PortType.gpOut].length }}
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.gpIn].length }}
+							/
+							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.gpOut].length }}
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger" @click="store.data.removeExpansionBoard(index + 1)">
@@ -154,6 +156,7 @@ const expansionBoards = computed(() => {
 // CAN configuration
 const supportsCan = computed(() => store.data.boardDefinition?.objectModelBoard.canAddress !== null);
 const hasCanBoards = computed(() => store.data.boards.some((board, index) => index > 0 && board.canAddress !== null));
+
 const configureCanValue = ref(false);
 const configureCan = computed<boolean>({
 	get() { return configureCanValue.value; },
@@ -182,12 +185,10 @@ const canExpansionBoards = computed(() => {
 	}
 	return result;
 });
-const canExpansionBoardToAdd = ref(Object.keys(ExpansionBoardType).length > 0 ? Object.values(ExpansionBoardType)[0] : "");
+
+const canExpansionBoardToAdd = ref(Object.keys(ExpansionBoardType).length > 0 ? Object.values(ExpansionBoardType)[0] as ExpansionBoardType : null);
 const canAddCanExpansionBoard = computed(() => canExpansionBoardToAdd.value || (store.data.limits.boards !== null && store.data.boards.length > store.data.limits.boards));
-function setCanAddress(canBoard: Board, value: number) {
-	canBoard.canAddress = value;
-	store.data.refreshDrivers();
-}
+
 const isCanAddressUnique = (canAddress: number | null) => {
 	let occurrences = 0;
 	for (const board of store.data.boards) {
@@ -197,4 +198,8 @@ const isCanAddressUnique = (canAddress: number | null) => {
 	}
 	return occurrences === 1;
 };
+function setCanAddress(canBoard: Board, value: number) {
+	canBoard.canAddress = value;
+	store.data.refreshDrivers();
+}
 </script>
