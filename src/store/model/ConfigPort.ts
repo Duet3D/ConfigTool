@@ -16,6 +16,9 @@ export enum ConfigPortFunction {
 	probeServo = "probeServo",
 	servo = "servo",
 	spiCs = "spiCs",
+	spindlePwm = "spindlePwm",
+	spindleForwards = "spindleForwards",
+	spindleBackwards = "spindleBackwards",
 	thermistor = "thermistor",
 	uart = "uart"
 }

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { DriverId, EndstopType, initObject, ProbeType } from "@duet3d/objectmodel";
+import { AnalogSensorType, DriverId, EndstopType, initObject, ProbeType } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
@@ -88,19 +88,14 @@ const port = computed<string | null>({
 		// Assign new selection (if applicable)
 		if (value !== null) {
 			const configuredPort = store.data.configTool.assignPort(value, props.function, props.index);
-			switch (props.function) {
-				case ConfigPortFunction.probeIn:
-				case ConfigPortFunction.probeMod:
-					for (const port of store.data.configTool.ports) {
-						if ((port.function === ConfigPortFunction.probeIn || port.function === ConfigPortFunction.probeMod) &&
-							(port.function !== props.function && port.index === port.index && port.canBoard !== configuredPort.canBoard)) {
-							// Free up related ports if the CAN board is about to change. Don't worry about probe servos
-							port.function = null;
-						}
+			if (props.function === ConfigPortFunction.probeIn || props.function === ConfigPortFunction.probeMod) {
+				for (const port of store.data.configTool.ports) {
+					if ((port.function === ConfigPortFunction.probeIn || port.function === ConfigPortFunction.probeMod) &&
+						(port.function !== props.function && port.index === port.index && port.canBoard !== configuredPort.canBoard)) {
+						// Free up related ports if the CAN board is about to change. Don't worry about probe servos
+						port.function = null;
 					}
-					break;
-				
-				// TODO
+				}
 			}
 		}
 	}
@@ -199,6 +194,13 @@ const ports = computed(() => {
 		case ConfigPortFunction.endstop:
 			requiredCapabilities.add(PortType.gpIn);
 			break;
+		case ConfigPortFunction.spindlePwm:
+			requiredCapabilities.add(PortType.pwm);
+			break;
+		case ConfigPortFunction.spindleForwards:
+		case ConfigPortFunction.spindleBackwards:
+			requiredCapabilities.add(PortType.gpOut);
+			break;
 
 /*
 		default:
@@ -286,6 +288,12 @@ const disabled = computed(() => {
 				}
 			}
 			return true;
+		case ConfigPortFunction.thermistor:
+			// Input port selection is only available for thermistors
+			if (props.index < store.data.sensors.analog.length && store.data.sensors.analog[props.index] !== null) {
+				return [AnalogSensorType.linearAnalog, AnalogSensorType.pt1000, AnalogSensorType.thermistor].includes(store.data.sensors.analog[props.index]!.type);
+			}
+			break;
 
 /*
 		default:

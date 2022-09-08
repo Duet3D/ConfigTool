@@ -7,6 +7,7 @@ export interface BaseBoardDescriptor {
 	hasClosedLoopDrivers: boolean;              // TODO add this to object model -> boards
 	hasInputPullUps: boolean;
 	hasSmartDrivers: boolean;                   // TODO add this to object model -> boards
+	hasVrefMonitor: boolean;
 	motorWarnCurrent: number;
 	motorMaxCurrent: number;
 	minVoltage: number,

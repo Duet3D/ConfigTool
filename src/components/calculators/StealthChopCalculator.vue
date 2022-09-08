@@ -52,7 +52,7 @@ const velocity = ref(50);
 </script>
 
 <script setup lang="ts">
-import { computed, type Ref } from "vue";
+import { computed } from "vue";
 
 import BaseCalculator from "./BaseCalculator.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue"
@@ -66,7 +66,7 @@ const props = defineProps<{
 
 const store = useStore();
 
-const calculator: Ref<typeof BaseCalculator | null> = ref(null);
+const calculator = ref<typeof BaseCalculator | null>(null);
 
 const microstepping = ref(1), stepsPerMm = ref(80);
 const tpwmthrs = computed(() => Math.round((12000000 * microstepping.value) / (256 * stepsPerMm.value * velocity.value)));

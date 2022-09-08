@@ -1,5 +1,5 @@
 {
-  "name": "config-tool",
+  "name": "configtool",
   "version": "3.4.0-b1",
   "scripts": {
     "dev": "vite",

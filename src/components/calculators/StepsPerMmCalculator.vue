@@ -1,5 +1,6 @@
 <template>
-	<base-calculator ref="calculator" title="Calculate steps per mm" :min="0" step="any" v-model="stepsPerMm" @show="onShow" @hide="onHide">
+	<base-calculator ref="calculator" title="Calculate steps per mm" :min="0" step="any" v-model="stepsPerMm"
+					 @show="onShow" @hide="onHide">
 		<form class="row g-3" @submit.prevent="apply">
 			<template v-if="props.axis">
 				<!-- Axis Inputs -->
@@ -15,15 +16,15 @@
 					<!-- Belt Inputs -->
 					<div class="col-6">
 						<select-input label="Belt preset" :required="false" v-model="beltPreset"
-									  :options="BeltPresets.map(preset => preset.name)" />
+									  :options="beltPresetOptions" />
 					</div>
 					<div class="col-6">
 						<number-input label="Belt pitch" :min="0.1" step="any" unit="mm" v-model="belt.pitch"
-									  :preset="BeltPresets.find(preset => preset.name === beltPreset)?.pitch" />
+									  :preset="getPresetBeltValue('pitch') " />
 					</div>
 					<div class="col-6">
 						<number-input label="Pulley teeth" :min="1" :step="1" v-model="belt.pulleyTeeth"
-									  :preset="BeltPresets.find(preset => preset.name === beltPreset)?.pulleyTeeth" />
+									  :preset="getPresetBeltValue('pulleyTeeth')" />
 					</div>
 				</template>
 				<template v-else>
@@ -33,11 +34,12 @@
 									  :options="leadscrewPresetOptions" />
 					</div>
 					<div class="col-6">
-						<number-input label="Lead" :min="0.01" step="any" v-model="leadscrew.lead" />
+						<number-input label="Lead" :min="0.01" step="any" v-model="leadscrew.lead"
+									  :preset="getPresetLeadscrewValue('lead')" />
 					</div>
 					<div class="col-6">
-						<ratio-input label="Gear ratio" v-model:first-ratio="leadscrew.ratio1"
-									 v-model:second-ratio="leadscrew.ratio2" />
+						<ratio-input label="Gear ratio" v-model:first-ratio="leadscrew.ratio1" :first-preset="1"
+									 :second-preset="1" v-model:second-ratio="leadscrew.ratio2" />
 					</div>
 				</template>
 			</template>
@@ -54,20 +56,20 @@
 					</div>
 					<div class="col-6">
 						<number-input label="Hob diameter" :min="0.01" step="any" unit="mm"
-									  v-model="extruder.hobDiameter" />
+									  v-model="extruder.hobDiameter" :preset="7" />
 					</div>
 					<div class="col-6">
-						<ratio-input label="Gear ratio" v-model:first-ratio="extruder.ratio1"
-									 v-model:second-ratio="extruder.ratio2" />
+						<ratio-input label="Gear ratio" v-model:first-ratio="extruder.ratio1" :first-preset="1"
+									 v-model:second-ratio="extruder.ratio2" :second-preset="3" />
 					</div>
 				</template>
 				<div class="col-6">
 					<number-input label="Amount extruded" :min="0.01" step="any" unit="mm"
-								  v-model="extruder.amountExtruded" />
+								  v-model="extruder.amountExtruded" :preset="10" />
 				</div>
 				<div class="col-6">
 					<number-input label="Actually extruded" :min="0.01" step="any" unit="mm"
-								  v-model="extruder.actuallyExtruded" />
+								  v-model="extruder.actuallyExtruded" :preset="10" />
 				</div>
 			</template>
 
@@ -78,7 +80,8 @@
 						{{ stepsPerMmValid ? calculatedStepsPerMm : "error" }}
 					</span>
 				</h4>
-				<span v-if="extruderPreset.stepsPerMm && extruderPreset.stepsPerMm !== calculatedStepsPerMm" class="fs-6">
+				<span v-if="extruderPreset.stepsPerMm && extruderPreset.stepsPerMm !== calculatedStepsPerMm"
+					  class="fs-6">
 					{{ `Preset steps per mm: ${extruderPreset.stepsPerMm}` }}
 				</span>
 				<span v-if="presetStepsPerMm" class="fs-6 mb-2">
@@ -104,6 +107,7 @@
 import { computed, reactive, ref, watch } from "vue";
 
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue"
+import { fixPrecision } from "@/utils";
 
 // Motor settings
 const stepAngle = ref(1.8);
@@ -144,56 +148,98 @@ interface BeltPreset {
 	pitch: number | null,
 	pulleyTeeth: number | null
 }
-const BeltPresets: Array<BeltPreset> = [
-	{
-		name: "GT2",
-		pitch: 2,
-		pulleyTeeth: 20
-	},
-	{
-		name: "MXL",
-		pitch: 2.05,
-		pulleyTeeth: 16
-	},
-	{
-		name: "T2.5",
-		pitch: 2.5,
-		pulleyTeeth: 20
-	},
-	{
-		name: "T5",
-		pitch: 5,
-		pulleyTeeth: 20
-	},
-	{
-		name: "Custom",
-		pitch: null,
-		pulleyTeeth: null
-	}
-];
+const BeltPresets: Record<string, Array<BeltPreset>> = {
+	Metric: [
+		{
+			name: "GT2",
+			pitch: 2,
+			pulleyTeeth: 20
+		},
+		{
+			name: "HTD-3M",
+			pitch: 3,
+			pulleyTeeth: 20
+		},
+		{
+			name: "HTD-5M",
+			pitch: 5,
+			pulleyTeeth: 20
+		},
+		{
+			name: "T2.5",
+			pitch: 2.5,
+			pulleyTeeth: 20
+		},
+		{
+			name: "T5",
+			pitch: 5,
+			pulleyTeeth: 20
+		},
+	],
+	Imperial: [
+		{
+			name: "MXL",
+			pitch: 2.032,
+			pulleyTeeth: 16
+		},
+		{
+			name: "XL",
+			pitch: 5.08,
+			pulleyTeeth: 16
+		}
+	],
+	Other: [
+		{
+			name: "Custom",
+			pitch: null,
+			pulleyTeeth: null
+		}
+	]
+};
+const beltPresetOptions: Record<string, Array<string>> = {};
+for (const category in BeltPresets) {
+	beltPresetOptions[category] = BeltPresets[category].map(item => item.name);
+}
 
 const belt = reactive({
-	pitch: BeltPresets[0].pitch!,
-	pulleyTeeth: BeltPresets[0].pulleyTeeth!
-})
+	pitch: BeltPresets.Metric[0].pitch!,
+	pulleyTeeth: BeltPresets.Metric[0].pulleyTeeth!
+});
 
 const beltPreset = computed({
 	get() {
-		for (const preset of BeltPresets) {
-			if (preset.pitch === belt.pitch && preset.pulleyTeeth === belt.pulleyTeeth) {
-				return preset.name;
+		for (const category in BeltPresets) {
+			for (const preset of BeltPresets[category]) {
+				if (preset.pitch === belt.pitch && preset.pulleyTeeth === belt.pulleyTeeth) {
+					return preset.name;
+				}
 			}
 		}
-		return BeltPresets[BeltPresets.length - 1].name;
+		return BeltPresets.Custom[0].name;
 	},
 	set(value) {
-		const preset = BeltPresets.find(preset => preset.name === value);
-		if (preset && preset.pitch !== null && preset.pulleyTeeth !== null) {
-			belt.pitch = preset.pitch;
-			belt.pulleyTeeth = preset.pulleyTeeth;
+		for (const category in BeltPresets) {
+			const preset = BeltPresets[category].find(preset => preset.name === value);
+			if (preset) {
+				if (preset.pitch !== null && preset.pulleyTeeth !== null) {
+					belt.pitch = preset.pitch;
+					belt.pulleyTeeth = preset.pulleyTeeth;
+				}
+				break;
+			}
 		}
 	}
-})
+});
+
+function getPresetBeltValue<K extends keyof BeltPreset>(key: K) {
+	for (const preset in BeltPresets) {
+		const value = BeltPresets[preset].find(preset => preset.name === beltPreset.value);
+		if (value) {
+			return value[key];
+		}
+	}
+	return null;
+}
 
 // Leadscrew
 interface LeadscrewPreset {
@@ -274,6 +320,16 @@ const leadscrewPreset = computed({
 		}
 	}
 });
+
+function getPresetLeadscrewValue<K extends keyof LeadscrewPreset>(key: K) {
+	for (const preset in LeadscrewPresets) {
+		const value = LeadscrewPresets[preset].find(preset => preset.name === leadscrewPreset.value);
+		if (value) {
+			return value[key];
+		}
+	}
+	return null;
+}
 
 // Extruders
 interface ExtruderPreset {
@@ -425,10 +481,6 @@ const presetStepsPerMm = computed<number | null>(() => {
 	}
 	return null;
 });
-
-function fixPrecision(value: number, maxFractionDigits: number) {
-	return Math.round(value * (10 ** maxFractionDigits)) / (10 ** maxFractionDigits);
-}
 
 const calculatedStepsPerMm = computed(() => {
 	if (props.axis) {

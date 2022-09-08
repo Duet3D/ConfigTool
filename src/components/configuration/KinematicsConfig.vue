@@ -44,7 +44,7 @@
 			</div>
 			<div class="col-auto d-flex align-items-end">
 				<button class="btn btn-secondary" @click="showAdvancedSettings = true">
-					<i class="bi-calculator"></i>
+					<i class="bi-box-arrow-up-right"></i>
 					Advanced
 				</button>
 			</div>

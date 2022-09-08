@@ -38,7 +38,7 @@ import { LegacyBoardType } from "@/store/compatibility/LegacyBoards";
 import { LegacyExpansionBoardType } from "@/store/compatibility/LegacyExpansionBoards";
 import { ConfigDeltaProbePoint } from "@/store/model/ConfigToolModel";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
-import { ConfigTempSensor, ConfigTempSensorType } from "@/store/model/ConfigTempSensor";
+import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
 
 /**
  * Convert a legacy template (configtool < 3.4) to a config model object
@@ -280,7 +280,7 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 		if (legacyHeater === null) {
 			model.heat.heaters.push(null);
 			model.sensors.analog.push(null);
-			model.configTool.tempSensors.push(null);
+			model.configTool.sensors.push(null);
 		} else {
 			const heater = new Heater();
 			heater.max = legacyHeater.temp_limit;
@@ -297,12 +297,10 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			model.sensors.analog.push(sensor);
 
 			const tempSensor = new ConfigTempSensor();
-			tempSensor.sensorIndex = i;
-			tempSensor.type = ConfigTempSensorType.thermistor;
 			tempSensor.r25 = legacyHeater.thermistor;
 			tempSensor.beta = legacyHeater.beta;
 			tempSensor.shC = legacyHeater.c;
-			model.configTool.tempSensors.push(tempSensor);
+			model.configTool.sensors.push(tempSensor);
 		}
 	}
 

@@ -9,7 +9,7 @@
 		</template>
 		<template #body>
 			<div class="card m-2" v-for="(probe, index) in store.data.sensors.probes">
-				<div class="card-header d-flex justify-content-between">
+				<div class="card-header d-flex justify-content-between align-items-center">
 					Probe #{{ index }}
 					<button class="btn btn-sm btn-danger" @click="store.data.sensors.probes.splice(index, 1)">
 						<i class="bi-trash"></i>
@@ -106,7 +106,7 @@ function addProbe() {
 	store.data.sensors.probes.push(probe);
 }
 
-function getPresetProbeValue(index: number, property: keyof Probe) {
-	return (index < store.preset.sensors.probes.length && store.preset.sensors.probes[index] !== null) ? store.preset.sensors.probes[index]![property] : undefined;
+function getPresetProbeValue<K extends keyof Probe>(index: number, key: K) {
+	return (index < store.preset.sensors.probes.length && store.preset.sensors.probes[index] !== null) ? store.preset.sensors.probes[index]![key] : undefined;
 }
 </script>

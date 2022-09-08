@@ -75,7 +75,7 @@ function buttonTitle() {
 	if (props.modelValue) {
 		return (props.modelValue.board !== null) ? `Board ${props.modelValue.board} Driver ${props.modelValue.driver}` : `Driver ${props.modelValue.driver}`;
 	}
-	return null;
+	return "No Driver selected";
 }
 
 function setDriver(driver: DriverId) {

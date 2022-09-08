@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import StartView from "../views/StartView.vue";
-import TemplatesView from "../views/TemplatesView.vue";
+import StartView from "@/views/StartView.vue";
+import TemplatesView from "@/views/TemplatesView.vue";
 
 export const eventOptions = {
 	ignoreScrollHandler: false,
@@ -37,7 +37,7 @@ const router = createRouter({
 			component: () => import('../views/FinishView.vue')
 		}
 	],
-	scrollBehavior(to, from, savedPosition) {
+	scrollBehavior(to) {
 		if (eventOptions.ignoreRouterHandler) {
 			eventOptions.ignoreRouterHandler = false;
 			return;

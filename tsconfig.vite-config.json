@@ -5,8 +5,14 @@
   ],
   "compilerOptions": {
     "composite": true,
+    "lib": [
+      "DOM",
+      "ES2020"
+    ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "strict": true,
     "types": [

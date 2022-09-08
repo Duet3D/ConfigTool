@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, DeltaKinematics } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, DeltaKinematics, Sensors } from "@duet3d/objectmodel";
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
@@ -7,6 +7,7 @@ import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from
 import { ConfigPort } from "@/store/model/ConfigPort";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
 import { ConfigToolModel } from "@/store/model/ConfigToolModel";
+import { ConfigTempSensor } from "./ConfigTempSensor";
 
 /**
  * Object model tailored for the config tool
@@ -120,6 +121,7 @@ export default class ConfigModel extends ObjectModel {
 
 		this.refreshDrivers();
 		this.refreshPorts();
+		this.refreshSensors();
 	}
 
 	/**
@@ -168,6 +170,7 @@ export default class ConfigModel extends ObjectModel {
         this.fixExpansionBoards();
 		this.refreshDrivers();
 		this.refreshPorts();
+		this.refreshSensors();
 		this.enforceLimits();
 	}
 
@@ -353,6 +356,27 @@ export default class ConfigModel extends ObjectModel {
 
 		// Sort the port list again
 		this.configTool.ports.sort((a, b) => a.toString().localeCompare(b.toString()));
+	}
+
+	/**
+	 * Refresh the temperature sensor list and either add new sensors or remove obsolete ones
+	 */
+	refreshSensors(): void {
+		while (this.sensors.analog.length > this.configTool.sensors.length) {
+			this.configTool.sensors.push((this.sensors.analog[this.sensors.analog.length - 1] !== null) ? new ConfigTempSensor() : null);
+		}
+
+		while (this.configTool.sensors.length > this.sensors.analog.length) {
+			this.configTool.sensors.pop();
+		}
+
+		for (let i = 0; i < this.configTool.sensors.length; i++) {
+			if (this.sensors.analog[i] === null) {
+				this.configTool.sensors[i] = null;
+			} else if (this.configTool.sensors[i] === null) {
+				this.configTool.sensors[i] = new ConfigTempSensor();
+			}
+		}
 	}
 
 	/**

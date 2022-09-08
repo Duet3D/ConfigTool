@@ -90,6 +90,7 @@
 						<li><RouterLink to="/Configuration/ZProbes" class="link-dark rounded">Z-Probes</RouterLink></li>
 						<li><RouterLink to="/Configuration/Endstops" class="link-dark rounded">Endstops</RouterLink></li>
 						<li><RouterLink to="/Configuration/Compensation" class="link-dark rounded">Compensation</RouterLink></li>
+						<li><RouterLink to="/Configuration/Sensors" class="link-dark rounded">Sensors</RouterLink></li>
 						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration/Extruders" class="link-dark rounded">Extruders</RouterLink></li>
 						<li v-if="store.data.configTool.capabilities.cnc"><RouterLink to="/Configuration/Spindles" class="link-dark rounded">Spindles</RouterLink></li>
 						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration/Lasers" class="link-dark rounded">Lasers</RouterLink></li>

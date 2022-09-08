@@ -4,6 +4,7 @@ import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
 import type { ExpansionBoardType } from "@/store/ExpansionBoards";
+import { fixPrecision } from "@/utils";
 
 export class ConfigAutoSaveModel extends ModelObject {
 	enabled: boolean = false;
@@ -80,8 +81,8 @@ export class ConfigDeltaProperties extends ModelObject {
 		}));
 
 		for (const point of this.probePoints) {
-			point.x = parseFloat(point.x.toFixed(2));
-			point.y = parseFloat(point.y.toFixed(2));
+			point.x = fixPrecision(point.x, 2);
+			point.y = fixPrecision(point.y, 2);
 		}
 	}
 }
@@ -117,7 +118,7 @@ export class ConfigToolModel extends ModelObject {
 	password: string = "";
 	readonly ports: ModelCollection<ConfigPort> = new ModelCollection(ConfigPort);
 	skewOffset: number = 100;
-	readonly tempSensors: ModelCollection<ConfigTempSensor | null> = new ModelCollection(ConfigTempSensor);
+	readonly sensors: ModelCollection<ConfigTempSensor | null> = new ModelCollection(ConfigTempSensor);
 	waitForToolTemperatures: boolean = true;
 	readonly wiFi: ConfigWiFi = new ConfigWiFi();
 

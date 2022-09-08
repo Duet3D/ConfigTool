@@ -1,4 +1,7 @@
 <template>
+	<label v-if="props.label" class="form-label" :for="id">
+		{{ props.label }}:
+	</label>
 	<div class="input-group">
 		<slot name="prepend" />
 		<input ref="input" :id="id" class="form-control" :class="validationClass" type="number" v-bind="$attrs"

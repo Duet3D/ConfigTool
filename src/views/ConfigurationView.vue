@@ -8,6 +8,7 @@
 		<z-probes-config />
 		<endstops-config />
 		<compensation-config />
+		<sensors-config />
 		<extruders-config v-if="store.data.configTool.capabilities.fff" />
 		<spindles-config v-if="store.data.configTool.capabilities.cnc" />
 		<lasers-config v-if="store.data.configTool.capabilities.laser" />
@@ -33,6 +34,7 @@ import AxesConfig from "@/components/configuration/AxesConfig.vue";
 import ZProbesConfig from "@/components/configuration/ZProbesConfig.vue";
 import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
 import CompensationConfig from "@/components/configuration/CompensationConfig.vue";
+import SensorsConfig from "@/components/configuration/SensorsConfig.vue";
 import ExtrudersConfig from "@/components/configuration/ExtrudersConfig.vue";
 import SpindlesConfig from "@/components/configuration/SpindlesConfig.vue";
 import LasersConfig from "@/components/configuration/LasersConfig.vue";

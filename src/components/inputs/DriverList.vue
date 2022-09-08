@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { Dropdown } from "bootstrap";
 import type { DriverId } from "@duet3d/objectmodel";
-import { computed, onBeforeUnmount, onMounted, type Ref, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 import { useStore } from "@/store";
 
@@ -54,7 +54,7 @@ const props = defineProps<{
 const store = useStore();
 
 // Dropdown functionality
-const dropdownButton: Ref<Element | null> = ref(null), dropdown: Ref<Dropdown | null> = ref(null);
+const dropdownButton = ref<Element | null>(null), dropdown = ref<Dropdown | null>(null);
 onMounted(() => {
 	if (dropdownButton.value) {
 		dropdown.value = new Dropdown(dropdownButton.value);
@@ -75,11 +75,13 @@ function addDriver(driver: DriverId) {
 // Driver list
 const availableDrivers = computed(() => {
 	const driverList: Array<DriverId> = [];
-	for (const driver of store.data.configTool.drivers) {
-		if (!store.data.move.axes.some(axis => axis.drivers.some(item => item.equals(driver.id))) &&
-			!store.data.move.extruders.some(extruder => extruder.driver?.equals(driver.id))
-		) {
-			driverList.push(driver.id);
+	if (props.drivers.length < store.data.limits.driversPerAxis!) {
+		for (const driver of store.data.configTool.drivers) {
+			if (!store.data.move.axes.some(axis => axis.drivers.some(item => item.equals(driver.id))) &&
+				!store.data.move.extruders.some(extruder => extruder.driver?.equals(driver.id))
+			) {
+				driverList.push(driver.id);
+			}
 		}
 	}
 	return driverList;

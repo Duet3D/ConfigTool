@@ -5,13 +5,13 @@
 	<div class="input-group">
 		<input :id="id" class="form-control" :class="firstValidationClass" type="number"
 			   required :min="0.00001" step="any"
-			   :value="props.firstRatio" @input="onFirstInput">
+			   :value="props.firstRatio" @input="onFirstInput" v-preset="props.firstPreset">
 		<span class="input-group-text">
 			:
 		</span>
 		<input class="form-control" :class="secondValidationClass" type="number"
 		       required :min="0.00001" step="any"
-		       :value="props.secondRatio" @input="onSecondInput">
+		       :value="props.secondRatio" @input="onSecondInput" v-preset='props.secondPreset'>
 	</div>
 </template>
 
@@ -36,9 +36,19 @@ interface RatioInputProps {
 	firstRatio: number,
 
 	/**
+	 * Optional first preset value
+	 */
+	firstPreset?: number,
+
+	/**
 	 * Second ratio value
 	 */
-	secondRatio: number
+	secondRatio: number,
+
+	/**
+	 * Optional second preset value
+	 */
+	secondPreset?: number
 }
 const props = defineProps<RatioInputProps>();
 

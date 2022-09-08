@@ -3,11 +3,10 @@
 		{{ props.label }}:
 	</label>
 	<div class="input-group" :class="props.small ? 'input-group-sm' : ''">
-		<input type="number" :id="id" class="form-control" :class="validationClass" v-bind="$attrs"
-		       :min="props.min" :max="props.max" :step="props.step"
-			   :disabled="props.disabled" :required="props.required"
-			   :data-unit="unit" v-preset="props.preset"
-			   :value="props.modelValue" @change="onChange" @input="onInput">
+		<input type="number" :id="id" class="form-control" :class="validationClass" v-bind="$attrs" :min="props.min"
+			   :max="props.max" :step="props.step" :disabled="props.disabled" :required="props.required"
+			   :data-unit="unit" v-preset="(props.preset != null) ? props.preset * props.factor : null"
+			   :value="props.modelValue * props.factor" @change="onChange" @input="onInput">
 		<span v-if="!!props.unit && !props.hideUnit" class="input-group-text">
 			<slot name="unit">
 				{{ props.unit }}
@@ -52,6 +51,11 @@ interface NumberInputProps {
 	max?: number,
 
 	/**
+	 * Optional multiplier for the model value
+	 */
+	factor?: number,
+
+	/**
 	 * Current value
 	 */
 	modelValue: number,
@@ -93,6 +97,7 @@ interface NumberInputProps {
 }
 const props = withDefaults(defineProps<NumberInputProps>(), {
 	lazy: false,
+	factor: 1,
 	disabled: false,
 	required: true,
 	valid: true,
@@ -111,8 +116,8 @@ const validationClass = computed<string | null>(() => {
 	if (!props.disabled && props.required) {
 		return (props.valid &&
 				!isNaN(props.modelValue) && isFinite(props.modelValue) &&
-				(props.min === undefined || props.modelValue >= props.min) &&
-				(props.max === undefined || props.modelValue <= props.max)) ? "is-valid" : "is-invalid";
+				(props.min === undefined || props.modelValue * props.factor >= props.min) &&
+				(props.max === undefined || props.modelValue * props.factor <= props.max)) ? "is-valid" : "is-invalid";
 	}
 	return null;
 })
@@ -121,13 +126,13 @@ const validationClass = computed<string | null>(() => {
 function onChange(e: Event) {
 	if (e.target !== null && props.lazy) {
 		const value = parseFloat((e.target as HTMLInputElement).value);
-		emit("update:modelValue", value);
+		emit("update:modelValue", value / props.factor);
 	}
 }
 function onInput(e: Event) {
 	if (e.target !== null && !props.lazy) {
 		const value = parseFloat((e.target as HTMLInputElement).value);
-		emit("update:modelValue", value);
+		emit("update:modelValue", value / props.factor);
 	}
 }
 </script>

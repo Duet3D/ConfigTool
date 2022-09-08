@@ -62,7 +62,7 @@
 							</div>
 							<select-input v-else title="Letter of this axis"
 							              :valid="!!axis.letter && isAxisUnique(axis)" :required="!axis.letter || !isAxisUnique(axis)"
-							              v-model="axis.letter" :options="getAxisLetterOptions(axis)" :preset="getAxisDefault(index, 'letter')" />
+							              v-model="axis.letter" :options="getAxisLetterOptions(axis)" :preset="getPresetAxisValue(index, 'letter')" />
 						</td>
 						<td>
 							<driver-list :drivers="axis.drivers" class="mt-1" />
@@ -70,7 +70,7 @@
 						<td class="lh-1">
 							<select-input title="Microstepping for mapped drivers"
 							              :model-value="getMicrostepping(axis)" @update:model-value="setMicrostepping(axis, $event)"
-							              :options="getMicrosteppingOptions(axis)" :preset="getDefaultMicrostepping(axis)" />
+							              :options="getMicrosteppingOptions(axis)" :preset="getPresetAxisMicrostepping(axis)" />
 							<span v-show="getMicrostepping(axis).endsWith('i')" class="small-text">
 								interpolated to x256
 							</span>
@@ -81,23 +81,23 @@
 						<td>
 							<number-input title="Maximum allowed speed for instantaneous direction changes"
 							              :min="0" :step="1" :max="axis.speed" unit="mm/s" hide-unit
-							              v-model="axis.jerk" :preset="getAxisDefault(index, 'jerk')" />
+							              v-model="axis.jerk" :preset="getPresetAxisValue(index, 'jerk')" />
 						</td>
 						<td>
 							<number-input title="Maximum allowed speed"
 							              :min="0.1" :step="1" unit="mm/s" hide-unit
-							              v-model="axis.speed" :preset="getAxisDefault(index, 'speed')" />
+							              v-model="axis.speed" :preset="getPresetAxisValue(index, 'speed')" />
 						</td>
 						<td>
 							<number-input title="Acceleration for moves"
 							              :min="0.1" :step="1" unit="mm/s²" hide-unit
-							              v-model="axis.acceleration" :preset="getAxisDefault(index, 'acceleration')" />
+							              v-model="axis.acceleration" :preset="getPresetAxisValue(index, 'acceleration')" />
 						</td>
 						<td>
 							<number-input title="Peak current for mapped drivers (not RMS)"
 							              :min="0" :max="getMaxCurrent(axis.drivers)" :step="100" unit="mA" hide-unit
 							              :disabled="getMaxCurrent(axis.drivers)! <= 0"
-							              v-model="axis.current" :preset="getAxisDefault(index, 'current')" />
+							              v-model="axis.current" :preset="getPresetAxisValue(index, 'current')" />
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger mt-1" :disabled="isPersistentAxis(axis)" @click="store.data.move.axes.splice(index, 1)">
@@ -186,7 +186,7 @@ function getMicrostepping(axis: Axis): string {
 			}
 		}
 	}
-	return getDefaultMicrostepping(axis);
+	return getPresetAxisMicrostepping(axis);
 }
 function setMicrostepping(axis: Axis, value: string): void {
 	let microstepping: number, interpolated: boolean;
@@ -238,13 +238,13 @@ function getMicrosteppingOptions(axis: Axis) {
 	}
 	return options;
 }
-function getDefaultMicrostepping(axis: Axis): string {
+function getPresetAxisMicrostepping(axis: Axis): string {
 	const boardDefinition = store.data.getBoardDefinition((axis.drivers.length > 0) ? axis.drivers[0].board : null);
 	return (boardDefinition && boardDefinition.microstepInterpolations.includes(16)) ? "16i" : "16";
 }
 
-function getAxisDefault(index: number, property: keyof Axis): number | null {
-	return (index < store.preset.move.axes.length) ? store.preset.move.axes[index][property] as number | null : null;
+function getPresetAxisValue<K extends keyof Axis>(index: number, key: K) {
+	return (index < store.preset.move.axes.length) ? store.preset.move.axes[index][key] : null;
 }
 
 function getMaxCurrent(drivers: DriverId[]) {

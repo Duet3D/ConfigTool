@@ -69,7 +69,7 @@
 										  :model-value="getMicrostepping(extruder)"
 										  @update:model-value="setMicrostepping(extruder, $event)"
 										  :options="getMicrosteppingOptions(extruder)"
-										  :preset="getDefaultMicrostepping(extruder)" />
+										  :preset="getPresetExtruderMicrostepping(extruder)" />
 							<span v-show="getMicrostepping(extruder).endsWith('i')" class="small-text">
 								interpolated to x256
 							</span>
@@ -80,22 +80,22 @@
 						<td>
 							<number-input title="Maximum allowed speed for instantaneous direction changes" :min="0"
 										  :step="1" :max="extruder.speed" unit="mm/s" hide-unit v-model="extruder.jerk"
-										  :preset="getExtruderDefault(index, 'jerk')" />
+										  :preset="getPresetExtruderValue(index, 'jerk')" />
 						</td>
 						<td>
 							<number-input title="Maximum allowed speed" :min="0.1" :step="1" unit="mm/s" hide-unit
-										  v-model="extruder.speed" :preset="getExtruderDefault(index, 'speed')" />
+										  v-model="extruder.speed" :preset="getPresetExtruderValue(index, 'speed')" />
 						</td>
 						<td>
 							<number-input title="Acceleration for moves" :min="0.1" :step="1" unit="mm/s²" hide-unit
 										  v-model="extruder.acceleration"
-										  :preset="getExtruderDefault(index, 'acceleration')" />
+										  :preset="getPresetExtruderValue(index, 'acceleration')" />
 						</td>
 						<td>
 							<number-input title="Peak current for mapped driver (not RMS)" :min="0"
 										  :max="getMaxCurrent(extruder.driver)" :step="100" unit="mA" hide-unit
 										  :disabled="getMaxCurrent(extruder.driver)! <= 0" v-model="extruder.current"
-										  :preset="getExtruderDefault(index, 'current')" />
+										  :preset="getPresetExtruderValue(index, 'current')" />
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger mt-1"
@@ -149,7 +149,7 @@ function getMicrostepping(extruder: Extruder): string {
 			return `${driver.microstepping}${driver.microsteppingInterpolated ? "i" : ""}`
 		}
 	}
-	return getDefaultMicrostepping(extruder);
+	return getPresetExtruderMicrostepping(extruder);
 }
 function setMicrostepping(extruder: Extruder, value: string): void {
 	let microstepping: number, interpolated: boolean;
@@ -201,13 +201,13 @@ function getMicrosteppingOptions(extruder: Extruder) {
 	}
 	return options;
 }
-function getDefaultMicrostepping(extruder: Extruder): string {
+function getPresetExtruderMicrostepping(extruder: Extruder): string {
 	const boardDefinition = store.data.getBoardDefinition(extruder.driver ? extruder.driver.board : null);
 	return (boardDefinition && boardDefinition.microstepInterpolations.includes(16)) ? "16i" : "16";
 }
 
-function getExtruderDefault(index: number, property: keyof Extruder): number | null {
-	return (index < store.preset.move.extruders.length) ? store.preset.move.extruders[index][property] as number | null : null;
+function getPresetExtruderValue<K extends keyof Extruder>(index: number, key: K) {
+	return (index < store.preset.move.extruders.length) ? store.preset.move.extruders[index][key] : null;
 }
 
 function getMaxCurrent(driver: DriverId | null) {
