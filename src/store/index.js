@@ -38,7 +38,12 @@ export default new Vuex.Store({
 		canRemoveTool(state) { return state.template.tools.length > 0; },
 
 		canAddFan(state) { return state.template.fans.length < Template.getMaxFans(state.template); },
-		canRemoveFan(state) { return state.template.fans.length > 0; }
+		canRemoveFan(state) { return state.template.fans.length > 0; },
+
+		canAddExpansionBoard: (state) => (board) => {
+			return (state.template.expansion_boards.length < state.board.maxExpansionBoards) &&
+					(board !== 'Dual Stepper Driver Expansion Module' || !state.template.expansion_boards.includes('Dual Stepper Driver Expansion Module'));
+		},
 	},
 	actions: {
 		setBoard({ commit }, board) {
@@ -206,9 +211,6 @@ export default new Vuex.Store({
 			}
 
 			state.template.expansion_boards.push(boardName);
-		},
-		canAddExpansionBoard(state, board) {
-			return (state.template.expansion_boards.length < state.board.maxExpansionBoards) && (board !== 'Dual Stepper Driver Expansion Module' || !state.template.expansion_boards.includes('Dual Stepper Driver Expansion Module'));
 		},
 		removeExpansionBoard(state, index) {
 			state.template.expansion_boards.splice(index, 1);

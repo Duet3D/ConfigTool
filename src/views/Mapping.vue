@@ -1,4 +1,4 @@
-<, truestyle scoped>
+<style scoped>
 .no-wrap {
 	white-space: nowrap;
 }
@@ -249,7 +249,7 @@ export default {
 			preset: state => state.preset,
 			template: state => state.template
 		}),
-		...mapGetters(['canAddExtruder', 'canRemoveExtruder', 'canAddNozzle', 'canRemoveNozzle', 'canAddFan', 'canRemoveFan']),
+		...mapGetters(['canAddExtruder', 'canRemoveExtruder', 'canAddNozzle', 'canRemoveNozzle', 'canAddFan', 'canRemoveFan', 'canAddExpansionBoard']),
 		...mapMultiRowFields(['template.drives', 'template.heaters', 'template.fans']),
 		canRemoveHeater() {
 			return this.canRemoveNozzle || this.template.bed.present || this.template.chamber.present;
@@ -264,7 +264,7 @@ export default {
 	},
 	methods: {
 		...mapMutations([
-			'addExpansionBoard', 'canAddExpansionBoard', 'removeExpansionBoard',
+			'addExpansionBoard', 'removeExpansionBoard',
 			'addExtruder', 'removeExtruder', 'updateDrive',
 			'addNozzle', 'removeNozzle', 'updateBed', 'updateChamber', 'updateHeater',
 			'addFan', 'removeFan', 'updateFan',
