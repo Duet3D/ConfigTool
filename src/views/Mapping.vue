@@ -274,12 +274,12 @@ export default {
 			let expIndex = 1, toolIndex = 121;
 			for (let i = 0; i <= index; i++) {
 				const expansionBoard = ExpansionBoards[this.template.expansion_boards[i]];
-				const canAddress = expansionBoard.isToolBoard ? toolIndex++ : expIndex++;
+				const canAddress = expansionBoard.isCanBoard ? (expansionBoard.isToolBoard ? toolIndex++ : expIndex++) : 0;
 				if (i === index) {
 					return canAddress;
 				}
 			}
-			return 'n/a';
+			return "n/a";
 		},
 		getBoardProp(boardName, propName) {
 			const board = ExpansionBoards[boardName];
@@ -328,14 +328,26 @@ export default {
 			}
 			for (let i = 0; i < this.template.expansion_boards.length; i++) {
 				const expansionBoard = ExpansionBoards[this.template.expansion_boards[i]];
-				for (let k = 0; k < expansionBoard.numDrives; k++) {
-					const canAddress = this.getCanAddress(i), driver = `${canAddress}.${k}`;
-					options.push({
-						text: this.getDriverCaption(canAddress, k),
-						value: driver,
-						disabled: index !== drive && this.drives.some(item => item.driver_v3 === driver)
-					});
-					index++;
+				if (expansionBoard.isCanBoard) {
+					for (let k = 0; k < expansionBoard.numDrives; k++) {
+						const canAddress = this.getCanAddress(i), driver = `${canAddress}.${k}`;
+						options.push({
+							text: this.getDriverCaption(canAddress, k),
+							value: driver,
+							disabled: index !== drive && this.drives.some(item => item.driver_v3 === driver)
+						});
+						index++;
+					}
+				} else {
+					for (let k = 0; k < expansionBoard.numDrives; k++) {
+						const driver = `0.${this.board.numDrives + k}`;
+						options.push({
+							text: this.getDriverCaption(0, this.board.numDrives + k),
+							value: driver,
+							disabled: index !== drive && this.drives.some(item => item.driver_v3 === driver)
+						});
+						index++;
+					}
 				}
 			}
 
