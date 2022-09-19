@@ -24,7 +24,7 @@ let numInstances = 0;
 
 <script setup lang="ts">
 import { Popover } from "bootstrap";
-import { computed, onBeforeUnmount, type Ref, ref } from "vue";
+import { computed, onBeforeUnmount, ref } from "vue";
 import { closeAllTooltips } from "@/directives/VPreset";
 
 // External interface
@@ -93,7 +93,7 @@ function onChange(e: Event) {
 };
 
 // Popover functionality
-const input: Ref<Element | null> = ref(null), popoverContent: Ref<Element | null> = ref(null);
+const input = ref<Element | null>(null), popoverContent = ref<Element | null>(null);
 let popover: Popover | null = null, popoverShown = false
 
 function hidePopover() {

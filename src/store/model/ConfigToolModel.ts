@@ -122,11 +122,11 @@ export class ConfigToolModel extends ModelObject {
 	waitForToolTemperatures: boolean = true;
 	readonly wiFi: ConfigWiFi = new ConfigWiFi();
 
-	assignPort(port: string, fn: ConfigPortFunction | null, index: number, frequency: number = 0): ConfigPort {
+	assignPort(port: string, fn: ConfigPortFunction | null, index: number, frequency?: number): ConfigPort {
 		for (const item of this.ports) {
 			if (item.equals(port)) {
 				item.function = fn;
-				item.frequency = frequency;
+				item.frequency = frequency ?? ((fn === ConfigPortFunction.fan || ConfigPortFunction.heater) ? 250 : 500);
 				item.index = index;
 				item.inverted = port.includes("!");
 				item.pullUp = port.includes("^");
@@ -135,14 +135,14 @@ export class ConfigToolModel extends ModelObject {
 		}
 		throw new Error(`Could not find port ${port}`);
 	}
-	
-    getProbesByBoard(board: number | null): Set<number> {
-        const probes = new Set<number>();
-        for (const port of this.ports) {
+
+	getProbesByBoard(board: number | null): Set<number> {
+		const probes = new Set<number>();
+		for (const port of this.ports) {
 			if (port.canBoard === board && [ConfigPortFunction.probeIn, ConfigPortFunction.probeMod, ConfigPortFunction.probeServo].includes(port.function!)) {
-                probes.add(port.index);
-            }
-        }
-        return probes;
-    }
+				probes.add(port.index);
+			}
+		}
+		return probes;
+	}
 }

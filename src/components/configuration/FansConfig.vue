@@ -2,35 +2,46 @@
 	<scroll-item anchor="Fans">
 		<template #title>
 			Fans
-			<button class="btn btn-sm btn-primary" :disabled="!canAddFan" @click="addFan">
+			<button class="btn btn-sm btn-primary" :disabled="!canAddFan" @click.prevent="addFan">
 				<i class="bi-plus-circle"></i>
 				Add Fan
 			</button>
 		</template>
 		<template #body>
-			<div class="card m-2" v-for="(fan, index) in store.data.fans">
-				<template v-if="fan !== null">
+			<template v-for="(fan, index) in store.data.fans">
+				<div v-if="fan !== null" class="card m-2">
 					<div class="card-header d-flex justify-content-between align-items-center">
 						Fan #{{ index }}
-						<button class="btn btn-sm btn-danger" @click="store.data.fans.splice(index, 1)">
+						<button class="btn btn-sm btn-danger" @click.prevent="store.data.fans.splice(index, 1)">
 							<i class="bi-trash"></i>
 						</button>
 					</div>
 					<div class="card-body">
 						<div class="row g-3">
 							<div class="col-2">
+								<select-input label="Number" title="Number of this fan" :model-value="index"
+											  @update:model-value="setFanNumber(index, $event)"
+											  :options="getFanNumbers(index)" />
+							</div>
+							<div class="col-2">
 								<text-input label="Name" title="Optional name of this fan" v-model="fan.name"
 											:max-length="20" :required="false"
 											:preset="getPresetFanValue(index, 'name')" :placeholder="`Fan ${index}`" />
 							</div>
-							<div class="col-2">
+							<div class="col-3">
 								<port-input label="PWM Port" title="PWM output port for this fan"
 											:function="ConfigPortFunction.fan" :index="index" />
 							</div>
-							<div class="col-2">
+							<div class="col-3">
 								<port-input label="Tacho Port"
 											title="Optional fan tach port for this fan (e.g. from 4-pin PWM fans)"
 											:function="ConfigPortFunction.fanTacho" :index="index" />
+							</div>
+							<div class="col-2">
+								<number-input label="Blip Time"
+											  title="Fan will be run at full PWM for this number of seconds when started from standstill"
+											  unit="s" :min="0" :step="0.1" v-model="fan.blip"
+											  :preset="getPresetFanValue(index, 'blip')" />
 							</div>
 							<div class="col-2">
 								<number-input label="Minimum Speed" title="Minimum fan speed" unit="%" :factor="100"
@@ -43,17 +54,11 @@
 											  :preset="getPresetFanValue(index, 'max')" />
 							</div>
 							<div class="col-2">
-								<number-input label="Default Speed" title="Initial fan speed on start-up" :factor="100"
+								<number-input label="Initial Speed" title="Initial fan speed on start-up" :factor="100"
 											  unit="%" :min="0" :max="100" :step="0.1" v-model="fan.requestedValue"
 											  :preset="getPresetFanValue(index, 'requestedValue')" />
 							</div>
-							<div class="col-2">
-								<number-input label="Blip Time"
-											  title="Fan will be run at full PWM for this number of seconds when started from standstill"
-											  unit="s" :min="0" :step="0.1" v-model="fan.blip"
-											  :preset="getPresetFanValue(index, 'blip')" />
-							</div>
-							<div class="col-2">
+							<div class="col-3">
 								TODO sensor selection
 							</div>
 							<div class="col-3">
@@ -61,8 +66,8 @@
 							</div>
 						</div>
 					</div>
-				</template>
-			</div>
+				</div>
+			</template>
 
 			<div v-if="store.data.fans.length === 0" class="alert alert-info mb-0">
 				<i class="bi-info-circle"></i>
@@ -79,6 +84,7 @@ import { computed } from "vue";
 import ScrollItem from "@/components/ScrollItem.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
+import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
 
 import { useStore } from "@/store";
@@ -99,6 +105,41 @@ function addFan() {
 }
 
 // Fans
+function getFanNumbers(index: number) {
+	const options: Array<SelectOption> = [];
+	for (let i = 0; i < (store.data.limits.fans ?? 0); i++) {
+		options.push({
+			text: i.toString(),
+			value: i,
+			disabled: (i !== index) && (i < store.data.fans.length) && (store.data.fans[i] !== null)
+		});
+	}
+	return options;
+}
+
+function setFanNumber(index: number, newIndex: number) {
+	for (const port of store.data.configTool.ports) {
+		if ([ConfigPortFunction.fan, ConfigPortFunction.fanTacho].includes(port.function!) && port.index === index) {
+			// Move associated ports to the new index
+			port.index = newIndex;
+		}
+	}
+
+	// Ensure we have enough items in the fans array
+	while (store.data.fans.length < newIndex) {
+		store.data.fans.push(null);
+	}
+
+	// Move the fan from the old slot to the new one
+	store.data.fans[newIndex] = store.data.fans[index];
+	store.data.fans[index] = null;
+
+	// Clean up unused items at the end
+	while (store.data.fans[store.data.fans.length - 1] === null) {
+		store.data.fans.pop();
+	}
+}
+
 function getPresetFanValue<K extends keyof Fan>(index: number, key: K) {
 	if (index < store.preset.fans.length) {
 		const presetFan = store.preset.fans[index];

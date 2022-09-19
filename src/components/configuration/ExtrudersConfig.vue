@@ -2,7 +2,7 @@
 	<scroll-item anchor="Extruders" title="Extruders">
 		<template #title>
 			Extruders
-			<button class="btn btn-sm btn-primary" :disabled="!canAddExtruder" @click="addExtruder">
+			<button class="btn btn-sm btn-primary" :disabled="!canAddExtruder" @click.prevent="addExtruder">
 				<i class="bi-plus-circle"></i>
 				Add Extruder
 			</button>
@@ -99,7 +99,7 @@
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger mt-1"
-									@click="store.data.move.extruders.splice(index, 1)">
+									@click.prevent="store.data.move.extruders.splice(index, 1)">
 								<i class="bi-trash"></i>
 							</button>
 						</td>

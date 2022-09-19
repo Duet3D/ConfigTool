@@ -1,6 +1,6 @@
 <template>
-	<base-dialog title="Advanced Delta Kinematics Settings"
-	             :model-value="props.modelValue" @update:model-value="emit('update:modelValue', $event)">
+	<base-dialog title="Advanced Delta Kinematics Settings" :model-value="props.modelValue"
+				 @update:model-value="emit('update:modelValue', $event)">
 		<div v-if="deltaKinematics">
 			<table class="table table-striped table-bordered table-advanced-delta">
 				<thead>
@@ -22,14 +22,13 @@
 							{{ getTowerCaption(index) }}
 						</td>
 						<td>
-							<number-input title="Diagonal rod length of this tower"
-							              :min="1" step="any" unit="mm"
-							              v-model="tower.diagonal" :preset="getPresetTower(index)?.diagonal" />
+							<number-input title="Diagonal rod length of this tower" :min="1" :step="0.001" unit="mm"
+										  v-model="tower.diagonal" :preset="getPresetTower(index)?.diagonal" />
 						</td>
 						<td>
-							<number-input title="Endstop adjustment of this tower"
-							              step="any" unit="mm"
-							              v-model="tower.endstopAdjustment" :preset="getPresetTower(index)?.endstopAdjustment" />
+							<number-input title="Endstop adjustment of this tower" :step="0.001" unit="mm"
+										  v-model="tower.endstopAdjustment"
+										  :preset="getPresetTower(index)?.endstopAdjustment" />
 						</td>
 					</tr>
 				</tbody>
@@ -37,14 +36,12 @@
 
 			<div class="row">
 				<div class="col">
-					<number-input label="X Tilt" title="Tilt of the printer in X direction"
-					              step="any" unit="%"
-					              v-model="deltaKinematics.xTilt" :preset="presetDeltaKinematics?.xTilt" />
+					<number-input label="X Tilt" title="Tilt of the printer in X direction" :step="0.001" unit="%"
+								  v-model="deltaKinematics.xTilt" :preset="presetDeltaKinematics?.xTilt" />
 				</div>
 				<div class="col">
-					<number-input label="Y Tilt" title="Tilt of the printer in Y direction"
-					              step="any" unit="%"
-					              v-model="deltaKinematics.yTilt" :preset="presetDeltaKinematics?.yTilt" />
+					<number-input label="Y Tilt" title="Tilt of the printer in Y direction" :step="0.001" unit="%"
+								  v-model="deltaKinematics.yTilt" :preset="presetDeltaKinematics?.yTilt" />
 				</div>
 			</div>
 

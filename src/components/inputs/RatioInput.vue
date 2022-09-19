@@ -4,13 +4,13 @@
 	</label>
 	<div class="input-group">
 		<input :id="id" class="form-control" :class="firstValidationClass" type="number"
-			   required :min="0.00001" step="any"
+			   required :min="0.01" step="any"
 			   :value="props.firstRatio" @input="onFirstInput" v-preset="props.firstPreset">
 		<span class="input-group-text">
 			:
 		</span>
 		<input class="form-control" :class="secondValidationClass" type="number"
-		       required :min="0.00001" step="any"
+		       required :min="0.01" step="any"
 		       :value="props.secondRatio" @input="onSecondInput" v-preset='props.secondPreset'>
 	</div>
 </template>

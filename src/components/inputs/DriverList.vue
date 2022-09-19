@@ -9,17 +9,17 @@
 		<span v-if="props.drivers.length === 0" class="text-danger is-invalid me-2 mb-1">
 			<i class="bi-exclamation-circle"></i> none
 		</span>
-		<button v-for="(driver, index) in props.drivers" class="btn btn-outline-primary btn-sm text-nowrap"
+		<button v-for="(driver, index) in props.drivers" type="button" class="btn btn-outline-primary btn-sm text-nowrap"
 				v-title="(driver.board !== null) ? `Board ${driver.board} Driver ${driver.driver}` : `Driver ${driver.driver}`"
-		        @click="props.drivers.splice(index, 1)">
+		        @click.prevent="props.drivers.splice(index, 1)">
 			{{ driver }}
 			<i class="bi-x"></i>
 		</button>
 
 		<div class="dropdown">
-			<button ref="dropdownButton" class="btn btn-outline-success btn-sm text-nowrap"
+			<button ref="dropdownButton" type="button" class="btn btn-outline-success btn-sm text-nowrap"
 					:disabled="availableDrivers.length === 0" data-bs-toggle="dropdown" data-bs-auto-close="true"
-					@click="dropdown?.show()">
+					@click.prevent="dropdown?.show()">
 				<i class="bi-plus"></i>
 			</button>
 

@@ -34,7 +34,7 @@
 		</template>
 
 		<div class="d-flex justify-content-center mt-3">
-			<button type="button" class="btn btn-lg btn-secondary me-1" @click="inputJsonFile!.click()">
+			<button type="button" class="btn btn-lg btn-secondary me-1" @click.prevent="inputJsonFile!.click()">
 				<i class="bi bi-cloud-arrow-up"></i>
 				Import Existing Template
 			</button>

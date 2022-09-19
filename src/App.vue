@@ -2,6 +2,7 @@
 body {
 	min-height: 100vh;
 	min-height: -webkit-fill-available;
+	overflow: hidden;
 }
 
 html {

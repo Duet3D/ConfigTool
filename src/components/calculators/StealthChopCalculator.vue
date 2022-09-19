@@ -36,7 +36,7 @@
 					<i class="bi-check-circle"></i>
 					Apply
 				</button>
-				<button type="button" class="btn btn-danger ms-2" @click="cancel">
+				<button type="button" class="btn btn-danger ms-2" @click.prevent="cancel">
 					<i class="bi-x-circle"></i>
 					Cancel
 				</button>

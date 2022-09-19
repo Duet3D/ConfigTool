@@ -1,9 +1,9 @@
 <template>
-	<base-calculator ref="calculator" label="Resistance at 25C" title="Calculate Thermistor Parameters"
+	<base-calculator ref="calculator" label="Resistance at 25°C" title="Calculate Thermistor Parameters"
 	                 :min="100" :max="1000000" :step="1"
 	                 v-model="props.sensor.r25" unit="Ω">
 		<template #prepend>
-			<span class="input-group-text" v-title="'Heater thermistor resistance at 25C'">
+			<span class="input-group-text" v-title="'Heater thermistor resistance at 25°C'">
 				<i class="bi bi-calculator"></i>
 			</span>
 		</template>

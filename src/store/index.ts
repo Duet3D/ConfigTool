@@ -1,4 +1,6 @@
 import {
+	AnalogSensor,
+	AnalogSensorType,
 	Axis,
 	AxisLetter,
 	Board,
@@ -7,6 +9,15 @@ import {
 	Endstop,
 	EndstopType,
 	Extruder,
+	Fan,
+	FanThermostaticControl,
+	Heat,
+	Heater,
+	HeaterModel,
+	HeaterModelPID,
+	HeaterMonitor,
+	HeaterMonitorAction,
+	HeaterMonitorCondition,
 	initCollection,
 	initObject,
 	KinematicsName,
@@ -22,13 +33,51 @@ import {
 import { defineStore } from 'pinia';
 
 import ConfigModel from "@/store/model";
+import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { Boards, BoardType } from "@/store/Boards";
-import { ConfigPortFunction } from "./model/ConfigPort";
 
 const defaultTemplate = initObject(ConfigModel, {
 	boards: initCollection(Board, [
 		Boards[BoardType.Duet3Mini5PlusWiFi].objectModelBoard
 	]),
+	fans: initCollection(Fan, [
+		{
+			thermostatic: initObject(FanThermostaticControl, {
+				heaters: [1]	// sensors, actually
+			})
+		}
+	]),
+	heat: initObject(Heat, {
+		heaters: initCollection(Heater, [
+			{
+				max: 140,
+				model: initObject(HeaterModel, {
+					pid: initObject(HeaterModelPID, {
+						used: false
+					})
+				}),
+				monitors: initCollection(HeaterMonitor, [
+					{
+						action: HeaterMonitorAction.generateFault,
+						condition: HeaterMonitorCondition.tooHigh,
+						limit: 140
+					}
+				]),
+				sensor: 0
+			},
+			{
+				max: 285,
+				monitors: initCollection(HeaterMonitor, [
+					{
+						action: HeaterMonitorAction.generateFault,
+						condition: HeaterMonitorCondition.tooHigh,
+						limit: 285
+					}
+				]),
+				sensor: 1
+			}
+		])
+	}),
 	move: initObject(Move, {
 		axes: initCollection(Axis, [
 			{
@@ -101,6 +150,16 @@ const defaultTemplate = initObject(ConfigModel, {
 		name: "Duet 3"
 	}),
 	sensors: initObject(Sensors, {
+		analog: initCollection(AnalogSensor, [
+			{
+				name: "Heated Bed",
+				type: AnalogSensorType.thermistor
+			},
+			{
+				name: "Nozzle",
+				type: AnalogSensorType.thermistor
+			}
+		]),
 		endstops: initCollection(Endstop, [
 			{
 				type: EndstopType.InputPin
@@ -124,6 +183,11 @@ defaultTemplate.configTool.delta.calculateProbePoints(0, 0);
 defaultTemplate.configTool.assignPort("io0.in", ConfigPortFunction.endstop, 0);		// X endstop
 defaultTemplate.configTool.assignPort("io1.in", ConfigPortFunction.endstop, 1);		// Y endstop
 defaultTemplate.configTool.assignPort("io2.in", ConfigPortFunction.probeIn, 0);		// Z probe in
+defaultTemplate.configTool.assignPort("temp0", ConfigPortFunction.thermistor, 0);	// Bed temp
+defaultTemplate.configTool.assignPort("temp1", ConfigPortFunction.thermistor, 1);	// Nozzle temp
+defaultTemplate.configTool.assignPort("out0", ConfigPortFunction.heater, 0);		// Bed heater
+defaultTemplate.configTool.assignPort("out1", ConfigPortFunction.heater, 1);		// Nozzle heater
+defaultTemplate.configTool.assignPort("out3", ConfigPortFunction.fan, 0);			// Nozzle fan
 
 export const useStore = defineStore({
     id: "model",

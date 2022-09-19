@@ -2,35 +2,47 @@
 	<scroll-item anchor="Kinematics">
 		<template #title>
 			Kinematics
-			<a v-if="store.data.move.kinematics.name === KinematicsName.cartesian" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_cartesian" target="_blank">
+			<a v-if="store.data.move.kinematics.name === KinematicsName.cartesian"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_cartesian" target="_blank">
 				<i class="bi-info-circle"></i>
 				Cartesian configuration
 			</a>
-			<a v-else-if="isCoreKinematics" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_coreXY" target="_blank">
+			<a v-else-if="isCoreKinematics"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_coreXY" target="_blank">
 				<i class="bi-info-circle"></i>
 				CoreXY configuration
 			</a>
-			<a v-else-if="store.data.move.kinematics.name === KinematicsName.delta" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_linear_delta" target="_blank">
+			<a v-else-if="store.data.move.kinematics.name === KinematicsName.delta"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_linear_delta"
+			   target="_blank">
 				<i class="bi-info-circle"></i>
 				Linear Delta configuration
 			</a>
-			<a v-else-if="store.data.move.kinematics.name === KinematicsName.rotaryDelta" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_rotary_delta" target="_blank">
+			<a v-else-if="store.data.move.kinematics.name === KinematicsName.rotaryDelta"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_rotary_delta"
+			   target="_blank">
 				<i class="bi-info-circle"></i>
 				Rotary Delta configuration
 			</a>
-			<a v-else-if="store.data.move.kinematics.name === KinematicsName.scara" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_SCARA" target="_blank">
+			<a v-else-if="store.data.move.kinematics.name === KinematicsName.scara"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_SCARA" target="_blank">
 				<i class="bi-info-circle"></i>
 				Serial SCARA configuration
 			</a>
-			<a v-else-if="store.data.move.kinematics.name === KinematicsName.fiveBarScara" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_five_bar_parallel_scara" target="_blank">
+			<a v-else-if="store.data.move.kinematics.name === KinematicsName.fiveBarScara"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_five_bar_parallel_scara"
+			   target="_blank">
 				<i class="bi-info-circle"></i>
 				Five Bar Parallel SCARA configuration
 			</a>
-			<a v-else-if="store.data.move.kinematics.name === KinematicsName.hangprinter" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_Hangprinter" target="_blank">
+			<a v-else-if="store.data.move.kinematics.name === KinematicsName.hangprinter"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_Hangprinter"
+			   target="_blank">
 				<i class="bi-info-circle"></i>
 				Hangprinter configuration
 			</a>
-			<a v-else-if="store.data.move.kinematics.name === KinematicsName.polar" href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_Polar" target="_blank">
+			<a v-else-if="store.data.move.kinematics.name === KinematicsName.polar"
+			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_Polar" target="_blank">
 				<i class="bi-info-circle"></i>
 				Polar configuration
 			</a>
@@ -39,11 +51,12 @@
 		<div class="row mb-3">
 			<div class="col">
 				<select-input label="Kinematics type" title="Kinematics type to use"
-				              :model-value="store.data.move.kinematics.name" @update:model-value="setKinematics($event as KinematicsName)"
-				              :options="KinematicsOptions" :preset="store.preset.move.kinematics.name" />
+							  :model-value="store.data.move.kinematics.name"
+							  @update:model-value="setKinematics($event as KinematicsName)" :options="KinematicsOptions"
+							  :preset="store.preset.move.kinematics.name" />
 			</div>
 			<div class="col-auto d-flex align-items-end">
-				<button class="btn btn-secondary" @click="showAdvancedSettings = true">
+				<button class="btn btn-secondary" @click.prevent="showAdvancedSettings = true">
 					<i class="bi-box-arrow-up-right"></i>
 					Advanced
 				</button>
@@ -54,19 +67,19 @@
 			<core-kinematics-dialog v-model="showAdvancedSettings" />
 			<template v-for="letter in [AxisLetter.X, AxisLetter.Y, AxisLetter.Z]">
 				<div class="col-2">
-					<number-input v-if="getAxis(letter)"
-					              :label="`${letter} minimum`" :title="`Minimum position of the ${letter} axis`"
-					              :max="getAxis(letter)!.max - 0.01" step="any" unit="mm"
-					              v-model="getAxis(letter)!.min" :preset="getAxisPreset(letter)?.min" />
+					<number-input v-if="getAxis(letter)" :label="`${letter} minimum`"
+								  :title="`Minimum position of the ${letter} axis`" :max="getAxis(letter)!.max - 0.01"
+								  :step="0.01" unit="mm" v-model="getAxis(letter)!.min"
+								  :preset="getAxisPreset(letter)?.min" />
 					<span v-else class="text-danger is-invalid">
 						missing {{ letter }} axis
 					</span>
 				</div>
 				<div class="col-2">
-					<number-input v-if="getAxis(letter)"
-					              :label="`${letter} maximum`" :title="`Maximum position of the ${letter} axis`"
-					              :min="getAxis(letter)!.min + 0.01" step="any" unit="mm"
-					              v-model="getAxis(letter)!.max" :preset="getAxisPreset(letter)?.max" />
+					<number-input v-if="getAxis(letter)" :label="`${letter} maximum`"
+								  :title="`Maximum position of the ${letter} axis`" :min="getAxis(letter)!.min + 0.01"
+								  :step="0.01" unit="mm" v-model="getAxis(letter)!.max"
+								  :preset="getAxisPreset(letter)?.max" />
 
 				</div>
 			</template>
@@ -75,33 +88,34 @@
 			<!-- Delta Kinematics -->
 			<delta-kinematics-dialog v-model="showAdvancedSettings" />
 			<div class="col">
-				<number-input label="Delta radius" title="Horizontal distance subtended by each rod, measured between joint centres, when the effector is in the centre"
-				              :min="deltaKinematics!.printRadius" step="any" unit="mm"
-				              v-model="deltaKinematics!.deltaRadius" :preset="presetDeltaKinematics?.deltaRadius" />
+				<number-input label="Delta radius"
+							  title="Horizontal distance subtended by each rod, measured between joint centres, when the effector is in the centre"
+							  :min="deltaKinematics!.printRadius" :step="0.1" unit="mm"
+							  v-model="deltaKinematics!.deltaRadius" :preset="presetDeltaKinematics?.deltaRadius" />
 			</div>
 			<div class="col">
-				<number-input v-if="getAxis(AxisLetter.Z)"
-				              :label="`${AxisLetter.Z} minimum`" :title="`Minimum position of the ${AxisLetter.Z} axis`"
-				              step="any" unit="mm"
-				              v-model="getAxis(AxisLetter.Z)!.min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
+				<number-input v-if="getAxis(AxisLetter.Z)" :label="`${AxisLetter.Z} minimum`"
+							  :title="`Minimum position of the ${AxisLetter.Z} axis`" :step="0.01" unit="mm"
+							  v-model="getAxis(AxisLetter.Z)!.min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
 				<span v-else class="text-danger is-invalid">
 					missing {{ AxisLetter.Z }} axis
 				</span>
 			</div>
 			<div class="col">
-				<number-input label="Homed height" title="Maximum build height of your printer"
-				              :min="0" step="any" unit="mm"
-				              v-model="deltaKinematics!.homedHeight" :preset="presetDeltaKinematics?.homedHeight" />
+				<number-input label="Homed height" title="Maximum build height of your printer" :min="0" :step="0.001"
+							  unit="mm" v-model="deltaKinematics!.homedHeight"
+							  :preset="presetDeltaKinematics?.homedHeight" />
 			</div>
 			<div class="col">
-				<number-input label="Printable radius" title="Safe printing radius"
-				              :min="0" :max="deltaKinematics!.deltaRadius" step="any" unit="mm"
-				              v-model="deltaKinematics!.printRadius" :preset="presetDeltaKinematics?.printRadius" />
+				<number-input label="Printable radius" title="Safe printing radius" :min="0"
+							  :max="deltaKinematics!.deltaRadius" :step="0.1" unit="mm"
+							  v-model="deltaKinematics!.printRadius" :preset="presetDeltaKinematics?.printRadius" />
 			</div>
 			<div class="col">
-				<number-input label="Diagonal rod length" title="Distance between the centre of your towers and the joint at the effector"
-				              :min="0" step="any" unit="mm"
-				              :model-value="avgDeltaRodLength" @update:model-value="setDeltaRodLength($event)" :preset="avgDeltaRodLengthPreset" />
+				<number-input label="Diagonal rod length"
+							  title="Distance between the centre of your towers and the joint at the effector" :min="0"
+							  :step="0.001" unit="mm" :model-value="avgDeltaRodLength"
+							  @update:model-value="setDeltaRodLength($event)" :preset="avgDeltaRodLengthPreset" />
 			</div>
 		</div>
 		<div v-else-if="store.data.move.kinematics.name === KinematicsName.rotaryDelta">
@@ -149,24 +163,25 @@
 			<hangprinter-kinematics-dialog v-model="showAdvancedSettings" />
 			<div class="row">
 				<div class="col">
-					<number-input label="Printable radius from the origin" title="Printable radius from the origin of the printer"
-					              :min="0.01" step="any" unit="mm"
-					              v-model="hangprinterKinematics!.printRadius" :preset="presetHangprinterKinematics?.printRadius" />
+					<number-input label="Printable radius from the origin"
+								  title="Printable radius from the origin of the printer" :min="0.1" :step="0.1"
+								  unit="mm" v-model="hangprinterKinematics!.printRadius"
+								  :preset="presetHangprinterKinematics?.printRadius" />
 				</div>
 				<div class="col">
-					<number-input v-if="getAxis(AxisLetter.Z)"
-					              :label="`${AxisLetter.Z} minimum`" :title="`Minimum position of the ${AxisLetter.Z} axis`"
-					              :max="getAxis(AxisLetter.Z)!.max - 0.01" step="any" unit="mm"
-					              v-model="getAxis(AxisLetter.Z)!.min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
+					<number-input v-if="getAxis(AxisLetter.Z)" :label="`${AxisLetter.Z} minimum`"
+								  :title="`Minimum position of the ${AxisLetter.Z} axis`"
+								  :max="getAxis(AxisLetter.Z)!.max - 0.01" :step="0.01" unit="mm"
+								  v-model="getAxis(AxisLetter.Z)!.min" :preset="getAxisPreset(AxisLetter.Z)?.min" />
 					<span v-else class="text-danger is-invalid">
-							missing {{ AxisLetter.Z }} axis
+						missing {{ AxisLetter.Z }} axis
 					</span>
 				</div>
 				<div class="col">
-					<number-input v-if="getAxis(AxisLetter.Z)"
-					              :label="`${AxisLetter.Z} maximum`" :title="`Maximum position of the ${AxisLetter.Z} axis`"
-					              :min="getAxis(AxisLetter.Z)!.min + 0.01" step="any" unit="mm"
-					              v-model="getAxis(AxisLetter.Z)!.max" :preset="getAxisPreset(AxisLetter.Z)?.max" />
+					<number-input v-if="getAxis(AxisLetter.Z)" :label="`${AxisLetter.Z} maximum`"
+								  :title="`Maximum position of the ${AxisLetter.Z} axis`"
+								  :min="getAxis(AxisLetter.Z)!.min + 0.01" :step="0.01" unit="mm"
+								  v-model="getAxis(AxisLetter.Z)!.max" :preset="getAxisPreset(AxisLetter.Z)?.max" />
 				</div>
 			</div>
 			<div class="row mt-3">
@@ -197,25 +212,27 @@
 									{{ anchor }}
 								</td>
 								<td>
-									<number-input :title="`X coordinate of the ${anchor} anchor`"
-									              step="any" unit="mm" :disabled="anchor === 'D'"
-									              v-model="hangprinterKinematics!.anchors[index][0]" :preset="presetHangprinterKinematics?.anchors[index][0]" />
+									<number-input :title="`X coordinate of the ${anchor} anchor`" :step="0.1" unit="mm"
+												  :disabled="anchor === 'D'"
+												  v-model="hangprinterKinematics!.anchors[index][0]"
+												  :preset="presetHangprinterKinematics?.anchors[index][0]" />
 								</td>
 								<td>
-									<number-input :title="`Y coordinate of the ${anchor} anchor`"
-									              step="any" unit="mm" :disabled="anchor === 'D'"
-									              v-model="hangprinterKinematics!.anchors[index][1]" :preset="presetHangprinterKinematics?.anchors[index][1]" />
+									<number-input :title="`Y coordinate of the ${anchor} anchor`" :step="0.1" unit="mm"
+												  :disabled="anchor === 'D'"
+												  v-model="hangprinterKinematics!.anchors[index][1]"
+												  :preset="presetHangprinterKinematics?.anchors[index][1]" />
 								</td>
 								<td>
-									<number-input :title="`Z coordinate of the ${anchor} anchor`"
-									              step="any" unit="mm"
-									              v-model="hangprinterKinematics!.anchors[index][2]" :preset="presetHangprinterKinematics?.anchors[index][2]" />
+									<number-input :title="`Z coordinate of the ${anchor} anchor`" :step="0.1" unit="mm"
+												  v-model="hangprinterKinematics!.anchors[index][2]"
+												  :preset="presetHangprinterKinematics?.anchors[index][2]" />
 								</td>
 								<!--
 								<td>
 									<number-input v-if="getAxis(AxisLetter.Z)"
 									              :title="`Z coordinate of the ${anchor} anchor`"
-									              :min="getAxis(AxisLetter.Z).min" :max="getAxis(AxisLetter.Z).max" step="any" unit="mm"
+									              :min="getAxis(AxisLetter.Z).min" :max="getAxis(AxisLetter.Z).max" :step="0.01" unit="mm"
 									              v-model="hangprinterKinematics.anchors[index][2]" :preset="presetHangprinterKinematics?.anchors[index][2]" />
 									<span v-else class="text-danger is-invalid">
 										missing {{ AxisLetter.Z }} axis
@@ -332,8 +349,8 @@ const KinematicsOptions: Record<string, Array<SelectOption>> = {
 
 // General
 function setKinematics(value: KinematicsName) {
-	let updateKinematics = 
-	store.data.update({ move: { kinematics: { name: value } } });
+	let updateKinematics =
+		store.data.update({ move: { kinematics: { name: value } } });
 	if (store.data.move.kinematics instanceof CoreKinematics) {
 		// Update forward/inverse matrices for core kinematics
 		store.data.move.kinematics.update({

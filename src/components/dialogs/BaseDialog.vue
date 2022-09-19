@@ -8,9 +8,11 @@
 					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="modal-body">
+				<slot v-if="contentIsBody" />
+				<div v-else class="modal-body">
 					<slot />
 				</div>
+				<slot name="body" />
 				<div class="modal-footer justify-content-center">
 					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">
 						Close
@@ -25,10 +27,13 @@
 import { Modal } from "bootstrap";
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	modelValue: boolean,
-	title: string
-}>();
+	title: string,
+	contentIsBody?: boolean
+}>(), {
+	contentIsBody: false
+});
 const emit = defineEmits<{
 	(e: "update:modelValue", value: boolean): void
 }>();

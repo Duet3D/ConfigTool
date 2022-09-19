@@ -1,5 +1,5 @@
 <style scoped>
-.table-can-boards tr > td {
+.table-can-boards tr>td {
 	vertical-align: middle;
 }
 </style>
@@ -27,20 +27,24 @@
 		<template v-if="supportsExpansionBoards || supportsCan">
 			<div v-if="supportsCan" class="row">
 				<div class="col-auto mb-2">
-					<check-input label="Configure CAN-connected expansion boards" title="Check this to configure CAN-connected expansion boards"
-					             v-model="configureCan" :preset="false" />
+					<check-input label="Configure CAN-connected expansion boards"
+								 title="Check this to configure CAN-connected expansion boards" v-model="configureCan"
+								 :preset="false" />
 				</div>
 			</div>
 			<div class="row">
 				<div v-if="supportsExpansionBoards" class="col">
-					<select-input label="Direct-Connect Expansion Board" title="Expansion board to use with the selected main board"
-					              v-model="expansionBoard" :options="expansionBoards" :preset="null" />
+					<select-input label="Direct-Connect Expansion Board"
+								  title="Expansion board to use with the selected main board" v-model="expansionBoard"
+								  :options="expansionBoards" :preset="null" />
 				</div>
 				<div v-if="supportsCan && configureCan" class="col">
-						<select-input label="CAN Expansion Board" v-model="canExpansionBoardToAdd" :options="canExpansionBoards" :required="false" />
+					<select-input label="CAN Expansion Board" v-model="canExpansionBoardToAdd"
+								  :options="canExpansionBoards" :required="false" />
 				</div>
 				<div v-if="supportsCan && configureCan" class="col-auto d-flex align-items-end ps-0">
-					<button class="btn btn-primary" :disabled="!canAddCanExpansionBoard" @click="store.data.addExpansionBoard(canExpansionBoardToAdd!)">
+					<button class="btn btn-primary" :disabled="!canAddCanExpansionBoard"
+							@click.prevent="store.data.addExpansionBoard(canExpansionBoardToAdd!)">
 						<i class="bi-plus"></i>
 						Add
 					</button>
@@ -77,9 +81,10 @@
 				<tbody>
 					<tr v-for="(canBoard, index) in store.data.boards.slice(1)">
 						<td>
-							<number-input title="CAN address of this board" :min="1" :step="1" lazy
-							              :model-value="canBoard.canAddress as number" @update:model-value="setCanAddress(canBoard, $event)"
-							              :valid="isCanAddressUnique(canBoard.canAddress)" />
+							<select-input title="CAN address of this board"
+										  :model-value="canBoard.canAddress"
+										  @update:model-value="setCanAddress(canBoard, $event)"
+										  :options="getCanAddressOptions(canBoard.canAddress!)" />
 						</td>
 						<td>
 							{{ ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType] }}
@@ -99,7 +104,7 @@
 							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.gpOut].length }}
 						</td>
 						<td>
-							<button class="btn btn-sm btn-danger" @click="store.data.removeExpansionBoard(index + 1)">
+							<button class="btn btn-sm btn-danger" @click.prevent="store.data.removeExpansionBoard(index + 1)">
 								<i class="bi-trash"></i>
 							</button>
 						</td>
@@ -189,15 +194,18 @@ const canExpansionBoards = computed(() => {
 const canExpansionBoardToAdd = ref(Object.keys(ExpansionBoardType).length > 0 ? Object.values(ExpansionBoardType)[0] as ExpansionBoardType : null);
 const canAddCanExpansionBoard = computed(() => canExpansionBoardToAdd.value || (store.data.limits.boards !== null && store.data.boards.length > store.data.limits.boards));
 
-const isCanAddressUnique = (canAddress: number | null) => {
-	let occurrences = 0;
-	for (const board of store.data.boards) {
-		if (board.canAddress === canAddress) {
-			occurrences++;
-		}
+function getCanAddressOptions(currentAddress: number) {
+	const result = new Array<SelectOption>();
+	for (let i = 1; i <= 125; i++) {
+		result.push({
+			text: i.toString(),
+			value: i,
+			disabled: (i !== currentAddress) && !!store.data.boards.find(board => board.canAddress === i)
+		});
 	}
-	return occurrences === 1;
-};
+	return result;
+}
+
 function setCanAddress(canBoard: Board, value: number) {
 	canBoard.canAddress = value;
 	store.data.refreshDrivers();

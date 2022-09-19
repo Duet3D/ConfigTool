@@ -9,6 +9,7 @@
 		<endstops-config />
 		<compensation-config />
 		<sensors-config />
+		<heaters-config v-if="store.data.configTool.capabilities.fff" />
 		<extruders-config v-if="store.data.configTool.capabilities.fff" />
 		<spindles-config v-if="store.data.configTool.capabilities.cnc" />
 		<lasers-config v-if="store.data.configTool.capabilities.laser" />
@@ -35,6 +36,7 @@ import ZProbesConfig from "@/components/configuration/ZProbesConfig.vue";
 import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
 import CompensationConfig from "@/components/configuration/CompensationConfig.vue";
 import SensorsConfig from "@/components/configuration/SensorsConfig.vue";
+import HeatersConfig from "@/components/configuration/HeatersConfig.vue";
 import ExtrudersConfig from "@/components/configuration/ExtrudersConfig.vue";
 import SpindlesConfig from "@/components/configuration/SpindlesConfig.vue";
 import LasersConfig from "@/components/configuration/LasersConfig.vue";
@@ -55,15 +57,15 @@ const store = useStore();
 // Scrollspy functionality
 const content = ref(), router = useRouter();
 onMounted(() => {
-	let debounceTimer = 0;
+	let ignoreScrollHandler = false, debounceTimer = 0;
 	content.value.onscroll = () => {
 		// When the router scrolls an element into view, it takes a moment before this event can be used again
-		if (eventOptions.ignoreScrollHandler) {
+		if (ignoreScrollHandler) {
 			if (debounceTimer) {
 				clearTimeout(debounceTimer);
 			}
 			debounceTimer = setTimeout(() => {
-				eventOptions.ignoreScrollHandler = false;
+				ignoreScrollHandler = false;
 				debounceTimer = 0;
 			}, 250);
 			return;

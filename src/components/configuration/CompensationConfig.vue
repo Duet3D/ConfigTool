@@ -123,7 +123,7 @@
 						<number-input label="Probe Radius"
 									  title="Probe radius of the mesh grid for automatic bed compensation"
 									  v-model="store.data.move.compensation.probeGrid.radius" :min="1"
-									  :max="store.data.move.compensation.probeGrid.maxs[0]" step="any" unit="mm"
+									  :max="store.data.move.compensation.probeGrid.maxs[0]" :step="0.1" unit="mm"
 									  :preset="store.preset.move.compensation.probeGrid.mins[0]" />
 					</div>
 
@@ -132,7 +132,7 @@
 									  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[0]} axis between the probe points for automatic bed compensation`"
 									  v-model="store.data.move.compensation.probeGrid.spacings[0]" :min="1"
 									  :max="store.data.move.compensation.probeGrid.maxs[0] - store.data.move.compensation.probeGrid.mins[0]"
-									  step="any" unit="mm"
+									  :step="0.1" unit="mm"
 									  :preset="store.preset.move.compensation.probeGrid.spacings[0]" />
 					</div>
 					<div class="col">
@@ -140,7 +140,7 @@
 									  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[1]} axis between the probe points for automatic bed compensation`"
 									  v-model="store.data.move.compensation.probeGrid.spacings[1]" :min="1"
 									  :max="store.data.move.compensation.probeGrid.maxs[1] - store.data.move.compensation.probeGrid.mins[1]"
-									  step="any" unit="mm"
+									  :step="0.1" unit="mm"
 									  :preset="store.preset.move.compensation.probeGrid.spacings[1]" />
 					</div>
 				</div>
@@ -159,7 +159,7 @@
 										  :title="`Minimum ${store.data.move.compensation.probeGrid.axes[0]} coordinate of the mesh grid for automatic bed compensation`"
 										  v-model="store.data.move.compensation.probeGrid.mins[0]"
 										  :min="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[0])?.min"
-										  :max="store.data.move.compensation.probeGrid.maxs[0]" :step="1" unit="mm"
+										  :max="store.data.move.compensation.probeGrid.maxs[0]" :step="0.1" unit="mm"
 										  :preset="store.preset.move.compensation.probeGrid.mins[0]" />
 						</div>
 						<div class="col">
@@ -168,7 +168,7 @@
 										  v-model="store.data.move.compensation.probeGrid.maxs[0]"
 										  :min="store.data.move.compensation.probeGrid.mins[0]"
 										  :max="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[0])?.max"
-										  :step="1" unit="mm"
+										  :step="0.1" unit="mm"
 										  :preset="store.preset.move.compensation.probeGrid.maxs[0]" />
 						</div>
 						<div class="col">
@@ -176,7 +176,7 @@
 										  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[0]} axis between the probe points for automatic bed compensation`"
 										  v-model="store.data.move.compensation.probeGrid.spacings[0]" :min="1"
 										  :max="store.data.move.compensation.probeGrid.maxs[0] - store.data.move.compensation.probeGrid.mins[0]"
-										  step="any" unit="mm"
+										  :step="0.1" unit="mm"
 										  :preset="store.preset.move.compensation.probeGrid.spacings[0]" />
 						</div>
 					</div>
@@ -193,7 +193,7 @@
 										  :title="`Minimum ${store.data.move.compensation.probeGrid.axes[1]} coordinate of the mesh grid for automatic bed compensation`"
 										  v-model="store.data.move.compensation.probeGrid.mins[1]"
 										  :min="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[1])?.min"
-										  :max="store.data.move.compensation.probeGrid.maxs[1]" :step="1" unit="mm"
+										  :max="store.data.move.compensation.probeGrid.maxs[1]" :step="0.1" unit="mm"
 										  :preset="store.preset.move.compensation.probeGrid.mins[1]" />
 						</div>
 						<div class="col">
@@ -202,7 +202,7 @@
 										  v-model="store.data.move.compensation.probeGrid.maxs[1]"
 										  :min="store.data.move.compensation.probeGrid.mins[1]"
 										  :max="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[1])?.max"
-										  :step="1" unit="mm"
+										  :step="0.1" unit="mm"
 										  :preset="store.preset.move.compensation.probeGrid.maxs[1]" />
 						</div>
 						<div class="col">
@@ -210,7 +210,7 @@
 										  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[1]} axis between the probe points for automatic bed compensation`"
 										  v-model="store.data.move.compensation.probeGrid.spacings[1]" :min="1"
 										  :max="store.data.move.compensation.probeGrid.maxs[1] - store.data.move.compensation.probeGrid.mins[1]"
-										  step="any" unit="mm"
+										  :step="0.1" unit="mm"
 										  :preset="store.preset.move.compensation.probeGrid.spacings[1]" />
 						</div>
 					</div>
@@ -394,10 +394,10 @@ function getAxisLetters(index: number) {
 const configureOrthogonoalCompensation = ref<boolean>(false);
 const orthogonalCompensation = computed<boolean>({
 	get() {
-		return (store.data.move.compensation.skew.tanXY !== 0) || 
-			   (store.data.move.compensation.skew.tanXZ !== 0) ||
-			   (store.data.move.compensation.skew.tanYZ !== 0) ||
-			    configureOrthogonoalCompensation.value;
+		return (store.data.move.compensation.skew.tanXY !== 0) ||
+			(store.data.move.compensation.skew.tanXZ !== 0) ||
+			(store.data.move.compensation.skew.tanYZ !== 0) ||
+			configureOrthogonoalCompensation.value;
 	},
 	set(value) {
 		if (!value) {

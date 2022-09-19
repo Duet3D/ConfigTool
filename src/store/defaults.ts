@@ -1,4 +1,5 @@
 import { Kinematics, KinematicsName } from "@duet3d/objectmodel";
+import { PortType } from "./BaseBoard";
 
 export type CoreKinematicsTypes =
 	KinematicsName.cartesian |

@@ -4,7 +4,6 @@ import StartView from "@/views/StartView.vue";
 import TemplatesView from "@/views/TemplatesView.vue";
 
 export const eventOptions = {
-	ignoreScrollHandler: false,
 	ignoreRouterHandler: false
 };
 
@@ -46,6 +45,7 @@ const router = createRouter({
 		if (to.name === "configuration") {
 			const element = document.getElementById((to.params.item.length !== 0) ? to.params.item[0] : 'General');
 			if (element) {
+				// Cannot use return { el .. } here because our anchors sit in a div
 				element.scrollIntoView(); // { behavior: "smooth" });
 			}
 		}

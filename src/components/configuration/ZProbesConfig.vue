@@ -2,7 +2,7 @@
 	<scroll-item anchor="ZProbes">
 		<template #title>
 			Z-Probes
-			<button class="btn btn-sm btn-primary" :disabled="!canAddProbe" @click="addProbe">
+			<button class="btn btn-sm btn-primary" :disabled="!canAddProbe" @click.prevent="addProbe">
 				<i class="bi-plus-circle"></i>
 				Add Z-Probe
 			</button>
@@ -11,7 +11,7 @@
 			<div class="card m-2" v-for="(probe, index) in store.data.sensors.probes">
 				<div class="card-header d-flex justify-content-between align-items-center">
 					Probe #{{ index }}
-					<button class="btn btn-sm btn-danger" @click="store.data.sensors.probes.splice(index, 1)">
+					<button class="btn btn-sm btn-danger" @click.prevent="store.data.sensors.probes.splice(index, 1)">
 						<i class="bi-trash"></i>
 					</button>
 				</div>

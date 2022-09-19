@@ -61,7 +61,7 @@
 									<select-input title="Location of this endstop"
 												  :model-value="getEndstopLocation(axisIndex)"
 												  @update:model-value="setEndstopLocation(axisIndex, $event)"
-												  :options="EndstopLocations"
+												  :options="EndstopLocationOptions"
 												  :preset="getPresetEndstopLocation(axisIndex)" />
 								</td>
 								<td>
@@ -88,7 +88,7 @@
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
 
-const EndstopLocations: Array<SelectOption> = [
+const EndstopLocationOptions: Array<SelectOption> = [
 	{
 		text: "High end",
 		value: true
@@ -207,25 +207,25 @@ function getEndstopTypeOptions(axis: Axis): Array<SelectOption> {
 }
 
 // Endstop Location
-function getEndstopLocation(index: number): boolean {
-	return (index < store.data.sensors.endstops.length && store.data.sensors.endstops[index] !== null) ? store.data.sensors.endstops[index]!.highEnd : false;
+function getEndstopLocation(axisIndex: number): boolean {
+	return (axisIndex < store.data.sensors.endstops.length && store.data.sensors.endstops[axisIndex] !== null) ? store.data.sensors.endstops[axisIndex]!.highEnd : false;
 }
 
-function setEndstopLocation(index: number, highEnd: boolean): void {
-	if (index < store.data.sensors.endstops.length) {
-		if (store.data.sensors.endstops[index] === null) {
-			store.data.sensors.endstops[index] = new Endstop();
+function setEndstopLocation(axisIndex: number, highEnd: boolean): void {
+	if (axisIndex < store.data.sensors.endstops.length) {
+		if (store.data.sensors.endstops[axisIndex] === null) {
+			store.data.sensors.endstops[axisIndex] = new Endstop();
 		}
-		store.data.sensors.endstops[index]!.highEnd = highEnd;
+		store.data.sensors.endstops[axisIndex]!.highEnd = highEnd;
 	}
 }
 
-function getPresetEndstopLocation(index: number): boolean {
-	return (index < store.preset.sensors.endstops.length && store.preset.sensors.endstops[index] !== null) ? store.preset.sensors.endstops[index]!.highEnd : false;
+function getPresetEndstopLocation(axisIndex: number): boolean {
+	return (axisIndex < store.preset.sensors.endstops.length && store.preset.sensors.endstops[axisIndex] !== null) ? store.preset.sensors.endstops[axisIndex]!.highEnd : false;
 }
 
-function getPresetHomingSpeeds(index: number): Array<number> | undefined {
-	const presetAxis = (index < store.preset.move.axes.length && store.preset.move.axes[index] !== null) ? store.preset.move.axes[index] : null;
+function getPresetHomingSpeeds(axisIndex: number): Array<number> | undefined {
+	const presetAxis = (axisIndex < store.preset.move.axes.length && store.preset.move.axes[axisIndex] !== null) ? store.preset.move.axes[axisIndex] : null;
 	if (presetAxis !== null) {
 		const firstDriver = (presetAxis.drivers.length > 0) ? presetAxis.drivers[0] : null;
 		if (firstDriver) {

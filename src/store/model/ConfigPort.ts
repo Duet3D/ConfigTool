@@ -1,5 +1,5 @@
 import { ModelObject } from "@duet3d/objectmodel";
-import type { PortType } from "../BaseBoard";
+import { PortType } from "../BaseBoard";
 
 /**
  * Enumeration of possible configurations for individual ports
@@ -44,6 +44,7 @@ export class ConfigPort extends ModelObject {
 		this.rawPorts = this.ports.map(port => stripPort(port));
 		if (capability !== null) {
 			this.capabilities.add(capability);
+			this.frequency = (capability === PortType.fan || capability === PortType.heater) ? 250 : 500;
 		}
 	}
 
@@ -83,6 +84,10 @@ export class ConfigPort extends ModelObject {
 		this.capabilities = value.capabilities;
 		this.ports = value.ports;
 		this.rawPorts = value.rawPorts;
+
+		this.frequency = value.frequency;
+		this.inverted = value.inverted;
+		this.pullUp = value.pullUp;
 	}
 
 	/**

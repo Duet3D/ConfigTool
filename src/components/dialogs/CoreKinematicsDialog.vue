@@ -8,7 +8,7 @@
 					<tbody>
 						<tr v-for="mRow in coreKinematics.forwardMatrix">
 							<td v-for="(_, index) in mRow">
-								<number-input step="any" v-model="mRow[index]" />
+								<number-input :step="0.001" v-model="mRow[index]" />
 							</td>
 						</tr>
 					</tbody>
@@ -20,7 +20,7 @@
 					<tbody>
 						<tr v-for="mRow in coreKinematics.inverseMatrix">
 							<td v-for="(_, index) in mRow">
-								<number-input step="any" v-model="mRow[index]" />
+								<number-input :step="0.001" v-model="mRow[index]" />
 							</td>
 						</tr>
 					</tbody>

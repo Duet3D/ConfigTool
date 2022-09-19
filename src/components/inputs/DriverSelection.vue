@@ -1,9 +1,9 @@
 <template>
 	<div class="dropdown" v-title="buttonTitle">
-		<button ref="dropdownButton" class="btn btn-sm text-nowrap dropdown-toggle"
+		<button ref="dropdownButton" type="button" class="btn btn-sm text-nowrap dropdown-toggle"
 				:class="(props.modelValue === null) ? ['btn-outline-danger', 'is-invalid'] : 'btn-outline-success'"
 				:disabled="availableDrivers.length === 0" data-bs-toggle="dropdown"
-				data-bs-auto-close="true" @click="dropdown?.show()">
+				data-bs-auto-close="true" @click.prevent="dropdown?.show()">
 			<template v-if="!props.modelValue">
 				<i class="bi-exclamation-circle"></i> none
 			</template>

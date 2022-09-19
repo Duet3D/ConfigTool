@@ -3,6 +3,7 @@
 		{{ props.label }}:
 	</label>
 	<div class="input-group" :class="props.small ? 'input-group-sm' : ''">
+		<slot name="prepend" />
 		<input type="number" :id="id" class="form-control" :class="validationClass" v-bind="$attrs" :min="props.min"
 			   :max="props.max" :step="props.step" :disabled="props.disabled" :required="props.required"
 			   :data-unit="unit" v-preset="(props.preset != null) ? props.preset * props.factor : null"
@@ -24,7 +25,7 @@ let numInstances = 0;
 import { computed } from "vue";
 
 // External interface
-interface NumberInputProps {
+export interface NumberInputProps {
 	/**
 	 * Optional label next to the control
 	 */

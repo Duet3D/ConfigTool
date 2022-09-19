@@ -5,17 +5,17 @@
 	<div class="input-group">
 		<button type="button" class="btn" :class="homeTwice ? 'btn-primary' : 'btn-outline-secondary'"
 				v-title="probeSpeeds ? 'Probe twice per point at different speeds' : 'Home twice per axis at different speeds'"
-				@click="homeTwice = !homeTwice">
+				@click.prevent="homeTwice = !homeTwice">
 			x2
 		</button>
-		<input :id="id" class="form-control" :class="firstValidationClass" type="number" required :min="0.00001"
+		<input :id="id" class="form-control" :class="firstValidationClass" type="number" required :min="0.1"
 			   step="any" :value="speeds.length > 0 ? speeds[0] : NaN" v-preset="firstPreset" data-unit="mm/s"
 			   :title="probeSpeeds ? 'First speed when probing' : 'First speed when homing'" @input="onFirstInput">
 		<template v-if="homeTwice">
 			<span class="input-group-text">
 				/
 			</span>
-			<input class="form-control" :class="secondValidationClass" type="number" required :min="0.00001" step="any"
+			<input class="form-control" :class="secondValidationClass" type="number" required :min="0.1" step="any"
 				   :value="speeds.length > 1 ? speeds[1] : NaN" v-preset="secondPreset" data-unit="mm/s"
 				   :title="probeSpeeds ? 'Second speed when probing' : 'Second speed when homing'"
 				   @input="onSecondInput">
@@ -32,7 +32,7 @@ let numInstances = 0;
 </script>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 
 // External interface
 interface HomingSpeedsInput {

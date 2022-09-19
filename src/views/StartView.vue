@@ -21,11 +21,11 @@
 		</div>
 
 		<div class="d-flex justify-content-center">
-			<button type="button" class="btn btn-lg btn-secondary me-1" @click="startFromScratch">
+			<button type="button" class="btn btn-lg btn-secondary me-1" @click.prevent="startFromScratch">
 				<i class="bi bi-plus-square"></i>
 				Start from Scratch
 			</button>
-			<button type="button" class="btn btn-lg btn-primary ms-1" @click="$router.push('/Templates')">
+			<button type="button" class="btn btn-lg btn-primary ms-1" @click.prevent="$router.push('/Templates')">
 				<i class="bi bi-file-earmark-arrow-up"></i>
 				Start with Existing Template
 			</button>

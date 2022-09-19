@@ -2,7 +2,7 @@
 	<scroll-item anchor="Axes">
 		<template #title>
 			Axes
-			<button class="btn btn-sm btn-primary" :disabled="!canAddAxis" @click="addAxis">
+			<button class="btn btn-sm btn-primary" :disabled="!canAddAxis" @click.prevent="addAxis">
 				<i class="bi-plus-circle"></i>
 				Add Axis
 			</button>
@@ -100,7 +100,7 @@
 							              v-model="axis.current" :preset="getPresetAxisValue(index, 'current')" />
 						</td>
 						<td>
-							<button class="btn btn-sm btn-danger mt-1" :disabled="isPersistentAxis(axis)" @click="store.data.move.axes.splice(index, 1)">
+							<button class="btn btn-sm btn-danger mt-1" :disabled="isPersistentAxis(axis)" @click.prevent="store.data.move.axes.splice(index, 1)">
 								<i class="bi-trash"></i>
 							</button>
 						</td>

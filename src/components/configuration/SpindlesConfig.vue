@@ -2,7 +2,7 @@
 	<scroll-item anchor="Spindles">
 		<template #title>
 			Spindles
-			<button class="btn btn-sm btn-primary" :disabled="!canAddSpindle" @click="addSpindle">
+			<button class="btn btn-sm btn-primary" :disabled="!canAddSpindle" @click.prevent="addSpindle">
 				<i class="bi-plus-circle"></i>
 				Add Spindle
 			</button>
@@ -96,7 +96,7 @@
 							-->
 							<td>
 								<button class="btn btn-sm btn-danger mt-1"
-										@click="store.data.spindles.splice(index, 1)">
+										@click.prevent="store.data.spindles.splice(index, 1)">
 									<i class="bi-trash"></i>
 								</button>
 							</td>
