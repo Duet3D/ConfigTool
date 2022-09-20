@@ -207,7 +207,16 @@ function getCanAddressOptions(currentAddress: number) {
 }
 
 function setCanAddress(canBoard: Board, value: number) {
+	for (const port of store.data.configTool.ports) {
+		if (port.canBoard === canBoard.canAddress) {
+			port.setCanBoard(value);
+		}
+	}
+	for (const driver of store.data.configTool.drivers) {
+		if (driver.id.board === canBoard.canAddress) {
+			driver.id.board = value;
+		}
+	}
 	canBoard.canAddress = value;
-	store.data.refreshDrivers();
 }
 </script>

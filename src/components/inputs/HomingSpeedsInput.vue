@@ -35,7 +35,7 @@ let numInstances = 0;
 import { computed, ref } from "vue";
 
 // External interface
-interface HomingSpeedsInput {
+interface HomingSpeedInputProps {
 	/**
 	 * Whether this control is meant to set probe speeds
 	 */
@@ -51,7 +51,7 @@ interface HomingSpeedsInput {
 	 */
 	preset?: Array<number> | null
 }
-const props = withDefaults(defineProps<HomingSpeedsInput>(), {
+const props = withDefaults(defineProps<HomingSpeedInputProps>(), {
 	probeSpeeds: false
 });
 

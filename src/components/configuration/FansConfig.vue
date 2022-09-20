@@ -58,11 +58,31 @@
 											  unit="%" :min="0" :max="100" :step="0.1" v-model="fan.requestedValue"
 											  :preset="getPresetFanValue(index, 'requestedValue')" />
 							</div>
-							<div class="col-3">
-								TODO sensor selection
+							<div class="col-2">
+								<sensor-list label="Monitored Sensors" :board="getFanBoard(index)"
+											 :sensors="fan.thermostatic.heaters"
+											 @sensorAdded="onFanSensorAdded(fan.thermostatic)"
+											 @sensorRemoved="onFanSensorRemoved(fan.thermostatic)" />
 							</div>
-							<div class="col-3">
-								TODO Trigger Temeprature (control range)
+							<div class="col-4">
+								<two-number-input first-label="Thermostatic Trigger Temperature"
+												  second-label="Thermostatic Temperature Range"
+												  v-model:first-value="fan.thermostatic.lowTemperature"
+												  v-model:second-value="fan.thermostatic.highTemperature"
+												  :first-preset="getPresetFanThermostaticValue(index, 'lowTemperature')"
+												  :second-preset="getPresetFanThermostaticValue(index, 'highTemperature')"
+												  button-title="Control fan within a specified temperature range from 0-100%"
+												  first-title="Lower temperature threshold"
+												  second-title="Upper temperature threshold"
+												  :disabled="fan.thermostatic.heaters.length === 0" :min="-273"
+												  :max="1999" :step="0.1" unit="°C" is-range>
+									<template #button>
+										<i class="bi bi-sliders"></i>
+									</template>
+									<template #separator>
+										-
+									</template>
+								</two-number-input>
 							</div>
 						</div>
 					</div>
@@ -78,17 +98,19 @@
 </template>
 
 <script setup lang="ts">
-import { Fan } from "@duet3d/objectmodel";
+import { Fan, FanThermostaticControl } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
+import SensorList from "@/components/inputs/SensorList.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
+import TwoNumberInput from "@/components/inputs/TwoNumberInput.vue";
 
 import { useStore } from "@/store";
-import { ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const store = useStore();
 
@@ -145,6 +167,35 @@ function getPresetFanValue<K extends keyof Fan>(index: number, key: K) {
 		const presetFan = store.preset.fans[index];
 		if (presetFan !== null) {
 			return presetFan[key];
+		}
+	}
+	return null;
+}
+
+function getFanBoard(index: number) {
+	return store.data.configTool.ports.find(port => port.function === ConfigPortFunction.fan && port.index === index)?.canBoard;
+}
+
+function onFanSensorAdded(ft: FanThermostaticControl) {
+	if (ft.lowTemperature === null) {
+		ft.lowTemperature = 45;
+	}
+	if (ft.highTemperature === null) {
+		ft.highTemperature = 45;
+	}
+}
+
+function onFanSensorRemoved(ft: FanThermostaticControl) {
+	if (ft.heaters.length === 0) {
+		ft.lowTemperature = ft.highTemperature = null;
+	}
+}
+
+function getPresetFanThermostaticValue<K extends keyof FanThermostaticControl>(index: number, key: K) {
+	if (index < store.preset.fans.length) {
+		const presetFan = store.preset.fans[index];
+		if (presetFan !== null) {
+			return presetFan.thermostatic[key];
 		}
 	}
 	return null;

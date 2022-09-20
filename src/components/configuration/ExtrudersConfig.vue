@@ -129,8 +129,9 @@ import { useStore } from "@/store";
 
 const store = useStore();
 
-// Axis management
+// Extruder management
 const canAddExtruder = computed(() => (store.data.move.extruders.length < store.data.limits.extruders!) && (store.data.move.axes.length + store.data.move.extruders.length < store.data.limits.axesPlusExtruders!));
+
 function addExtruder() {
 	const extruder = new Extruder();
 	if (store.preset.move.extruders.length > store.data.move.extruders.length) {

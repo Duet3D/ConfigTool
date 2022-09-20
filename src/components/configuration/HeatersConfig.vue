@@ -10,10 +10,10 @@
 		<template #body>
 			<table class="table table-striped mb-0">
 				<colgroup>
-					<col style="width: auto;">
-					<col style="width: 30%;">
-					<col style="width: 20%;">
-					<col style="width: 30%;">
+					<col style="width: 12%;">
+					<col style="width: 25%;">
+					<col style="width: 18%;">
+					<col style="width: 25%;">
 					<col style="width: 20%;">
 					<col style="width: auto;">
 				</colgroup>
@@ -45,7 +45,9 @@
 							<!-- Heater -->
 							<tr>
 								<td class="text-center align-middle">
-									{{ index }}
+									<select-input title="Number of this heater" :model-value="index"
+												  @update:model-value="setHeaterNumber(index, $event)"
+												  :options="getHeaterNumbers(index)" />
 								</td>
 								<td>
 									<select-input title="Sensor mapped to this heater" v-model="heater.sensor"
@@ -99,7 +101,7 @@
 								</td>
 								<td>
 									<button class="btn btn-sm btn-danger mt-1"
-											@click.prevent="store.data.heat.heaters.splice(index, 1)">
+											@click.prevent="deleteHeater(index)">
 										<i class="bi-trash"></i>
 									</button>
 								</td>
@@ -165,6 +167,66 @@
 									:monitors="heaterMonitors" />
 		</template>
 	</scroll-item>
+
+	<div class="row mt-3">
+		<!-- Bed Heaters-->
+		<div class="col-6">
+			<div class="card">
+				<div class="card-header d-flex justify-content-between">
+					Bed Heaters
+					<button class="btn btn-primary btn-sm">
+						<i class="bi bi-plus-circle"></i>
+						Add Bed Heater
+					</button>
+				</div>
+				<table class="table table-striped mb-0">
+					<thead>
+						<th>
+							Number
+						</th>
+						<th>
+							Heater
+						</th>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+				<div class="alert alert-info mb-0">
+					<i class="bi bi-info-circle"></i>
+					No Bed Heaters
+				</div>
+			</div>
+		</div>
+
+		<!-- Chamber Heaters-->
+		<div class="col-6">
+			<div class="card">
+				<div class="card-header d-flex justify-content-between">
+					Chamber Heaters
+					<button class="btn btn-primary btn-sm">
+						<i class="bi bi-plus-circle"></i>
+						Add Chamber Heater
+					</button>
+				</div>
+				<table class="table table-striped mb-0">
+					<thead>
+						<th>
+							Number
+						</th>
+						<th>
+							Heater
+						</th>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+				<div class="alert alert-info mb-0">
+					<i class="bi bi-info-circle"></i>
+					No Chamber Heaters
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script lang="ts">
@@ -217,6 +279,41 @@ function deleteHeater(index: number) {
 }
 
 // Heaters
+function getHeaterNumbers(index: number) {
+	const options: Array<SelectOption> = [];
+	for (let i = 0; i < (store.data.limits.heaters ?? 0); i++) {
+		options.push({
+			text: i.toString(),
+			value: i,
+			disabled: (i !== index) && (i < store.data.heat.heaters.length) && (store.data.heat.heaters[i] !== null)
+		});
+	}
+	return options;
+}
+
+function setHeaterNumber(index: number, newIndex: number) {
+	for (const port of store.data.configTool.ports) {
+		if (port.function === ConfigPortFunction.heater && port.index === index) {
+			// Move associated ports to the new index
+			port.index = newIndex;
+		}
+	}
+
+	// Ensure we have enough items in the heaters array
+	while (store.data.heat.heaters.length < newIndex) {
+		store.data.heat.heaters.push(null);
+	}
+
+	// Move the heater from the old slot to the new one
+	store.data.heat.heaters[newIndex] = store.data.heat.heaters[index];
+	store.data.heat.heaters[index] = null;
+
+	// Clean up unused items at the end
+	while (store.data.heat.heaters[store.data.heat.heaters.length - 1] === null) {
+		store.data.heat.heaters.pop();
+	}
+}
+
 const sensorOptions = computed(() => {
 	const result: Array<SelectOption> = [];
 	for (let i = 0; i < store.data.sensors.analog.length; i++) {

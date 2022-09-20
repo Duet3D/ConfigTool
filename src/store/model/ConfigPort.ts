@@ -54,19 +54,30 @@ export class ConfigPort extends ModelObject {
 	capabilities: Set<PortType> = new Set<PortType>();
 
     /**
-     * CAN address of these ports
+     * CAN address of this port
      */
-    canBoard: number | null;
+	canBoard: number | null = null;
+
+	/**
+	 * Update the CAN board of this port
+	 * @param value New CAN address
+	 */
+	setCanBoard(value: number) {
+		const regex = new RegExp(`(^[!^]*)(${this.canBoard})\.`), replaceWith = `$1${value.toString()}.`;
+		this.ports = this.ports.map(port => port.replace(regex, replaceWith));
+		this.rawPorts = this.rawPorts.map(rawPort => rawPort.replace(regex, replaceWith));
+		this.canBoard = value;
+	}
 
 	/**
 	 * Ports with default modifiers (e.g. inversion [!] or pull-up [^])
 	 */
-	ports: Array<string>;
+	ports: Array<string> = [];
 
 	/**
 	 * Raw port names without address prefix or modifiers for faster comparisons
 	 */
-	rawPorts: Array<string>;
+	rawPorts: Array<string> = [];
 
 	/**
 	 * Check if any port is set for DueX

@@ -28,7 +28,8 @@ import {
 	Probe,
 	ProbeGrid,
 	ProbeType,
-	Sensors
+	Sensors,
+	Tool
 } from "@duet3d/objectmodel";
 import { defineStore } from 'pinia';
 
@@ -42,8 +43,13 @@ const defaultTemplate = initObject(ConfigModel, {
 	]),
 	fans: initCollection(Fan, [
 		{
+			// default
+		},
+		{
 			thermostatic: initObject(FanThermostaticControl, {
-				heaters: [1]	// sensors, actually
+				heaters: [1],				// sensors, actually
+				lowTemperature: 45,
+				highTemperature: 45
 			})
 		}
 	]),
@@ -176,7 +182,15 @@ const defaultTemplate = initObject(ConfigModel, {
 				type: ProbeType.analog
 			}
 		])
-	})
+	}),
+	tools: initCollection(Tool, [
+		{
+			extruders: [0],
+			filamentExtruder: 0,
+			heaters: [1],
+			fans: [0]
+		}
+	])
 });
 defaultTemplate.validate();
 defaultTemplate.configTool.delta.calculateProbePoints(0, 0);
@@ -188,6 +202,7 @@ defaultTemplate.configTool.assignPort("temp1", ConfigPortFunction.thermistor, 1)
 defaultTemplate.configTool.assignPort("out0", ConfigPortFunction.heater, 0);		// Bed heater
 defaultTemplate.configTool.assignPort("out1", ConfigPortFunction.heater, 1);		// Nozzle heater
 defaultTemplate.configTool.assignPort("out3", ConfigPortFunction.fan, 0);			// Nozzle fan
+defaultTemplate.configTool.assignPort("out4", ConfigPortFunction.fan, 1);			// Nozzle thermostatic fan
 
 export const useStore = defineStore({
     id: "model",

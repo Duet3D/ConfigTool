@@ -22,7 +22,7 @@ interface TextInputProps {
 	/**
 	 * Optional label next to the control
 	 */
-	label: string,
+	label?: string,
 
 	/**
 	 * Update value on change, not on input (defaults to false)

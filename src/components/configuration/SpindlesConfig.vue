@@ -11,17 +11,17 @@
 		<template #body>
 			<table v-if="store.data.spindles.length > 0" class="table table-striped mb-0">
 				<colgroup>
-					<col style="width: auto;">
-					<col style="width: 23.3%;">
-					<col style="width: 23.4%;">
-					<col style="width: 23.3%;">
-					<col style="width: 15%;">
-					<col style="width: 15%;">
+					<col style="width: 10%;">
+					<col style="width: 25%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 12.5%;">
+					<col style="width: 12.5%;">
 					<col style="width: auto;">
 				</colgroup>
 				<thead>
 					<tr>
-						<th class="text-center">
+						<th>
 							Spindle
 						</th>
 						<th>
@@ -58,10 +58,10 @@
 				<tbody>
 					<template v-for="(spindle, index) in store.data.spindles">
 						<tr v-if="spindle !== null">
-							<td class="text-center">
-								<div class="mt-2">
-									{{ index }}
-								</div>
+							<td>
+								<select-input title="Number of this spindle" :model-value="index"
+										  @update:model-value="setSpindleNumber(index, $event)"
+										  :options="getSpindleNumbers(index)" />
 							</td>
 							<td>
 								<port-input :function="ConfigPortFunction.spindlePwm" :index="index" />
@@ -120,6 +120,7 @@ import { computed } from "vue";
 import ScrollItem from "@/components/ScrollItem.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
+import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
@@ -139,6 +140,41 @@ function addSpindle() {
 }
 
 // Spindles
+function getSpindleNumbers(index: number) {
+	const options: Array<SelectOption> = [];
+	for (let i = 0; i < store.data.limits.spindles!; i++) {
+		options.push({
+			text: i.toString(),
+			value: i,
+			disabled: (i !== index) && (i < store.data.spindles.length) && (store.data.spindles[i] !== null)
+		});
+	}
+	return options;
+}
+
+function setSpindleNumber(index: number, newIndex: number) {
+	for (const port of store.data.configTool.ports) {
+		if ([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards].includes(port.function!) && port.index === index) {
+			// Move associated ports to the new index
+			port.index = newIndex;
+		}
+	}
+
+	// Ensure we have enough items in the spindles array
+	while (store.data.spindles.length < newIndex) {
+		store.data.spindles.push(null);
+	}
+
+	// Move the spindle from the old slot to the new one
+	store.data.spindles[newIndex] = store.data.spindles[index];
+	store.data.spindles[index] = null;
+
+	// Clean up unused items at the end
+	while (store.data.spindles[store.data.spindles.length - 1] === null) {
+		store.data.spindles.pop();
+	}
+}
+
 function getPresetSpindleValue<K extends keyof Spindle>(index: number, key: K) {
 	if (index < store.preset.spindles.length) {
 		const presetSpindle = store.preset.spindles[index];

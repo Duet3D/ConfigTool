@@ -260,10 +260,10 @@ const ports = computed(() => {
 			break;
 
 		/*
-				default:
-					const _exhaustiveCheck: never = props.type;
-					break;
-					*/
+		default:
+			const _exhaustiveCheck: never = props.type;
+			break;
+		*/
 	}
 
 	// Filter ports according to their capabilities
