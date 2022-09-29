@@ -7,7 +7,11 @@ import vue from "@vitejs/plugin-vue";
 export default defineConfig({
 	base: "/next/",
 	build: {
+		commonjsOptions: { include: [] },
 		target: "ES2020"
+	},
+	optimizeDeps: {
+		disabled: false,
 	},
 	plugins: [
 		checker({ typescript: true }),
