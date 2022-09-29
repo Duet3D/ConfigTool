@@ -100,8 +100,7 @@
 									</number-input>
 								</td>
 								<td>
-									<button class="btn btn-sm btn-danger mt-1"
-											@click.prevent="deleteHeater(index)">
+									<button class="btn btn-sm btn-danger mt-1" @click.prevent="deleteHeater(index)">
 										<i class="bi-trash"></i>
 									</button>
 								</td>
@@ -174,12 +173,17 @@
 			<div class="card">
 				<div class="card-header d-flex justify-content-between">
 					Bed Heaters
-					<button class="btn btn-primary btn-sm">
+					<button class="btn btn-primary btn-sm" :disabled="!canAddBedHeater" @click="addBedHeater">
 						<i class="bi bi-plus-circle"></i>
 						Add Bed Heater
 					</button>
 				</div>
-				<table class="table table-striped mb-0">
+				<table v-if="hasBedHeaters || bedHeaterToAdd >= 0" class="table table-striped mb-0">
+					<colgroup>
+						<col style="width: 25%;">
+						<col style="width: 75%;">
+						<col style="width: auto;">
+					</colgroup>
 					<thead>
 						<th>
 							Number
@@ -187,11 +191,51 @@
 						<th>
 							Heater
 						</th>
+						<th>
+							<!-- Delete button -->
+						</th>
 					</thead>
 					<tbody>
+						<template v-for="(bedHeater, index) in store.data.heat.bedHeaters">
+							<tr v-if="bedHeater >= 0">
+								<td>
+									<select-input title="Number of this bed heater" :model-value="index"
+												  @update:model-value="changeBedHeaterNumber(index, $event)"
+												  :options="getBedHeaterNumbers(index)" />
+								</td>
+								<td>
+									<select-input :model-value="bedHeater"
+												  @update:model-value="changeBedHeater(index, $event)"
+												  :options="getSlowHeaters(bedHeater)" />
+								</td>
+								<td>
+									<button class="btn btn-sm btn-danger mt-1"
+											@click.prevent="store.data.heat.bedHeaters[index] = -1">
+										<i class="bi-trash"></i>
+									</button>
+								</td>
+							</tr>
+						</template>
+						<tr v-if="bedHeaterToAdd >= 0">
+							<td>
+								<select-input title="Number of this bed heater" :model-value="bedHeaterToAdd"
+											  @update:model-value="bedHeaterToAdd = $event"
+											  :options="getBedHeaterNumbers(bedHeaterToAdd)" />
+							</td>
+							<td>
+								<select-input :model-value="-1"
+											  @update:model-value="changeBedHeater(bedHeaterToAdd, $event)"
+											  :options="getSlowHeaters(-1)" />
+							</td>
+							<td>
+								<button class="btn btn-sm btn-danger mt-1" @click.prevent="bedHeaterToAdd = -1">
+									<i class="bi-trash"></i>
+								</button>
+							</td>
+						</tr>
 					</tbody>
 				</table>
-				<div class="alert alert-info mb-0">
+				<div v-else class="alert alert-info mb-0">
 					<i class="bi bi-info-circle"></i>
 					No Bed Heaters
 				</div>
@@ -203,12 +247,17 @@
 			<div class="card">
 				<div class="card-header d-flex justify-content-between">
 					Chamber Heaters
-					<button class="btn btn-primary btn-sm">
+					<button class="btn btn-primary btn-sm" :disabled="!canAddChamberHeater" @click="addChamberHeater">
 						<i class="bi bi-plus-circle"></i>
 						Add Chamber Heater
 					</button>
 				</div>
-				<table class="table table-striped mb-0">
+				<table v-if="hasChamberHeaters || chamberHeaterToAdd >= 0" class="table table-striped mb-0">
+					<colgroup>
+						<col style="width: 25%;">
+						<col style="width: 75%;">
+						<col style="width: auto;">
+					</colgroup>
 					<thead>
 						<th>
 							Number
@@ -216,11 +265,51 @@
 						<th>
 							Heater
 						</th>
+						<th>
+							<!-- Delete button -->
+						</th>
 					</thead>
 					<tbody>
+						<template v-for="(chamberHeater, index) in store.data.heat.chamberHeaters">
+							<tr v-if="chamberHeater >= 0">
+								<td>
+									<select-input title="Number of this chamber heater" :model-value="index"
+												  @update:model-value="changeChamberHeaterNumber(index, $event)"
+												  :options="getChamberHeaterNumbers(index)" />
+								</td>
+								<td>
+									<select-input :model-value="chamberHeater"
+												  @update:model-value="changeChamberHeater(index, $event)"
+												  :options="getSlowHeaters(chamberHeater)" />
+								</td>
+								<td>
+									<button class="btn btn-sm btn-danger mt-1"
+											@click.prevent="store.data.heat.chamberHeaters[index] = -1">
+										<i class="bi-trash"></i>
+									</button>
+								</td>
+							</tr>
+						</template>
+						<tr v-if="chamberHeaterToAdd >= 0">
+							<td>
+								<select-input title="Number of this chamber heater" :model-value="chamberHeaterToAdd"
+											  @update:model-value="chamberHeaterToAdd = $event"
+											  :options="getChamberHeaterNumbers(chamberHeaterToAdd)" />
+							</td>
+							<td>
+								<select-input :model-value="-1"
+											  @update:model-value="changeChamberHeater(chamberHeaterToAdd, $event)"
+											  :options="getSlowHeaters(-1)" />
+							</td>
+							<td>
+								<button class="btn btn-sm btn-danger mt-1" @click.prevent="chamberHeaterToAdd = -1">
+									<i class="bi-trash"></i>
+								</button>
+							</td>
+						</tr>
 					</tbody>
 				</table>
-				<div class="alert alert-info mb-0">
+				<div v-else class="alert alert-info mb-0">
 					<i class="bi bi-info-circle"></i>
 					No Chamber Heaters
 				</div>
@@ -434,5 +523,92 @@ function deleteHeaterPort(heaterIndex: number, index: number) {
 			secondaryIndex++;
 		}
 	}
+}
+
+// Bed and Chamber heaters
+function getSlowHeaters(current: number) {
+	const result: Array<SelectOption> = [];
+	for (let i = 0; i < store.data.heat.heaters.length; i++) {
+		result.push({
+			text: `Heater #${i}`,
+			value: i,
+			disabled: (i !== current) && (store.data.heat.bedHeaters.some(bedHeater => bedHeater === i) || store.data.heat.chamberHeaters.some(chamberHeater => chamberHeater === i))
+		});
+	}
+	return result;
+}
+
+// Bed Heaters
+const hasBedHeaters = computed(() => store.data.heat.bedHeaters.some(heater => heater >= 0));
+const canAddBedHeater = computed(() => (bedHeaterToAdd.value < 0) && ((store.data.heat.bedHeaters.length < store.data.limits.bedHeaters!) || store.data.heat.bedHeaters.some(heater => heater < 0)));
+const bedHeaterToAdd = ref(-1);
+function addBedHeater() {
+	for (let i = 0; i < store.data.heat.bedHeaters.length; i++) {
+		if (store.data.heat.bedHeaters[i] < 0) {
+			bedHeaterToAdd.value = i;
+			return;
+		}
+	}
+
+	store.data.heat.bedHeaters.push(-1);
+	bedHeaterToAdd.value = store.data.heat.bedHeaters.length - 1;
+}
+
+function changeBedHeaterNumber(from: number, to: number) {
+	store.data.heat.bedHeaters[to] = store.data.heat.bedHeaters[from];
+	store.data.heat.bedHeaters[from] = -1;
+}
+function getBedHeaterNumbers(index: number) {
+	const result: Array<SelectOption> = [];
+	for (let i = 0; i < store.data.limits.bedHeaters!; i++) {
+		result.push({
+			text: i.toString(),
+			value: i,
+			disabled: (i !== index) && (i < store.data.heat.bedHeaters.length) && (store.data.heat.bedHeaters[i] >= 0)
+		});
+	}
+	return result;
+}
+
+function changeBedHeater(index: number, to: number) {
+	store.data.heat.bedHeaters[index] = to;
+	bedHeaterToAdd.value = -1;
+}
+
+// Chamber Heaters
+const hasChamberHeaters = computed(() => store.data.heat.chamberHeaters.some(heater => heater >= 0));
+const canAddChamberHeater = computed(() => (chamberHeaterToAdd.value < 0) && ((store.data.heat.chamberHeaters.length < store.data.limits.chamberHeaters!) || store.data.heat.chamberHeaters.some(heater => heater < 0)));
+const chamberHeaterToAdd = ref(-1);
+function addChamberHeater() {
+	for (let i = 0; i < store.data.heat.chamberHeaters.length; i++) {
+		if (store.data.heat.chamberHeaters[i] < 0) {
+			chamberHeaterToAdd.value = i;
+			return;
+		}
+	}
+
+	store.data.heat.chamberHeaters.push(-1);
+	chamberHeaterToAdd.value = store.data.heat.chamberHeaters.length - 1;
+}
+
+function changeChamberHeaterNumber(from: number, to: number) {
+	store.data.heat.chamberHeaters[to] = store.data.heat.chamberHeaters[from];
+	store.data.heat.chamberHeaters[from] = -1;
+}
+function getChamberHeaterNumbers(index: number) {
+	const result: Array<SelectOption> = [];
+	for (let i = 0; i < store.data.limits.chamberHeaters!; i++) {
+		result.push({
+			text: i.toString(),
+			value: i,
+			disabled: (i !== index) && (i < store.data.heat.chamberHeaters.length) && (store.data.heat.chamberHeaters[i] >= 0)
+		});
+	}
+	return result;
+}
+
+function changeChamberHeater(index: number, to: number) {
+	store.data.heat.chamberHeaters[index] = to;
+	chamberHeaterToAdd.value = -1;
 }
 </script>

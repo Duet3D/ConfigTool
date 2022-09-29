@@ -11,6 +11,7 @@ export enum ConfigPortFunction {
 	gpIn = "gpIn",
 	gpOut = "gpOut",
 	heater = "heater",
+	laser = "laser",
 	probeIn = "probeIn",
 	probeMod = "probeMod",
 	probeServo = "probeServo",

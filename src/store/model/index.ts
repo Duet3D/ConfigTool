@@ -1,12 +1,15 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, DeltaKinematics, Sensors } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop } from "@duet3d/objectmodel";
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 
-import { ConfigPort } from "@/store/model/ConfigPort";
+import { preconfigureNetworkInterface } from "../defaults";
+
+import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
 import { ConfigToolModel } from "@/store/model/ConfigToolModel";
+
 import { ConfigTempSensor } from "./ConfigTempSensor";
 
 /**
@@ -16,7 +19,7 @@ export default class ConfigModel extends ObjectModel {
 	/**
 	 * Values specific to the config tool
 	 */
-    configTool: ConfigToolModel = new ConfigToolModel();
+	configTool: ConfigToolModel = new ConfigToolModel();
 
 	/**
 	 * Update this instance from the given data
@@ -86,13 +89,16 @@ export default class ConfigModel extends ObjectModel {
 			this.boards.push(newBoard);
 		}
 
-		for (const networkInterfacePreset in boardDefinition.objectModelNetworkInterfaces) {
-			const newNetworkInterface = new NetworkInterface();
-			newNetworkInterface.update(networkInterfacePreset)
-			this.network.interfaces.push(newNetworkInterface);
+		if (this.state.dsfVersion === null) {
+			for (const networkInterfacePreset of boardDefinition.objectModelNetworkInterfaces) {
+				const newNetworkInterface = new NetworkInterface();
+				newNetworkInterface.update(networkInterfacePreset);
+				preconfigureNetworkInterface(networkInterfacePreset);
+				this.network.interfaces.push(newNetworkInterface);
+			}
 		}
 
-        this.validate();
+		this.validate();
 	}
 
 	/**
@@ -167,7 +173,7 @@ export default class ConfigModel extends ObjectModel {
 	 * Validate this instance and fix potential incompatibilities
 	 */
 	validate(): void {
-        this.fixExpansionBoards();
+		this.fixExpansionBoards();
 		this.refreshDrivers();
 		this.refreshPorts();
 		this.refreshSensors();
@@ -275,14 +281,14 @@ export default class ConfigModel extends ObjectModel {
 		// Sort the driver list again
 		this.configTool.drivers.sort((a, b) => (a.id.board === b.id.board) ? a.id.driver - b.id.driver : (a.id.board || 0) - (b.id.board || 0));
 
-        // Make sure the number of endstops matches the number of total axes
-        if (this.sensors.endstops.length > this.move.axes.length) {
-            this.sensors.endstops.splice(this.move.axes.length);
-        } else if (this.sensors.endstops.length < this.move.axes.length) {
-            for (let i = this.sensors.endstops.length; i < this.move.axes.length; i++) {
-                this.sensors.endstops.push(new Endstop());
-            }
-        }
+		// Make sure the number of endstops matches the number of total axes
+		if (this.sensors.endstops.length > this.move.axes.length) {
+			this.sensors.endstops.splice(this.move.axes.length);
+		} else if (this.sensors.endstops.length < this.move.axes.length) {
+			for (let i = this.sensors.endstops.length; i < this.move.axes.length; i++) {
+				this.sensors.endstops.push(new Endstop());
+			}
+		}
 	}
 
 	/**
@@ -392,18 +398,18 @@ export default class ConfigModel extends ObjectModel {
 					// Drives 0.5 + 0.6 require a Duet 3 Mini +2 expansion board
 					this.configTool.expansionBoard = ExpansionBoardType.Duet3Mini2Plus;
 				} else {
-                    // Reset expansion board
-                    this.configTool.expansionBoard = null;
-                }
+					// Reset expansion board
+					this.configTool.expansionBoard = null;
+				}
 				break;
 
-            case BoardType.Duet3MB6HC:
-            case BoardType.Duet3MB6XD:
-                // These boards do not support any direct-connect expansion boards
-                this.configTool.expansionBoard = null;
-                break;
+			case BoardType.Duet3MB6HC:
+			case BoardType.Duet3MB6XD:
+				// These boards do not support any direct-connect expansion boards
+				this.configTool.expansionBoard = null;
+				break;
 
-            case BoardType.Duet2Ethernet:
+			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
 			case BoardType.Duet2SBC:
 				if (this.configTool.ports.some(port => port.coversDueX) ||
@@ -425,31 +431,31 @@ export default class ConfigModel extends ObjectModel {
 							this.configTool.expansionBoard = ExpansionBoardType.Duet2ExpansionBreakout;
 						}
 					} else {
-                        // Reset expansion board
-                        this.configTool.expansionBoard = null;
-                    }
+						// Reset expansion board
+						this.configTool.expansionBoard = null;
+					}
 				}
 				break;
 
-            case BoardType.Duet2Maestro:
-                if (this.move.axes.some(axis => axis.drivers.some(driver => driver?.board === null && driver?.driver >= 5)) ||
-                    this.move.extruders.some(extruder => extruder.driver?.board === null && extruder.driver?.driver >= 5)
-                ) {
-                    // Drives 0.5 + 0.6 require a Duet Maestro 2+ expansion board
-                    this.configTool.expansionBoard = ExpansionBoardType.Duet2Maestro2Plus;
-                } else {
-                    // Reset expansion board
-                    this.configTool.expansionBoard = null;
-                }
-                break;
+			case BoardType.Duet2Maestro:
+				if (this.move.axes.some(axis => axis.drivers.some(driver => driver?.board === null && driver?.driver >= 5)) ||
+					this.move.extruders.some(extruder => extruder.driver?.board === null && extruder.driver?.driver >= 5)
+				) {
+					// Drives 0.5 + 0.6 require a Duet Maestro 2+ expansion board
+					this.configTool.expansionBoard = ExpansionBoardType.Duet2Maestro2Plus;
+				} else {
+					// Reset expansion board
+					this.configTool.expansionBoard = null;
+				}
+				break;
 
-            case null:
-                // Should never get here...
-                break;
+			case null:
+				// Should never get here...
+				break;
 
-            default:
-                const _exhaustiveCheck: never = this.boardType;
-                break;
+			default:
+				const _exhaustiveCheck: never = this.boardType;
+				break;
 		}
 	}
 
@@ -491,6 +497,11 @@ export default class ConfigModel extends ObjectModel {
 		this.configTool.capabilities.laser = value;
 		if (!value) {
 			this.state.laserPwm = null;
+			for (const port of this.configTool.ports) {
+				if (port.function === ConfigPortFunction.laser) {
+					port.function = null;
+				}
+			}
 		}
 	}
 }

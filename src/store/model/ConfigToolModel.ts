@@ -92,6 +92,11 @@ export class ConfigDisplayFiles extends ModelObject {
 	images: ModelDictionary<string> = new ModelDictionary<string>(true);
 }
 
+export class ConfigLaserModel extends ModelObject {
+	maxIntensity: number = 255;
+	sParamSticky: boolean = false;
+}
+
 export class ConfigWiFi extends ModelObject {
 	ssid: string = "";
 	psk: string = "";
@@ -113,8 +118,10 @@ export class ConfigToolModel extends ModelObject {
 	homeBeforeAutoCalibration: boolean = false;
 	homingSpeedFast: number = 30;
 	homingSpeedSlow: number = 6;
+	readonly laser: ConfigLaserModel = new ConfigLaserModel();
 	orthogonalDistance: number = 85;
-	panelDue: boolean = false;
+	panelDueChecksum: boolean = false;
+	panelDueBaudRate: number = 57600;
 	password: string = "";
 	readonly ports: ModelCollection<ConfigPort> = new ModelCollection(ConfigPort);
 	skewOffset: number = 100;

@@ -10,7 +10,7 @@
 		<template #body>
 			<table class="table table-striped table-extruders mb-0">
 				<colgroup>
-					<col style="width: auto;">
+					<col style="width: 15%;">
 					<col style="width: 20%;">
 					<col style="width: 20%;">
 					<col style="width: 15%;">
@@ -51,59 +51,63 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="tool in store.data.tools.filter(tool => tool !== null) as Array<Tool>">
-						<td>
-							<select-input title="Number of this tool" :model-value="tool.number"
-										  @update:model-value="setToolNumber(tool, $event)"
-										  :options="getToolNumbers(tool)" />
-						</td>
-						<td>
-							<text-input title="Optional name of this tool" v-model="tool.name" :max-length="32"
-										:required="false" :preset="getPresetToolValue(tool, 'name')"
-										:placeholder="`Tool ${tool.number}`" />
-						</td>
-						<td v-show="store.data.configTool.capabilities.cnc">
-							<select-input title="Spindle mapped to this tool" v-model="tool.spindle"
-										  :preset="getPresetToolValue(tool, 'spindle')" :options="spindleOptions"
-										  :required="false" />
-						</td>
-						<td v-show="store.data.configTool.capabilities.fff">
-							<extruder-list class="mt-1" :extruders="tool.extruders"
-										   @extruder-added="onExtruderAdded(tool)"
-										   @extruder-removed="onExtruderRemoved(tool)" />
-						</td>
-						<td v-show="store.data.configTool.capabilities.fff">
-							<select-input title="Extruder used for filament mapping"
-										  :disabled="tool.extruders.length === 0" v-model="tool.filamentExtruder"
-										  :preset="getPresetToolValue(tool, 'filamentExtruder')"
-										  :options="getFilamentExtruders(tool)" :required="false" />
-						</td>
-						<td v-show="store.data.configTool.capabilities.fff">
-							<heater-list class="mt-1" :heaters="tool.heaters" />
-						</td>
-						<td>
-							<fan-list class="mt-1" :fans="tool.fans" />
-						</td>
-						<td>
-							<button class="btn btn-sm btn-primary mt-1" @click.prevent="">
-								<i class="bi bi-gear"></i>
-							</button>
-						</td>
-						<td>
-							<button class="btn btn-sm btn-danger mt-1"
-									@click.prevent="store.data.tools.splice(tool.number, 1)">
-								<i class="bi bi-trash"></i>
-							</button>
-						</td>
-					</tr>
+					<template v-for="tool in store.data.tools">
+						<tr v-if="tool !== null">
+							<td>
+								<select-input title="Number of this tool" :model-value="tool.number"
+											  @update:model-value="setToolNumber(tool, $event)"
+											  :options="getToolNumbers(tool)" />
+							</td>
+							<td>
+								<text-input title="Optional name of this tool" v-model="tool.name" :max-length="32"
+											:required="false" :preset="getPresetToolValue(tool, 'name')"
+											:placeholder="`Tool ${tool.number}`" />
+							</td>
+							<td v-show="store.data.configTool.capabilities.cnc">
+								<select-input title="Spindle mapped to this tool" v-model="tool.spindle"
+											  :preset="getPresetToolValue(tool, 'spindle')" :options="spindleOptions"
+											  :required="false" />
+							</td>
+							<td v-show="store.data.configTool.capabilities.fff">
+								<extruder-list class="mt-1" :extruders="tool.extruders"
+											   @extruder-added="onExtruderAdded(tool)"
+											   @extruder-removed="onExtruderRemoved(tool)" />
+							</td>
+							<td v-show="store.data.configTool.capabilities.fff">
+								<select-input title="Extruder used for filament mapping"
+											  :disabled="tool.extruders.length === 0" v-model="tool.filamentExtruder"
+											  :preset="getPresetToolValue(tool, 'filamentExtruder')"
+											  :options="getFilamentExtruders(tool)" :required="false" />
+							</td>
+							<td v-show="store.data.configTool.capabilities.fff">
+								<heater-list class="mt-1" :heaters="tool.heaters" />
+							</td>
+							<td>
+								<fan-list class="mt-1" :fans="tool.fans" />
+							</td>
+							<td>
+								<button class="btn btn-sm mt-1" :class="getToolClass(tool)" @click.prevent="configureTool(tool)">
+									<i class="bi bi-gear"></i>
+								</button>
+							</td>
+							<td>
+								<button class="btn btn-sm btn-danger mt-1"
+										@click.prevent="store.data.tools.splice(tool.number, 1)">
+									<i class="bi bi-trash"></i>
+								</button>
+							</td>
+						</tr>
+					</template>
 				</tbody>
 			</table>
+
+			<tool-dialog v-model="toolDialogShown" :tool="toolToConfigure" />
 		</template>
 	</scroll-item>
 </template>
 
 <script lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 import { useStore } from "@/store";
 import type { SelectOption } from "../inputs/SelectInput.vue";
@@ -134,6 +138,7 @@ const spindleOptions = computed(() => {
 import { Tool } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
+import ToolDialog from "@/components/dialogs/ToolDialog.vue";
 import ExtruderList from "@/components/inputs/ExtruderList.vue";
 import FanList from "@/components/inputs/FanList.vue";
 import HeaterList from "@/components/inputs/HeaterList.vue";
@@ -222,5 +227,18 @@ function onExtruderRemoved(tool: Tool) {
 	if (tool.filamentExtruder >= 0 && !tool.extruders.includes(tool.filamentExtruder)) {
 		tool.filamentExtruder = -1;
 	}
+}
+
+// Tool Dialog
+const toolDialogShown = ref(false), toolToConfigure = ref<Tool | null>(null);
+
+function getToolClass(tool: Tool) {
+	const isValid = tool.offsets.every(offset => isFinite(offset));
+	return isValid ? "btn-primary" : "btn-outline-danger is-invalid";
+}
+
+function configureTool(tool: Tool) {
+	toolToConfigure.value = tool;
+	toolDialogShown.value = true;
 }
 </script>

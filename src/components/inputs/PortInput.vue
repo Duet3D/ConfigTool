@@ -13,7 +13,8 @@
 			</button>
 			<template v-if="isPwm">
 				<button ref="pwmButton" type="button" class="btn" :class="pwmClass"
-						:disabled="props.secondaryIndex !== null" data-bs-toggle="dropdown" @click.prevent="togglePwmDropdown">
+						:disabled="props.secondaryIndex !== null" data-bs-toggle="dropdown"
+						@click.prevent="togglePwmDropdown">
 					<i class="bi bi-activity"></i>
 				</button>
 				<div class="dropdown-menu p-3" style="max-width: 320px;" @click.stop="">
@@ -120,6 +121,21 @@ const allowPullUp = computed(() => {
 	}
 
 	switch (props.function) {
+		case ConfigPortFunction.fan:
+		case ConfigPortFunction.gpOut:
+		case ConfigPortFunction.heater:
+		case ConfigPortFunction.laser:
+		case ConfigPortFunction.probeMod:
+		case ConfigPortFunction.probeServo:
+		case ConfigPortFunction.servo:
+		case ConfigPortFunction.spiCs:
+		case ConfigPortFunction.spindleBackwards:
+		case ConfigPortFunction.spindleForwards:
+		case ConfigPortFunction.spindlePwm:
+		case ConfigPortFunction.thermistor:
+		case ConfigPortFunction.uart:
+			return false;
+
 		case ConfigPortFunction.probeIn:
 			if (props.index < store.data.sensors.probes.length) {
 				const probe = store.data.sensors.probes[props.index];
@@ -129,11 +145,6 @@ const allowPullUp = computed(() => {
 				}
 			}
 			break;
-		case ConfigPortFunction.thermistor:
-		case ConfigPortFunction.spiCs:
-		case ConfigPortFunction.fan:
-		case ConfigPortFunction.heater:
-			return false;
 	}
 	return true;
 });
@@ -171,7 +182,24 @@ function togglePullUp() {
 }
 
 // PWM Frequency
-const isPwm = computed(() => !disabled.value && [ConfigPortFunction.fan, ConfigPortFunction.gpOut, ConfigPortFunction.heater, ConfigPortFunction.probeServo, ConfigPortFunction.servo, ConfigPortFunction.spindlePwm].includes(props.function));
+const isPwm = computed(() => {
+	if (disabled.value) {
+		return false;
+	}
+
+	switch (props.function) {
+		case ConfigPortFunction.fan:
+		case ConfigPortFunction.gpOut:
+		case ConfigPortFunction.heater:
+		case ConfigPortFunction.laser:
+		case ConfigPortFunction.probeServo:
+		case ConfigPortFunction.servo:
+		case ConfigPortFunction.spindlePwm:
+			return true;
+	}
+	return false;
+});
+
 const defaultPwm = computed(() => {
 	if (presetRealPort.value !== null) {
 		return presetRealPort.value.frequency;
@@ -218,6 +246,27 @@ const ports = computed(() => {
 	// Define what capabilities the ports to show must have
 	const requiredCapabilities = new Set<PortType>();
 	switch (props.function) {
+		case ConfigPortFunction.endstop:
+			requiredCapabilities.add(PortType.gpIn);
+			break;
+		case ConfigPortFunction.fan:
+			requiredCapabilities.add(PortType.fan);
+			break;
+		case ConfigPortFunction.fanTacho:
+			requiredCapabilities.add(PortType.fanTacho);
+			break;
+		case ConfigPortFunction.gpIn:
+			requiredCapabilities.add(PortType.gpIn);
+			break;
+		case ConfigPortFunction.gpOut:
+			requiredCapabilities.add(PortType.gpOut);
+			break;
+		case ConfigPortFunction.heater:
+			requiredCapabilities.add(PortType.heater);
+			break;
+		case ConfigPortFunction.laser:
+			requiredCapabilities.add(PortType.pwm);
+			break;
 		case ConfigPortFunction.probeIn:
 			requiredCapabilities.add(PortType.analogIn);
 			if (props.index < store.data.sensors.probes.length) {
@@ -233,23 +282,11 @@ const ports = computed(() => {
 		case ConfigPortFunction.probeServo:
 			requiredCapabilities.add(PortType.pwm);
 			break;
-		case ConfigPortFunction.endstop:
-			requiredCapabilities.add(PortType.gpIn);
-			break;
-		case ConfigPortFunction.thermistor:
-			requiredCapabilities.add(PortType.thermistor);
+		case ConfigPortFunction.servo:
+			requiredCapabilities.add(PortType.pwm);
 			break;
 		case ConfigPortFunction.spiCs:
 			requiredCapabilities.add(PortType.spiCs);
-			break;
-		case ConfigPortFunction.heater:
-			requiredCapabilities.add(PortType.heater);
-			break;
-		case ConfigPortFunction.fan:
-			requiredCapabilities.add(PortType.fan);
-			break;
-		case ConfigPortFunction.fanTacho:
-			requiredCapabilities.add(PortType.fanTacho);
 			break;
 		case ConfigPortFunction.spindlePwm:
 			requiredCapabilities.add(PortType.pwm);
@@ -258,12 +295,15 @@ const ports = computed(() => {
 		case ConfigPortFunction.spindleBackwards:
 			requiredCapabilities.add(PortType.gpOut);
 			break;
-
-		/*
-		default:
-			const _exhaustiveCheck: never = props.type;
+		case ConfigPortFunction.thermistor:
+			requiredCapabilities.add(PortType.thermistor);
 			break;
-		*/
+		case ConfigPortFunction.uart:
+			// none
+			break;
+		default:
+			const _exhaustiveCheck: never = props.function;
+			break;
 	}
 
 	// Filter ports according to their capabilities
@@ -373,7 +413,7 @@ const port = computed<string | null>({
 
 		// Assign new selection (if applicable)
 		if (value !== null) {
-			const configuredPort = store.data.configTool.assignPort(value, props.function, props.index);
+			const configuredPort = store.data.configTool.assignPort(value, props.function, props.index, defaultPwm.value);
 			if (props.function === ConfigPortFunction.probeIn || props.function === ConfigPortFunction.probeMod) {
 				for (const port of store.data.configTool.ports) {
 					if ((port.function === ConfigPortFunction.probeIn || port.function === ConfigPortFunction.probeMod) &&
@@ -413,6 +453,16 @@ const disabled = computed(() => {
 	}
 
 	switch (props.function) {
+		case ConfigPortFunction.endstop:
+			// Endstop selection is only possible if the corresponding driver is set to EndstopType.InputPin
+			if (props.board !== undefined) {
+				const expectedDriver = initObject(DriverId, { board: props.board, driver: props.index });
+				const axisIndex = store.data.move.axes.findIndex(axis => axis.drivers.some(axisDriver => axisDriver.equals(expectedDriver)));
+				if (axisIndex >= 0 && axisIndex < store.data.sensors.endstops.length && store.data.sensors.endstops[axisIndex] !== null) {
+					return store.data.sensors.endstops[axisIndex]!.type !== EndstopType.InputPin;
+				}
+			}
+			return true;
 		case ConfigPortFunction.probeIn:
 			// Only enabled if a valid probe type is set
 			if (props.index < store.data.sensors.probes.length) {
@@ -434,32 +484,13 @@ const disabled = computed(() => {
 				return (probe === null || probe.type !== ProbeType.blTouch);
 			}
 			break;
-		case ConfigPortFunction.endstop:
-			// Endstop selection is only possible if the corresponding driver is set to EndstopType.InputPin
-			if (props.board !== undefined) {
-				const expectedDriver = initObject(DriverId, { board: props.board, driver: props.index });
-				const axisIndex = store.data.move.axes.findIndex(axis => axis.drivers.some(axisDriver => axisDriver.equals(expectedDriver)));
-				if (axisIndex >= 0 && axisIndex < store.data.sensors.endstops.length && store.data.sensors.endstops[axisIndex] !== null) {
-					return store.data.sensors.endstops[axisIndex]!.type !== EndstopType.InputPin;
-				}
-			}
-			return true;
+
 		case ConfigPortFunction.thermistor:
 			// Input port selection is only available for thermistors
 			if (props.index < store.data.sensors.analog.length && store.data.sensors.analog[props.index] !== null) {
 				return ![AnalogSensorType.linearAnalog, AnalogSensorType.pt1000, AnalogSensorType.thermistor].includes(store.data.sensors.analog[props.index]!.type);
 			}
 			break;
-		case ConfigPortFunction.spiCs:
-			// SPI selection is always permitted
-			break;
-
-		/*
-				default:
-					const _exhaustiveCheck: never = props.type;
-					break;
-		
-					*/
 	}
 	return false;
 });

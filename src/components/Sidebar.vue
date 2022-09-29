@@ -97,9 +97,7 @@
 						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration/Lasers" class="link-dark rounded">Lasers</RouterLink></li>
 						<li><RouterLink to="/Configuration/Fans" class="link-dark rounded">Fans</RouterLink></li>
 						<li><RouterLink to="/Configuration/Tools" class="link-dark rounded">Tools</RouterLink></li>
-						<li><RouterLink to="/Configuration/IO" class="link-dark rounded">I/O Ports</RouterLink></li>
-						<li><RouterLink to="/Configuration/Servos" class="link-dark rounded">Servos</RouterLink></li>
-						<li><RouterLink to="/Configuration/Network" class="link-dark rounded">Network</RouterLink></li>
+						<li v-if="store.data.network.interfaces.length > 0"><RouterLink to="/Configuration/Network" class="link-dark rounded">Network</RouterLink></li>
 						<li><RouterLink to="/Configuration/Accessories" class="link-dark rounded">Accessories</RouterLink></li>
 						<li><RouterLink to="/Configuration/Miscellaneous" class="link-dark rounded">Miscellaneous</RouterLink></li>
 					</ul>

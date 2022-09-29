@@ -15,9 +15,7 @@
 		<lasers-config v-if="store.data.configTool.capabilities.laser" />
 		<fans-config />
 		<tools-config />
-		<i-o-config />
-		<servos-config />
-		<network-config />
+		<network-config v-if="store.data.network.interfaces.length > 0" />
 		<accessories-config />
 		<miscellaneous-config />
 	</div>
@@ -42,8 +40,6 @@ import SpindlesConfig from "@/components/configuration/SpindlesConfig.vue";
 import LasersConfig from "@/components/configuration/LasersConfig.vue";
 import FansConfig from "@/components/configuration/FansConfig.vue";
 import ToolsConfig from "@/components/configuration/ToolsConfig.vue";
-import IOConfig from "@/components/configuration/IOConfig.vue";
-import ServosConfig from "@/components/configuration/ServosConfig.vue";
 import NetworkConfig from "@/components/configuration/NetworkConfig.vue";
 import AccessoriesConfig from "@/components/configuration/AccessoriesConfig.vue";
 import MiscellaneousConfig from "@/components/configuration/MiscellaneousConfig.vue";

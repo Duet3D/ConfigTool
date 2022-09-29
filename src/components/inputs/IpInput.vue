@@ -2,9 +2,9 @@
 	<label v-if="props.label" :for="id" class="form-label">
 		{{ props.label }}:
 	</label>
-	<input :type="props.password ? 'password' : 'text'" :id="id" class="form-control" :class="validationClass"
-		   v-bind="$attrs" :maxlength="props.maxLength - 1" v-preset="props.preset" :disabled="props.disabled"
-		   :required="props.required" :value="props.modelValue" @change="onChange" @input="onInput">
+	<input type="text" :id="id" class="form-control" :class="validationClass" v-bind="$attrs" maxlength="15"
+		   v-preset="props.preset" :disabled="props.disabled" :required="props.required" :value="props.modelValue"
+		   @change="onChange" @input="onInput">
 </template>
 
 <script lang="ts">
@@ -16,7 +16,7 @@ let numInstances = 0;
 import { computed } from "vue";
 
 // External interface
-interface TextInputProps {
+interface IpInputProps {
 	/**
 	 * Optional label next to the control
 	 */
@@ -28,9 +28,9 @@ interface TextInputProps {
 	lazy?: boolean,
 
 	/**
-	 * If this is meant for passwords
+	 * Indicates if the value is a subnet mask
 	 */
-	password?: boolean,
+	netMask?: boolean,
 
 	/**
 	 * Current value
@@ -43,11 +43,6 @@ interface TextInputProps {
 	preset?: string | null,
 
 	/**
-	 * Maximum text length
-	 */
-	maxLength: number,
-
-	/**
 	 * Disable this control (defaults to false)
 	 */
 	disabled?: boolean,
@@ -57,8 +52,9 @@ interface TextInputProps {
 	 */
 	required?: boolean
 }
-const props = withDefaults(defineProps<TextInputProps>(), {
+const props = withDefaults(defineProps<IpInputProps>(), {
 	lazy: false,
+	netMask: false,
 	disabled: false,
 	required: true
 });
@@ -68,12 +64,13 @@ const emit = defineEmits<{
 }>();
 
 // Display converters
-const id = `text-${++numInstances}`;
+const id = `ip-${++numInstances}`;
 
 // Validation
 const validationClass = computed<string | null>(() => {
 	if (!props.disabled && props.required) {
-		return (props.modelValue.trim() !== "") ? "is-valid" : "is-invalid";
+		const matches = /^(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)\.(\d\d?\d?)$/.exec(props.modelValue.trim()), max = props.netMask ? 256 : 255;
+		return (matches && parseInt(matches[1]) < max && parseInt(matches[2]) < max && parseInt(matches[3]) < max && parseInt(matches[4]) < max) ? "is-valid" : "is-invalid";
 	}
 	return null;
 })

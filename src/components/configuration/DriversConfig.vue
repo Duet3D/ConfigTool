@@ -45,33 +45,63 @@
 							{{ driver.id }}
 						</td>
 						<td>
-							<select-input title="Movement direction of this driver"
-							              :required="false"
-							              v-model="driver.forwards" :options="directionOptions" :preset="true" />
+							<select-input title="Movement direction of this driver" :required="false"
+										  v-model="driver.forwards" :options="directionOptions" :preset="true" />
 						</td>
 						<td>
 							<select-input title="Operation mode of this driver. Defaults to SpreadCycle, may be changed to StealthChop to reduce motor noise"
-							              :required="false"
-							              v-model="driver.mode" :options="getDriverModes(driver)" :preset="ConfigDriverMode.spreadCycle" />
+										  :required="false" v-model="driver.mode" :options="getDriverModes(driver)"
+										  :preset="ConfigDriverMode.spreadCycle" />
 						</td>
 						<td>
 							<stealth-chop-calculator :driver="driver" />
 						</td>
 						<td>
-							<number-input title="StallGuard threshold value. Only used for sensorless homing"
-							              :min="-64" :max="63" :step="1"
-							              v-model="driver.sgThreshold" :preset="0" />
+							<number-input title="StallGuard threshold value. Only used for sensorless homing" :min="-64"
+										  :max="63" :step="1" v-model="driver.sgThreshold" :preset="0" />
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 
+		<!-- Motor Current Reduction -->
+		<div v-if="smartDrivers.length > 0" class="card mt-3">
+			<div class="card-header">
+				Motor Current Reduction
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col d-flex align-items-center">
+						<check-input label="Reduce motor currents when idle" title="Reduce motor current on inactivity"
+									 :model-value="store.data.move.idle.timeout > 0"
+									 @update:model-value="store.data.move.idle.timeout = $event ? 30 : 0"
+									 :preset="store.preset.move.idle.timeout > 0" />
+					</div>
+					<div class="col">
+						<number-input label="Idle current percentage"
+									  title="Motor current will be reduced to this percentage on inactivity"
+									  :disabled="store.data.move.idle.timeout <= 0"
+									  v-model="store.data.move.idle.factor" :preset="store.preset.move.idle.factor"
+									  :factor="100" unit="%" :min="0" :max="100" :step="1" />
+					</div>
+					<div class="col">
+						<number-input label="Idle timeout"
+									  title="Maximum time for the machine to idle before current reduction is applied"
+									  :disabled="store.data.move.idle.timeout <= 0"
+									  v-model="store.data.move.idle.timeout" :preset="store.preset.move.idle.timeout"
+									  unit="s" />
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- External Drivers -->
 		<div v-if="externalDrivers.length > 0" class="card mt-3">
 			<div class="card-header d-flex justify-content-between">
 				External Drivers
-				<a href="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_connecting_external" target="_blank">
+				<a href="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_connecting_external"
+				   target="_blank">
 					<i class="bi-info-circle"></i>
 					Connecting External Drivers
 				</a>
@@ -108,34 +138,29 @@
 							{{ driver.id }}
 						</td>
 						<td>
-							<select-input title="Movement direction of this driver"
-							              :required="false"
-							              v-model="driver.forwards" :options="directionOptions" :preset="true" />
+							<select-input title="Movement direction of this driver" :required="false"
+										  v-model="driver.forwards" :options="directionOptions" :preset="true" />
 						</td>
 						<td>
-							<select-input title="Driver enable polarity of this driver"
-							              :required="false"
-							              v-model="driver.external.enablePolarity" :options="polarityOptions" :preset="false" />
+							<select-input title="Driver enable polarity of this driver" :required="false"
+										  v-model="driver.external.enablePolarity" :options="polarityOptions"
+										  :preset="false" />
 						</td>
 						<td>
-							<number-input title="Minimum time for each step pulse"
-							              :min="0.1" :step="0.1" unit="µs"
-							              v-model="driver.external.minStepPulse" :preset="5" />
+							<number-input title="Minimum time for each step pulse" :min="0.1" :step="0.1" unit="µs"
+										  v-model="driver.external.minStepPulse" :preset="5" />
 						</td>
 						<td>
-							<number-input title="Minimum step interval"
-							              :min="0.1" :step="0.1" unit="µs"
-							              v-model="driver.external.minStepInterval" :preset="5" />
+							<number-input title="Minimum step interval" :min="0.1" :step="0.1" unit="µs"
+										  v-model="driver.external.minStepInterval" :preset="5" />
 						</td>
 						<td>
-							<number-input title="Time needed to set up the direction pin level"
-							              :min="0" :step="0.1" unit="µs"
-							              v-model="driver.external.dirSetupTime" :preset="10" />
+							<number-input title="Time needed to set up the direction pin level" :min="0" :step="0.1"
+										  unit="µs" v-model="driver.external.dirSetupTime" :preset="10" />
 						</td>
 						<td>
-							<number-input title="Time to hold the direction pin level"
-							              :min="0" :step="0.1" unit="µs"
-							              v-model="driver.external.holdTime" :preset="0" />
+							<number-input title="Time to hold the direction pin level" :min="0" :step="0.1" unit="µs"
+										  v-model="driver.external.holdTime" :preset="0" />
 						</td>
 					</tr>
 				</tbody>
@@ -172,15 +197,14 @@
 							{{ driver.id }}
 						</td>
 						<td>
-							<select-input title="Encoder type used for closed-loop operation"
-							              :required="false"
-							              v-model="driver.closedLoop.encoderType" :options="encoderTypeOptions" :preset="ConfigDriverClosedLoopEncoderType.none" />
+							<select-input title="Encoder type used for closed-loop operation" :required="false"
+										  v-model="driver.closedLoop.encoderType" :options="encoderTypeOptions"
+										  :preset="ConfigDriverClosedLoopEncoderType.none" />
 						</td>
 						<td>
-							<number-input title="Encoder counts per full step"
-							              :min="1" :step="1"
-							              :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
-							              v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
+							<number-input title="Encoder counts per full step" :min="1" :step="1"
+										  :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
+										  v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
 						</td>
 					</tr>
 				</tbody>
@@ -198,6 +222,7 @@ import { useStore } from "@/store";
 import { ConfigDriver, ConfigDriverClosedLoopEncoderType, ConfigDriverMode } from "@/store/model/ConfigDriver";
 import { ExpansionBoards, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 import { computed } from "vue";
+import CheckInput from "../inputs/CheckInput.vue";
 
 const store = useStore();
 

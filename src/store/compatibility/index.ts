@@ -417,7 +417,14 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	}
 
 	// Miscellaneous
-	model.configTool.panelDue = input.panelDue;
+	if (input.panelDue && model.boardDefinition !== null) {
+		const firstUartPorts = model.boardDefinition.ports.uart.find(item => item !== "usb");
+		if (firstUartPorts) {
+			for (const uartPort of firstUartPorts.split("+")) {
+				model.configTool.assignPort(uartPort, ConfigPortFunction.uart, 0);
+			}
+		}
+	}
 	model.configTool.customSettings = input.custom_settings;
 
 	return model;

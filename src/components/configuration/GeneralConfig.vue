@@ -2,42 +2,61 @@
 	<scroll-item anchor="General" title="General">
 		<div class="row">
 			<div class="col">
-				<select-input label="Board" title="Mainboard of your setup"
-				              v-model="board" :options="boardOptions" :preset="boardPreset" />
+				<select-input label="Board" title="Mainboard of your setup" v-model="board" :options="boardOptions"
+							  :preset="boardPreset" />
 			</div>
 			<div class="col">
-				<text-input label="Printer Name" title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local"
-				            :max-length="50" v-model="store.data.network.name" :preset="store.preset.network.name" />
+				<text-input label="Printer Name"
+							title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local"
+							:max-length="50" v-model="store.data.network.name" :preset="store.preset.network.name" />
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
-				<check-input v-if="supportsSbcMode" label="Run in standalone mode without SBC (Raspberry Pi)" title="Run RepRapFirmware in stand-alone mode without an attached single-board computer"
-				             v-model="sbcMode" :preset="store.preset.state.dsfVersion !== null" />
-				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)" title="Enable auto-save facility"
-				             v-model="store.data.configTool.configOverride" :preset="store.preset.configTool.configOverride" />
-				<check-input v-if="supportsAutoSave" label="Save print state on power failure" title="Store the last valid print parameters on the SD card when a power failure occurs (M911)"
-				             v-model="store.data.configTool.autoSave.enabled" :preset="store.preset.configTool.autoSave.enabled" />
+				<check-input v-if="supportsSbcMode" label="Run in standalone mode without SBC (Raspberry Pi)"
+							 title="Run RepRapFirmware in stand-alone mode without an attached single-board computer"
+							 v-model="standaloneMode" :preset="store.preset.state.dsfVersion !== null" />
+				<check-input label="Select the first tool on start-up" title="Select the first available tool on start-up"
+							 v-model="store.data.configTool.autoSelectFirstTool"
+							 :preset="store.preset.configTool.autoSelectFirstTool" />
+				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)"
+							 title="Enable auto-save facility" v-model="store.data.configTool.configOverride"
+							 :preset="store.preset.configTool.configOverride" />
+				<check-input v-if="supportsAutoSave" label="Save print state on power failure"
+							 title="Store the last valid print parameters on the SD card when a power failure occurs (M911)"
+							 v-model="store.data.configTool.autoSave.enabled"
+							 :preset="store.preset.configTool.autoSave.enabled" />
 				<div v-if="store.data.configTool.autoSave.enabled" class="mt-2 ps-4">
 					<div class="row">
 						<div class="col-3">
-							<number-input label="Auto Save Threshold" title="If the input voltage falls below this value, the print is paused and resume information is saved"
-							              :min="store.data.boardDefinition?.minVoltage" :max="store.data.boardDefinition?.maxVoltage" :step="0.1" unit="V"
-							              v-model="store.data.configTool.autoSave.saveThreshold" :preset="store.preset.configTool.autoSave.saveThreshold" />
+							<number-input label="Auto Save Threshold"
+										  title="If the input voltage falls below this value, the print is paused and resume information is saved"
+										  :min="store.data.boardDefinition?.minVoltage"
+										  :max="store.data.boardDefinition?.maxVoltage" :step="0.1" unit="V"
+										  v-model="store.data.configTool.autoSave.saveThreshold"
+										  :preset="store.preset.configTool.autoSave.saveThreshold" />
 						</div>
 						<div class="col-3">
-							<number-input label="Resume Threshold" title="If the input voltage rises above this value after an under-voltage event, the print is resumed"
-							              :min="store.data.boardDefinition?.minVoltage" :max="store.data.boardDefinition?.maxVoltage" :step="0.1" unit="V"
-							              v-model="store.data.configTool.autoSave.resumeThreshold" :preset="store.preset.configTool.autoSave.resumeThreshold" />
+							<number-input label="Resume Threshold"
+										  title="If the input voltage rises above this value after an under-voltage event, the print is resumed"
+										  :min="store.data.boardDefinition?.minVoltage"
+										  :max="store.data.boardDefinition?.maxVoltage" :step="0.1" unit="V"
+										  v-model="store.data.configTool.autoSave.resumeThreshold"
+										  :preset="store.preset.configTool.autoSave.resumeThreshold" />
 						</div>
 						<div class="col pe-0">
-							<text-input label="G/M/T-codes to run when auto-saving is performed" title="These codes are executed when an under-voltage event is detected"
-							            :max-length="80" v-model="store.data.configTool.autoSave.codesToRun" :preset="store.preset.configTool.autoSave.codesToRun" />
+							<text-input label="G/M/T-codes to run when auto-saving is performed"
+										title="These codes are executed when an under-voltage event is detected"
+										:max-length="80" v-model="store.data.configTool.autoSave.codesToRun"
+										:preset="store.preset.configTool.autoSave.codesToRun" />
 						</div>
 					</div>
 					<div class="row mt-2">
 						<div class="col">
-							Important: The file <code>/sys/resurrect-prologue.g</code> must be set up manually for resume to work (see <a href="https://docs.duet3d.com/en/User_manual/Tuning/Resume#setting-up-the-sysresurrect-prologueg-file" target="_blank">Duet3D Documentation</a>)
+							Important: The file <code>/sys/resurrect-prologue.g</code> must be set up manually for
+							resume to work (see <a
+							   href="https://docs.duet3d.com/en/User_manual/Tuning/Resume#setting-up-the-sysresurrect-prologueg-file"
+							   target="_blank">Duet3D Documentation</a>)
 						</div>
 					</div>
 				</div>
@@ -51,24 +70,28 @@
 		<div class="row">
 			<div class="col-4">
 				<check-input label="FFF (3D Printing)" title="Enable FFF printing"
-				             :model-value="store.data.configTool.capabilities.fff" @update:model-value="store.data.setFFF($event)"
-				             :preset="store.preset.configTool.capabilities.fff" />
+							 :model-value="store.data.configTool.capabilities.fff"
+							 @update:model-value="store.data.setFFF($event)"
+							 :preset="store.preset.configTool.capabilities.fff" />
 			</div>
 			<div class="col-4">
 				<check-input label="CNC (Milling)" title="Enable CNC functionality"
-				             :model-value="store.data.configTool.capabilities.cnc" @update:model-value="store.data.setCNC($event)"
-				             :preset="store.preset.configTool.capabilities.cnc" />
+							 :model-value="store.data.configTool.capabilities.cnc"
+							 @update:model-value="store.data.setCNC($event)"
+							 :preset="store.preset.configTool.capabilities.cnc" />
 			</div>
 			<div class="col-4">
 				<check-input label="Laser (Cutting/Etching)" title="Enable Laser functionality"
-				             :model-value="store.data.configTool.capabilities.laser" @update:model-value="store.data.setLaser($event)"
-				             :preset="store.preset.configTool.capabilities.laser" />
+							 :model-value="store.data.configTool.capabilities.laser"
+							 @update:model-value="store.data.setLaser($event)"
+							 :preset="store.preset.configTool.capabilities.laser" />
 			</div>
 		</div>
 	</scroll-item>
 </template>
 
 <script setup lang="ts">
+import { NetworkInterface, NetworkInterfaceType } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ScrollItem from "@/components/ScrollItem.vue";
@@ -78,6 +101,7 @@ import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.
 import TextInput from "@/components/inputs/TextInput.vue";
 
 import { BoardType, UnsupportedBoardType } from "@/store/Boards";
+import { preconfigureNetworkInterface } from "@/store/defaults";
 import { useStore } from "@/store";
 
 import { version } from "../../../package.json";
@@ -141,9 +165,54 @@ const boardPreset = computed(() => store.preset.boardType as string);
 
 // SBC mode
 const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC);
-const sbcMode = computed<boolean>({
-	get() { return !!store.data.state.dsfVersion; },
-	set(value) { store.data.state.dsfVersion = value ? dsfVersion : null; }
+const standaloneMode = computed<boolean>({
+	get() { return !store.data.state.dsfVersion; },
+	set(value) {
+		store.data.state.dsfVersion = value ? null : dsfVersion;
+		if (value) {
+			if (store.data.boardDefinition) {
+				// Delete interfaces that are not present in the original board
+				for (let i = store.data.network.interfaces.length - 1; i >= 0; i--) {
+					if (!store.data.boardDefinition.objectModelNetworkInterfaces.some(iface => iface.type === store.data.network.interfaces[i].type)) {
+						store.data.network.interfaces.splice(i, 1);
+					}
+				}
+
+				// Add missing interface types
+				for (const networkInterfacePreset of store.data.boardDefinition.objectModelNetworkInterfaces) {
+					if (!store.data.network.interfaces.some(iface => iface.type === networkInterfacePreset.type)) {
+						const newNetworkInterface = new NetworkInterface();
+						newNetworkInterface.update(networkInterfacePreset);
+						preconfigureNetworkInterface(newNetworkInterface);
+						store.data.network.interfaces.push(newNetworkInterface);
+					}
+				}
+			}
+		} else {
+			// Assume a standard Raspberry Pi with LAN and WiFi is the SBC to use
+			if (store.data.network.interfaces.length === 0 || store.data.network.interfaces[0].type !== NetworkInterfaceType.lan) {
+				const lanInterface = new NetworkInterface();
+				preconfigureNetworkInterface(lanInterface);
+				lanInterface.type = NetworkInterfaceType.lan;
+				if (store.data.network.interfaces.length === 0) {
+					store.data.network.interfaces.push(lanInterface);
+				} else {
+					store.data.network.interfaces[0].update(lanInterface);
+				}
+			}
+
+			if (store.data.network.interfaces.length === 1 || store.data.network.interfaces[1].type !== NetworkInterfaceType.wifi) {
+				const wifiInterface = new NetworkInterface();
+				preconfigureNetworkInterface(wifiInterface);
+				wifiInterface.type = NetworkInterfaceType.wifi;
+				if (store.data.network.interfaces.length === 1) {
+					store.data.network.interfaces.push(wifiInterface);
+				} else {
+					store.data.network.interfaces[1].update(wifiInterface);
+				}
+			}
+		}
+	}
 });
 const supportsAutoSave = computed(() => !!store.data.boardDefinition?.objectModelBoard.vIn);
 </script>

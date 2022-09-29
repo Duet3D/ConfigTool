@@ -42,15 +42,6 @@ export interface BoardDescriptor extends BaseBoardDescriptor {
 }
 
 /**
- * Check if the given value is a board descriptor
- * @param value Value to check
- * @returns True if the value is a board descriptor
- */
-export function isBoardDescriptor(value: any): value is BoardDescriptor {
-	return (value instanceof Object) && (value.objectModelNetworkInterfaces instanceof Array);
-}
-
-/**
  * Descriptors for supported main boards
  */
 export const Boards: Record<BoardType, BoardDescriptor> = {
@@ -622,7 +613,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.pwm]: ["zprobe.mod+servo"],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2"],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "ctemp"],
-			[PortType.uart]: ["usb", "urxd+utxf"]
+			[PortType.uart]: ["usb", "urxd+utxd"]
 		},
 
 		expansionBoards: new Set([

@@ -25,6 +25,10 @@ import {
 	Move,
 	MoveCompensation,
 	Network,
+	NetworkInterface,
+	NetworkInterfaceState,
+	NetworkInterfaceType,
+	NetworkProtocol,
 	Probe,
 	ProbeGrid,
 	ProbeType,
@@ -54,6 +58,7 @@ const defaultTemplate = initObject(ConfigModel, {
 		}
 	]),
 	heat: initObject(Heat, {
+		bedHeaters: [0],
 		heaters: initCollection(Heater, [
 			{
 				max: 140,
@@ -153,7 +158,18 @@ const defaultTemplate = initObject(ConfigModel, {
 	}),
 	limits: initObject(Limits, Boards[BoardType.Duet3Mini5PlusWiFi].objectModelLimits),
 	network: initObject(Network, {
-		name: "Duet 3"
+		name: "Duet 3",
+		interfaces: initCollection(NetworkInterface, [
+			{
+				activeProtocols: new Set<NetworkProtocol>([NetworkProtocol.HTTP]),
+				actualIP: "192.168.1.123",
+				subnet: "255.255.255.0",
+				gateway: "192.168.1.254",
+				dnsServer: "192.168.1.254",
+				state: NetworkInterfaceState.active,
+				type: NetworkInterfaceType.lan
+			}
+		])
 	}),
 	sensors: initObject(Sensors, {
 		analog: initCollection(AnalogSensor, [
