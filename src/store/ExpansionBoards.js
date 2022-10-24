@@ -44,8 +44,8 @@ export default {
 		numDrives: 3,
 		heaterPorts: ['out0', 'out1', 'out2'],
 		fanPorts: ['out3', 'out4', 'out5', 'out6', 'out7', 'out8'],
-		gpioPorts: [/*'io0.out', 'io0.in',*/ 'io1.out', 'io1.in', 'io2.out', 'io2.in', 'io3.out', 'io3.in', 'io4.out', 'io4.in', 'io5.out', 'io5.in', 'out3.tach', 'out4.tach', 'out5.tach'],
-		analogPorts: ['temp0', 'temp1', 'temp2', /*'io0.in',*/ 'io1.in', 'io2.in', 'io5.in'],
+		gpioPorts: ['io0.out', 'io0.in', 'io1.out', 'io1.in', 'io2.out', 'io2.in', 'io3.out', 'io3.in', 'io4.out', 'io4.in', 'io5.out', 'io5.in', 'out3.tach', 'out4.tach', 'out5.tach'],
+		analogPorts: ['temp0', 'temp1', 'temp2', 'io0.in', 'io1.in', 'io2.in', 'io5.in'],
 		pwmPorts: ['io1.out', 'io4.out'],
 		spiCsPorts: ['spi.cs0', 'spi.cs1', 'spi.cs2', 'spi.cs3'],
 		maxRtdBoards: 2
