@@ -22,6 +22,7 @@ import {
 	initObject,
 	KinematicsName,
 	Limits,
+	ModelSet,
 	Move,
 	MoveCompensation,
 	Network,
@@ -161,7 +162,7 @@ const defaultTemplate = initObject(ConfigModel, {
 		name: "Duet 3",
 		interfaces: initCollection(NetworkInterface, [
 			{
-				activeProtocols: new Set<NetworkProtocol>([NetworkProtocol.HTTP]),
+				activeProtocols: new ModelSet<NetworkProtocol>([NetworkProtocol.HTTP]),
 				actualIP: "192.168.1.123",
 				subnet: "255.255.255.0",
 				gateway: "192.168.1.254",
