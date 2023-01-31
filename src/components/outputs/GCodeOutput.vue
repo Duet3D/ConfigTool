@@ -10,9 +10,14 @@ import "./monaco-gcode";
 import "./monaco-worker";
 
 // Properties
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+    minimap?: boolean,
+    readOnly?: boolean,
     value: string
-}>();
+}>(), {
+    minimap: false,
+    readOnly: true
+});
 
 // Component lifecycle
 const editorRef = ref<HTMLDivElement | null>(null);
@@ -21,10 +26,14 @@ let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 onMounted(() => {
     editor = monaco.editor.create(editorRef.value!, {
         language: "gcode",
+        matchBrackets: "never",
         minimap: {
-            enabled: false
+            enabled: props.minimap
         },
-        readOnly: true,
+        occurrencesHighlight: false,
+        overviewRulerLanes: 0,
+        readOnly: props.readOnly,
+        renderLineHighlight: "none",
         scrollBeyondLastLine: false,
         value: props.value
     });

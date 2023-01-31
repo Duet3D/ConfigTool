@@ -1,0 +1,54 @@
+<%  if (model.move.kinematics instanceof CoreKinematics) {
+        let kinematicsName, kParam;
+        switch (model.move.kinematics.name) {
+            case KinematicsName.cartesian:
+                kinematicsName = "Cartesian";
+                kParam = 0;
+                break;
+            case KinematicsName.coreXY:
+                kinematicsName = "CoreXY";
+                kParam = 1;
+                break;
+            case KinematicsName.coreXZ:
+                kinematicsName = "CoreXZ";
+                kParam = 2;
+                break;
+            case KinematicsName.coreXYU:
+                kinematicsName = "CoreXYU";
+                kParam = 5;
+                break;
+            case KinematicsName.coreXYUV:
+                kinematicsName = "CoreXYUV";
+                kParam = 8;
+                break;
+            case KinematicsName.markForged:
+                kinematicsName = "MarkForged";
+                kParam = 11;
+                break;
+            default:
+                throw new Error(`Unsupported core kinematics: ${model.move.kinematics.name}`);
+        }
+
+        let moveCoefficients = "";
+        if (!isDefaultCoreKinematics(model.move.kinematics)) {
+            const letters = "XYZUVAB";
+            for (let i = 0; i < model.move.kinematics.forwardMatrix.length; i++) {
+                moveCoefficients += ` ${letters[i]}${model.move.kinematics.forwardMatrix[i].join(':')}`;
+            }
+        } -%>
+; <%- kinematicsName %> kinematics
+M669 K<%- kParam %><%- moveCoefficients %> ; set kinematics type
+<%  } else if (model.move.kinematics.name === KinematicsName.delta) {
+        let rodLengths = model.move.kinematics.towers.map(tower => tower.diagonal);
+        if (!rodLengths.some(diagnonal => diagnonal != rodLengths[0])) {
+            rodLengths = rodLengths[0];
+        } -%>
+; Linear delta
+M665 R<%- model.move.kinematics.deltaRadius %> L<%- rodLengths %> B<%- model.move.kinematics.deltaRadius %> H<%- model.move.kinematics.homedHeight %> ; set delta radius, diagonal rod length, printable radius and homed height
+M666 X0 Y0 Z0 ; put your endstop adjustments here, or let auto calibration find them
+<%  } else if (model.move.kinematics.name === KinematicsName.hangprinter) { -%>
+; Hangprinter
+M669 K7 A<%- model.move.kinematics.anchors[0].join(':') %> B<%- model.move.kinematics.anchors[1].join(':') %> C<%- model.move.kinematics.anchors[2].join(':') %> D<%- model.move.kinematics.anchors[3][0] %> P<%- model.move.kinematics.printRadius %> ; configure hangprinter kinematics
+<%  } else { -%>
+; Unsupported kinematics: <%- model.move.kinematics.name %>
+<%  } -%>

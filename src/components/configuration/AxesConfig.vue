@@ -10,14 +10,15 @@
 		<template #body>
 			<table class="table table-striped table-axes mb-0">
 				<colgroup>
-					<col style="width: 8%;">
-					<col style="width: 16%;">
-					<col style="width: 15%;">
 					<col style="width: 10%;">
-					<col style="width: 14%;">
-					<col style="width: 12%;">
-					<col style="width: 12%;">
+					<col style="width: auto;">
+					<col style="width: 10%;">
+					<col style="width: 10%;">
+					<col style="width: 18%;">
+					<col style="width: 11%;">
+					<col style="width: 17%;">
 					<col style="width: 13%;">
+					<col style="width: 11%;">
 					<col style="width: auto;">
 				</colgroup>
 				<thead>
@@ -27,6 +28,12 @@
 						</th>
 						<th>
 							Drivers
+						</th>
+						<th>
+							Minimum (mm)
+						</th>
+						<th>
+							Maximum (mm)
 						</th>
 						<th>
 							Microstepping
@@ -47,9 +54,6 @@
 							Acceleration (mm/s²)
 						</th>
 						<th>
-							Motor Current (mA)
-						</th>
-						<th>
 							<!-- Delete button -->
 						</th>
 					</tr>
@@ -66,6 +70,16 @@
 						</td>
 						<td>
 							<driver-list :drivers="axis.drivers" class="mt-1" />
+						</td>
+						<td>
+							<number-input title="Minimum axis position"
+							              :max="axis.max" :step="0.01" unit="mm" hide-unit
+							              v-model="axis.min" :preset="getPresetAxisValue(index, 'min')" />
+						</td>
+						<td>
+							<number-input title="Maximum axis position"
+							              :min="axis.min" :step="0.01" unit="mm" hide-unit
+							              v-model="axis.max" :preset="getPresetAxisValue(index, 'max')" />
 						</td>
 						<td class="lh-1">
 							<select-input title="Microstepping for mapped drivers"
@@ -92,12 +106,6 @@
 							<number-input title="Acceleration for moves"
 							              :min="0.1" :step="1" unit="mm/s²" hide-unit
 							              v-model="axis.acceleration" :preset="getPresetAxisValue(index, 'acceleration')" />
-						</td>
-						<td>
-							<number-input title="Peak current for mapped drivers (not RMS)"
-							              :min="0" :max="getMaxCurrent(axis.drivers)" :step="100" unit="mA" hide-unit
-							              :disabled="getMaxCurrent(axis.drivers)! <= 0"
-							              v-model="axis.current" :preset="getPresetAxisValue(index, 'current')" />
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger mt-1" :disabled="isPersistentAxis(axis)" @click.prevent="store.data.move.axes.splice(index, 1)">
@@ -245,16 +253,5 @@ function getPresetAxisMicrostepping(axis: Axis): string {
 
 function getPresetAxisValue<K extends keyof Axis>(index: number, key: K) {
 	return (index < store.preset.move.axes.length) ? store.preset.move.axes[index][key] : null;
-}
-
-function getMaxCurrent(drivers: DriverId[]) {
-	let maxCurrent: number | undefined;
-	for (const driver of drivers) {
-		const boardDefinition = store.data.getBoardDefinition(driver.board);
-		if (boardDefinition && (maxCurrent == null || maxCurrent < boardDefinition.motorMaxCurrent)) {
-			maxCurrent = boardDefinition.motorMaxCurrent;
-		}
-	}
-	return maxCurrent;
 }
 </script>

@@ -1,5 +1,4 @@
-import { Kinematics, KinematicsName, Network, NetworkInterface, NetworkInterfaceState, NetworkProtocol } from "@duet3d/objectmodel";
-import { PortType } from "./BaseBoard";
+import { CoreKinematics, DeltaKinematics, DeltaTower, initCollection, initObject, KinematicsName, NetworkInterface, NetworkInterfaceState, NetworkProtocol } from "@duet3d/objectmodel";
 
 export type CoreKinematicsTypes =
 	KinematicsName.cartesian |
@@ -79,6 +78,28 @@ export const DefaultInverseMatrix: { [Property in CoreKinematicsTypes]: Readonly
 		[-1, 1, 0],
 		[0, 0, 1]
 	]
+}
+
+export const DefaultDeltaKinematics = new DeltaKinematics(KinematicsName.delta);
+DefaultDeltaKinematics.update({
+	deltaRadius: 105.6,
+	homedHeight: 250,
+	printRadius: 85,
+	towers: [
+		{
+			diagonal: 215
+		},
+		{
+			diagonal: 215
+		},
+		{
+			diagonal: 215
+		}
+	]
+});
+
+export function isDefaultCoreKinematics(kinematics: CoreKinematics) {
+	return JSON.stringify(kinematics.forwardMatrix) === JSON.stringify(DefaultForwardMatrix[kinematics.name as CoreKinematicsTypes]);
 }
 
 export function preconfigureNetworkInterface(iface: NetworkInterface, updateProtocols: boolean = true) {

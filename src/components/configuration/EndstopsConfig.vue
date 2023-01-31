@@ -101,7 +101,7 @@ const EndstopLocationOptions: Array<SelectOption> = [
 </script>
 
 <script setup lang="ts">
-import { EndstopType, ProbeType, Axis, Endstop, DriverId } from "@duet3d/objectmodel";
+import { EndstopType, ProbeType, Axis, Endstop } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import HomingSpeedsInput from "@/components/inputs/HomingSpeedsInput.vue";

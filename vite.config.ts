@@ -7,7 +7,17 @@ import vue from "@vitejs/plugin-vue";
 export default defineConfig({
 	base: "/next/",
 	build: {
+		assetsDir: "",
 		commonjsOptions: { include: [] },
+		rollupOptions: {
+			output: {
+				manualChunks(id) {
+					if (id.includes("monaco-editor")) {
+						return "monaco-editor";
+					}
+				}
+			}
+		},
 		target: "ES2020"
 	},
 	optimizeDeps: {

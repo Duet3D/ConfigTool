@@ -19,6 +19,14 @@
 			</div>
 
 			<table class="table table-striped table-smart-drivers mb-0">
+				<colgroup>
+					<col style="width: auto;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+					<col style="width: 20%;">
+				</colgroup>
 				<thead>
 					<tr>
 						<th class="text-center">
@@ -26,6 +34,9 @@
 						</th>
 						<th>
 							Direction
+						</th>
+						<th>
+							Motor Current
 						</th>
 						<th>
 							Mode
@@ -36,7 +47,6 @@
 						<th>
 							StallGuard Threshold
 						</th>
-						<!-- TODO insert motor current + standstill current reduction here -->
 					</tr>
 				</thead>
 				<tbody>
@@ -47,6 +57,13 @@
 						<td>
 							<select-input title="Movement direction of this driver" :required="false"
 										  v-model="driver.forwards" :options="directionOptions" :preset="true" />
+						</td>
+						<td>
+							<number-input title="Peak current for mapped drivers (not RMS). If this setting is not available, map this driver to an axis or extruder first"
+										  :disabled="!hasMotorsMapped(driver)" :min="0" :max="getMaxCurrent(driver)"
+										  :step="100" unit="mA" :model-value="getCurrent(driver)"
+										  @update:model-value="setCurrent(driver, $event)"
+										  :preset="getPresetCurrent(driver)" />
 						</td>
 						<td>
 							<select-input title="Operation mode of this driver. Defaults to SpreadCycle, may be changed to StealthChop to reduce motor noise"
@@ -280,6 +297,74 @@ function getDriverModes(driver: ConfigDriver) {
 	}
 
 	return options;
+}
+
+function hasMotorsMapped(driver: ConfigDriver) {
+	for (const axis of store.data.move.axes) {
+		if (axis.drivers.some(item => item.equals(driver.id))) {
+			return true;
+		}
+	}
+
+	for (const extruder of store.data.move.extruders) {
+		if (extruder.driver?.equals(driver.id)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function getMaxCurrent(driver: ConfigDriver) {
+	return store.data.getBoardDefinition(driver.id.board)?.motorMaxCurrent;
+}
+
+function getCurrent(driver: ConfigDriver) {
+	for (const axis of store.data.move.axes) {
+		if (axis.drivers.some(item => item.equals(driver.id))) {
+			return axis.current;
+		}
+	}
+
+	for (const extruder of store.data.move.extruders) {
+		if (extruder.driver?.equals(driver.id)) {
+			return extruder.current;
+		}
+	}
+
+	return NaN;
+}
+
+function setCurrent(driver: ConfigDriver, value: number) {
+	for (const axis of store.data.move.axes) {
+		if (axis.drivers.some(item => item.equals(driver.id))) {
+			axis.current = value;
+			return;
+		}
+	}
+
+	for (const extruder of store.data.move.extruders) {
+		if (extruder.driver?.equals(driver.id)) {
+			extruder.current = value;
+			return;
+		}
+	}
+}
+
+function getPresetCurrent(driver: ConfigDriver) {
+	for (const axis of store.preset.move.axes) {
+		if (axis.drivers.some(item => item.equals(driver.id))) {
+			return axis.current;
+		}
+	}
+
+	for (const extruder of store.preset.move.extruders) {
+		if (extruder.driver?.equals(driver.id)) {
+			return extruder.current;
+		}
+	}
+
+	return undefined;
 }
 
 // External Drivers

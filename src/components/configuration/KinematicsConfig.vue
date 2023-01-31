@@ -1,7 +1,6 @@
 <template>
-	<scroll-item anchor="Kinematics">
-		<template #title>
-			Kinematics
+	<scroll-item anchor="Kinematics" title="Kinematics" :preview-templates="['config/kinematics.ejs']">
+		<template #url>
 			<a v-if="store.data.move.kinematics.name === KinematicsName.cartesian"
 			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_cartesian" target="_blank">
 				<i class="bi-info-circle"></i>
@@ -65,24 +64,6 @@
 		<div v-if="isCoreKinematics" class="row">
 			<!-- Core Kinematics -->
 			<core-kinematics-dialog v-model="showAdvancedSettings" />
-			<template v-for="letter in [AxisLetter.X, AxisLetter.Y, AxisLetter.Z]">
-				<div class="col-2">
-					<number-input v-if="getAxis(letter)" :label="`${letter} minimum`"
-								  :title="`Minimum position of the ${letter} axis`" :max="getAxis(letter)!.max - 0.01"
-								  :step="0.01" unit="mm" v-model="getAxis(letter)!.min"
-								  :preset="getAxisPreset(letter)?.min" />
-					<span v-else class="text-danger is-invalid">
-						missing {{ letter }} axis
-					</span>
-				</div>
-				<div class="col-2">
-					<number-input v-if="getAxis(letter)" :label="`${letter} maximum`"
-								  :title="`Maximum position of the ${letter} axis`" :min="getAxis(letter)!.min + 0.01"
-								  :step="0.01" unit="mm" v-model="getAxis(letter)!.max"
-								  :preset="getAxisPreset(letter)?.max" />
-
-				</div>
-			</template>
 		</div>
 		<div v-else-if="store.data.move.kinematics.name === KinematicsName.delta" class="row g-3">
 			<!-- Delta Kinematics -->
@@ -263,9 +244,7 @@
 
 <script setup lang="ts">
 import {
-	Axis,
-	AxisLetter,
-	KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics, EndstopType
+	Axis, AxisLetter, KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics, EndstopType
 } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
@@ -275,7 +254,7 @@ import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.
 import { useStore } from "@/store";
 import { computed, ref } from "vue";
 import CoreKinematicsDialog from "@/components/dialogs/CoreKinematicsDialog.vue";
-import { type CoreKinematicsTypes, DefaultForwardMatrix, DefaultInverseMatrix } from "@/store/defaults";
+import { type CoreKinematicsTypes, DefaultForwardMatrix, DefaultInverseMatrix, DefaultDeltaKinematics } from "@/store/defaults";
 import DeltaKinematicsDialog from "@/components/dialogs/DeltaKinematicsDialog.vue";
 import PolarKinematicsDialog from "@/components/dialogs/PolarKinematicsDialog.vue";
 import ScaraKinematicsDialog from "@/components/dialogs/ScaraKinematicsDialog.vue";
@@ -349,8 +328,7 @@ const KinematicsOptions: Record<string, Array<SelectOption>> = {
 
 // General
 function setKinematics(value: KinematicsName) {
-	let updateKinematics =
-		store.data.update({ move: { kinematics: { name: value } } });
+	store.data.update({ move: { kinematics: { name: value } } });
 	if (store.data.move.kinematics instanceof CoreKinematics) {
 		// Update forward/inverse matrices for core kinematics
 		store.data.move.kinematics.update({
@@ -361,6 +339,8 @@ function setKinematics(value: KinematicsName) {
 
 	// Update defaults
 	if (store.data.move.kinematics instanceof DeltaKinematics) {
+		store.data.move.kinematics.update(DefaultDeltaKinematics);
+
 		for (const axis of store.data.move.axes) {
 			if ([AxisLetter.X, AxisLetter.Y].includes(axis.letter)) {
 				if (axis.jerk === 15) { axis.jerk = 20; }
@@ -373,7 +353,7 @@ function setKinematics(value: KinematicsName) {
 				if (axis.acceleration == 20) { axis.acceleration = 1000; }
 			}
 		}
-		if (true) {		// TODO if custom preset
+		if (store.preset.configTool.name !== null) {
 			for (const presetAxis of store.preset.move.axes) {
 				if ([AxisLetter.X, AxisLetter.Y, AxisLetter.Z].includes(presetAxis.letter)) {
 					presetAxis.stepsPerMm = 80;
@@ -389,7 +369,7 @@ function setKinematics(value: KinematicsName) {
 			if (extruder.jerk === 2) { extruder.jerk = 20; }
 			if (extruder.acceleration == 250) { extruder.jerk = 1000; }
 		}
-		if (true) {		// TODO if custom preset
+		if (store.preset.configTool.name !== null) {
 			for (const presetExtruder of store.preset.move.extruders) {
 				presetExtruder.stepsPerMm = 663;
 				presetExtruder.jerk = 20;
@@ -405,7 +385,7 @@ function setKinematics(value: KinematicsName) {
 					if (store.data.move.axes[i].letter === AxisLetter.Z && endstop.type === EndstopType.ZProbeAsEndstop) { endstop.type = EndstopType.InputPin; }
 				}
 
-				if (true) {		// TODO if custom preset
+				if (store.preset.configTool.name !== null) {
 					const presetEndstop = (i < store.preset.sensors.endstops.length) ? store.preset.sensors.endstops[i] : null;
 					if (presetEndstop !== null) {
 						presetEndstop.highEnd = true;
@@ -417,17 +397,17 @@ function setKinematics(value: KinematicsName) {
 	} else {
 		for (const axis of store.data.move.axes) {
 			if ([AxisLetter.X, AxisLetter.Y].includes(axis.letter)) {
-				if (axis.jerk === 80) { axis.jerk = 20; }
-				if (axis.speed === 100) { axis.speed = 300; }
-				if (axis.acceleration === 500) { axis.acceleration = 1000; }
+				if (axis.jerk === 20) { axis.jerk = 15; }
+				if (axis.speed === 300) { axis.speed = 100; }
+				if (axis.acceleration === 1000) { axis.acceleration = 500; }
 			} else if (axis.letter === AxisLetter.Z) {
 				if (axis.stepsPerMm === 80) { axis.stepsPerMm = 400; }
-				if (axis.jerk === 2) { axis.jerk = 0.2; }
+				if (axis.jerk === 20) { axis.jerk = 0.2; }
 				if (axis.speed === 300) { axis.speed = 3; }
 				if (axis.acceleration == 1000) { axis.acceleration = 20; }
 			}
 		}
-		if (true) {		// TODO if custom preset
+		if (store.preset.configTool.name !== null) {
 			for (const presetAxis of store.preset.move.axes) {
 				if ([AxisLetter.X, AxisLetter.Y].includes(presetAxis.letter)) {
 					presetAxis.jerk = 20;
@@ -447,7 +427,7 @@ function setKinematics(value: KinematicsName) {
 			if (extruder.jerk === 20) { extruder.jerk = 2; }
 			if (extruder.acceleration == 1000) { extruder.acceleration = 250; }
 		}
-		if (true) {		// TODO if custom preset
+		if (store.preset.configTool.name !== null) {
 			for (const presetExtruder of store.preset.move.extruders) {
 				presetExtruder.stepsPerMm = 420;
 				presetExtruder.jerk = 2;
@@ -463,7 +443,7 @@ function setKinematics(value: KinematicsName) {
 					if (store.data.move.axes[i].letter === AxisLetter.Z && endstop.type === EndstopType.InputPin) { endstop.type = EndstopType.ZProbeAsEndstop; }
 				}
 
-				if (true) {		// TODO if custom preset
+				if (store.preset.configTool.name !== null) {
 					const presetEndstop = (i < store.preset.sensors.endstops.length) ? store.preset.sensors.endstops[i] : null;
 					if (presetEndstop !== null) {
 						presetEndstop.highEnd = false;

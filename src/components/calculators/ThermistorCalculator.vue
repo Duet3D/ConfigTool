@@ -235,6 +235,12 @@ const props = defineProps<{
 
 const calculator = ref<typeof BaseCalculator | null>(null);
 
+function onShow() {
+	r25.value = props.sensor.r25;
+	beta.value = props.sensor.beta;
+	shC.value = props.sensor.shC;
+}
+
 function apply() {
 	props.sensor.r25 = calculatedR25.value;
 	props.sensor.beta = calculatedBeta.value;

@@ -119,6 +119,7 @@ export class ConfigToolModel extends ModelObject {
 	homingSpeedFast: number = 30;
 	homingSpeedSlow: number = 6;
 	readonly laser: ConfigLaserModel = new ConfigLaserModel();
+	name: string | null = null;
 	orthogonalDistance: number = 85;
 	panelDueChecksum: boolean = false;
 	panelDueBaudRate: number = 57600;

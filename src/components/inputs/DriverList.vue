@@ -1,6 +1,6 @@
 <style scoped>
 .driver-list {
-	min-width: 9rem;
+	min-width: 7.5rem;
 }
 </style>
 

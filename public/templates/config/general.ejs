@@ -1,0 +1,35 @@
+; General settings
+M550 P<%- escapeString(model.network.name) %> ; set hostname
+<%  if (model.configTool.autoSave.enabled) { -%>
+M911 S<%- model.configTool.autoSave.saveThreshold %> R<%- model.configTool.autoSave.resumeThreshold %> P<%- escapeString(model.configTool.autoSave.codesToRun) %> ; set voltage thresholds and actions to run on power loss
+<%  }
+    if (model.configTool.capabilities.cnc) {
+        if (preview) { -%>
+; see Spindles section for a preview of the spindle configuration
+<%      } else {
+            for (let i = 0; i < model.spindles.length; i++) {
+                const spindle = model.spindles[i];
+                if (spindle !== null) { -%>
+M950 C"<%- getCombinedPort([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards], i) %>" Q<%- getPort(ConfigPortFunction.spindlePwm).frequency %> L<%- spindle.min %>:<%- spindle.max %> ; configure spindle #<%- i %>
+<%              }
+            }
+        }
+    }
+    if (model.configTool.capabilities.laser) {
+        if (preview) { -%>
+; see Laser section for a preview of the laser configuration
+<%      } else { -%>
+M452 C"<%- getPort(ConfigPortFunction.laser).toString() %>" R<%- model.configTool.laser.maxIntensity %> S<%- model.configTool.laser.sParamSticky ? 1 : 0 %> ; configure laser
+<%      }
+    }
+    if (preview && ((model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) || model.configTool.configOverride)) { -%>
+
+; ... generated at the end of config.g:
+<%      if (model.configTool.configOverride) { -%>
+M501 ; load saved parameters from non-volatile memory
+<%      }
+        if (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) { -%>
+T<%- model.tools.findIndex(tool => tool !== null) %> ; select first tool
+<%      }
+    }
+-%>

@@ -218,6 +218,15 @@ export class ConfigPort extends ModelObject {
  * @param value Port to strip
  * @returns Stripped port
  */
-export function stripPort(value: string): string {
+export function stripPort(value: string) {
 	return value.replace(/^[!^]+/, "");
+}
+
+/**
+ * Strip the optional board number from a given port (e.g. "0." from "0.io3.in")
+ * @param value Port to strip
+ * @returns Stripped port
+ */
+export function stripBoard(value: string) {
+	return value.replace(/^(\d+\.)/, "");
 }

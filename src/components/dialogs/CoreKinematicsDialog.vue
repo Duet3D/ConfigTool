@@ -14,6 +14,7 @@
 					</tbody>
 				</table>
 			</div>
+			<!--
 			<div class="col-12">
 				Inverse Matrix:
 				<table class="table table-bordered mt-1">
@@ -26,6 +27,7 @@
 					</tbody>
 				</table>
 			</div>
+			-->
 			<!-- TODO segmentation -->
 		</div>
 		<div v-else class="text-danger">

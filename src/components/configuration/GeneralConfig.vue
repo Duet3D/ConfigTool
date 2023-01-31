@@ -1,5 +1,7 @@
 <template>
-	<scroll-item anchor="General" title="General">
+	<scroll-item anchor="General" title="General"
+				 :preview-templates="(store.data.state.dsfVersion !== null) ? ['config/general.ejs', 'runonce.ejs'] : ['config/general.ejs']"
+				 url-title="Getting Started" url="https://docs.duet3d.com/en/User_manual/Overview">
 		<div class="row">
 			<div class="col">
 				<select-input label="Board" title="Mainboard of your setup" v-model="board" :options="boardOptions"
@@ -16,7 +18,8 @@
 				<check-input v-if="supportsSbcMode" label="Run in standalone mode without SBC (Raspberry Pi)"
 							 title="Run RepRapFirmware in stand-alone mode without an attached single-board computer"
 							 v-model="standaloneMode" :preset="store.preset.state.dsfVersion !== null" />
-				<check-input label="Select the first tool on start-up" title="Select the first available tool on start-up"
+				<check-input label="Select the first tool on start-up"
+							 title="Select the first available tool on start-up"
 							 v-model="store.data.configTool.autoSelectFirstTool"
 							 :preset="store.preset.configTool.autoSelectFirstTool" />
 				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)"

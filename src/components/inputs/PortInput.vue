@@ -500,6 +500,6 @@ const required = computed(() => {
 		return props.required;
 	}
 
-	return (props.function !== ConfigPortFunction.fanTacho);
+	return ![ConfigPortFunction.fanTacho, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards].includes(props.function);
 });
 </script>
