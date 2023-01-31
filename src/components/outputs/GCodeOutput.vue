@@ -3,21 +3,16 @@
 </template>
 
 <script setup lang="ts">
-import * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 
 import "./monaco-gcode";
 import "./monaco-worker";
 
 // Properties
-const props = withDefaults(defineProps<{
-    minimap?: boolean,
-    readOnly?: boolean,
+const props = defineProps<{
     value: string
-}>(), {
-    minimap: false,
-    readOnly: true
-});
+}>();
 
 // Component lifecycle
 const editorRef = ref<HTMLDivElement | null>(null);
@@ -28,11 +23,11 @@ onMounted(() => {
         language: "gcode",
         matchBrackets: "never",
         minimap: {
-            enabled: props.minimap
+            enabled: false
         },
         occurrencesHighlight: false,
         overviewRulerLanes: 0,
-        readOnly: props.readOnly,
+        readOnly: true,
         renderLineHighlight: "none",
         scrollBeyondLastLine: false,
         value: props.value
