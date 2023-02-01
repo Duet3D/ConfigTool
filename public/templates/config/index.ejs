@@ -9,7 +9,6 @@ G4 S2
 <% } -%>
 
 <%- await render("config/general.ejs", renderArgs) %>
-
 <%- await render("config/kinematics.ejs", renderArgs) %>
 
 <% if (!preview && ((model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) || model.configTool.configOverride)) {

@@ -56,13 +56,13 @@ function updateEditorHeight() {
         return;
     }
 
-    const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight)
-    const lineCount = editor.getModel()?.getLineCount() || 1
-    const height = editor.getTopForLineNumber(lineCount + 1) + lineHeight
+    const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
+    const lineCount = editor.getModel()?.getLineCount() || 1;
+    const height = editor.getTopForLineNumber(lineCount + 1) + lineHeight;
 
     if (prevHeight !== height) {
-        prevHeight = height
-        editorRef.value.style.height = `${height}px`
+        prevHeight = height;
+        editorRef.value.style.height = `${height}px`;
         editor.layout();
     }
 }

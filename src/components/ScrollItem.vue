@@ -14,6 +14,7 @@
 	<div class="pt-3">
 		<a :id="anchor" data-anchor="true"></a>
 		<div class="card" :class="previewVisible ? 'preview-visible' : ''" v-bind="$attrs">
+			<!-- Card Title-->
 			<div class="card-header d-flex justify-content-between">
 				<slot name="title">
 					{{ props.title }}
@@ -32,6 +33,7 @@
 				</slot>
 			</div>
 
+			<!-- Card Content-->
 			<template v-if="previewVisible">
 				<ul class="nav nav-tabs">
 					<li v-for="template in props.previewTemplates" class="nav-item">
@@ -41,7 +43,7 @@
 						</a>
 					</li>
 				</ul>
-				<g-code-output class="output" :value="generatedCode" readonly />
+				<g-code-output v-show="previewVisible" class="output" :value="generatedCode" readonly />
 			</template>
 			<template v-else>
 				<slot name="body" />
@@ -55,11 +57,11 @@
 </template>
 
 <script setup lang="ts">
-import { Comment, ref, watch, type Slot, type VNode } from "vue";
-
-import GCodeOutput from "./outputs/GCodeOutput.vue";
+import { Comment, defineAsyncComponent, ref, watch, type Slot, type VNode } from "vue";
 
 import { indent, render } from "@/store/render";
+
+const GCodeOutput = defineAsyncComponent(() => import("./monaco/GCodeOutput.vue"));
 
 const props = defineProps<{
 	anchor: string,

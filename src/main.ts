@@ -16,3 +16,9 @@ createApp(App)
     .directive("title", VTitle)
     .use(router)
     .mount("#app");
+
+// Prefetch Monaco component here so they're rendered faster later
+const _ = new Promise(async () => {
+    await import("./components/monaco/GCodeInput.vue");
+    await import("./components/monaco/GCodeOutput.vue");
+});

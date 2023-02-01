@@ -113,8 +113,7 @@ Object.defineProperty(renderOptions, "mainboard", { get: () => store.data.boards
  * @returns Rendered file
  */
 export async function render(filename: string, args: Record<string, any> = {}): Promise<string> {
-    const fullFilename = '/' + (import.meta.env.DEV ? `templates/${filename}` : `${import.meta.env.BASE_URL}templates/${filename}`);
-    console.log("attempting to load " + fullFilename);
+    const fullFilename = `${import.meta.env.BASE_URL}templates/${filename}`;
     const response = await fetch(fullFilename);
     if (response.ok) {
         const responseText = await response.text();
