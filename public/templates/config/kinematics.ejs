@@ -36,19 +36,19 @@
                 moveCoefficients += ` ${letters[i]}${model.move.kinematics.forwardMatrix[i].join(':')}`;
             }
         } -%>
-; <%- kinematicsName %> kinematics
-M669 K<%- kParam %><%- moveCoefficients %> ; set kinematics type
+M669 K<%- kParam %><%- moveCoefficients %> ; configure <%- kinematicsName -%> kinematics
 <%  } else if (model.move.kinematics.name === KinematicsName.delta) {
         let rodLengths = model.move.kinematics.towers.map(tower => tower.diagonal);
         if (!rodLengths.some(diagnonal => diagnonal != rodLengths[0])) {
             rodLengths = rodLengths[0];
         } -%>
-; Linear delta
 M665 R<%- model.move.kinematics.deltaRadius %> L<%- rodLengths %> B<%- model.move.kinematics.deltaRadius %> H<%- model.move.kinematics.homedHeight %> ; set delta radius, diagonal rod length, printable radius and homed height
-M666 X0 Y0 Z0 ; put your endstop adjustments here, or let auto calibration find them
+M208 Z<%- model.move.axes.find(axis => axis.letter === 'Z').min -%> S1 ; set minimum Z 
+M666 X<%- model.move.kinematics.towers[0].endstopAdjustment -%> Y<%- model.move.kinematics.towers[1].endstopAdjustment -%> Z<%- model.move.kinematics.towers[2].endstopAdjustment -%> ; endstop adjustments, can be determined using auto calibration as well
 <%  } else if (model.move.kinematics.name === KinematicsName.hangprinter) { -%>
-; Hangprinter
 M669 K7 A<%- model.move.kinematics.anchors[0].join(':') %> B<%- model.move.kinematics.anchors[1].join(':') %> C<%- model.move.kinematics.anchors[2].join(':') %> D<%- model.move.kinematics.anchors[3][0] %> P<%- model.move.kinematics.printRadius %> ; configure hangprinter kinematics
+M208 S0 Z<%- model.move.axes.find(axis => axis.letter === 'Z').max -%> ; set maximum height
+M208 S1 Z<%- model.move.axes.find(axis => axis.letter === 'Z').min -%> ; set minimum height
 <%  } else { -%>
 ; Unsupported kinematics: <%- model.move.kinematics.name %>
 <%  } -%>

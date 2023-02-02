@@ -1,0 +1,7 @@
+<%  if (model.configTool.configOverride) { -%>
+M501 ; load saved parameters from non-volatile memory
+<%  }
+
+    if (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) { -%>
+T<%- model.tools.findIndex(tool => tool !== null) %> ; select first tool
+<%  } -%>

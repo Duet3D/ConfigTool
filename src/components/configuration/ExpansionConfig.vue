@@ -8,6 +8,9 @@
 	<scroll-item anchor="Expansion">
 		<template #title>
 			Expansion
+		</template>
+
+		<template #append-title>
 			<a v-if="isDuet2" href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_2_family" target="_blank">
 				<i class="bi-info-circle"></i>
 				Duet 2 Family
@@ -121,7 +124,6 @@ import { computed, ref } from "vue";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
-import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";

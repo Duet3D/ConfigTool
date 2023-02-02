@@ -2,6 +2,8 @@
 	<scroll-item anchor="ZProbes">
 		<template #title>
 			Z-Probes
+		</template>
+		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddProbe" @click.prevent="addProbe">
 				<i class="bi-plus-circle"></i>
 				Add Z-Probe

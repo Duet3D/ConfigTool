@@ -2,6 +2,8 @@
 	<scroll-item anchor="Axes">
 		<template #title>
 			Axes
+		</template>
+		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddAxis" @click.prevent="addAxis">
 				<i class="bi-plus-circle"></i>
 				Add Axis

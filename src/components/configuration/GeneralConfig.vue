@@ -1,6 +1,6 @@
 <template>
 	<scroll-item anchor="General" title="General"
-				 :preview-templates="(store.data.state.dsfVersion !== null) ? ['config/general.ejs', 'runonce.ejs'] : ['config/general.ejs']"
+				 :preview-templates="(store.data.state.dsfVersion === null) ? ['config/general.ejs', 'runonce.ejs'] : ['config/general.ejs']"
 				 url-title="Getting Started" url="https://docs.duet3d.com/en/User_manual/Overview">
 		<div class="row">
 			<div class="col">

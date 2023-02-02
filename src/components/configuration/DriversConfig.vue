@@ -9,109 +9,100 @@
 		<a id="Drivers" data-anchor="true"></a>
 
 		<!-- Smart Drivers -->
-		<div v-if="smartDrivers.length > 0" class="card">
-			<div class="card-header d-flex justify-content-between">
-				Smart Drivers
-				<a href="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_tuning" target="_blank">
-					<i class="bi-info-circle"></i>
-					Tuning Stepper Motor Drivers
-				</a>
-			</div>
-
-			<table class="table table-striped table-smart-drivers mb-0">
-				<colgroup>
-					<col style="width: auto;">
-					<col style="width: 20%;">
-					<col style="width: 20%;">
-					<col style="width: 20%;">
-					<col style="width: 20%;">
-					<col style="width: 20%;">
-				</colgroup>
-				<thead>
-					<tr>
-						<th class="text-center">
-							Driver
-						</th>
-						<th>
-							Direction
-						</th>
-						<th>
-							Motor Current
-						</th>
-						<th>
-							Mode
-						</th>
-						<th>
-							StealthChop PWM Threshold
-						</th>
-						<th>
-							StallGuard Threshold
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="driver in smartDrivers">
-						<td class="text-center align-middle">
-							{{ driver.id }}
-						</td>
-						<td>
-							<select-input title="Movement direction of this driver" :required="false"
-										  v-model="driver.forwards" :options="directionOptions" :preset="true" />
-						</td>
-						<td>
-							<number-input title="Peak current for mapped drivers (not RMS). If this setting is not available, map this driver to an axis or extruder first"
-										  :disabled="!hasMotorsMapped(driver)" :min="0" :max="getMaxCurrent(driver)"
-										  :step="100" unit="mA" :model-value="getCurrent(driver)"
-										  @update:model-value="setCurrent(driver, $event)"
-										  :preset="getPresetCurrent(driver)" />
-						</td>
-						<td>
-							<select-input title="Operation mode of this driver. Defaults to SpreadCycle, may be changed to StealthChop to reduce motor noise"
-										  :required="false" v-model="driver.mode" :options="getDriverModes(driver)"
-										  :preset="ConfigDriverMode.spreadCycle" />
-						</td>
-						<td>
-							<stealth-chop-calculator :driver="driver" />
-						</td>
-						<td>
-							<number-input title="StallGuard threshold value. Only used for sensorless homing" :min="-64"
-										  :max="63" :step="1" v-model="driver.sgThreshold" :preset="0" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		<card v-if="smartDrivers.length > 0" title="Smart Drivers"
+			  :preview-templates="['config/drivers/smartDrivers.ejs']" url-title="Tuning Stepper Motor Drivers"
+			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_tuning">
+			<template #append>
+				<table class="table table-striped table-smart-drivers mb-0">
+					<colgroup>
+						<col style="width: auto;">
+						<col style="width: 20%;">
+						<col style="width: 20%;">
+						<col style="width: 20%;">
+						<col style="width: 20%;">
+						<col style="width: 20%;">
+					</colgroup>
+					<thead>
+						<tr>
+							<th class="text-center">
+								Driver
+							</th>
+							<th>
+								Direction
+							</th>
+							<th>
+								Motor Current
+							</th>
+							<th>
+								Mode
+							</th>
+							<th>
+								StealthChop PWM Threshold
+							</th>
+							<th>
+								StallGuard Threshold
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="driver in smartDrivers">
+							<td class="text-center align-middle">
+								{{ driver.id }}
+							</td>
+							<td>
+								<select-input title="Movement direction of this driver" :required="false"
+											  v-model="driver.forwards" :options="directionOptions" :preset="true" />
+							</td>
+							<td>
+								<number-input title="Peak current for mapped drivers (not RMS). If this setting is not available, map this driver to an axis or extruder first"
+											  :disabled="!hasMotorsMapped(driver)" :min="0" :max="getMaxCurrent(driver)"
+											  :step="100" unit="mA" :model-value="getCurrent(driver)"
+											  @update:model-value="setCurrent(driver, $event)"
+											  :preset="getPresetCurrent(driver)" />
+							</td>
+							<td>
+								<select-input title="Operation mode of this driver. Defaults to SpreadCycle, may be changed to StealthChop to reduce motor noise"
+											  :required="false" v-model="driver.mode" :options="getDriverModes(driver)"
+											  :preset="ConfigDriverMode.spreadCycle" />
+							</td>
+							<td>
+								<stealth-chop-calculator :driver="driver" />
+							</td>
+							<td>
+								<number-input title="StallGuard threshold value. Only used for sensorless homing"
+											  :min="-64" :max="63" :step="1" v-model="driver.sgThreshold" :preset="0" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</template>
+		</card>
 
 		<!-- Motor Current Reduction -->
-		<div v-if="smartDrivers.length > 0" class="card mt-3">
-			<div class="card-header">
-				Motor Current Reduction
-			</div>
-			<div class="card-body">
-				<div class="row">
-					<div class="col d-flex align-items-center">
-						<check-input label="Reduce motor currents when idle" title="Reduce motor current on inactivity"
-									 :model-value="store.data.move.idle.timeout > 0"
-									 @update:model-value="store.data.move.idle.timeout = $event ? 30 : 0"
-									 :preset="store.preset.move.idle.timeout > 0" />
-					</div>
-					<div class="col">
-						<number-input label="Idle current percentage"
-									  title="Motor current will be reduced to this percentage on inactivity"
-									  :disabled="store.data.move.idle.timeout <= 0"
-									  v-model="store.data.move.idle.factor" :preset="store.preset.move.idle.factor"
-									  :factor="100" unit="%" :min="0" :max="100" :step="1" />
-					</div>
-					<div class="col">
-						<number-input label="Idle timeout"
-									  title="Maximum time for the machine to idle before current reduction is applied"
-									  :disabled="store.data.move.idle.timeout <= 0"
-									  v-model="store.data.move.idle.timeout" :preset="store.preset.move.idle.timeout"
-									  unit="s" />
-					</div>
+		<card v-if="smartDrivers.length > 0" class="card mt-3" title="Motor Current Reduction"
+			  :preview-templates="['config/drivers/currentReduction.ejs']">
+			<div class="row">
+				<div class="col d-flex align-items-center">
+					<check-input label="Reduce motor currents when idle" title="Reduce motor current on inactivity"
+								 :model-value="store.data.move.idle.timeout > 0"
+								 @update:model-value="store.data.move.idle.timeout = $event ? 30 : 0"
+								 :preset="store.preset.move.idle.timeout > 0" />
+				</div>
+				<div class="col">
+					<number-input label="Idle current percentage"
+								  title="Motor current will be reduced to this percentage on inactivity"
+								  :disabled="store.data.move.idle.timeout <= 0" v-model="store.data.move.idle.factor"
+								  :preset="store.preset.move.idle.factor" :factor="100" unit="%" :min="0" :max="100"
+								  :step="1" />
+				</div>
+				<div class="col">
+					<number-input label="Idle timeout"
+								  title="Maximum time for the machine to idle before current reduction is applied"
+								  :disabled="store.data.move.idle.timeout <= 0" v-model="store.data.move.idle.timeout"
+								  :preset="store.preset.move.idle.timeout" unit="s" />
 				</div>
 			</div>
-		</div>
+		</card>
 
 		<!-- External Drivers -->
 		<div v-if="externalDrivers.length > 0" class="card mt-3">
@@ -231,15 +222,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
+import Card from "@/components/Card.vue";
 import StealthChopCalculator from "@/components/calculators/StealthChopCalculator.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
+import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 
 import { useStore } from "@/store";
 import { ConfigDriver, ConfigDriverClosedLoopEncoderType, ConfigDriverMode } from "@/store/model/ConfigDriver";
 import { ExpansionBoards, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
-import { computed } from "vue";
-import CheckInput from "../inputs/CheckInput.vue";
 
 const store = useStore();
 

@@ -4,8 +4,10 @@ import ejs from "ejs";
 import { useStore } from "@/store";
 
 import packageInfo from "../../package.json";
-import { ConfigPortFunction, stripBoard } from "./model/ConfigPort";
+import { ConfigPort, ConfigPortFunction, stripBoard } from "./model/ConfigPort";
 import { isDefaultCoreKinematics } from "./defaults";
+import { ExpansionBoards, getExpansionBoardDefinition } from "./ExpansionBoards";
+import { ConfigDriverMode } from "./model/ConfigDriver";
 
 const store = useStore();
 
@@ -47,13 +49,44 @@ export function indent(content: string): string {
 }
 
 const renderOptions = {
+    // Basics
+    model: store.data,
+    render,
+    /* renderArgs, */
+    version: packageInfo.version,
+
+    // Display helpers
     capitalize(value: string) {
         return (value.length > 0) ? value.charAt(0).toUpperCase() + value.slice(1) : value;
     },
-    escapeString(value: string) {
+    escape(value: string) {
         return '"' + value.replace(/"/g, '""').replace(/'/g, "''") + '"';
     },
-    getPort(fn: ConfigPortFunction, index?: number, secondaryIndex?: number) {
+    params(params: Record<string, any>) {
+        return Object.keys(params)
+                .filter(key => (params[key] !== undefined) && (!(params[key] instanceof Array) || params[key].length > 0))
+                .map(key => {
+                    const value = params[key]
+                    if (value === null) {
+                        return key;
+                    }
+                    if (typeof value === "string") {
+                        return key + this.escape(value);
+                    }
+                    if (value instanceof Array) {
+                        return key + value.join(':');
+                    }
+                    return key + value;
+                }, this)
+                .join(' ');
+    },
+    precise(value: number, digitsToShow: number = 0) {
+        const factor = 10 ** digitsToShow;
+        return (Math.round(value * factor) / factor);
+    },
+
+    // Ports
+    getPort(fn: ConfigPortFunction, index?: number, secondaryIndex?: number): ConfigPort | null {
         let secondaryCounter = 0;
         for (const port of store.data.configTool.ports) {
             if (port.function === fn && ((index === undefined) || (index === port.index)) && ((secondaryIndex === undefined) || (secondaryIndex === secondaryCounter++))) {
@@ -62,7 +95,11 @@ const renderOptions = {
         }
         return null;
     },
-    getCombinedPort(fns: Array<ConfigPortFunction>, index?: number) {
+    getPortString(fn: ConfigPortFunction, index?: number, secondaryIndex?: number): string | null {
+        const port = this.getPort(fn, index, secondaryIndex);
+        return (port != null) ? port.toString() : null;
+    },
+    getCombinedPort(fns: Array<ConfigPortFunction>, index?: number): string {
         const ports: Array<string> = [];
         for (const fn of fns) {
             let portFound = false;
@@ -90,17 +127,22 @@ const renderOptions = {
         }
         return ports.join('+');
     },
-    isDefaultCoreKinematics,
-    mainboard: null,
-    model: store.data,
-    render,
-    version: packageInfo.version,
 
+    // Boards
+    mainboard: null,
+    ExpansionBoards,
+    getExpansionBoardDefinition,
+
+    // Kinematics
+    ConfigDriverMode,
     ConfigPortFunction,
     CoreKinematics,
+    isDefaultCoreKinematics,
     KinematicsName,
+
+    // Other
     NetworkInterfaceType
-}
+};
 Object.defineProperty(renderOptions, "mainboard", { get: () => store.data.boards.find(board => !board.canAddress) });
 
 // DEBUG:

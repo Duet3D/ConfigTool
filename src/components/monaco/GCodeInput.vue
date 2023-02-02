@@ -34,6 +34,7 @@ onMounted(() => {
             enabled: false
         },
         overviewRulerLanes: 0,
+        renderLineHighlightOnlyWhenFocus: true,
         scrollBeyondLastLine: false,
         value: props.modelValue
     });

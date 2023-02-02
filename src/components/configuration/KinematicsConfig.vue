@@ -1,6 +1,6 @@
 <template>
 	<scroll-item anchor="Kinematics" title="Kinematics" :preview-templates="['config/kinematics.ejs']">
-		<template #url>
+		<template #append-title>
 			<a v-if="store.data.move.kinematics.name === KinematicsName.cartesian"
 			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_cartesian" target="_blank">
 				<i class="bi-info-circle"></i>

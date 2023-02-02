@@ -1,0 +1,61 @@
+<%  // Get the list of smart drivers first
+    const smartDrivers = [];
+    for (const driver of model.configTool.drivers) {
+        if (!driver.id.board && model.boardDefinition) {
+            if ((driver.id.driver < model.boardDefinition.numDrivers && model.boardDefinition.hasSmartDrivers) ||
+                (driver.id.driver >= model.boardDefinition.numDrivers && model.configTool.expansionBoard !== null && ExpansionBoards[model.configTool.expansionBoard].hasSmartDrivers))
+            {
+                smartDrivers.push(driver);
+            }
+        } else {
+            const board = model.boards.find(board => board.canAddress === driver.id.board);
+            if (board) {
+                const boardDefinition = getExpansionBoardDefinition(board);
+                if (boardDefinition?.hasSmartDrivers) {
+                    smartDrivers.push(driver);
+                }
+            }
+        }
+    }
+
+    // Configure each driver and possibly SG
+    let hasSmartDrivers = false, configureExtruderCurrents = false;
+    for (const driver of smartDrivers) {
+        const axis = model.move.axes.find(axis => axis.drivers.some(axisDriver => axisDriver.equals(driver.id)));
+        const extruderIndex = model.move.extruders.find(extruder => (extruder.driver !== null) && extruder.driver.equals(driver.id));
+        if (axis || extruderIndex >= 0) { -%>
+M569 <%- params({
+    P: driver.id,
+    S: driver.forwards ? 1 : 0,
+    D: driver.mode,
+    V: (driver.mode === ConfigDriverMode.stealthChop) ? driver.tpwmThreshold : undefined
+}) -%> ; driver <%- driver.id.toString() -%> goes <%- driver.forwards ? "forwards" : "backwards" -%> (<%- axis ? `${axis.letter} axis` : `extruder ${extruderIndex}` -%>)
+<%          if (driver.sgThreshold !== 0) { -%>
+M915 P<%- driver.id -%> S<%- driver.sgThreshold -%> ; set StallGuard threshold
+<%          }
+            hasSmartDrivers = true;
+            configureExtruderCurrents |= extruderIndex >= 0;
+        } 
+    }
+
+    // Configure motor driver currents if possible
+    if (hasSmartDrivers) {
+        const currents = {};
+        for (const axis of model.move.axes) {
+            if (smartDrivers.some(smartDriver => axis.drivers.some(axisDriver => axisDriver.equals(smartDriver.id)))) {
+                currents[axis.letter] = axis.current;
+            }
+        }
+        if (configureExtruderCurrents) {
+            const extruderCurrents = [];
+            for (const extruder of model.move.extruders) {
+                if (smartDrivers.some(smartDriver => extruder.driver.equals(smartDriver))) {
+                    extruderCurrents.push(extruder.current);
+                } else {
+                    extruderCurrents.push(0);
+                }
+            }
+            currents['E'] = extruderCurrents;
+        } -%>
+M906 <%- params(currents) -%> ; set motor driver currents
+<%  } -%>
