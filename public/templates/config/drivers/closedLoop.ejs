@@ -1,7 +1,7 @@
 <%  // Get the list of closed loop drivers first
 	const closedLoopDrivers = [];
 	for (const driver of model.configTool.drivers) {
-        if (driver.closedLoop.type !== ConfigDriverClosedLoopEncoderType.none) {
+        if (driver.closedLoop.encoderType !== ConfigDriverClosedLoopEncoderType.none) {
             const boardDefinition = model.getBoardDefinition(driver.id.board);
             if (boardDefinition?.hasClosedLoopDrivers) {
                 closedLoopDrivers.push(driver);
@@ -28,5 +28,5 @@ M569.1 <%- params({
 }) %> ; driver <%- driver.id %> has a <%- type %> encoder<%- (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic) ? ` with ${driver.closedLoop.countsPerFullStep} CPS` : "" %>
 <%  }
     if (preview && closedLoopDrivers.length === 0) { -%>
-; no drivers configured in closed-loop mode
+; no drivers with encoders configured
 <%  } -%>
