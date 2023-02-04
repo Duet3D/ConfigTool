@@ -208,8 +208,8 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			}
 			driver.forwards = legacyDrive.direction;
 			axis.jerk = legacyDrive.instant_dv;
-			driver.microstepping = legacyDrive.microstepping;
-			driver.microsteppingInterpolated = legacyDrive.microstepping_interpolation;
+			axis.microstepping.interpolated = legacyDrive.microstepping_interpolation;
+			axis.microstepping.value = legacyDrive.microstepping;
 			axis.speed = legacyDrive.max_speed;
 			axis.stepsPerMm = legacyDrive.steps_per_mm;
 		} else {
@@ -218,8 +218,8 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 			extruder.current = legacyDrive.current;
 			driver.forwards = legacyDrive.direction;
 			extruder.jerk = legacyDrive.instant_dv;
-			driver.microstepping = legacyDrive.microstepping;
-			driver.microsteppingInterpolated = legacyDrive.microstepping_interpolation;
+			extruder.microstepping.interpolated = legacyDrive.microstepping_interpolation;
+			extruder.microstepping.value = legacyDrive.microstepping;
 			extruder.speed = legacyDrive.max_speed;
 			extruder.stepsPerMm = legacyDrive.steps_per_mm;
 			model.move.extruders.push(extruder);

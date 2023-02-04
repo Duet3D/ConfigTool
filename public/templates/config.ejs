@@ -9,11 +9,15 @@ G4 S2
 <%  } -%>
 
 ; General
-<%- await render("config/general.ejs", renderArgs) -%>
+<%- await render("config/general.ejs") -%>
 
-; Drivers
-<%- await render("config/drivers/index.ejs", renderArgs) %>
-<%- await render("config/kinematics.ejs", renderArgs) -%>
+<%- await render("config/drivers/index.ejs") -%>
+
+; Kinematics
+<%- await render("config/kinematics.ejs") -%>
+
+; Axes
+<%- await render("config/axes.ejs") -%>
 
 ; End of config.g
-<%- await render("config/end.ejs", renderArgs) -%>
+<%- await render("config/end.ejs") -%>

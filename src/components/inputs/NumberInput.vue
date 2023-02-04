@@ -52,7 +52,7 @@ export interface NumberInputProps {
 	max?: number,
 
 	/**
-	 * Optional multiplier for the model value
+	 * Optional multiplier for the input value (e.g. 100% -> 1 requires a multiplier of 0.01)
 	 */
 	factor?: number,
 

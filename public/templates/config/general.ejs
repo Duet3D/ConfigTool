@@ -17,7 +17,7 @@ M950 <%- params({
     C: getCombinedPort([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards], i),
     Q: getPort(ConfigPortFunction.spindlePwm).frequency,
     L: [spindle.min, spindle.max]
-}) -%> ; configure spindle #<%- i %>
+}) %> ; configure spindle #<%- i %>
 <%              }
             }
         }
@@ -30,7 +30,7 @@ M452 <%- params({
     C: getPortString(ConfigPortFunction.laser),
     R: model.configTool.laser.maxIntensity,
     S: model.configTool.laser.sParamSticky
-}) -%> ; configure laser
+}) %> ; configure laser
 <%      }
     }
 
@@ -38,5 +38,5 @@ M452 <%- params({
     if (preview && ((model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) || model.configTool.configOverride)) { -%>
 
 ; ... generated at the end of config.g:
-<%- await render("config/end.ejs", renderArgs) -%>
+<%- await render("config/end.ejs") -%>
 <%  } -%>

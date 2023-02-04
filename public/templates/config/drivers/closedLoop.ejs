@@ -1,0 +1,32 @@
+<%  // Get the list of closed loop drivers first
+	const closedLoopDrivers = [];
+	for (const driver of model.configTool.drivers) {
+        if (driver.closedLoop.type !== ConfigDriverClosedLoopEncoderType.none) {
+            const boardDefinition = model.getBoardDefinition(driver.id.board);
+            if (boardDefinition?.hasClosedLoopDrivers) {
+                closedLoopDrivers.push(driver);
+            }
+        }
+	}
+
+    // Configure them
+    for (const driver of closedLoopDrivers) {
+        let type = "unknown";
+        switch (driver.closedLoop.encoderType) {
+            case ConfigDriverClosedLoopEncoderType.quadratureOnAxis:
+            case ConfigDriverClosedLoopEncoderType.quadratureOnMotor:
+                type = "quadrature";
+                break;
+            case ConfigDriverClosedLoopEncoderType.magnetic:
+                type = "magnetic";
+                break;
+        } -%>
+M569.1 <%- params({
+    P: driver.id,
+    T: driver.closedLoop.encoderType,
+    C: (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic) ? driver.closedLoop.countsPerFullStep : undefined
+}) %> ; driver <%- driver.id %> has a <%- type %> encoder<%- (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic) ? ` with ${driver.closedLoop.countsPerFullStep} CPS` : "" %>
+<%  }
+    if (preview && closedLoopDrivers.length === 0) { -%>
+; no drivers configured in closed-loop mode
+<%  } -%>

@@ -9,8 +9,8 @@
 		<a id="Drivers" data-anchor="true"></a>
 
 		<!-- Smart Drivers -->
-		<card v-if="smartDrivers.length > 0" title="Smart Drivers"
-			  :preview-templates="['config/drivers/smartDrivers.ejs']" url-title="Tuning Stepper Motor Drivers"
+		<card v-if="smartDrivers.length > 0" title="Smart Drivers" :preview-templates="['config/drivers/smart.ejs']"
+			  url-title="Tuning Stepper Motor Drivers"
 			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_tuning">
 			<template #append>
 				<table class="table table-striped table-smart-drivers mb-0">
@@ -79,7 +79,7 @@
 		</card>
 
 		<!-- Motor Current Reduction -->
-		<card v-if="smartDrivers.length > 0" class="card mt-3" title="Motor Current Reduction"
+		<card v-if="smartDrivers.length > 0" class="mt-3" title="Motor Current Reduction"
 			  :preview-templates="['config/drivers/currentReduction.ejs']">
 			<div class="row">
 				<div class="col d-flex align-items-center">
@@ -105,119 +105,111 @@
 		</card>
 
 		<!-- External Drivers -->
-		<div v-if="externalDrivers.length > 0" class="card mt-3">
-			<div class="card-header d-flex justify-content-between">
-				External Drivers
-				<a href="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_connecting_external"
-				   target="_blank">
-					<i class="bi-info-circle"></i>
-					Connecting External Drivers
-				</a>
-			</div>
-			<table class="table table-striped table-external-drivers mb-0">
-				<thead>
-					<tr>
-						<th class="text-center">
-							Driver
-						</th>
-						<th>
-							Direction
-						</th>
-						<th>
-							Enable Polarity
-						</th>
-						<th>
-							Min. Step Pulse
-						</th>
-						<th>
-							Min. Step Interval
-						</th>
-						<th>
-							Dir. Setup Time
-						</th>
-						<th>
-							Dir. Hold Time
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="driver in externalDrivers">
-						<td class="text-center align-middle">
-							{{ driver.id }}
-						</td>
-						<td>
-							<select-input title="Movement direction of this driver" :required="false"
-										  v-model="driver.forwards" :options="directionOptions" :preset="true" />
-						</td>
-						<td>
-							<select-input title="Driver enable polarity of this driver" :required="false"
-										  v-model="driver.external.enablePolarity" :options="polarityOptions"
-										  :preset="false" />
-						</td>
-						<td>
-							<number-input title="Minimum time for each step pulse" :min="0.1" :step="0.1" unit="µs"
-										  v-model="driver.external.minStepPulse" :preset="5" />
-						</td>
-						<td>
-							<number-input title="Minimum step interval" :min="0.1" :step="0.1" unit="µs"
-										  v-model="driver.external.minStepInterval" :preset="5" />
-						</td>
-						<td>
-							<number-input title="Time needed to set up the direction pin level" :min="0" :step="0.1"
-										  unit="µs" v-model="driver.external.dirSetupTime" :preset="10" />
-						</td>
-						<td>
-							<number-input title="Time to hold the direction pin level" :min="0" :step="0.1" unit="µs"
-										  v-model="driver.external.holdTime" :preset="0" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		<card v-if="externalDrivers.length > 0" class="mt-3" title="External Drivers"
+			  :preview-templates="['config/drivers/external.ejs']" url-title="Connecting External Drivers"
+			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_connecting_external">
+			<template #append>
+				<table class="table table-striped table-external-drivers mb-0">
+					<thead>
+						<tr>
+							<th class="text-center">
+								Driver
+							</th>
+							<th>
+								Direction
+							</th>
+							<th>
+								Enable Polarity
+							</th>
+							<th>
+								Min. Step Pulse
+							</th>
+							<th>
+								Min. Step Interval
+							</th>
+							<th>
+								Dir. Setup Time
+							</th>
+							<th>
+								Dir. Hold Time
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="driver in externalDrivers">
+							<td class="text-center align-middle">
+								{{ driver.id }}
+							</td>
+							<td>
+								<select-input title="Movement direction of this driver" :required="false"
+											  v-model="driver.forwards" :options="directionOptions" :preset="true" />
+							</td>
+							<td>
+								<select-input title="Driver enable polarity of this driver" :required="false"
+											  v-model="driver.external.enablePolarity" :options="polarityOptions"
+											  :preset="false" />
+							</td>
+							<td>
+								<number-input title="Minimum time for each step pulse" :min="0.1" :step="0.1" unit="µs"
+											  v-model="driver.external.minStepPulse" :preset="5" />
+							</td>
+							<td>
+								<number-input title="Minimum step interval" :min="0.1" :step="0.1" unit="µs"
+											  v-model="driver.external.minStepInterval" :preset="5" />
+							</td>
+							<td>
+								<number-input title="Time needed to set up the direction pin level" :min="0" :step="0.1"
+											  unit="µs" v-model="driver.external.dirSetupTime" :preset="10" />
+							</td>
+							<td>
+								<number-input title="Time to hold the direction pin level" :min="0" :step="0.1"
+											  unit="µs" v-model="driver.external.holdTime" :preset="0" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</template>
+		</card>
 
 		<!-- Closed Loop Drivers -->
-		<div v-if="closedLoopDrivers.length > 0" class="card mt-3">
-			<div class="card-header d-flex justify-content-between">
-				Closed Loop Drivers
-				<a href="https://docs.duet3d.com/en/User_manual/Tuning/Duet_3_1HCL_tuning" target="_blank">
-					<i class="bi-info-circle"></i>
-					Tuning Closed-Loop Motor Drivers
-				</a>
-			</div>
-
-			<table class="table table-striped table-closed-loop-drivers mb-0">
-				<thead>
-					<tr>
-						<th class="text-center">
-							Driver
-						</th>
-						<th>
-							Encoder Type
-						</th>
-						<th>
-							Encoder Counts per Full Step
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="driver in closedLoopDrivers">
-						<td class="text-center align-middle">
-							{{ driver.id }}
-						</td>
-						<td>
-							<select-input title="Encoder type used for closed-loop operation" :required="false"
-										  v-model="driver.closedLoop.encoderType" :options="encoderTypeOptions"
-										  :preset="ConfigDriverClosedLoopEncoderType.none" />
-						</td>
-						<td>
-							<number-input title="Encoder counts per full step" :min="1" :step="1"
-										  :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
-										  v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+		<card v-if="closedLoopDrivers.length > 0" class="mt-3" title="Closed Loop Drivers"
+			  :preview-templates="['config/drivers/closedLoop.ejs']" url-title="Tuning Closed-Loop Motor Drivers"
+			  url="https://docs.duet3d.com/en/User_manual/Tuning/Duet_3_1HCL_tuning">
+			<template #append>
+				<table class="table table-striped table-closed-loop-drivers mb-0">
+					<thead>
+						<tr>
+							<th class="text-center">
+								Driver
+							</th>
+							<th>
+								Encoder Type
+							</th>
+							<th>
+								Encoder Counts per Full Step
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="driver in closedLoopDrivers">
+							<td class="text-center align-middle">
+								{{ driver.id }}
+							</td>
+							<td>
+								<select-input title="Encoder type used for closed-loop operation" :required="false"
+											  v-model="driver.closedLoop.encoderType" :options="encoderTypeOptions"
+											  :preset="ConfigDriverClosedLoopEncoderType.none" />
+							</td>
+							<td>
+								<number-input title="Encoder counts per full step" :min="1" :step="1"
+											  :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
+											  v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</template>
+		</card>
 	</div>
 </template>
 

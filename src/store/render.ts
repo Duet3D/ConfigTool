@@ -7,7 +7,7 @@ import packageInfo from "../../package.json";
 import { ConfigPort, ConfigPortFunction, stripBoard } from "./model/ConfigPort";
 import { isDefaultCoreKinematics } from "./defaults";
 import { ExpansionBoards, getExpansionBoardDefinition } from "./ExpansionBoards";
-import { ConfigDriverMode } from "./model/ConfigDriver";
+import { ConfigDriverClosedLoopEncoderType, ConfigDriverMode } from "./model/ConfigDriver";
 
 const store = useStore();
 
@@ -51,8 +51,7 @@ export function indent(content: string): string {
 const renderOptions = {
     // Basics
     model: store.data,
-    render,
-    /* renderArgs, */
+    /* render, */
     version: packageInfo.version,
 
     // Display helpers
@@ -83,6 +82,22 @@ const renderOptions = {
     precise(value: number, digitsToShow: number = 0) {
         const factor = 10 ** digitsToShow;
         return (Math.round(value * factor) / factor);
+    },
+    sections(sections: Record<string, string>) {
+        const result = [];
+        for (const key in sections) {
+            const value = sections[key].trimEnd();
+            if (value !== "") {
+                result.push(this.title(key, value));
+            }
+        }
+        return result.join("\n");
+    },
+    title(title: string, section: string) {
+        if (section.trim() !== "") {
+            return `; ${title}\n${section.trimEnd()}\n`;
+        }
+        return "";
     },
 
     // Ports
@@ -134,6 +149,7 @@ const renderOptions = {
     getExpansionBoardDefinition,
 
     // Kinematics
+    ConfigDriverClosedLoopEncoderType,
     ConfigDriverMode,
     ConfigPortFunction,
     CoreKinematics,
@@ -163,8 +179,10 @@ export async function render(filename: string, args: Record<string, any> = {}): 
         if (!("preview" in renderArgs)) {
             renderArgs.preview = false;
         }
+        renderArgs.render = (file: string, args: Record<string, any> = {}) => render(file, { ...renderArgs, ...args });
+
         try {
-            return await ejs.render(responseText, { ...renderArgs, renderArgs }, { async: true, cache: false });
+            return await ejs.render(responseText, renderArgs, { async: true, cache: false });
         } catch (e) {
             console.warn(`Failed to render file ${fullFilename}`);
             throw e;

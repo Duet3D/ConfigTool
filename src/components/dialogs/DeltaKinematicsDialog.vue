@@ -36,12 +36,12 @@
 
 			<div class="row">
 				<div class="col">
-					<number-input label="X Tilt" title="Tilt of the printer in X direction" :step="0.001" unit="%"
-								  v-model="deltaKinematics.xTilt" :preset="presetDeltaKinematics?.xTilt" />
+					<number-input label="X Tilt" title="Tilt of the printer in X direction" :step="0.1" :factor="0.01"
+								  unit="%" v-model="deltaKinematics.xTilt" :preset="presetDeltaKinematics?.xTilt" />
 				</div>
 				<div class="col">
-					<number-input label="Y Tilt" title="Tilt of the printer in Y direction" :step="0.001" unit="%"
-								  v-model="deltaKinematics.yTilt" :preset="presetDeltaKinematics?.yTilt" />
+					<number-input label="Y Tilt" title="Tilt of the printer in Y direction" :step="0.1" :factor="0.01"
+								  unit="%" v-model="deltaKinematics.yTilt" :preset="presetDeltaKinematics?.yTilt" />
 				</div>
 			</div>
 

@@ -11,6 +11,7 @@
             const board = model.boards.find(board => board.canAddress === driver.id.board);
             if (board) {
                 const boardDefinition = getExpansionBoardDefinition(board);
+                console.log(board, boardDefinition, driver);
                 if (boardDefinition?.hasSmartDrivers) {
                     smartDrivers.push(driver);
                 }
@@ -22,7 +23,7 @@
     let hasSmartDrivers = false, configureExtruderCurrents = false;
     for (const driver of smartDrivers) {
         const axis = model.move.axes.find(axis => axis.drivers.some(axisDriver => axisDriver.equals(driver.id)));
-        const extruderIndex = model.move.extruders.find(extruder => (extruder.driver !== null) && extruder.driver.equals(driver.id));
+        const extruderIndex = model.move.extruders.findIndex(extruder => (extruder.driver !== null) && extruder.driver.equals(driver.id));
         if (axis || extruderIndex >= 0) { -%>
 M569 <%- params({
     P: driver.id,
@@ -56,6 +57,13 @@ M915 P<%- driver.id -%> S<%- driver.sgThreshold -%> ; set StallGuard threshold
                 }
             }
             currents['E'] = extruderCurrents;
-        } -%>
+        } 
+        
+        if (preview) { -%>
+
+; ... this is later generated in the axis and/or extruder section
 M906 <%- params(currents) -%> ; set motor driver currents
+<%      }
+    } else if (preview) { -%>
+; no smart drivers mapped to axes or extruders
 <%  } -%>

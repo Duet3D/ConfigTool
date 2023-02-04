@@ -13,7 +13,7 @@
 <template>
 	<div class="card" :class="previewVisible ? 'preview-visible' : ''" v-bind="$attrs">
 		<!-- Card Title-->
-		<div class="card-header d-flex justify-content-between">
+		<div class="card-header d-flex justify-content-between align-items-center">
 			<slot name="title">
 				{{ props.title }}
 			</slot>
@@ -43,9 +43,9 @@
 						{{ getTemplateFile(template) }}
 					</a>
 				</li>
-				<a v-if="fileRendered" class="align-self-center ms-auto me-3" href="javascript:void(0)" @click.prevent="showFile">
-					<i class="bi-box-arrow-in-up-right"></i>
-					view full file
+				<a v-if="fileRendered" class="align-self-center ms-auto me-3 text-decoration-none" href="javascript:void(0)" @click.prevent="showFile">
+					<i :class="rendering ? 'bi-hourglass' : 'bi-box-arrow-in-up-right'"></i>
+					{{ rendering ? "rendering..." : "view full file" }}
 				</a>
 			</ul>
 			<g-code-output v-show="previewVisible" class="output" :value="generatedCode" readonly />
@@ -107,29 +107,35 @@ const fileRendered = ref(false);
 watch(() => previewVisible.value && selectedTemplate.value, async () => {
 	if (previewVisible.value) {
 		fileRendered.value = false;
-		generatedCode.value = "Rendering...";
+		generatedCode.value = "rendering...";
 		try {
 			const content = await render(selectedTemplate.value, { ...(props.previewOptions ?? {}), preview: true });
 			generatedCode.value = indent(content);
 			fileRendered.value = true;
 		} catch (e) {
 			console.warn(e);
-			generatedCode.value = "Failed to render preview G-code:\n" + e;
+			generatedCode.value = "failed to render G-code:\n" + e;
 		}
 	}
 });
 
+const rendering = ref(false);
 async function showFile() {
+	if (rendering.value) {
+		return;
+	}
+	rendering.value = true;
+
 	const filename = getTemplateFile(selectedTemplate.value);
 	try {
 		const ejsFilename = getBaseFile(selectedTemplate.value) + ".ejs";
 		const output = await render(ejsFilename);
 
-		let tab = window.open('about:blank', '_blank');
+		let tab = window.open("about:blank", "_blank");
 		if (tab == null) {
-			alert('Could not open a new tab!\n\nPlease allow pop-ups for this page and try again.');
+			alert("Could not open a new tab!\n\nPlease allow pop-ups for this page and try again.");
 		} else {
-			tab.document.write(indent(output).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;'));
+			tab.document.write(indent(output).replace(/\n/g, "<br>").replace(/ /g, "&nbsp;"));
 			(tab.document.body as HTMLBodyElement).style.fontFamily = "monospace";
 			(tab.document as Document).title = filename;
 			tab.document.close();
@@ -137,5 +143,6 @@ async function showFile() {
 	} catch (e) {
 		alert(`Failed to generate file ${filename}:\n\n${e}`);
 	}
+	rendering.value = false;
 }
 </script>

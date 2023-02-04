@@ -1,0 +1,52 @@
+<%  const mapping = {}, mins = {}, maxs = {};
+    const microstepping = {}, microsteppingInterpolated = {}, currents = {}, stepsPerMm = {};
+    const jerk = {}, maxSpeed = {}, acceleration = {};
+    for (const axis of model.move.axes) {
+        mapping[axis.letter] = axis.drivers;
+        if (!['X', 'Y', 'Z'].includes(axis.letter) || model.move.kinematics.name !== KinematicsName.delta) {
+            // Don't set axis min/max in Delta configs
+            mins[axis.letter] = axis.min;
+            maxs[axis.letter] = axis.max;
+        }
+        if (axis.microstepping.interpolated) {
+            microsteppingInterpolated[axis.letter] = axis.microstepping.value;
+        } else {
+            microstepping[axis.letter] = axis.microstepping.value;
+        }
+        stepsPerMm[axis.letter] = axis.stepsPerMm;
+        jerk[axis.letter] = axis.jerk * 60;
+        maxSpeed[axis.letter] = axis.speed * 60;
+        acceleration[axis.letter] = axis.acceleration;
+        for (const driver of axis.drivers) {
+            const board = model.boards.find(board => board.canAddress === driver.board);
+            if (board) {
+                const boardDefinition = getExpansionBoardDefinition(board);
+                if (boardDefinition?.hasSmartDrivers) {
+                    currents[axis.letter] = axis.current;
+                    break;
+                }
+            }
+        }
+    } -%>
+M584 <%- params(mapping) %> ; set axis mapping
+<%  if (Object.keys(microstepping).length > 0) { -%>
+M350 <%- params({ ...microstepping, I: 0 }) %> ; configure microstepping without interpolation
+<%  }
+    if (Object.keys(microsteppingInterpolated).length > 0) { -%>
+M350 <%- params({ ...microsteppingInterpolated, I: 1}) %> ; configure microstepping with interpolation
+<%  }
+    if (Object.keys(currents).length > 0) {
+        if (preview) { -%>
+; see smart drivers section for currents
+<%      } else { -%>
+M906 <%- params(currents) %> ; set motor driver currents
+<%      }
+    } -%>
+M92 <%- params(stepsPerMm) %> ; configure steps per mm
+<%  if (Object.keys(mins).length > 0) { -%>
+M201 <%- params({ S: 1, ...mins }) %> ; set axis minima
+M201 <%- params({ S: 0, ...maxs }) %> ; set axis maxima
+<%  } -%>
+M566 <%- params(jerk) %> ; set maximum instantaneous speed changes (mm/min)
+M203 <%- params(maxSpeed) %> ; set maximum speeds (mm/min)
+M201 <%- params(acceleration) %> ; set accelerations (mm/s^2)

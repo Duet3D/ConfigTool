@@ -1,2 +1,6 @@
-<%- await render("config/drivers/smartDrivers.ejs", renderArgs) -%>
-<%- await render("config/drivers/currentReduction.ejs", renderArgs) -%>
+<%- sections({
+    "Smart Drivers": await render("config/drivers/smart.ejs"),
+    "Motor Idle Current Reduction": await render("config/drivers/currentReduction.ejs"),
+    "External Drivers": await render("config/drivers/external.ejs"),
+    "Closed-Loop Drivers": await render("config/drivers/closedLoop.ejs")
+}) -%>

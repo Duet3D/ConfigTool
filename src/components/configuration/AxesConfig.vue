@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Axes">
+	<scroll-item anchor="Axes" :preview-templates="['config/axes.ejs']">
 		<template #title>
 			Axes
 		</template>
@@ -14,8 +14,8 @@
 				<colgroup>
 					<col style="width: 10%;">
 					<col style="width: auto;">
-					<col style="width: 10%;">
-					<col style="width: 10%;">
+					<col v-if="!isDelta" style="width: 10%;">
+					<col v-if="!isDelta" style="width: 10%;">
 					<col style="width: 18%;">
 					<col style="width: 11%;">
 					<col style="width: 17%;">
@@ -31,10 +31,10 @@
 						<th>
 							Drivers
 						</th>
-						<th>
+						<th v-if="!isDelta">
 							Minimum (mm)
 						</th>
-						<th>
+						<th v-if="!isDelta">
 							Maximum (mm)
 						</th>
 						<th>
@@ -73,12 +73,12 @@
 						<td>
 							<driver-list :drivers="axis.drivers" class="mt-1" />
 						</td>
-						<td>
+						<td v-if="!isDelta">
 							<number-input title="Minimum axis position"
 							              :max="axis.max" :step="0.01" unit="mm" hide-unit
 							              v-model="axis.min" :preset="getPresetAxisValue(index, 'min')" />
 						</td>
-						<td>
+						<td v-if="!isDelta">
 							<number-input title="Maximum axis position"
 							              :min="axis.min" :step="0.01" unit="mm" hide-unit
 							              v-model="axis.max" :preset="getPresetAxisValue(index, 'max')" />
@@ -123,7 +123,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Axis, AxisLetter, DriverId, Endstop } from "@duet3d/objectmodel";
+import { Axis, AxisLetter, DriverId, Endstop, KinematicsName } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import StepsPerMmCalculator from "@/components/calculators/StepsPerMmCalculator.vue";
@@ -186,35 +186,24 @@ function isAxisUnique(axis: Axis) {
 	return occurences === 1;
 }
 
+// Mins/Maxs
+const isDelta = computed(() => [KinematicsName.delta, KinematicsName.rotaryDelta].includes(store.data.move.kinematics.name));
+
 // Microstepping
 function getMicrostepping(axis: Axis): string {
-	if (axis.drivers.length > 0) {
-		const firstDriver = axis.drivers[0];
-		for (const driver of store.data.configTool.drivers) {
-			if (driver.id.equals(firstDriver)) {
-				return `${driver.microstepping}${driver.microsteppingInterpolated ? "i" : ""}`
-			}
-		}
-	}
-	return getPresetAxisMicrostepping(axis);
+	return `${axis.microstepping.value}${axis.microstepping.interpolated ? "i" : ""}`
 }
-function setMicrostepping(axis: Axis, value: string): void {
-	let microstepping: number, interpolated: boolean;
-	if (value.endsWith("i")) {
-		microstepping = parseInt(value.substring(0, value.length - 1));
-		interpolated = true;
-	} else {
-		microstepping = parseInt(value);
-		interpolated = false;
-	}
 
-	for (const driver of store.data.configTool.drivers) {
-		if (axis.drivers.some(axisDriver => axisDriver.equals(driver.id))) {
-			driver.microstepping = microstepping;
-			driver.microsteppingInterpolated = interpolated;
-		}
+function setMicrostepping(axis: Axis, value: string): void {
+	if (value.endsWith("i")) {
+		axis.microstepping.interpolated = true;
+		axis.microstepping.value = parseInt(value.substring(0, value.length - 1));
+	} else {
+		axis.microstepping.interpolated = false;
+		axis.microstepping.value = parseInt(value);
 	}
 }
+
 function getMicrosteppingOptions(axis: Axis) {
 	// Check which interpolations to x256 are supported
 	let supportedInterpolations: Array<number> = [];
@@ -248,6 +237,7 @@ function getMicrosteppingOptions(axis: Axis) {
 	}
 	return options;
 }
+
 function getPresetAxisMicrostepping(axis: Axis): string {
 	const boardDefinition = store.data.getBoardDefinition((axis.drivers.length > 0) ? axis.drivers[0].board : null);
 	return (boardDefinition && boardDefinition.microstepInterpolations.includes(16)) ? "16i" : "16";

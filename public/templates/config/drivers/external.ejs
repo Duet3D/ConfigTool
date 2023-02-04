@@ -1,0 +1,39 @@
+<%  // Get the list of external drivers first
+    const externalDrivers = [];
+    for (const driver of model.configTool.drivers) {
+        if (!driver.id.board && model.boardDefinition) {
+            if ((driver.id.driver < model.boardDefinition.numDrivers && !model.boardDefinition.hasSmartDrivers) ||
+                (driver.id.driver >= model.boardDefinition.numDrivers && model.configTool.expansionBoard !== null && !ExpansionBoards[model.configTool.expansionBoard].hasSmartDrivers))
+            {
+                externalDrivers.push(driver);
+            }
+        } else {
+            const board = model.boards.find(board => board.canAddress === driver.id.board);
+            if (board) {
+                const boardDefinition = getExpansionBoardDefinition(board);
+                if (boardDefinition && !boardDefinition.hasSmartDrivers) {
+                    externalDrivers.push(driver);
+                }
+            }
+        }
+    }
+
+    // Configure each driver
+    let hasExternalDrivers = false;
+    for (const driver of externalDrivers) {
+        const axis = model.move.axes.find(axis => axis.drivers.some(axisDriver => axisDriver.equals(driver.id)));
+        const extruderIndex = model.move.extruders.findIndex(extruder => (extruder.driver !== null) && extruder.driver.equals(driver.id));
+        if (axis || extruderIndex >= 0) { -%>
+M569 <%- params({
+    P: driver.id,
+    S: driver.forwards ? 1 : 0,
+    R: driver.external.enablePolarity ? 1 : 0,
+    T: [driver.external.minStepPulse, driver.external.minStepInterval, driver.external.dirSetupTime, driver.external.holdTime]
+}) %> ; driver <%- driver.id.toString() %> goes <%- driver.forwards ? "forwards" : "backwards" %> and requires an <%- driver.enablePolarity ? "active-high" : "active-low" %> enable signal (<%- axis ? `${axis.letter} axis` : `extruder ${extruderIndex}` %>)
+<%          hasExternalDrivers = true;
+        } 
+    }
+
+    if (preview && !hasExternalDrivers) { -%>
+; no external drivers mapped to axes or extruders
+<%  } -%>

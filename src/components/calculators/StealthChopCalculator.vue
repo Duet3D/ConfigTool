@@ -75,15 +75,16 @@ const currentThreshold = computed(() => (12000000 * microstepping.value) / (256 
 const currentThresholdValid = computed(() => isFinite(currentThreshold.value));
 
 function onShow() {
-	microstepping.value = props.driver.microstepping;
 	for (const axis of store.data.move.axes) {
 		if (axis.drivers.some(driver => driver.equals(props.driver.id))) {
+			microstepping.value = axis.microstepping.value;
 			stepsPerMm.value = axis.stepsPerMm;
 			return;
 		}
 	}
 	for (const extruder of store.data.move.extruders) {
 		if (extruder.driver?.equals(props.driver.id)) {
+			microstepping.value = extruder.microstepping.value;
 			stepsPerMm.value = extruder.stepsPerMm;
 			return;
 		}

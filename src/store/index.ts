@@ -22,6 +22,7 @@ import {
 	initObject,
 	KinematicsName,
 	Limits,
+	Microstepping,
 	ModelSet,
 	Move,
 	MoveCompensation,
@@ -102,6 +103,10 @@ const defaultTemplate = initObject(ConfigModel, {
 					}
 				]),
 				letter: AxisLetter.X,
+				microstepping: initObject(Microstepping, {
+					interpolated: true,
+					value: 16
+				}),
 				jerk: 15,
 				speed: 100,
 				stepsPerMm: 80
@@ -116,6 +121,10 @@ const defaultTemplate = initObject(ConfigModel, {
 					}
 				]),
 				letter: AxisLetter.Y,
+				microstepping: initObject(Microstepping, {
+					interpolated: true,
+					value: 16
+				}),
 				jerk: 15,
 				speed: 100,
 				stepsPerMm: 80
@@ -130,6 +139,10 @@ const defaultTemplate = initObject(ConfigModel, {
 					}
 				]),
 				letter: AxisLetter.Z,
+				microstepping: initObject(Microstepping, {
+					interpolated: true,
+					value: 16
+				}),
 				jerk: 0.2,
 				speed: 3,
 				stepsPerMm: 400
@@ -151,6 +164,10 @@ const defaultTemplate = initObject(ConfigModel, {
 					driver: 3
 				}),
 				jerk: 2,
+				microstepping: initObject(Microstepping, {
+					interpolated: true,
+					value: 16
+				}),
 				speed: 60,
 				stepsPerMm: 420
 			}

@@ -145,30 +145,19 @@ function addExtruder() {
 
 // Microstepping
 function getMicrostepping(extruder: Extruder): string {
-	for (const driver of store.data.configTool.drivers) {
-		if (driver.id.equals(extruder.driver)) {
-			return `${driver.microstepping}${driver.microsteppingInterpolated ? "i" : ""}`
-		}
-	}
-	return getPresetExtruderMicrostepping(extruder);
+	return `${extruder.microstepping.value}${extruder.microstepping.interpolated ? "i" : ""}`
 }
-function setMicrostepping(extruder: Extruder, value: string): void {
-	let microstepping: number, interpolated: boolean;
-	if (value.endsWith("i")) {
-		microstepping = parseInt(value.substring(0, value.length - 1));
-		interpolated = true;
-	} else {
-		microstepping = parseInt(value);
-		interpolated = false;
-	}
 
-	for (const driver of store.data.configTool.drivers) {
-		if (driver.id.equals(extruder.driver)) {
-			driver.microstepping = microstepping;
-			driver.microsteppingInterpolated = interpolated;
-		}
+function setMicrostepping(extruder: Extruder, value: string): void {
+	if (value.endsWith("i")) {
+		extruder.microstepping.interpolated = true;
+		extruder.microstepping.value = parseInt(value.substring(0, value.length - 1));
+	} else {
+		extruder.microstepping.interpolated = false;
+		extruder.microstepping.value = parseInt(value);
 	}
 }
+
 function getMicrosteppingOptions(extruder: Extruder) {
 	// Check which interpolations to x256 are supported
 	let supportedInterpolations: Array<number> = [];
@@ -202,6 +191,7 @@ function getMicrosteppingOptions(extruder: Extruder) {
 	}
 	return options;
 }
+
 function getPresetExtruderMicrostepping(extruder: Extruder): string {
 	const boardDefinition = store.data.getBoardDefinition(extruder.driver ? extruder.driver.board : null);
 	return (boardDefinition && boardDefinition.microstepInterpolations.includes(16)) ? "16i" : "16";

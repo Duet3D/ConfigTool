@@ -34,8 +34,6 @@ export class ConfigDriver extends ModelObject {
 	forwards: boolean = true;
     homingSpeeds: Array<number> = [10, 5];
 	id: DriverId = new DriverId();
-	microstepping: number = 16;
-	microsteppingInterpolated: boolean = true;
 	mode: ConfigDriverMode = ConfigDriverMode.spreadCycle;
 	tpwmThreshold: number = 2000;
 	sgThreshold: number = 0;

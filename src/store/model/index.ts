@@ -240,19 +240,26 @@ export default class ConfigModel extends ObjectModel {
 			}
 		}
 
-		// Update or add missing drivers
 		for (const driver of driverList) {
-			const existingDriver = this.configTool.drivers.find(configDriver => configDriver.id.equals(driver));
-			if (existingDriver) {
-				if (existingDriver.microsteppingInterpolated) {
-					const boardDefinition = this.getBoardDefinition(existingDriver.id.board);
-					existingDriver.microsteppingInterpolated = !!boardDefinition && boardDefinition.microstepInterpolations.includes(existingDriver.microstepping);
-				}
-			} else {
+			// Add missing drivers
+			if (!this.configTool.drivers.some(configDriver => configDriver.id.equals(driver))) {
 				const configDriver = new ConfigDriver();
 				configDriver.id = driver;
 				this.configTool.drivers.push(configDriver);
 			}
+
+			// Update microstepping interpolations
+            const axis = this.move.axes.find(axis => axis.drivers.some(axisDriver => axisDriver.equals(driver)));
+            if (axis) {
+                const boardDefinition = this.getBoardDefinition(driver.board);
+                axis.microstepping.interpolated = !!boardDefinition && boardDefinition.microstepInterpolations.includes(axis.microstepping.value);
+            }
+
+            const extruder = this.move.extruders.find(extruder => extruder.driver?.equals(driver));
+            if (extruder) {
+                const boardDefinition = this.getBoardDefinition(driver.board);
+                extruder.microstepping.interpolated = !!boardDefinition && boardDefinition.microstepInterpolations.includes(extruder.microstepping.value);
+            }
 		}
 
 		// Delete unsupported drivers

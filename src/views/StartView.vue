@@ -15,7 +15,7 @@
 			</h4>
 		</div>
 
-		<div class="alert alert-warning my-5" role="alert">
+		<div class="alert alert-warning mt-5" role="alert">
 			<i class="bi bi-exclamation-triangle"></i>
 			This version of the Config Tool is still under development. If you encounter problems, please consider using the previous <a href="https://configtool.reprapfirmware.org" target="_blank">Config Tool</a> instead.
 		</div>
@@ -34,10 +34,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { useStore } from "@/store";
+import { useRouter } from "vue-router";
 
-import { version } from "../../package.json";
+import { useStore } from "@/store";
 
 const store = useStore();
 const router = useRouter();
