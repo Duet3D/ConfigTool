@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Accessories" title="Accessories">
+	<scroll-item id="accessories" title="Accessories">
 		<div class="row">
 			<!-- Direct Display -->
 			<div class="col-auto">

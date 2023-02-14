@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Spindles">
+	<scroll-item id="spindles">
 		<template #title>
 			Spindles
 			<button class="btn btn-sm btn-primary" :disabled="!canAddSpindle" @click.prevent="addSpindle">

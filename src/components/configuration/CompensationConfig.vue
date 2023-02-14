@@ -1,7 +1,5 @@
 <template>
-	<div class="pt-3">
-		<a id="Compensation" data-anchor="true"></a>
-
+	<section id="compensation" class="pt-3">
 		<!-- Delta Calibration -->
 		<div v-if="showDeltaOptions" class="card mb-3">
 			<div class="card-header d-flex justify-content-between">
@@ -265,7 +263,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</section>
 </template>
 
 <script setup lang="ts">

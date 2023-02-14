@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Network" title="Network" url-title="Network Configuration"
+	<scroll-item id="network" title="Network" url-title="Network Configuration"
 				 url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Networking">
 		<div class="row">
 			<!-- Ethernet -->

@@ -1,4 +1,16 @@
 <style scoped>
+aside {
+	position: -webkit-sticky;
+	position: sticky;
+	top: 5rem;
+	display: block !important;
+	height: calc(100vh - 6rem);
+	padding-left: .25rem;
+	padding-right: 1rem;
+	margin-left: -.25rem;
+	overflow-y: auto;
+}
+
 .bi {
 	vertical-align: -.125em;
 	pointer-events: none;
@@ -58,12 +70,12 @@
 	margin-left: 1.25rem;
 }
 
-.router-link-active,
+.active,
 .fw-semibold { font-weight: 600; }
 </style>
 
 <template>
-	<div class="flex-shrink-0 p-3 ps-0 bg-white">
+	<aside class="bg-white">
 		<ul class="list-unstyled ps-0">
 			<li class="mb-1">
 				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
@@ -71,8 +83,8 @@
 				</button>
 				<div class="collapse show" id="start-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-						<li><RouterLink to="/" class="link-dark rounded">Introduction</RouterLink></li>
-						<li><RouterLink to="/Templates" class="link-dark rounded">Templates</RouterLink></li>
+						<li><RouterLink to="/" active-class="active" class="link-dark rounded">Introduction</RouterLink></li>
+						<li><RouterLink to="/Templates" active-class="active" class="link-dark rounded">Templates</RouterLink></li>
 					</ul>
 				</div>
 			</li>
@@ -82,24 +94,24 @@
 				</button>
 				<div class="collapse show" id="home-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-						<li><RouterLink to="/Configuration" class="link-dark rounded">General</RouterLink></li>
-						<li><RouterLink to="/Configuration/Expansion" class="link-dark rounded">Expansion</RouterLink></li>
-						<li><RouterLink to="/Configuration/Kinematics" class="link-dark rounded">Kinematics</RouterLink></li>
-						<li><RouterLink to="/Configuration/Drivers" class="link-dark rounded">Drivers</RouterLink></li>
-						<li><RouterLink to="/Configuration/Axes" class="link-dark rounded">Axes</RouterLink></li>
-						<li><RouterLink to="/Configuration/ZProbes" class="link-dark rounded">Z-Probes</RouterLink></li>
-						<li><RouterLink to="/Configuration/Endstops" class="link-dark rounded">Endstops</RouterLink></li>
-						<li><RouterLink to="/Configuration/Compensation" class="link-dark rounded">Compensation</RouterLink></li>
-						<li><RouterLink to="/Configuration/Sensors" class="link-dark rounded">Sensors</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration/Heaters" class="link-dark rounded">Heaters</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration/Extruders" class="link-dark rounded">Extruders</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.cnc"><RouterLink to="/Configuration/Spindles" class="link-dark rounded">Spindles</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration/Lasers" class="link-dark rounded">Lasers</RouterLink></li>
-						<li><RouterLink to="/Configuration/Fans" class="link-dark rounded">Fans</RouterLink></li>
-						<li><RouterLink to="/Configuration/Tools" class="link-dark rounded">Tools</RouterLink></li>
-						<li v-if="store.data.network.interfaces.length > 0"><RouterLink to="/Configuration/Network" class="link-dark rounded">Network</RouterLink></li>
-						<li><RouterLink to="/Configuration/Accessories" class="link-dark rounded">Accessories</RouterLink></li>
-						<li><RouterLink to="/Configuration/Miscellaneous" class="link-dark rounded">Miscellaneous</RouterLink></li>
+						<li><RouterLink :to="{ name: 'configuration' }" class="link-dark rounded">General</RouterLink></li>
+						<li><RouterLink :to="{ name: 'configuration', hash: '#expansion' }" class="link-dark rounded">Expansion</RouterLink></li>
+						<li><RouterLink :to="{ name: 'configuration', hash: '#kinematics' }" class="link-dark rounded">Kinematics</RouterLink></li>
+						<li><RouterLink to="/Configuration#drivers" class="link-dark rounded">Drivers</RouterLink></li>
+						<li><RouterLink to="/Configuration#axes" class="link-dark rounded">Axes</RouterLink></li>
+						<li><RouterLink to="/Configuration#probes" class="link-dark rounded">Z-Probes</RouterLink></li>
+						<li><RouterLink to="/Configuration#endstops" class="link-dark rounded">Endstops</RouterLink></li>
+						<li><RouterLink to="/Configuration#compensation" class="link-dark rounded">Compensation</RouterLink></li>
+						<li><RouterLink to="/Configuration#sensors" class="link-dark rounded">Sensors</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration#heaters" class="link-dark rounded">Heaters</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration#extruders" class="link-dark rounded">Extruders</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.cnc"><RouterLink to="/Configuration#spindles" class="link-dark rounded">Spindles</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration#lasers" class="link-dark rounded">Lasers</RouterLink></li>
+						<li><RouterLink to="/Configuration#fans" class="link-dark rounded">Fans</RouterLink></li>
+						<li><RouterLink to="/Configuration#tools" class="link-dark rounded">Tools</RouterLink></li>
+						<li v-if="store.data.network.interfaces.length > 0"><RouterLink to="/Configuration#network" class="link-dark rounded">Network</RouterLink></li>
+						<li><RouterLink to="/Configuration#accessories" class="link-dark rounded">Accessories</RouterLink></li>
+						<li><RouterLink to="/Configuration#miscellaneous" class="link-dark rounded">Miscellaneous</RouterLink></li>
 					</ul>
 				</div>
 			</li>
@@ -109,17 +121,17 @@
 				</button>
 				<div class="collapse show" id="finish-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-						<li><RouterLink to="/Summary" class="link-dark rounded">Summary</RouterLink></li>
-						<li><RouterLink to="/Finish" class="link-dark rounded">Finish</RouterLink></li>
+						<li><RouterLink to="/Summary" class="link-dark rounded" active-class="active">Summary</RouterLink></li>
+						<li><RouterLink to="/Finish" class="link-dark rounded" active-class="active">Finish</RouterLink></li>
 					</ul>
 				</div>
 			</li>
 		</ul>
-	</div>
+	</aside>
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink } from "vue-router"
 
 import { useStore } from "@/store";
 

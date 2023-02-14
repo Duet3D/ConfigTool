@@ -1,5 +1,5 @@
 <template>
-	<div class="container mt-3">
+	<main class="container mt-3">
 		<div v-if="loading" class="w-100 text-center text-muted">
 			<h4 class="mb-3">
 				Loading templates...
@@ -51,7 +51,7 @@
 		</div>
 
 		<input ref="inputJsonFile" type="file" accept="application/json" hidden @change="fileSelected">
-	</div>
+	</main>
 </template>
 
 <script setup lang="ts">

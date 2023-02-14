@@ -1,33 +1,12 @@
 <style>
-body {
-	min-height: 100vh;
-	min-height: -webkit-fill-available;
-	overflow: hidden;
-}
-
-html {
-	height: -webkit-fill-available;
-}
-
-main {
-	display: flex;
-	flex-wrap: nowrap;
-	height: 100vh;
-	height: -webkit-fill-available;
-	max-height: 100vh;
-	overflow-x: auto;
-	overflow-y: hidden;
-	padding-top: 64px;
-}
-
-main > :not(:first-child) {
-	overflow-y: auto;
+section {
+	scroll-margin-top: 56px;
 }
 </style>
 
 <template>
 	<!-- Navbar -->
-	<nav class="navbar navbar-light bg-light fixed-top">
+	<header class="navbar navbar-light bg-light sticky-top">
 		<!-- for sm and down -->
 		<div class="d-md-none container-fluid flex-nowrap">
 			<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
@@ -79,13 +58,13 @@ main > :not(:first-child) {
 			</div>
 			-->
 		</div>
-	</nav>
+	</header>
 
 	<!-- Content -->
-	<main class="container-xxl">
-		<Sidebar class="d-none d-md-block" />
+	<div class="container-xxl d-flex">
+		<Sidebar class="d-none d-md-flex col-auto" />
 		<RouterView />
-	</main>
+	</div>
 </template>
 
 <script setup lang="ts">

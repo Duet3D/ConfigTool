@@ -5,7 +5,7 @@
 </style>
 
 <template>
-	<scroll-item anchor="Miscellaneous" title="Miscellaneous" class="mb-3">
+	<scroll-item id="miscellaneous" title="Miscellaneous" class="mb-3">
 		<label>Custom settings for config.g:</label>
 		<g-code-input class="editor mt-1" v-model="store.data.configTool.customSettings" />
 	</scroll-item>

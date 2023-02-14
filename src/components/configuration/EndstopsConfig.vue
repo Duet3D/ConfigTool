@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Endstops" title="Endstops"
+	<scroll-item id="endstops" title="Endstops"
 				 url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Sensors_endstops"
 				 url-title="Connecting Endstops">
 		<template #body>

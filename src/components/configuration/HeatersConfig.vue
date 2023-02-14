@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Heaters">
+	<scroll-item id="heaters">
 		<template #title>
 			Heaters
 			<button class="btn btn-sm btn-primary" :disabled="!canAddHeater" @click.prevent="addHeater">

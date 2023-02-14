@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Sensors">
+	<scroll-item id="sensors">
 		<template #title>
 			Temperature Sensors
 			<button class="btn btn-sm btn-primary" :disabled="!canAddSensor" @click.prevent="addSensor">

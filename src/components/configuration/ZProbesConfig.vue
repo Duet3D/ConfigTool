@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="ZProbes">
+	<scroll-item id="probes">
 		<template #title>
 			Z-Probes
 		</template>

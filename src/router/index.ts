@@ -3,10 +3,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import StartView from "@/views/StartView.vue";
 import TemplatesView from "@/views/TemplatesView.vue";
 
-export const eventOptions = {
-	ignoreRouterHandler: false
-};
-
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
@@ -21,7 +17,7 @@ const router = createRouter({
 			component: TemplatesView,
 		},
 		{
-			path: "/Configuration/:item*",
+			path: "/Configuration",
 			name: "configuration",
 			component: () => import('../views/ConfigurationView.vue')
 		},
@@ -36,20 +32,15 @@ const router = createRouter({
 			component: () => import('../views/FinishView.vue')
 		}
 	],
-	scrollBehavior(to) {
-		if (eventOptions.ignoreRouterHandler) {
-			eventOptions.ignoreRouterHandler = false;
-			return;
+	scrollBehavior(to, from, savedPosition) {
+		if (savedPosition !== null) {
+			return savedPosition;
 		}
-
-		if (to.name === "configuration") {
-			const element = document.getElementById((to.params.item.length !== 0) ? to.params.item[0] : 'General');
-			if (element) {
-				// Cannot use return { el .. } here because our anchors sit in a div
-				element.scrollIntoView(); // { behavior: "smooth" });
-			}
-		}
-	}
+        if (to.hash) {
+            return { el: to.hash, behavior: "smooth", top: 56 };
+        }
+		return { left: 0, top: 0 };
+    }
 });
 
 export default router;

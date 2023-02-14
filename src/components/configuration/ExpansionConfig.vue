@@ -5,7 +5,7 @@
 </style>
 
 <template>
-	<scroll-item anchor="Expansion">
+	<scroll-item id="expansion">
 		<template #title>
 			Expansion
 		</template>

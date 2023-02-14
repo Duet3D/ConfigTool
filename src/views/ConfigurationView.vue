@@ -1,5 +1,5 @@
 <template>
-	<div class="container" ref="content">
+	<main class="container">
 		<general-config />
 		<expansion-config />
 		<kinematics-config />
@@ -18,12 +18,11 @@
 		<network-config v-if="store.data.network.interfaces.length > 0" />
 		<accessories-config />
 		<miscellaneous-config />
-	</div>
+	</main>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { onMounted } from "vue";
 
 import GeneralConfig from "@/components/configuration/GeneralConfig.vue";
 import ExpansionConfig from "@/components/configuration/ExpansionConfig.vue";
@@ -44,55 +43,35 @@ import NetworkConfig from "@/components/configuration/NetworkConfig.vue";
 import AccessoriesConfig from "@/components/configuration/AccessoriesConfig.vue";
 import MiscellaneousConfig from "@/components/configuration/MiscellaneousConfig.vue";
 
-import { eventOptions } from "@/router";
 import { useStore } from "@/store";
 
 // Visibility of categories
 const store = useStore();
 
-// Scrollspy functionality
-const content = ref(), router = useRouter();
+// Scrollspy
 onMounted(() => {
-	let ignoreScrollHandler = false, debounceTimer = 0;
-	content.value.onscroll = () => {
-		// When the router scrolls an element into view, it takes a moment before this event can be used again
-		if (ignoreScrollHandler) {
-			if (debounceTimer) {
-				clearTimeout(debounceTimer);
+	const observer = new IntersectionObserver(entries => {
+		entries.forEach(entry => {
+			const id = entry.target.getAttribute("id");
+			if (id === "general") {
+				if (entry.isIntersecting) {
+					document.querySelectorAll(`a[href$="/Configuration"]`).forEach(item => item.classList.add("active"));
+				} else {
+					document.querySelectorAll(`a[href$="/Configuration"]`).forEach(item => item.classList.remove("active"));
+				}
+			} else {
+				if (entry.isIntersecting) {
+					document.querySelectorAll(`a[href$="#${id}"]`).forEach(item => item.classList.add("active"));
+				} else {
+					document.querySelectorAll(`a[href$="#${id}"]`).forEach(item => item.classList.remove("active"));
+				}
 			}
-			debounceTimer = setTimeout(() => {
-				ignoreScrollHandler = false;
-				debounceTimer = 0;
-			}, 250);
-			return;
-		}
+		});
+	}, { threshold: 0.25 });
 
-		// Get the current anchors
-		const anchors: Array<HTMLElement> = [];
-		for (let el of content.value.getElementsByTagName("a")) {
-			if (el.dataset["anchor"] === "true") {
-				anchors.push(el);
-			}
-		}
-
-		// Check which router element is supposed to be active
-		let anchor = null, lastDelta = 0;
-		for (let item of anchors) {
-			const delta = Math.abs(item.getBoundingClientRect().top);
-			if (anchor === null || delta < lastDelta) {
-				anchor = item;
-				lastDelta = delta;
-			}
-		}
-
-		// Replace the current route if a new anchor was scrolled into view
-		if (anchor) {
-			const newRoute = (anchor.id === 'General') ? '/Configuration' : `/Configuration/${anchor.id}`;
-			if (router.currentRoute.value.path !== newRoute) {
-				eventOptions.ignoreRouterHandler = true;
-				router.replace(newRoute);
-			}
-		}
-	}
+	// Track all sections that have an `id` applied
+	document.querySelectorAll("section[id]").forEach((section) => {
+		observer.observe(section);
+	});
 });
 </script>

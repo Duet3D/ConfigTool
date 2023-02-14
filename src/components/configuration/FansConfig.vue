@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Fans">
+	<scroll-item id="fans">
 		<template #title>
 			Fans
 			<button class="btn btn-sm btn-primary" :disabled="!canAddFan" @click.prevent="addFan">

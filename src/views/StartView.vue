@@ -5,7 +5,7 @@
 </style>
 
 <template>
-	<div class="container mt-4">
+	<main class="container mt-4">
 		<div class="text-center">
 			<h2 class="mb-4">
 				Welcome to the RepRapFirmware Configuration Tool!
@@ -30,7 +30,7 @@
 				Start with Existing Template
 			</button>
 		</div>
-	</div>
+	</main>
 </template>
 
 <script setup lang="ts">
@@ -43,6 +43,6 @@ const router = useRouter();
 
 const startFromScratch = () => {
 	store.$reset();
-	router.push('/Configuration');
+	router.push("/Configuration");
 };
 </script>

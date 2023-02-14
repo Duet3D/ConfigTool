@@ -5,9 +5,7 @@
 </style>
 
 <template>
-	<div class="pt-3">
-		<a id="Drivers" data-anchor="true"></a>
-
+	<section id="drivers" class="pt-3">
 		<!-- Smart Drivers -->
 		<card v-if="smartDrivers.length > 0" title="Smart Drivers" :preview-templates="['config/drivers/smart.ejs']"
 			  url-title="Tuning Stepper Motor Drivers"
@@ -210,7 +208,7 @@
 				</table>
 			</template>
 		</card>
-	</div>
+	</section>
 </template>
 
 <script setup lang="ts">

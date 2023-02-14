@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Extruders" title="Extruders">
+	<scroll-item id="extruders" title="Extruders">
 		<template #title>
 			Extruders
 			<button class="btn btn-sm btn-primary" :disabled="!canAddExtruder" @click.prevent="addExtruder">

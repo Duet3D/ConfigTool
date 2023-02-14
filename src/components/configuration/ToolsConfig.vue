@@ -1,5 +1,5 @@
 <template>
-	<scroll-item anchor="Tools">
+	<scroll-item id="tools">
 		<template #title>
 			Tools
 			<button class="btn btn-sm btn-primary" :disabled="!canAddTool" @click.prevent="addTool">
