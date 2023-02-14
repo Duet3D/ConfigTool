@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onBeforeUnmount, onMounted } from "vue";
 
 import GeneralConfig from "@/components/configuration/GeneralConfig.vue";
 import ExpansionConfig from "@/components/configuration/ExpansionConfig.vue";
@@ -49,29 +49,34 @@ import { useStore } from "@/store";
 const store = useStore();
 
 // Scrollspy
-onMounted(() => {
-	const observer = new IntersectionObserver(entries => {
-		entries.forEach(entry => {
-			const id = entry.target.getAttribute("id");
-			if (id === "general") {
-				if (entry.isIntersecting) {
-					document.querySelectorAll(`a[href$="/Configuration"]`).forEach(item => item.classList.add("active"));
-				} else {
-					document.querySelectorAll(`a[href$="/Configuration"]`).forEach(item => item.classList.remove("active"));
-				}
+const observer = new IntersectionObserver(entries => {
+	entries.forEach(entry => {
+		const id = entry.target.getAttribute("id");
+		if (id === "general") {
+			if (entry.isIntersecting) {
+				document.querySelectorAll(`a[href$="/Configuration"]`).forEach(item => item.classList.add("active"));
 			} else {
-				if (entry.isIntersecting) {
-					document.querySelectorAll(`a[href$="#${id}"]`).forEach(item => item.classList.add("active"));
-				} else {
-					document.querySelectorAll(`a[href$="#${id}"]`).forEach(item => item.classList.remove("active"));
-				}
+				document.querySelectorAll(`a[href$="/Configuration"]`).forEach(item => item.classList.remove("active"));
 			}
-		});
-	}, { threshold: 0.25 });
+		} else {
+			if (entry.isIntersecting) {
+				document.querySelectorAll(`a[href$="#${id}"]`).forEach(item => item.classList.add("active"));
+			} else {
+				document.querySelectorAll(`a[href$="#${id}"]`).forEach(item => item.classList.remove("active"));
+			}
+		}
+	});
+}, { rootMargin: "-59px 0px 0px 0px" });
 
+onMounted(() => {
 	// Track all sections that have an `id` applied
 	document.querySelectorAll("section[id]").forEach((section) => {
 		observer.observe(section);
 	});
+});
+
+onBeforeUnmount(() => {
+	// Stop tracking
+	observer.disconnect();
 });
 </script>
