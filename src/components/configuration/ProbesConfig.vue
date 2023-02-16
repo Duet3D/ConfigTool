@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="probes" :preview-templates="['config/probes']">
+	<scroll-item id="probes" :preview-templates="['config/probes.js']">
 		<template #title>
 			Z-Probes
 		</template>
