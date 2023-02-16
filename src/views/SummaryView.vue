@@ -5,10 +5,10 @@
 </style>
 
 <template>
-	<div class="form-floating mt-3 w-100">
+	<main class="container form-floating mt-3 w-100">
 		<textarea class="form-control textarea" id="json-data" v-model="jsonData"></textarea>
 		<label for="jsonData">Final object model / JSON data</label>
-	</div>
+	</main>
 </template>
 
 <script setup lang="ts">

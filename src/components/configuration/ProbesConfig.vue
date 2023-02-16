@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="probes">
+	<scroll-item id="probes" :preview-templates="['config/probes']">
 		<template #title>
 			Z-Probes
 		</template>
@@ -20,7 +20,7 @@
 				<div class="card-body">
 					<div class="row g-3">
 						<div class="col-3">
-							<probe-type-input :probe="probe" :index="index" :preset="getPresetProbeValue(index, 'type') as ProbeType" />
+							<probe-type-input :probe="probe" :index="index" :preset="getPresetProbeValue(index, 'type')" />
 						</div>
 						<template v-if="probe !== null">
 							<div class="col-3">

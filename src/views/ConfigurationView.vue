@@ -5,7 +5,7 @@
 		<kinematics-config />
 		<drivers-config />
 		<axes-config />
-		<z-probes-config />
+		<probes-config />
 		<endstops-config />
 		<compensation-config />
 		<sensors-config />
@@ -29,7 +29,7 @@ import ExpansionConfig from "@/components/configuration/ExpansionConfig.vue";
 import KinematicsConfig from "@/components/configuration/KinematicsConfig.vue";
 import DriversConfig from "@/components/configuration/DriversConfig.vue";
 import AxesConfig from "@/components/configuration/AxesConfig.vue";
-import ZProbesConfig from "@/components/configuration/ZProbesConfig.vue";
+import ProbesConfig from "@/components/configuration/ProbesConfig.vue";
 import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
 import CompensationConfig from "@/components/configuration/CompensationConfig.vue";
 import SensorsConfig from "@/components/configuration/SensorsConfig.vue";
@@ -66,7 +66,7 @@ const observer = new IntersectionObserver(entries => {
 			}
 		}
 	});
-}, { rootMargin: "-59px 0px 0px 0px" });
+}, { rootMargin: "-59px 0px -16px 0px" });
 
 onMounted(() => {
 	// Track all sections that have an `id` applied
