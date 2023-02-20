@@ -7,7 +7,7 @@
 <template>
 	<section id="drivers" class="pt-3">
 		<!-- Smart Drivers -->
-		<card v-if="smartDrivers.length > 0" title="Smart Drivers" :preview-templates="['config/drivers/smart.ejs']"
+		<card v-if="smartDrivers.length > 0" title="Smart Drivers" :preview-templates="['config/drivers/smart']"
 			  url-title="Tuning Stepper Motor Drivers"
 			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_tuning">
 			<template #append>
@@ -78,7 +78,7 @@
 
 		<!-- Motor Current Reduction -->
 		<card v-if="smartDrivers.length > 0" class="mt-3" title="Motor Current Reduction"
-			  :preview-templates="['config/drivers/currentReduction.ejs']">
+			  :preview-templates="['config/drivers/currentReduction']">
 			<div class="row">
 				<div class="col d-flex align-items-center">
 					<check-input label="Reduce motor currents when idle" title="Reduce motor current on inactivity"
@@ -104,7 +104,7 @@
 
 		<!-- External Drivers -->
 		<card v-if="externalDrivers.length > 0" class="mt-3" title="External Drivers"
-			  :preview-templates="['config/drivers/external.ejs']" url-title="Connecting External Drivers"
+			  :preview-templates="['config/drivers/external']" url-title="Connecting External Drivers"
 			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Motors_connecting_external">
 			<template #append>
 				<table class="table table-striped table-external-drivers mb-0">
@@ -171,7 +171,7 @@
 
 		<!-- Closed Loop Drivers -->
 		<card v-if="closedLoopDrivers.length > 0" class="mt-3" title="Closed Loop Drivers"
-			  :preview-templates="['config/drivers/closedLoop.ejs']" url-title="Tuning Closed-Loop Motor Drivers"
+			  :preview-templates="['config/drivers/closedLoop']" url-title="Tuning Closed-Loop Motor Drivers"
 			  url="https://docs.duet3d.com/en/User_manual/Tuning/Duet_3_1HCL_tuning">
 			<template #append>
 				<table class="table table-striped table-closed-loop-drivers mb-0">

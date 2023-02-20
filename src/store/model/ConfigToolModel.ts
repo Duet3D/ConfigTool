@@ -4,7 +4,7 @@ import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
 import type { ExpansionBoardType } from "@/store/ExpansionBoards";
-import { fixPrecision } from "@/utils";
+import { precise } from "@/utils";
 
 export class ConfigAutoSaveModel extends ModelObject {
 	enabled: boolean = false;
@@ -29,6 +29,8 @@ export class ConfigDeltaProperties extends ModelObject {
 	peripheralPoints: number = 3;
 	halfwayPoints: number = 3;
 	factors: number = 6;
+	slowHoming: boolean = false;
+	lowDiveHeight: boolean = true;
 	probeRadius: number = 85;
 	readonly probePoints: ModelCollection<ConfigDeltaProbePoint> = new ModelCollection(ConfigDeltaProbePoint);
 	homeFirst: boolean = false;
@@ -81,8 +83,8 @@ export class ConfigDeltaProperties extends ModelObject {
 		}));
 
 		for (const point of this.probePoints) {
-			point.x = fixPrecision(point.x, 2);
-			point.y = fixPrecision(point.y, 2);
+			point.x = precise(point.x, 2);
+			point.y = precise(point.y, 2);
 		}
 	}
 }
@@ -111,7 +113,7 @@ export class ConfigToolModel extends ModelObject {
 	configOverride: boolean = false;
 	customSettings: string = "";
 	readonly delta: ConfigDeltaProperties = new ConfigDeltaProperties();
-	deployRetractProbe: boolean = false;
+	deployRetractProbes: Set<number> = new Set();
 	readonly displayFiles: ConfigDisplayFiles = new ConfigDisplayFiles();
 	readonly drivers: ModelCollection<ConfigDriver> = new ModelCollection(ConfigDriver);
 	expansionBoard: ExpansionBoardType | null = null;

@@ -14,7 +14,7 @@ M911 <%- params({
                 const spindle = model.spindles[i];
                 if (spindle !== null) { -%>
 M950 <%- params({
-    C: getCombinedPort([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards], i),
+    C: getCombinedPortParam([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards], i),
     Q: getPort(ConfigPortFunction.spindlePwm).frequency,
     L: [spindle.min, spindle.max]
 }) %> ; configure spindle #<%- i %>
@@ -27,7 +27,7 @@ M950 <%- params({
 ; see Laser section for a preview of the laser configuration
 <%      } else { -%>
 M452 <%- params({
-    C: getPortString(ConfigPortFunction.laser),
+    C: getPortParam(ConfigPortFunction.laser),
     R: model.configTool.laser.maxIntensity,
     S: model.configTool.laser.sParamSticky
 }) %> ; configure laser
@@ -38,5 +38,5 @@ M452 <%- params({
     if (preview && ((model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) || model.configTool.configOverride)) { -%>
 
 ; ... generated at the end of config.g:
-<%- await render("config/end.ejs") -%>
+<%- await render("config/end") -%>
 <%  } -%>

@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="kinematics" title="Kinematics" :preview-templates="['config/kinematics.ejs']">
+	<scroll-item id="kinematics" title="Kinematics" :preview-templates="['config/kinematics']">
 		<template #append-title>
 			<a v-if="store.data.move.kinematics.name === KinematicsName.cartesian"
 			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_cartesian" target="_blank">
@@ -97,6 +97,16 @@
 							  title="Distance between the centre of your towers and the joint at the effector" :min="0"
 							  :step="0.001" unit="mm" :model-value="avgDeltaRodLength"
 							  @update:model-value="setDeltaRodLength($event)" :preset="avgDeltaRodLengthPreset" />
+			</div>
+			<div class="col-12">
+				<check-input label="Set initial homing speed to 10% for calibration and add a note to homedelta.g"
+							 title="Reduce homing speed. Recommended for initial calibration"
+							 v-model="store.data.configTool.delta.slowHoming" />
+			</div>
+			<div class="col-12 mt-1">
+				<check-input label="Set dive height to 30mm for initial calibration"
+							 title="Generate an extra M558 code in config.g that you can remove after initial calibration"
+							 v-model="store.data.configTool.delta.lowDiveHeight" />
 			</div>
 		</div>
 		<div v-else-if="store.data.move.kinematics.name === KinematicsName.rotaryDelta">
@@ -248,6 +258,7 @@ import {
 } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
+import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 

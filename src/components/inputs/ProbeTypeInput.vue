@@ -1,5 +1,5 @@
 <template>
-    <select-input label="Type" title="Type of this Z-Probe" :options="probeOptions" v-model="probeType"
+    <select-input label="Type" title="Type of this probe" :options="probeOptions" v-model="probeType"
                   :preset="props.probe" v-bind="$attrs" />
 </template>
 

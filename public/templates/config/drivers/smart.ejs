@@ -11,7 +11,6 @@
             const board = model.boards.find(board => board.canAddress === driver.id.board);
             if (board) {
                 const boardDefinition = getExpansionBoardDefinition(board);
-                console.log(board, boardDefinition, driver);
                 if (boardDefinition?.hasSmartDrivers) {
                     smartDrivers.push(driver);
                 }
@@ -50,7 +49,7 @@ M915 P<%- driver.id -%> S<%- driver.sgThreshold -%> ; set StallGuard threshold
         if (configureExtruderCurrents) {
             const extruderCurrents = [];
             for (const extruder of model.move.extruders) {
-                if (smartDrivers.some(smartDriver => extruder.driver.equals(smartDriver))) {
+                if (smartDrivers.some(smartDriver => extruder.driver.equals(smartDriver.id))) {
                     extruderCurrents.push(extruder.current);
                 } else {
                     extruderCurrents.push(0);

@@ -230,7 +230,7 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	model.move.idle.timeout = input.idle.used ? input.idle.timeout : 0;
 	model.move.idle.factor = input.idle.factor / 100;
 
-	// Z-Probe
+	// Probe
 	const probe = new Probe();
 	switch (input.probe.type) {
 		case LegacyProbeType.None:
@@ -272,7 +272,7 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	if (input.probe.pwm_pin !== null) {
 		model.configTool.assignPort(input.probe.pwm_pin, ConfigPortFunction.probeServo, 0);
 	}
-	model.configTool.deployRetractProbe = input.probe.deploy || input.probe.type === LegacyProbeType.BLTouch;
+	model.configTool.deployRetractProbes = new Set(input.probe.deploy ? [0] : []);
 
 	// General Heater Settings
 	for (let i = 0; i < input.heaters.length; i++) {
@@ -354,6 +354,8 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	model.configTool.delta.peripheralPoints = input.peripheral_points;
 	model.configTool.delta.halfwayPoints = input.halfway_points;
 	model.configTool.delta.factors = input.calibration_factors;
+	model.configTool.delta.lowDiveHeight = input.geometry.low_dive_height;
+	model.configTool.delta.slowHoming = input.slow_homing;
 	model.configTool.delta.probeRadius = input.probe_radius;
 	model.configTool.homeBeforeAutoCalibration = input.home_first;
 	for (const legacyProbePoint of input.probe.points) {

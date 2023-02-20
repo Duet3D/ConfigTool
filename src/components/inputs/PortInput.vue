@@ -68,7 +68,7 @@ interface PortInputProps {
 	function: ConfigPortFunction,
 
 	/**
-	 * Corresponding index value of the port (e.g. Z-probe index)
+	 * Corresponding index value of the port (e.g. probe index)
 	 */
 	index: number,
 

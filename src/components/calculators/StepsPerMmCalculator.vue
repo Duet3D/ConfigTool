@@ -107,7 +107,7 @@
 import { computed, reactive, ref, watch } from "vue";
 
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue"
-import { fixPrecision } from "@/utils";
+import { precise } from "@/utils";
 
 // Motor settings
 const stepAngle = ref(1.8);
@@ -215,7 +215,7 @@ const beltPreset = computed({
 				}
 			}
 		}
-		return BeltPresets.Custom[0].name;
+		return BeltPresets.Other[0].name;
 	},
 	set(value) {
 		for (const category in BeltPresets) {
@@ -486,10 +486,10 @@ const calculatedStepsPerMm = computed(() => {
 	if (props.axis) {
 		switch (driveType.value) {
 			case DriveType.belt:
-				return fixPrecision((360 * props.axis.microstepping.value) / (belt.pulleyTeeth * belt.pitch * stepAngle.value), 2);
+				return precise((360 * props.axis.microstepping.value) / (belt.pulleyTeeth * belt.pitch * stepAngle.value), 2);
 			case DriveType.leadscrew:
 				const leadscrewRatio = leadscrew.ratio2 / leadscrew.ratio1;
-				return fixPrecision((360.0 * props.axis.microstepping.value * leadscrewRatio) / (leadscrew.lead * stepAngle.value), 2);
+				return precise((360.0 * props.axis.microstepping.value * leadscrewRatio) / (leadscrew.lead * stepAngle.value), 2);
 			default:
 				const _exhaustiveCheck: never = driveType.value;
 				break;
@@ -501,7 +501,7 @@ const calculatedStepsPerMm = computed(() => {
 			const gearsRatio = extruder.ratio2 / extruder.ratio1;
 			stepsPerMm = (360.0 * props.extruder.microstepping.value * gearsRatio) / (extruder.hobDiameter * stepAngle.value * Math.PI);
 		}
-		return fixPrecision(stepsPerMm * (extruder.amountExtruded / extruder.actuallyExtruded), 2);
+		return precise(stepsPerMm * (extruder.amountExtruded / extruder.actuallyExtruded), 2);
 	}
 	return NaN;
 });

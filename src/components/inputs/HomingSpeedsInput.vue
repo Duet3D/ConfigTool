@@ -4,7 +4,7 @@
 	</label>
 	<div class="input-group">
 		<button type="button" class="btn" :class="homeTwice ? 'btn-primary' : 'btn-outline-secondary'"
-				v-title="probeSpeeds ? 'Probe twice per point at different speeds' : 'Home twice per axis at different speeds'"
+				v-title="probeSpeeds ? 'Probe twice per point' : 'Home twice per axis'"
 				@click.prevent="homeTwice = !homeTwice">
 			x2
 		</button>

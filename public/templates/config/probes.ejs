@@ -1,0 +1,66 @@
+<%  for (let probeIndex = 0; probeIndex < model.sensors.probes.length; probeIndex++) {
+        const probe = model.sensors.probes[probeIndex];
+        if (probe !== null) { -%>
+            const parameters = {
+                P: probe.type,
+                C: getCombinedPortParam([ConfigPortFunction.probeIn, ConfigPortFunction.probeMod], probeIndex),
+                H: probe.diveHeight,
+                F: reduce(probe.speeds.map(speed => speed * 60)),
+                T: probe.travelSpeed,
+            };
+
+            // Get probe details
+            let type = "unknown";
+            switch (probe.type) {
+                case ProbeType.none:
+                    type = "manual";
+                    break;
+                case ProbeType.analog:
+                    type = "analog";
+                    break;
+                case ProbeType.dumbModulated:
+                    type = "modulated";
+                    break;
+                case ProbeType.alternateAnalog:
+                    type = "alternate analog";
+                    break;
+                case ProbeType.endstopSwitch_obsolete:
+                    type = "endstop (obsolete)";
+                    break;
+                case ProbeType.digital:
+                    type = "digital";
+                    break;
+                case ProbeType.e1Switch_obsolete:
+                    type = "E1 endstop (obsolete)";
+                    break;
+                case ProbeType.zSwitch_obsolete:
+                    type = "Z endstop (obsolete)";
+                    break;
+                case ProbeType.unfilteredDigital:
+                    type = "unfiltered digital";
+                    break;
+                case ProbeType.blTouch:                     // BLTouch requires a pull-up resistor
+                    type = "BLTouch";
+                    const inputPort = getPort(ConfigPortFunction.probeIn, probeIndex);
+                    parameters.C = escape((inputPort.pullUp || model.getBoardDefinition(inputPort.canBoard)?.hasInputPullUps) ? inputPort.toString() : `^${inputPort.toString()}`);
+                    break;
+                case zMotorStall:
+                    type = "Z motor stall";
+                    break;
+            } -%>
+M558 <%- params(parameters) %> ; configure <%- type %> probe via slot #<%- index %>
+<%          if (model.isDelta && model.delta.lowDiveHeight) { -%>
+M558 H30 ;*** Remove this line after delta calibration has been done and new delta parameters have been saved
+<%		    } -%>
+G31 <%- params({
+    P: probe.threshold,
+    X: probe.offsets[0],
+    Y: probe.offsets[1],
+    Z: probe.triggerHeight
+}) %> ; set Z probe trigger value, offset and trigger height
+<%      }
+        if (probe.type === ProbeType.blTouch) {
+            const servoIndex = getProbeServoIndex(probeIndex); -%>
+M950 S<%- servoIndex %> C<%- getPortString(ConfigPortFunction.probeServo, probeIndex) %> ; create servo #<%- servoIndex %> for BLtouch
+<%      }
+    } -%>

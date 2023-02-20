@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="axes" :preview-templates="['config/axes.ejs']">
+	<scroll-item id="Axes" :preview-templates="['config/axes']">
 		<template #title>
 			Axes
 		</template>
@@ -14,8 +14,8 @@
 				<colgroup>
 					<col style="width: 10%;">
 					<col style="width: auto;">
-					<col v-if="!isDelta" style="width: 10%;">
-					<col v-if="!isDelta" style="width: 10%;">
+					<col v-if="!store.data.isDelta" style="width: 10%;">
+					<col v-if="!store.data.isDelta" style="width: 10%;">
 					<col style="width: 18%;">
 					<col style="width: 11%;">
 					<col style="width: 17%;">
@@ -31,10 +31,10 @@
 						<th>
 							Drivers
 						</th>
-						<th v-if="!isDelta">
+						<th v-if="!store.data.isDelta">
 							Minimum (mm)
 						</th>
-						<th v-if="!isDelta">
+						<th v-if="!store.data.isDelta">
 							Maximum (mm)
 						</th>
 						<th>
@@ -73,12 +73,12 @@
 						<td>
 							<driver-list :drivers="axis.drivers" class="mt-1" />
 						</td>
-						<td v-if="!isDelta">
+						<td v-if="!store.data.isDelta">
 							<number-input title="Minimum axis position"
 							              :max="axis.max" :step="0.01" unit="mm" hide-unit
 							              v-model="axis.min" :preset="getPresetAxisValue(index, 'min')" />
 						</td>
-						<td v-if="!isDelta">
+						<td v-if="!store.data.isDelta">
 							<number-input title="Maximum axis position"
 							              :min="axis.min" :step="0.01" unit="mm" hide-unit
 							              v-model="axis.max" :preset="getPresetAxisValue(index, 'max')" />
@@ -185,9 +185,6 @@ function isAxisUnique(axis: Axis) {
 	}
 	return occurences === 1;
 }
-
-// Mins/Maxs
-const isDelta = computed(() => [KinematicsName.delta, KinematicsName.rotaryDelta].includes(store.data.move.kinematics.name));
 
 // Microstepping
 function getMicrostepping(axis: Axis): string {

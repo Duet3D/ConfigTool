@@ -179,7 +179,7 @@ function getEndstopTypeOptions(axis: Axis): Array<SelectOption> {
 		
 		if (canSelectProbe) {
 			options.push(		{
-				text: "Z-Probe #0",
+				text: "Probe #0",
 				value: EndstopType.ZProbeAsEndstop
 			});
 		}

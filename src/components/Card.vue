@@ -23,15 +23,12 @@
 				{{ previewVisible? "Hide G-code preview": "Show G-code preview" }}
 			</a>
 
-			<slot name="append-title">
-				<a v-if="props.url && props.urlTitle" :href="props.url" target="_blank">
-					<i class="bi-info-circle"></i>
-					{{ props.urlTitle }}
-				</a>
-				<span v-else class="invisible">
-					{{ props.title }}
-				</span>
-			</slot>
+			<a v-if="props.url && props.urlTitle" :href="props.url" target="_blank">
+				<i class="bi-info-circle"></i>
+				{{ props.urlTitle }}
+			</a>
+
+			<slot name="append-title" />
 		</div>
 
 		<!-- Card Content-->
@@ -40,12 +37,12 @@
 				<li v-for="template in props.previewTemplates" class="nav-item">
 					<a class="nav-link" :class="(template === selectedTemplate) ? 'active' : ''"
 					   href="javascript:void(0)" @click="selectedTemplate = template">
-						{{ getTemplateFile(template) }}
+						{{ template.split('/')[0] + ".g" }}
 					</a>
 				</li>
-				<a v-if="fileRendered" class="align-self-center ms-auto me-3 text-decoration-none" href="javascript:void(0)" @click.prevent="showFile">
-					<i :class="rendering ? 'bi-hourglass' : 'bi-box-arrow-in-up-right'"></i>
-					{{ rendering ? "rendering..." : "view full file" }}
+				<a v-if="!previewRendering" class="align-self-center ms-auto me-3 text-decoration-none" href="javascript:void(0)" @click.prevent="showFile">
+					<i :class="fileRendering ? 'bi-hourglass' : 'bi-box-arrow-in-up-right'"></i>
+					{{ fileRendering ? "rendering..." : "view full file" }}
 				</a>
 			</ul>
 			<g-code-output v-show="previewVisible" class="output" :value="generatedCode" readonly />
@@ -61,16 +58,16 @@
 </template>
 
 <script setup lang="ts">
-import { Comment, defineAsyncComponent, ref, watch, type Slot, type VNode } from "vue";
+import { Comment, computed, defineAsyncComponent, ref, watch, type Slot, type VNode } from "vue";
 
-import { indent, render } from "@/store/render";
+import { indent, render, renderFull } from "@/store/render";
 
 const GCodeOutput = defineAsyncComponent(() => import("./monaco/GCodeOutput.vue"));
 
 const props = defineProps<{
 	title?: string,
-	previewTemplates?: Array<string>,
-	previewOptions?: Record<string, any>,
+	previewTemplates?: Array<string> | null,
+	previewOptions?: Record<string, any> | Array<Record<string, any> | null> | null,
 	url?: string
 	urlTitle?: string
 }>();
@@ -91,58 +88,58 @@ function hasSlotContent(slot: Slot | undefined, slotProps = {}): boolean {
 	});
 }
 
-const previewVisible = ref(false)
+// Preview
+const previewVisible = ref(false);
 const selectedTemplate = ref<string>(props.previewTemplates ? props.previewTemplates[0] : "");
-function getBaseFile(filename: string) {
-	let title = filename.split('/')[0].split('.')[0];
-	return title;
-}
-function getTemplateFile(filename: string) {
-	return getBaseFile(filename) + ".g";
-}
 
-const generatedCode = ref("");
+// Partial preview
+const generatedCode = ref(""), previewRendering = ref(false);
 
-const fileRendered = ref(false);
+const renderArgs = computed(() => {
+	let renderArgs;
+	if (props.previewOptions instanceof Array && props.previewTemplates) {
+		const index = props.previewTemplates.indexOf(selectedTemplate.value);
+		renderArgs = { ...props.previewOptions[index], preview: true };
+	} else if (props.previewOptions) {
+		renderArgs = { ...props.previewOptions, preview: true };
+	} else {
+		renderArgs = { preview: true };
+	}
+	return renderArgs;
+});
+
 watch(() => previewVisible.value && selectedTemplate.value, async () => {
-	if (previewVisible.value) {
-		fileRendered.value = false;
+	if (previewVisible.value && props.previewTemplates) {
+		if (previewRendering.value) {
+			return;
+		}
+		previewRendering.value = true;
+
 		generatedCode.value = "rendering...";
 		try {
-			const content = await render(selectedTemplate.value, { ...(props.previewOptions ?? {}), preview: true });
+			const content = await render(selectedTemplate.value, renderArgs.value);
 			generatedCode.value = indent(content);
-			fileRendered.value = true;
 		} catch (e) {
 			console.warn(e);
 			generatedCode.value = "failed to render G-code:\n" + e;
 		}
+		previewRendering.value = false;
 	}
 });
 
-const rendering = ref(false);
+// Full preview
+const fileRendering = ref(false);
 async function showFile() {
-	if (rendering.value) {
+	if (fileRendering.value) {
 		return;
 	}
-	rendering.value = true;
+	fileRendering.value = true;
 
-	const filename = getTemplateFile(selectedTemplate.value);
 	try {
-		const ejsFilename = getBaseFile(selectedTemplate.value) + ".ejs";
-		const output = await render(ejsFilename);
-
-		let tab = window.open("about:blank", "_blank");
-		if (tab == null) {
-			alert("Could not open a new tab!\n\nPlease allow pop-ups for this page and try again.");
-		} else {
-			tab.document.write(indent(output).replace(/\n/g, "<br>").replace(/ /g, "&nbsp;"));
-			(tab.document.body as HTMLBodyElement).style.fontFamily = "monospace";
-			(tab.document as Document).title = filename;
-			tab.document.close();
-		}
+		await renderFull(selectedTemplate.value, renderArgs.value);
 	} catch (e) {
-		alert(`Failed to generate file ${filename}:\n\n${e}`);
+		alert(`Failed to generate file:\n\n${e}`);
 	}
-	rendering.value = false;
+	fileRendering.value = false;
 }
 </script>

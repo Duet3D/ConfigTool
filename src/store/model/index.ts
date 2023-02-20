@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName } from "@duet3d/objectmodel";
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
@@ -510,5 +510,12 @@ export default class ConfigModel extends ObjectModel {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Check if the machine is using delta kinematics
+	 */
+	get isDelta(): boolean {
+		return [KinematicsName.delta, KinematicsName.rotaryDelta].includes(this.move.kinematics.name);
 	}
 }

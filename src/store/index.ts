@@ -152,6 +152,7 @@ const defaultTemplate = initObject(ConfigModel, {
 			probeGrid: initObject(ProbeGrid, {
 				mins: [20, 20],
 				maxs: [180, 180],
+				radius: 85,
 				spacings: [80, 80]
 			})
 		}),

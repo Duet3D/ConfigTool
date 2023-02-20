@@ -3,7 +3,7 @@
     const jerk = {}, maxSpeed = {}, acceleration = {};
     for (const axis of model.move.axes) {
         mapping[axis.letter] = axis.drivers;
-        if (!['X', 'Y', 'Z'].includes(axis.letter) || model.move.kinematics.name !== KinematicsName.delta) {
+        if (!['X', 'Y', 'Z'].includes(axis.letter) || model.isDelta) {
             // Don't set axis min/max in Delta configs
             mins[axis.letter] = axis.min;
             maxs[axis.letter] = axis.max;

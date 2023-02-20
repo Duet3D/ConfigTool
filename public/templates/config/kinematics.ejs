@@ -37,13 +37,9 @@
             }
         } -%>
 M669 K<%- kParam %><%- moveCoefficients %> ; configure <%- kinematicsName %> kinematics
-<%  } else if (model.move.kinematics.name === KinematicsName.delta) {
-        let rodLengths = model.move.kinematics.towers.map(tower => tower.diagonal);
-        if (!rodLengths.some(diagnonal => diagnonal != rodLengths[0])) {
-            rodLengths = rodLengths[0];
-        } -%>
+<%  } else if (model.isDelta) { -%>
 M665 <%- params({
-    L: rodLengths,
+    L: reduce(model.move.kinematics.towers.map(tower => tower.diagnonal)),
     R: model.move.kinematics.deltaRadius,
     B: model.move.kinematics.printRadius,
     H: model.move.kinematics.homedHeight

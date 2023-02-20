@@ -112,7 +112,8 @@ export const VPreset: Directive<Element & VPresetElement> = {
 		el.title = "";
 
 		// Register Bootstrap tooltip
-		el.tooltip = new Tooltip(el, {
+		const targetEl = el.classList.contains("form-check") ? el.querySelector("label") ?? el : el;
+		el.tooltip = new Tooltip(targetEl, {
 			html: true,
 			title: () => getTitle(binding, el),
 			trigger: "hover"
