@@ -1,4 +1,4 @@
-import { CoreKinematics, KinematicsName, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, KinematicsName, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
 import ejs from "ejs";
 
 import { useStore } from "@/store";
@@ -116,9 +116,9 @@ const renderOptions = {
         }
         return null;
     },
-    getPortParam(fn: ConfigPortFunction, index?: number, secondaryIndex?: number): string {
+    getPortString(fn: ConfigPortFunction, index?: number, secondaryIndex?: number): string {
         const port = this.getPort(fn, index, secondaryIndex);
-        return `"${(port != null) ? port.toString() : "nil"}"`;
+        return (port != null) ? port.toString() : "nil";
     },
     getCombinedPortParam(fns: Array<ConfigPortFunction>, index?: number): string | undefined {
         const ports: Array<string> = [];
@@ -141,12 +141,12 @@ const renderOptions = {
         }
         for (let i = ports.length - 1; i >= 0; i--) {
             if (ports[i] === "nil") {
-                ports.unshift();
+                ports.pop();
             } else {
                 break;
             }
         }
-        return (ports.length > 0) ? `"${ports.join('+')}"` : undefined;
+        return (ports.length > 0) ? ports.join('+') : undefined;
     },
     getProbeServoIndex(probeIndex: number) {
         let servoIndex = 0;
@@ -181,6 +181,7 @@ const renderOptions = {
     KinematicsName,
 
     // Other
+    AnalogSensorType,
     NetworkInterfaceType,
     ProbeType
 };

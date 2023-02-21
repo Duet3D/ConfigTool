@@ -1,7 +1,7 @@
 <%  for (let probeIndex = 0; probeIndex < model.sensors.probes.length; probeIndex++) {
         const probe = model.sensors.probes[probeIndex];
-        if (probe !== null) { -%>
-            const parameters = {
+        if (probe !== null) {
+            const probeConfig = {
                 P: probe.type,
                 C: getCombinedPortParam([ConfigPortFunction.probeIn, ConfigPortFunction.probeMod], probeIndex),
                 H: probe.diveHeight,
@@ -42,13 +42,13 @@
                 case ProbeType.blTouch:                     // BLTouch requires a pull-up resistor
                     type = "BLTouch";
                     const inputPort = getPort(ConfigPortFunction.probeIn, probeIndex);
-                    parameters.C = escape((inputPort.pullUp || model.getBoardDefinition(inputPort.canBoard)?.hasInputPullUps) ? inputPort.toString() : `^${inputPort.toString()}`);
+                    probeConfig.C = escape((inputPort.pullUp || model.getBoardDefinition(inputPort.canBoard)?.hasInputPullUps) ? inputPort.toString() : `^${inputPort.toString()}`);
                     break;
                 case zMotorStall:
                     type = "Z motor stall";
                     break;
             } -%>
-M558 <%- params(parameters) %> ; configure <%- type %> probe via slot #<%- index %>
+M558 <%- params(probeConfig) %> ; configure <%- type %> probe via slot #<%- probeIndex %>
 <%          if (model.isDelta && model.delta.lowDiveHeight) { -%>
 M558 H30 ;*** Remove this line after delta calibration has been done and new delta parameters have been saved
 <%		    } -%>

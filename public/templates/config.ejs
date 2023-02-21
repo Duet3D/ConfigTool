@@ -19,8 +19,16 @@ G4 S2
 ; Axes
 <%- await render("config/axes") -%>
 
-; Axes
-<%- await render("config/probes.ejs") -%>
+<%  if (model.configTool.capabilities.fff) { -%>
+; Extruders
+<%-     await render("config/extruders") -%>
+
+<%  } -%>
+; Probes
+<%- await render("config/probes") -%>
+
+; Sensors
+<%- await render("config/sensors") -%>
 
 ; End of config.g
 <%- await render("config/end") -%>

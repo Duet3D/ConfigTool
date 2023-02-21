@@ -14,7 +14,8 @@ export class ConfigTempSensor extends ModelObject {                     // TODO 
 
 	thermocoupleType: string = "K";										// only used by MAX31856
 	mainsFrequency: number = 50;										// used by MAX31856 and MAX31865
+	numWires: 2 | 3 | 4 = 2;											// only used by MAX31865
 	rref: number | null = null;											// only used by MAX31865
 
-	dhtSensor: number | null = null;									// only used by DHT Humdity
+	baseSensor: number | null = null;									// referenced sensor, e.g. by DHT humidity
 }

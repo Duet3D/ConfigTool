@@ -39,6 +39,8 @@ export interface BoardDescriptor extends BaseBoardDescriptor {
 	objectModelNetworkInterfaces: Array<NetworkInterface>;
 
 	expansionBoards: Set<ExpansionBoardType>;
+
+	supportsBME280: boolean;
 }
 
 /**
@@ -117,7 +119,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 
 		expansionBoards: new Set([
 			ExpansionBoardType.Duet3Mini2Plus
-		])
+		]),
+		supportsBME280: true
 	},
 	[BoardType.Duet3Mini5PlusWiFi]: {
 		hasClosedLoopDrivers: false,
@@ -191,7 +194,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 
 		expansionBoards: new Set([
 			ExpansionBoardType.Duet3Mini2Plus
-		])
+		]),
+		supportsBME280: true
 	},
 	[BoardType.Duet3MB6HC]: {
 		hasClosedLoopDrivers: false,
@@ -261,7 +265,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
 		},
 
-		expansionBoards: new Set()
+		expansionBoards: new Set(),
+		supportsBME280: true
 	},
 	[BoardType.Duet3MB6XD]: {
 		hasClosedLoopDrivers: false,
@@ -332,7 +337,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
 		},
 
-		expansionBoards: new Set()
+		expansionBoards: new Set(),
+		supportsBME280: true
 	},
 	[BoardType.Duet2Ethernet]: {
 		hasClosedLoopDrivers: false,
@@ -405,7 +411,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			ExpansionBoardType.DueX5,
 			ExpansionBoardType.Duet2ExpansionBreakout,
 			ExpansionBoardType.DueX2
-		])
+		]),
+		supportsBME280: false
 	},
 	[BoardType.Duet2WiFi]: {
 		hasClosedLoopDrivers: false,
@@ -478,7 +485,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			ExpansionBoardType.DueX5,
 			ExpansionBoardType.Duet2ExpansionBreakout,
 			ExpansionBoardType.DueX2
-		])
+		]),
+		supportsBME280: false
 	},
 	[BoardType.Duet2SBC]: {
 		hasClosedLoopDrivers: false,
@@ -547,7 +555,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			ExpansionBoardType.DueX5,
 			ExpansionBoardType.Duet2ExpansionBreakout,
 			ExpansionBoardType.DueX2
-		])
+		]),
+		supportsBME280: false
 	},
 	[BoardType.Duet2Maestro]: {
 		hasClosedLoopDrivers: false,
@@ -618,7 +627,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 
 		expansionBoards: new Set([
 			ExpansionBoardType.Duet2Maestro2Plus
-		])
+		]),
+		supportsBME280: false
 	}
 }
 

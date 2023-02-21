@@ -5,12 +5,12 @@
 		<kinematics-config />
 		<drivers-config />
 		<axes-config />
+		<extruders-config v-if="store.data.configTool.capabilities.fff" />
 		<probes-config />
 		<endstops-config />
 		<compensation-config />
 		<sensors-config />
 		<heaters-config v-if="store.data.configTool.capabilities.fff" />
-		<extruders-config v-if="store.data.configTool.capabilities.fff" />
 		<spindles-config v-if="store.data.configTool.capabilities.cnc" />
 		<lasers-config v-if="store.data.configTool.capabilities.laser" />
 		<fans-config />

@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="Probes" :preview-templates="previewTemplates" :preview-options="previewOptions"
+	<scroll-item id="probes" :preview-templates="previewTemplates" :preview-options="previewOptions"
 				 url-title="Connecting a Z probe" url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_connecting">
 		<template #title>
 			{{ store.data.configTool.capabilities.cnc ? "Probes" : "Z-Probes" }}

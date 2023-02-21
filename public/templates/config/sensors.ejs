@@ -1,0 +1,57 @@
+<%  for (let i = 0; i < model.sensors.analog.length; i++) {
+        const sensor = model.sensors.analog[i], configSensor = model.configTool.sensors[i];
+        if (sensor !== null) {
+            let port = undefined, sensorOptions = {};
+            if (sensor.type === AnalogSensorType.thermistor) {
+                port = getPortString(ConfigPortFunction.thermistor, i);
+                sensorOptions = {
+                    T: configSensor.r25,
+                    B: configSensor.beta,
+                    C: (configSensor.shC !== 0) ? configSensor.shC : undefined,
+                    R: (configSensor.seriesR !== null) ? configSensor.seriesR : undefined,
+                    L: (configSensor.adcLowOffset !== null) ? configSensor.adcLowOffset : undefined,
+                    H: (configSensor.adcHighOffset !== null) ? configSensor.adcHighOffset : undefined
+                };
+            } else if (sensor.type === AnalogSensorType.pt1000) {
+                port = getPortString(ConfigPortFunction.thermistor, i);
+                sensorOptions = {
+                    R: (configSensor.seriesR !== null) ? configSensor.seriesR : undefined,
+                    L: (configSensor.adcLowOffset !== null) ? configSensor.adcLowOffset : undefined,
+                    H: (configSensor.adcHighOffset !== null) ? configSensor.adcHighOffset : undefined
+                };
+            } else if (sensor.type === AnalogSensorType.max31856) {
+                port = getPortString(ConfigPortFunction.spiCs, i);
+                sensorOptions = {
+                    K: configSensor.thermocoupleType,
+                    F: configSensor.mainsFrequency
+                };
+            } else if (sensor.type === AnalogSensorType.max31865) {
+                port = getPortString(ConfigPortFunction.spiCs, i);
+                sensorOptions = {
+                    R: (configSensor.rref !== null) ? configSensor.rref : undefined,
+                    W: configSensor.thermocoupleType,
+                    F: configSensor.mainsFrequency
+                };
+            } else if (sensor.type === AnalogSensorType.linearAnalog) {
+                port = getPortString(ConfigPortFunction.spiCs, i);
+                sensorOptions = {
+                    F: configSensor.filtered ? 1 : 0,
+                    B: configSensor.minTemp,
+                    C: configSensor.maxTemp
+                };
+            } else if ([AnalogSensorType.dht21, AnalogSensorType.dht22, AnalogSensorType.bme280].includes(sensor.type)) {
+                port = getPortString(ConfigPortFunction.spiCs, i);
+            } else if ([AnalogSensorType.dhtHumidity, AnalogSensorType.bme280pressure].includes(sensor.type)) {
+                port = `${configSensor.baseSensor}.1`;
+            } else if (sensor.type === AnalogSensorType.bme280humidity) {
+                port = `${configSensor.baseSensor}.2`;
+            } -%>
+M308 <%- params({
+    S: i,
+    P: port,
+    Y: sensor.type,
+    A: (sensor.name.trim() !== "") ? sensor.name : undefined,
+    ...sensorOptions
+}) %> ; configure sensor #<%- i %>
+<%      }
+    } -%>

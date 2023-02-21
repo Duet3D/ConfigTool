@@ -99,12 +99,12 @@ aside {
 						<li><RouterLink :to="{ name: 'configuration', hash: '#kinematics' }" class="link-dark rounded">Kinematics</RouterLink></li>
 						<li><RouterLink to="/Configuration#drivers" class="link-dark rounded">Drivers</RouterLink></li>
 						<li><RouterLink to="/Configuration#axes" class="link-dark rounded">Axes</RouterLink></li>
+						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration#extruders" class="link-dark rounded">Extruders</RouterLink></li>
 						<li><RouterLink to="/Configuration#probes" class="link-dark rounded">Z-Probes</RouterLink></li>
 						<li><RouterLink to="/Configuration#endstops" class="link-dark rounded">Endstops</RouterLink></li>
 						<li><RouterLink to="/Configuration#compensation" class="link-dark rounded">Compensation</RouterLink></li>
 						<li><RouterLink to="/Configuration#sensors" class="link-dark rounded">Sensors</RouterLink></li>
 						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration#heaters" class="link-dark rounded">Heaters</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration#extruders" class="link-dark rounded">Extruders</RouterLink></li>
 						<li v-if="store.data.configTool.capabilities.cnc"><RouterLink to="/Configuration#spindles" class="link-dark rounded">Spindles</RouterLink></li>
 						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration#lasers" class="link-dark rounded">Lasers</RouterLink></li>
 						<li><RouterLink to="/Configuration#fans" class="link-dark rounded">Fans</RouterLink></li>

@@ -1,0 +1,26 @@
+<%  for (let i = 0; i < model.heat.heaters.length; i++) {
+        const heater = model.heat.heaters[i], heaterPort = getPort(ConfigPortFunction.heater, i);
+        if (heater !== null && heaterPort !== null) { -%>
+M950 <%- params({
+    H: i,
+    C: getPortString(ConfigPortFunction.heater, i),     // in case it is mapped to multiple ports...
+    Q: (heaterPort.frequency != 250) ? heaterPort.frequency : undefined
+}) %> ; create heater #<%- i %>
+M307 <%- params({
+    H: i,
+    R: heater.model.heatingRate,
+    D: heater.model.deadTime,
+    E: heater.model.coolingExp,
+    K: heater.model.coolingRate,     // TODO also add fanCoolingRate if present [via reduce]
+    B: heater.model.pid.used ? 1 : 0,
+    I: heater.model.inverted ? 1 : undefined,
+    S: (heater.model.maxPwm !== 1) ? heater.model.maxPwm : undefined,
+    V: (heater.model.standardVoltage > 0) : heater.model.standardVoltage : undefined
+}) %> ; configure model of heater #<%- i %>
+<%          if (heater.model.pid.overridden) { -%>
+foo
+
+<%-             // TODO configure PID as well
+            }
+        }
+    } -%>

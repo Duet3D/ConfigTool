@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="Axes" :preview-templates="['config/axes']">
+	<scroll-item id="axes" :preview-templates="['config/axes']">
 		<template #title>
 			Axes
 		</template>

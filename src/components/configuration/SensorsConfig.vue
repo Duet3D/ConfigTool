@@ -1,7 +1,9 @@
 <template>
-	<scroll-item id="sensors">
+	<scroll-item id="sensors" :preview-templates="['config/sensors']">
 		<template #title>
 			Temperature Sensors
+		</template>
+		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddSensor" @click.prevent="addSensor">
 				<i class="bi-plus-circle"></i>
 				Add Sensor
@@ -37,13 +39,13 @@
 											  :preset="getPresetSensorValue(index, 'type')" />
 							</div>
 							<div class="col-3">
-								<select-input v-if="sensor.type === AnalogSensorType.dhtHumidity" label="DHT Sensor"
-											  title="Existing DHT sensor channel number that the DHT humidity value is fetched from. The corresponding DHT sensor must come before this item"
-											  :model-value="getConfigSensorValue(index, 'dhtSensor')"
-											  @update:model-value="setConfigSensorValue(index, 'dhtSensor', $event)"
-											  :preset="getPresetConfigSensorValue(index, 'dhtSensor')"
-											  :options="getDhtSensorOptions(index)" />
-								<port-input v-else label="Input Port" title="Input port for this sensor"
+								<select-input v-if="requiresBaseSensor(sensor.type)" :label="(sensor.type === AnalogSensorType.dhtHumidity) ? 'DHT Sensor' : 'BME280 Sensor'"
+											  title="Existing sensor channel number used for this extra sensor. The corresponding sensor must come before this one"
+											  :model-value="getConfigSensorValue(index, 'baseSensor')"
+											  @update:model-value="setConfigSensorValue(index, 'baseSensor', $event)"
+											  :preset="getPresetConfigSensorValue(index, 'baseSensor')"
+											  :options="getBaseSensorOptions(sensor.type, index)" />
+								<port-input v-else-if="![AnalogSensorType.drivers, AnalogSensorType.driversDuex].includes(sensor.type)" label="Input Port" title="Input port for this sensor"
 											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.spiCs" :index="index" />
 							</div>
 							<!-- Thermistor and PT1000 Options-->
@@ -102,15 +104,16 @@
 												  :model-value="getConfigSensorValue(index, 'minTemp')"
 												  @update:model-value="setConfigSensorValue(index, 'minTemp', $event)"
 												  :preset="getPresetConfigSensorValue(index, 'minTemp')" :min="-273"
-												  :max="1999" step="any" unit="°C" />
+												  :max="getConfigSensorValue(index, 'maxTemp')" step="any" unit="°C" />
 								</div>
 								<div class="col-4">
 									<number-input label="Maximum Temperature"
 												  title="The temperature or other value when the ADC output is full scale"
-												  :model-value="getConfigSensorValue(index, 'minTemp')"
-												  @update:model-value="setConfigSensorValue(index, 'minTemp', $event)"
-												  :preset="getPresetConfigSensorValue(index, 'minTemp')" :min="-273"
-												  :max="1999" step="any" unit="°C" />
+												  :model-value="getConfigSensorValue(index, 'maxTemp')"
+												  @update:model-value="setConfigSensorValue(index, 'maxTemp', $event)"
+												  :preset="getPresetConfigSensorValue(index, 'maxTemp')"
+												  :min="getConfigSensorValue(index, 'minTemp')"	:max="1999" step="any"
+												  unit="°C" />
 								</div>
 								<div class="col-4 d-flex align-items-end">
 									<check-input class="mb-1" label="Filter input signal"
@@ -142,6 +145,14 @@
 															   :preset="getPresetConfigSensorValue(index, 'rref')"
 															   :min="350" :max="10000" step="0.01" unit="Ω" />
 									</div>
+									<div class="col-3">
+										<select-input label="Number of Wires"
+													  title="Number of wires used to connect the PT100 sensor"
+													  :model-value="getConfigSensorValue(index, 'numWires')"
+													  @update:model-value="setConfigSensorValue(index, 'numWires', $event)"
+													  :preset="getPresetConfigSensorValue(index, 'numWires')"
+													  :options="NumWires" />
+									</div>
 								</template>
 								<!-- MAX31856 and MAX31865-->
 								<div class="col-3">
@@ -172,6 +183,21 @@ const ThermocoupleTypeOptions: Array<SelectOption> = "BEJKNRST".split("").map(le
 	text: `Type ${letter}`,
 	value: letter
 }));
+
+const NumWires: Array<SelectOption> = [
+	{
+		text: "2",
+		value: 2
+	},
+	{
+		text: "3",
+		value: 3
+	},
+	{
+		text: "4",
+		value: 4
+	}
+];
 
 const MainsFrequencies: Array<SelectOption> = [
 	{
@@ -217,6 +243,7 @@ function addSensor() {
 	} else {
 		sensor.type = AnalogSensorType.thermistor;
 	}
+	sensor.name = "";
 	store.data.sensors.analog.push(sensor);
 	store.data.configTool.sensors.push(new ConfigTempSensor());
 }
@@ -289,7 +316,9 @@ function getSensorTypes(index: number) {
 			value: AnalogSensorType.drivers
 		});
 
-		if (store.data.boardDefinition.expansionBoards.has(ExpansionBoardType.DueX2) || store.data.boardDefinition.expansionBoards.has(ExpansionBoardType.DueX5)) {
+		if (store.data.boardDefinition.expansionBoards.has(ExpansionBoardType.DueX2) ||
+			store.data.boardDefinition.expansionBoards.has(ExpansionBoardType.DueX5))
+		{
 			builtInTypes.push({
 				text: "Smart Drivers (Duex)",
 				value: AnalogSensorType.driversDuex
@@ -324,6 +353,25 @@ function getSensorTypes(index: number) {
 			}
 		];
 
+		if (store.data.boardDefinition?.supportsBME280) {
+			result["BME280 Sensors"] = [
+				{
+					text: "BME280",
+					value: AnalogSensorType.bme280
+				},
+				{
+					text: "BME280 Pressure",
+					value: AnalogSensorType.bme280pressure,
+					disabled: !store.data.sensors.analog.some((sensor, idx) => (idx < index) && sensor?.type === AnalogSensorType.bme280)
+				},
+				{
+					text: "BME280 Humidity",
+					value: AnalogSensorType.bme280humidity,
+					disabled: !store.data.sensors.analog.some((sensor, idx) => (idx < index) && sensor?.type === AnalogSensorType.bme280)
+				}
+			];
+		}
+
 		result["SPI Daughter Boards"] = [
 			{
 				text: "K-Type Thermocouple (MAX31855)",
@@ -350,6 +398,9 @@ function getSensorPortFunctions(sensorType: AnalogSensorType) {
 		case AnalogSensorType.dht21:
 		case AnalogSensorType.dht22:
 		case AnalogSensorType.dhtHumidity:
+		case AnalogSensorType.bme280:
+		case AnalogSensorType.bme280pressure:
+		case AnalogSensorType.bme280humidity:
 		case AnalogSensorType.max31855:
 		case AnalogSensorType.max31856:
 		case AnalogSensorType.max31865:
@@ -428,15 +479,30 @@ function getPresetConfigSensorValue<K extends keyof ConfigTempSensor>(index: num
 	return null;
 }
 
-function getDhtSensorOptions(index: number) {
+function requiresBaseSensor(type: AnalogSensorType) {
+	return [AnalogSensorType.dhtHumidity, AnalogSensorType.bme280humidity, AnalogSensorType.bme280pressure].includes(type);
+}
+
+function getBaseSensorOptions(type: AnalogSensorType, index: number) {
 	const options = new Array<SelectOption>();
 	for (let i = 0; i < index; i++) {
 		const sensor = store.data.sensors.analog[i];
-		if (sensor !== null && (sensor.type == AnalogSensorType.dht21 || sensor.type === AnalogSensorType.dht22)) {
-			options.push({
-				text: sensor.name ? sensor.name : `Sensor ${i}`,
-				value: i
-			})
+		if (sensor !== null) {
+			if (type === AnalogSensorType.dhtHumidity) {
+				if (sensor.type == AnalogSensorType.dht21 || sensor.type === AnalogSensorType.dht22) {
+					options.push({
+						text: sensor.name ? sensor.name : `Sensor ${i}`,
+						value: i
+					});
+				}
+			} else if (type === AnalogSensorType.bme280humidity || type === AnalogSensorType.bme280pressure) {
+				if (sensor.type == AnalogSensorType.bme280) {
+					options.push({
+						text: sensor.name ? sensor.name : `Sensor ${i}`,
+						value: i
+					});
+				}
+			}
 		}
 	}
 	return options;

@@ -27,7 +27,7 @@ M950 <%- params({
 ; see Laser section for a preview of the laser configuration
 <%      } else { -%>
 M452 <%- params({
-    C: getPortParam(ConfigPortFunction.laser),
+    C: getPortString(ConfigPortFunction.laser),
     R: model.configTool.laser.maxIntensity,
     S: model.configTool.laser.sParamSticky
 }) %> ; configure laser
