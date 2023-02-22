@@ -1,0 +1,198 @@
+<%  // Get Z-probe values
+    const zProbe = model.sensors.probes.find(probe => probe !== null);
+    const diveHeight = zProbe ? zProbe.diveHeight : 5;
+    const travelSpeed = zProbe ? zProbe.travelSpeed : 6000;
+
+    // Get XY homing properties
+    let xEndstop = false, xHighEnd = false, xFastHomingSpeed = 600, xSlowHomingSpeed = 300;
+    let yEndstop = false, yHighEnd = false, yFastHomingSpeed = 600, ySlowHomingSpeed = 300;
+    let zEndstop = false, zHighEnd = false, zFastHomingSpeed = 600, zSlowHomingSpeed = 300;
+    for (let i = 0; i < model.move.axes.length; i++) {
+        const axis = model.move.axes[i];
+        if (model.sensors.endstops.length > i && model.sensors.endstops[i] !== null) {
+            let homingSpeeds = [10, 5];
+            if (axis.drivers.length > 0) {
+                const firstDriver = model.configTool.drivers.find(driver => driver.id.equals(axis.drivers[0]));
+                if (firstDriver) {
+                    homingSpeeds = firstDriver.homingSpeeds;
+                }
+            }
+
+            const endstop = model.sensors.endstops[i];
+            if (axis.letter === 'X') {
+                xEndstop = true;
+                xHighEnd = endstop.highEnd;
+                xFastHomingSpeed = homingSpeeds[0] * 60;
+                xSlowHomingSpeed = homingSpeeds[1] * 60;
+            } else if (axis.letter === 'Y') {
+                yEndstop = true;
+                yHighEnd = endstop.highEnd;
+                yFastHomingSpeed = homingSpeeds[0] * 60;
+                ySlowHomingSpeed = homingSpeeds[1] * 60;
+            } else if (axis.letter === 'Z' && endstop.type !== EndstopType.ZProbeAsEndstop) {
+                zEndstop = true;
+                zHighEnd = endstop.highEnd;
+                zFastHomingSpeed = homingSpeeds[0] * 60;
+                zSlowHomingSpeed = homingSpeeds[1] * 60;
+            }
+        }
+    } -%>
+G91 ; relative positioning
+G1 H2 Z<%- diveHeight %> F<%- travelSpeed %> ; lift Z relative to current position to avoid dragging nozzle over the bed
+<%  if (!xEndstop && !yEndstop) {
+        // manual XY homing
+-%>
+M291 S2 P"Please move the XY axes to the zero positions and press OK" R"Homing axes" X1 Y1 ; home XY manually
+G92 X0 Y0 ; set X=0 and Y=0
+<%  } else if (!yEndstop) {
+        // X homing option but none for Y
+-%>
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{move.axes[0].max-move.axes[0].min+5}" : "{-(move.axes[0].max-move.axes[0].min+5)}",
+    F: xFastHomingSpeed
+}) %> ; move in the <%- xHighEnd ? "+" : "-" %>X direction, stopping if the homing switch is triggered<%- (xFastHomingSpeed !== xSlowHomingSpeed) ? " (first pass)" : "" %>
+<%      if (xFastHomingSpeed !== xSlowHomingSpeed) {
+            // second pass
+-%>
+G1 <%- params({
+    H: 2,
+    X: xHighEnd ? -5 : 5,
+    F: travelSpeed
+}) %> ; move back 5mm
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? 10 : -10,
+    F: xSlowHomingSpeed
+}) %> ; move in the <%- xHighEnd ? "+" : "-" %>X direction, stopping if the homing switch is triggered (second pass)
+<%      } -%>
+M291 S2 P"Please move the Y axis to the zero position and press OK" R"Homing axes" Y1 ; home Y manually
+G92 Y0 ; set Y=0
+<%  } else if (!xEndstop) {
+        // Y homing option but none for X
+-%>
+M291 S2 P"Please move the X axis to the zero position and press OK" R"Homing axes" X1 ; home X manually
+G92 X0 ; set X=0
+G1 <%- params({
+    H: 1,
+    Y: yHighEnd ? "{move.axes[1].max-move.axes[1].min+5}" : "{-(move.axes[1].max-move.axes[1].min+5)}",
+    F: yFastHomingSpeed
+}) %> ; move in the <%- yHighEnd ? "+" : "-" %>Y direction, stopping if the homing switch is triggered<%- (yFastHomingSpeed !== ySlowHomingSpeed) ? " (first pass)" : "" %>
+<%      if (yFastHomingSpeed !== ySlowHomingSpeed) {
+            // second pass
+-%>
+G1 <%- params({
+    H: 2,
+    Y: yHighEnd ? -5 : 5,
+    F: travelSpeed
+}) %> ; move back 5mm
+G1 <%- params({
+    H: 1,
+    Y: yHighEnd ? 10 : -10,
+    F: ySlowHomingSpeed
+}) %> ; move in the <%- yHighEnd ? "+" : "-" %>Y direction, stopping if the homing switch is triggered (second pass)
+<%      }
+    } else {
+        // regular XY homing
+        if (xFastHomingSpeed === yFastHomingSpeed) {
+            // equal fast XY homing speeds
+-%>
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{move.axes[0].max-move.axes[0].min+5}" : "{-(move.axes[0].max-move.axes[0].min+5)}",
+    Y: yHighEnd ? "{move.axes[1].max-move.axes[1].min+5}" : "{-(move.axes[1].max-move.axes[1].min+5)}",
+    F: xFastHomingSpeed
+}) %> ; move in the <%- xHighEnd ? "+" : "-" %>X and <%- yHighEnd ? "+" : "-" %>Y directions, stopping if the homing switches are triggered<%- (xFastHomingSpeed !== xSlowHomingSpeed || yFastHomingSpeed !== ySlowHomingSpeed) ? " (first pass)" : "" %>
+<%      } else {
+            // different fast XY homing speeds
+-%>
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{move.axes[0].max-move.axes[0].min+5}" : "{-(move.axes[0].max-move.axes[0].min+5)}",
+    F: xFastHomingSpeed
+}) %> ; move in the <%- xHighEnd ? "+" : "-" %>X direction, stopping if the homing switch is triggered<%- (xFastHomingSpeed !== xSlowHomingSpeed) ? " (first pass)" : "" %>
+G1 <%- params({
+    H: 1,
+    Y: yHighEnd ? "{move.axes[1].max-move.axes[1].min+5}" : "{-(move.axes[1].max-move.axes[1].min+5)}",
+    F: yFastHomingSpeed
+}) %> ; move in the <%- yHighEnd ? "+" : "-" %>Y direction, stopping if the homing switch is triggered<%- (yFastHomingSpeed !== ySlowHomingSpeed) ? " (first pass)" : "" %>
+<%  }
+        if (xFastHomingSpeed !== xSlowHomingSpeed || yFastHomingSpeed !== ySlowHomingSpeed) {
+            // second pass
+-%>
+G1 <%- params({
+    H: 2,
+    X: (xFastHomingSpeed !== xSlowHomingSpeed) ? (xHighEnd ? -5 : 5) : undefined,
+    Y: (yFastHomingSpeed !== ySlowHomingSpeed) ? (yHighEnd ? -5 : 5) : undefined,
+    F: travelSpeed
+}) %> ; move back 5mm
+<%          if (xSlowHomingSpeed === ySlowHomingSpeed) {
+                // equal slow XY homing speeds
+-%>
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{move.axes[0].max-move.axes[0].min+5}" : "{-(move.axes[0].max-move.axes[0].min+5)}",
+    Y: yHighEnd ? "{move.axes[1].max-move.axes[1].min+5}" : "{-(move.axes[1].max-move.axes[1].min+5)}",
+    F: xSlowHomingSpeed
+}) %> ; move in the <%- xHighEnd ? "+" : "-" %>X and <%- yHighEnd ? "+" : "-" %>Y directions, stopping if the homing switches are triggered (second pass)
+<%          } else {
+                // different slow XY homing speeds
+-%>
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{move.axes[0].max-move.axes[0].min+5}" : "{-(move.axes[0].max-move.axes[0].min+5)}",
+    F: xSlowHomingSpeed
+}) %> ; move in the <%- xHighEnd ? "+" : "-" %>X direction, stopping if the homing switch is triggered (second pass)
+G1 <%- params({
+    H: 1,
+    Y: yHighEnd ? "{move.axes[1].max-move.axes[1].min+5}" : "{-(move.axes[1].max-move.axes[1].min+5)}",
+    F: ySlowHomingSpeed
+}) %> ; move in the <%- yHighEnd ? "+" : "-" %>Y direction, stopping if the homing switch is triggered (second pass)
+<%          }
+        }
+    } -%>
+G1 H2 Z<% -diveHeight %> F<%- travelSpeed %> ; lower Z again
+G90 ; absolute positioning
+<%  if (zEndstop) {
+        // use Z endstop for homing
+-%>
+G1 <%- params({
+    H: 1,
+    Z: zHighEnd ? "{move.axes[2].max-move.axes[2].min+5}" : "{-(move.axes[2].max-move.axes[2].min+5)}",
+    F: zFastHomingSpeed
+}) -%> ; move in the <%- zHighEnd ? "+" : "-" %>Z direction, stopping if the homing switch is triggered<%- (zFastHomingSpeed !== zSlowHomingSpeed) ? " (first pass)" : "" %>
+<%      if (zFastHomingSpeed !== zSlowHomingSpeed) {
+            // second pass
+-%>
+G1 <%- params({
+    H: 2,
+    Z: zHighEnd ? -diveHeight : diveHeight,
+    F: travelSpeed
+}) %> ; move back <%- diveHeight %>mm
+G1 <%- params({
+    H: 1,
+    Y: zHighEnd ? 10 : -10,
+    F: zSlowHomingSpeed
+}) %> ; move in the <%- yHighEnd ? "+" : "-" %>Z direction, stopping if the homing switch is triggered (second pass)
+<%      }
+    } else {
+        // use Z probe
+        let xCenter, yCenter;
+        if (model.move.compensation.probeGrid !== null && model.move.compensation.probeGrid.axes[0] === 'X' && model.move.compensation.probeGrid.axes[1] === 'Y') {
+            xCenter = model.move.compensation.probeGrid.mins[0] + (model.move.compensation.probeGrid.maxs[0] - model.move.compensation.probeGrid.mins[0]) / 2 - zProbe.offsets[0];
+            yCenter = model.move.compensation.probeGrid.mins[1] + (model.move.compensation.probeGrid.maxs[1] - model.move.compensation.probeGrid.mins[1]) / 2 - zProbe.offsets[1];
+            if (preview) { -%>
+; NOTE: The following XY position is determined from the probe grid defined in the next section
+<%          }
+        } else {
+            xCenter = model.move.axes[0].min + (model.move.axes[0].max - model.move.axes[0].min) / 2 - zProbe.offsets[0];
+            yCenter = model.move.axes[1].min + (model.move.axes[1].max - model.move.axes[1].min) / 2 - zProbe.offsets[1];
+            usingProbeGrid = false;
+        } -%>
+G1 <%- params({
+    X: xCenter,
+    Y: yCenter,
+    F: travelSpeed
+}) %> ; go to bed centre
+G30 ; probe the bed
+<%  } -%>

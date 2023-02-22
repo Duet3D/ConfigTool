@@ -60,9 +60,9 @@ M915 P<%- driver.id -%> S<%- driver.sgThreshold -%> ; set StallGuard threshold
         
         if (preview) { -%>
 
-; ... this is later generated in the axis and/or extruder section
+; NOTE: This is later generated in the Axes and/or Extruders section
 M906 <%- params(currents) -%> ; set motor driver currents
 <%      }
     } else if (preview) { -%>
-; no smart drivers mapped to axes or extruders
+; NOTE: No smart drivers mapped to axes or extruders
 <%  } -%>

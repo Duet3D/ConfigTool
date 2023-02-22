@@ -3,10 +3,13 @@
         if (probe !== null) {
             const probeConfig = {
                 P: probe.type,
-                C: getCombinedPortParam([ConfigPortFunction.probeIn, ConfigPortFunction.probeMod], probeIndex),
+                C: getCombinedPortString([ConfigPortFunction.probeIn, ConfigPortFunction.probeMod], probeIndex),
                 H: probe.diveHeight,
                 F: reduce(probe.speeds.map(speed => speed * 60)),
                 T: probe.travelSpeed,
+                R: (probe.recoveryTime !== 0) ? probe.recoveryTime : undefined,
+                A: (probe.maxProbeCount !== 1) ? probe.maxProbeCount : undefined,
+                S: (probe.tolerance !== 0.03) ? probe.tolerance : undefined
             };
 
             // Get probe details

@@ -1,6 +1,7 @@
 <template>
 	<scroll-item id="probes" :preview-templates="previewTemplates" :preview-options="previewOptions"
-				 url-title="Connecting a Z probe" url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_connecting">
+				 url-title="Connecting a Z probe"
+				 url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_connecting">
 		<template #title>
 			{{ store.data.configTool.capabilities.cnc ? "Probes" : "Z-Probes" }}
 		</template>
@@ -22,8 +23,7 @@
 				<div class="card-body">
 					<div class="row g-3">
 						<div class="col-3">
-							<probe-type-input :probe="probe" :index="index"
-											  :preset="getPresetProbeValue(index, 'type')" />
+							<probe-type-input :probe="probe" :index="index" :preset="getPresetProbeValue(index, 'type')" />
 						</div>
 						<template v-if="probe !== null">
 							<div class="col-3">
@@ -39,14 +39,18 @@
 											:function="ConfigPortFunction.probeServo" :index="index" />
 							</div>
 							<div class="col-2">
-								<number-input label="Dive Height" title="Dive height of the probe" unit="mm"
-											  :min="-10000" :max="10000" :step="0.01" v-model="probe.diveHeight"
+								<number-input label="Dive Height" title="Dive height of the probe" unit="mm" :min="-10000"
+											  :max="10000" :step="0.01" v-model="probe.diveHeight"
 											  :preset="getPresetProbeValue(index, 'diveHeight')" />
 							</div>
 							<div class="col-2">
-								<number-input label="Travel Speed"
-											  title="Defines how quickly to move between probe points" unit="mm/s"
-											  :min="0.1" :step="1" v-model="probe.travelSpeed"
+								<number-input label="Trigger Height" title="Z trigger height of the probe" unit="mm"
+											  :min="-10000" :max="10000" :step="0.01" v-model="probe.triggerHeight"
+											  :preset="getPresetProbeValue(index, 'triggerHeight')" />
+							</div>
+							<div class="col-2">
+								<number-input label="Travel Speed" title="Defines how quickly to move between probe points"
+											  unit="mm/s" :min="0.1" :step="1" :factor="1 / 60" v-model="probe.travelSpeed"
 											  :preset="getPresetProbeValue(index, 'travelSpeed')" />
 							</div>
 							<div class="col-4">
@@ -59,21 +63,31 @@
 											  unit="s" :min="0" :step="0.1" v-model="probe.recoveryTime" />
 							</div>
 							<div class="col-2">
+								<number-input label="X Offset" title="Offset of this probe in X direction" unit="mm"
+											  :preset="getPresetProbeValue(index, 'offsets', 0)"
+											  :model-value="probe.offsets[0]"
+											  @update:model-value="probe.offsets[0] = $event" />
+							</div>
+							<div class="col-2">
+								<number-input label="Y Offset" title="Offset of this probe in Y direction" unit="mm"
+											  :preset="getPresetProbeValue(index, 'offsets', 1)"
+											  :model-value="probe.offsets[1]"
+											  @update:model-value="probe.offsets[1] = $event" />
+							</div>
+							<div class="col-2">
 								<number-input label="Max Taps"
-											  title="Maximum number of probe attempts to attempt to reach the specified tolerance. A value of -1 disables this feature"
-											  :min="-1" :step="1" v-model="probe.maxProbeCount" />
+											  title="Maximum number of probe attempts to attempt to reach the specified tolerance. A value of 1 disables this feature"
+											  :min="1" :step="1" v-model="probe.maxProbeCount" />
 							</div>
-							<div v-if="probe.maxProbeCount > -1" class="col-2">
-								<number-input label="Tap Tolerance"
-											  title="Maximum allowed tolerance between probe attempts" unit="mm"
-											  :min="0" :step="0.001" v-model="probe.tolerance" />
+							<div class="col-2">
+								<number-input label="Tap Tolerance" title="Maximum allowed tolerance between probe attempts"
+											  :disabled="probe.maxProbeCount <= 1" unit="mm" :min="0" :step="0.001"
+											  v-model="probe.tolerance" />
 							</div>
-							<div class="col-4 d-flex align-items-end">
+							<div class="col-4 d-flex flex-column justify-content-end">
 								<check-input label="Turn off all heaters when probing"
 											 title="Turn off all heaters when probing to avoid potential interference"
 											 v-model="probe.disablesHeaters" />
-							</div>
-							<div class="col-4 d-flex align-items-end">
 								<check-input label="Deploy/retract probe"
 											 title="Run deployprobe/retractprobe macros when using this probe"
 											 :disabled="probe.type === ProbeType.blTouch"
@@ -119,8 +133,14 @@ function addProbe() {
 	store.data.sensors.probes.push(probe);
 }
 
-function getPresetProbeValue<K extends keyof Probe>(index: number, key: K) {
-	return (index < store.preset.sensors.probes.length && store.preset.sensors.probes[index] !== null) ? store.preset.sensors.probes[index]![key] : undefined;
+function getPresetProbeValue<K extends keyof Probe>(index: number, key: K, subIndex?: number) {
+	if (index < store.preset.sensors.probes.length && store.preset.sensors.probes[index] !== null) {
+		if (subIndex !== undefined) {
+			return (store.preset.sensors.probes[index]![key] as Array<any>)[subIndex];
+		}
+		return store.preset.sensors.probes[index]![key];
+	}
+	return undefined;
 }
 
 const previewTemplates = computed(() => {

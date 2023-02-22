@@ -1,0 +1,8 @@
+G91 ; use relative positioning
+G1 H1 X300 Y300 Z300 F2500 ; move all carriages up 300mm, stopping at the endstops
+G1 H2 X-5 Y-5 Z-5 ; move all towers down 5mm
+G1 H1 X8 Y8 Z8 F500 ; move towers slowly up 8mm, stopping at the endstops
+G1 H2 X-5 Y-5 Z-5 F10000 ; move carriages down 5mm
+G90 ; back to absolute positioning
+
+; rotary delta not supported yet, see https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_rotary_delta

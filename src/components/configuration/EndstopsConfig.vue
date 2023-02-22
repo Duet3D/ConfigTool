@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="endstops" title="Endstops"
+	<scroll-item id="endstops" title="Endstops" :preview-templates="previewTemplates" :preview-options="previewOptions"
 				 url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Sensors_endstops"
 				 url-title="Connecting Endstops">
 		<template #body>
@@ -65,7 +65,8 @@
 												  :preset="getPresetEndstopLocation(axisIndex)" />
 								</td>
 								<td>
-									<homing-speeds-input :speeds="configDriver.homingSpeeds"
+									<homing-speeds-input v-if="getEndstopType(axisIndex) !== null && (axis.letter !== 'Z' || getEndstopType(axisIndex) !== EndstopType.ZProbeAsEndstop)"
+														 :speeds="getHomingSpeeds(axis, configDriver)"
 														 :preset="getPresetHomingSpeeds(axisIndex)" />
 								</td>
 							</template>
@@ -87,6 +88,7 @@
 
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
+import { computed } from "vue";
 
 const EndstopLocationOptions: Array<SelectOption> = [
 	{
@@ -101,7 +103,7 @@ const EndstopLocationOptions: Array<SelectOption> = [
 </script>
 
 <script setup lang="ts">
-import { EndstopType, ProbeType, Axis, Endstop } from "@duet3d/objectmodel";
+import { Axis, Endstop, EndstopType, KinematicsName, ProbeType } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import HomingSpeedsInput from "@/components/inputs/HomingSpeedsInput.vue";
@@ -113,6 +115,45 @@ import type { ConfigDriver } from "@/store/model/ConfigDriver";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const store = useStore();
+
+// G-code preview
+const previewTemplates = computed(() => {
+	const templates = [
+		"config/endstops",
+		store.data.isDelta ? "homedelta" : "homeall"
+	];
+
+	for (let i = 0; i < store.data.move.axes.length; i++) {
+		if (store.data.sensors.endstops.length > i && store.data.sensors.endstops[i] !== null) {
+			const axis = store.data.move.axes[i], endstop = store.data.sensors.endstops[i]!;
+			if (!store.data.isDelta || !['X', 'Y', 'Z'].includes(axis.letter)) {
+				if (/[A-Z]/.test(axis.letter)) {
+					templates.push(`home${axis.letter.toLowerCase()}`);
+				} else {
+					templates.push(`home'${axis.letter}`);
+				}
+			}
+		}
+	}
+	return templates;
+});
+
+const previewOptions = computed(() => {
+	const options: Array<Record<string, any> | null> = [null, null];
+	for (let i = 0; i < store.data.move.axes.length; i++) {
+		if (store.data.sensors.endstops.length > i && store.data.sensors.endstops[i] !== null) {
+			const axis = store.data.move.axes[i], endstop = store.data.sensors.endstops[i]!;
+			if (!store.data.isDelta || !['X', 'Y', 'Z'].includes(axis.letter)) {
+				options.push({
+					axis,
+					axisIndex: i,
+					axisLetter: axis.letter
+				});
+			}
+		}
+	}
+	return options;
+});
 
 // Driver Enumeration
 function getConfigDrivers(axis: Axis) {
@@ -167,21 +208,27 @@ function getEndstopTypeOptions(axis: Axis): Array<SelectOption> {
 		}
 	];
 
-	// Currently only probe #0 can be selected for endstops
-	if (!axis.drivers.some(axisDriver => axisDriver.board) && store.data.sensors.probes.length !== 0 && store.data.sensors.probes[0] !== null) {
-		let canSelectProbe = (store.data.sensors.probes[0].type === ProbeType.none);
-		for (const port of store.data.configTool.ports) {
-			if (port.function === ConfigPortFunction.probeIn && port.equalsBoard(0)) {
-				canSelectProbe = true;
-				break;
+	// Probes on remote boards can be selected only if all the drivers are on the same board
+	for (let i = 0; i < store.data.sensors.probes.length; i++) {
+		const probe = store.data.sensors.probes[i];
+		if (probe !== null) {
+			let canSelectProbe = true;
+			if (probe.type !== ProbeType.none && !axis.drivers.some(axisDriver => axisDriver.board)) {
+				canSelectProbe = false;
+				for (const port of store.data.configTool.ports) {
+					if (port.function === ConfigPortFunction.probeIn && !axis.drivers.some(axisDriver => !port.equalsBoard(axisDriver.board))) {
+						canSelectProbe = true;
+						break;
+					}
+				}
 			}
-		}
-		
-		if (canSelectProbe) {
-			options.push(		{
-				text: "Probe #0",
-				value: EndstopType.ZProbeAsEndstop
-			});
+
+			if (canSelectProbe) {
+				options.push({
+					text: `Probe #${i}`,
+					value: EndstopType.ZProbeAsEndstop
+				});
+			}
 		}
 	}
 
@@ -222,6 +269,48 @@ function setEndstopLocation(axisIndex: number, highEnd: boolean): void {
 
 function getPresetEndstopLocation(axisIndex: number): boolean {
 	return (axisIndex < store.preset.sensors.endstops.length && store.preset.sensors.endstops[axisIndex] !== null) ? store.preset.sensors.endstops[axisIndex]!.highEnd : false;
+}
+
+function getHomingSpeeds(axis: Axis, configDriver: ConfigDriver): Array<number> {
+	function getAxisHomingSpeeds(axisLetter: string): Array<number> {
+		const axis = store.data.move.axes.find(item => item.letter === axisLetter);
+		if (axis && axis.drivers.length > 0) {
+			const firstAxisDriver = store.data.configTool.drivers.find(driver => driver.id.equals(axis.drivers[0]));
+			if (firstAxisDriver) {
+				return firstAxisDriver.homingSpeeds;
+			}
+		}
+		return configDriver.homingSpeeds;
+	}
+
+	switch (store.data.move.kinematics.name) {
+		case KinematicsName.coreXY:
+		case KinematicsName.markForged:
+			if (axis.letter === 'X' || axis.letter === 'Y') {
+				return getAxisHomingSpeeds('X');
+			}
+			break;
+		case KinematicsName.coreXYUV:
+			if (axis.letter === 'X' || axis.letter === 'Y') {
+				return getAxisHomingSpeeds('X');
+			}
+			if (axis.letter === 'U' || axis.letter === 'V') {
+				return getAxisHomingSpeeds('U');
+			}
+			break;
+		case KinematicsName.coreXZ:
+			if (axis.letter === 'X' || axis.letter === 'Z') {
+				return getAxisHomingSpeeds('X');
+			}
+			break;
+		case KinematicsName.delta:
+		case KinematicsName.rotaryDelta:
+			if (['X', 'Y', 'Z'].includes(axis.letter)) {
+				return getAxisHomingSpeeds('X');
+			}
+			break;
+	}
+	return configDriver.homingSpeeds;
 }
 
 function getPresetHomingSpeeds(axisIndex: number): Array<number> | undefined {

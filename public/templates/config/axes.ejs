@@ -3,8 +3,8 @@
     const jerk = {}, maxSpeed = {}, acceleration = {};
     for (const axis of model.move.axes) {
         mapping[axis.letter] = axis.drivers;
-        if (!['X', 'Y', 'Z'].includes(axis.letter) || model.isDelta) {
-            // Don't set axis min/max in Delta configs
+        if (!model.isDelta || !['X', 'Y', 'Z'].includes(axis.letter)) {
+            // Don't set XYZ min/max in Delta configs
             mins[axis.letter] = axis.min;
             maxs[axis.letter] = axis.max;
         }
@@ -37,15 +37,15 @@ M350 <%- params({ ...microsteppingInterpolated, I: 1}) %> ; configure microstepp
 <%  }
     if (Object.keys(currents).length > 0) {
         if (preview) { -%>
-; see smart drivers section for currents
+; NOTE: See Smart Drivers section for motor currents
 <%      } else { -%>
-M906 <%- params(currents) %> ; set motor driver currents
+M906 <%- params(currents) %> ; set axis driver currents
 <%      }
     } -%>
 M92 <%- params(stepsPerMm) %> ; configure steps per mm
 <%  if (Object.keys(mins).length > 0) { -%>
-M201 <%- params({ S: 1, ...mins }) %> ; set axis minima
-M201 <%- params({ S: 0, ...maxs }) %> ; set axis maxima
+M208 <%- params({ S: 1, ...mins }) %> ; set axis minima
+M208 <%- params({ S: 0, ...maxs }) %> ; set axis maxima
 <%  } -%>
 M566 <%- params(jerk) %> ; set maximum instantaneous speed changes (mm/min)
 M203 <%- params(maxSpeed) %> ; set maximum speeds (mm/min)

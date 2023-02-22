@@ -45,7 +45,8 @@ monaco.languages.setMonarchTokensProvider("gcode", {
 			[/T/, "keyword", "normalGcodeWithT"],
 
 			// parameter letters
-			[/[A-Z]/, "keyword"],
+			[/'?[A-Z]/, "keyword"],
+			[/'[a-z]/, "keyword"],
 
 			// expressions
 			[/{/, "operator", "@curlyBracket"],
@@ -84,10 +85,13 @@ monaco.languages.setMonarchTokensProvider("gcode", {
 		],
 		expression: [
 			// variables
-			[/(global\.|param\.|var\.)[a-zA-Z]+/, "variable.name"],
+			[/(global\.|param\.|var\.)[a-zA-Z]\w*/, "variable.name"],
+
+			// object model properties
+			[/(\w+\.(\w+\.?)*|\.\w+(\.\w+)*)/, "variable"],
 
 			// consts and functions
-			[/[a-z_$][\w$]*/, {
+			[/[a-z]\w*/, {
 				cases: {
 					"@consts": "constant",
 					"@functions": "keyword"

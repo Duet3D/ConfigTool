@@ -467,21 +467,21 @@ const disabled = computed(() => {
 			// Only enabled if a valid probe type is set
 			if (props.index < store.data.sensors.probes.length) {
 				const probe = store.data.sensors.probes[props.index];
-				return (probe === null || probe.type === ProbeType.none);
+				return (probe === null) || (probe.type === ProbeType.none);
 			}
 			break;
 		case ConfigPortFunction.probeMod:
 			// Only enabled for modulated probes and smart effectors
 			if (props.index < store.data.sensors.probes.length) {
 				const probe = store.data.sensors.probes[props.index];
-				return (probe === null || ![ProbeType.dumbModulated, ProbeType.alternateAnalog, ProbeType.digital, ProbeType.unfilteredDigital].includes(probe.type));
+				return (probe === null) || ![ProbeType.dumbModulated, ProbeType.alternateAnalog, ProbeType.digital, ProbeType.unfilteredDigital].includes(probe.type);
 			}
 			break;
 		case ConfigPortFunction.probeServo:
 			// Only enabled for BLTouch
 			if (props.index < store.data.sensors.probes.length) {
 				const probe = store.data.sensors.probes[props.index];
-				return (probe === null || probe.type !== ProbeType.blTouch);
+				return (probe === null) || (probe.type !== ProbeType.blTouch);
 			}
 			break;
 
@@ -500,6 +500,9 @@ const required = computed(() => {
 		return props.required;
 	}
 
+	if (props.function === ConfigPortFunction.probeMod) {
+		return (props.index < store.data.sensors.analog.length) && ![ProbeType.digital, ProbeType.unfilteredDigital].includes(store.data.sensors.probes[props.index]!.type);
+	}
 	return ![ConfigPortFunction.fanTacho, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards].includes(props.function);
 });
 </script>

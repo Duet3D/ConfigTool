@@ -1,2 +1,6 @@
+<%  if (model.move.idle.timeout > 0) { -%>
 M906 I<%- precise(model.move.idle.factor * 100) %> ; set motor current idle factor
 M84 S<%- model.move.idle.timeout %> ; set motor current idle timeout
+<%  } else if (preview) { -%>
+; NOTE: This section is not used in your configuration
+<%  } -%>

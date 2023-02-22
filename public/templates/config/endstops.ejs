@@ -1,0 +1,28 @@
+<%  for (let i = 0; i < model.move.axes.length; i++) {
+        const axis = model.move.axes[i], endstopConfig = {
+            [axis.letter]: 0
+        };
+
+        if (model.sensors.endstops.length > i && model.sensors.endstops[i] !== null) {
+            const endstop = model.sensors.endstops[i];
+            endstopConfig[axis.letter] = endstop.highEnd ? 2 : 1;
+
+            switch (endstop.type) {
+                case EndstopType.InputPin:
+                    endstopConfig.P = axis.drivers.map(axisDriver => getPortString(ConfigPortFunction.endstop, axisDriver.driver, undefined, axisDriver.board)).join('+');
+                    endstopConfig.S = 1;
+                    break;
+                case EndstopType.ZProbeAsEndstop:
+                    endstopConfig.S = 2;
+                    //endstopConfig.K = nnn;                // TODO add support for multiple probes
+                    break;
+                case EndstopType.motorStallAny:
+                    endstopConfig.S = 3;
+                    break;
+                case EndstopType.motorStallIndividual:
+                    endstopConfig.S = 4;
+                    break;
+            }
+        } -%>
+M574 <%- params(endstopConfig) %> ; configure <%- axis.letter %> axis endstop
+<%  } -%>

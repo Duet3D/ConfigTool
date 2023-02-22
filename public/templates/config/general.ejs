@@ -8,13 +8,13 @@ M911 <%- params({
 <%  }
     if (model.configTool.capabilities.cnc) {
         if (preview) { -%>
-; see Spindles section for a preview of the spindle configuration
+; NOTE: See Spindles section for a preview of the spindle configuration
 <%      } else {
             for (let i = 0; i < model.spindles.length; i++) {
                 const spindle = model.spindles[i];
                 if (spindle !== null) { -%>
 M950 <%- params({
-    C: getCombinedPortParam([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards], i),
+    C: getCombinedPortString([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards], i),
     Q: getPort(ConfigPortFunction.spindlePwm).frequency,
     L: [spindle.min, spindle.max]
 }) %> ; configure spindle #<%- i %>
@@ -24,7 +24,7 @@ M950 <%- params({
     }
     if (model.configTool.capabilities.laser) {
         if (preview) { -%>
-; see Laser section for a preview of the laser configuration
+; NOTE: See Laser section for a preview of the laser configuration
 <%      } else { -%>
 M452 <%- params({
     C: getPortString(ConfigPortFunction.laser),

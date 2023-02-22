@@ -1,0 +1,52 @@
+<%  const microstepping = [], microsteppingInterpolated = [], currents = [];
+    for (let i = 0; i < model.move.extruders.length; i++) {
+        const extruder = model.move.extruders[i];
+        if (extruder.microstepping.interpolated) {
+            microsteppingInterpolated.push(extruder.microstepping.value);
+            microstepping.push(-1);
+        } else {
+            microstepping.push(extruder.microstepping.value);
+            microsteppingInterpolated.push(-1);
+        }
+
+        const board = model.boards.find(board => board.canAddress === extruder.driver.board);
+        if (board) {
+            const boardDefinition = getExpansionBoardDefinition(board);
+            if (boardDefinition?.hasSmartDrivers) {
+                currents.push(extruder.current);
+            } else {
+                currents.push(0);
+            }
+        } else {
+            currents.push(0);
+        }
+    }
+
+    if (model.move.extruders.length > 0) { -%>
+M584 E<%- model.move.extruders.map(extruder => extruder.driver.toString()).join(':') %> ; set extruder mapping
+<%      if (microstepping.some(value => value !== -1)) { -%>
+M350 <%- params({
+    E: microstepping,
+    I: 0
+}) %> ; configure microstepping without interpolation
+<%      }
+        if (microsteppingInterpolated.some(value => value !== -1)) { -%>
+M350 <%- params({
+    E: microsteppingInterpolated,
+    I: 1
+}) %> ; configure microstepping with interpolation
+<%      }
+        if (currents.some(value => value > 0)) {
+            if (preview) { -%>
+; NOTE: See Smart Drivers section for motor currents
+<%          } else { -%>
+M906 E<%- currents.join(':') %> ; set extruder driver currents
+<%          }
+        } -%>
+M92 E<%- model.move.extruders.map(extruder => extruder.stepsPerMm).join(':') %> ; configure steps per mm
+M566 E<%- model.move.extruders.map(extruder => extruder.jerk * 60).join(':') %> ; set maximum instantaneous speed changes (mm/min)
+M203 E<%- model.move.extruders.map(extruder => extruder.speed * 60).join(':') %> ; set maximum speeds (mm/min)
+M201 E<%- model.move.extruders.map(extruder => extruder.acceleration).join(':') %> ; set accelerations (mm/s^2)
+<%  } else { -%>
+; no extruders configured
+<%  }  -%>

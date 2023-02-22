@@ -20,6 +20,7 @@ let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 onMounted(() => {
     editor = monaco.editor.create(editorRef.value!, {
+        automaticLayout: true,
         language: "gcode",
         matchBrackets: "never",
         minimap: {
@@ -29,10 +30,25 @@ onMounted(() => {
         overviewRulerLanes: 0,
         readOnly: true,
         renderLineHighlight: "none",
+        rulers: [255],
         scrollBeyondLastLine: false,
         value: props.value
     });
-    updateEditorHeight();
+
+    editor.onDidContentSizeChange(() => {
+        if (editor === null || editorRef.value === null) {
+            return;
+        }
+
+        const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
+        const lineCount = editor.getModel()?.getLineCount() || 1;
+        let height = editor.getTopForLineNumber(lineCount + 1) + lineHeight;
+        if (editor.getScrollWidth() > editorRef.value.clientWidth) {
+            height += editor.getOptions().get(monaco.editor.EditorOption.layoutInfo).horizontalScrollbarHeight;
+        }
+        editorRef.value.style.height = `${height}px`;
+        editor.layout();
+    })
 });
 
 onBeforeUnmount(() => {
@@ -46,24 +62,6 @@ onBeforeUnmount(() => {
 watch(() => props.value, () => {
     if (editor !== null) {
         editor.setValue(props.value);
-        updateEditorHeight();
     }
 });
-
-let prevHeight = 0;
-function updateEditorHeight() {
-    if (editor === null || editorRef.value === null) {
-        return;
-    }
-
-    const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
-    const lineCount = editor.getModel()?.getLineCount() || 1;
-    const height = editor.getTopForLineNumber(lineCount + 1) + lineHeight;
-
-    if (prevHeight !== height) {
-        prevHeight = height;
-        editorRef.value.style.height = `${height}px`;
-        editor.layout();
-    }
-}
 </script>

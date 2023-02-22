@@ -1,4 +1,4 @@
-import { AnalogSensorType, CoreKinematics, KinematicsName, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, DeltaKinematics, EndstopType, KinematicsName, NetworkInterfaceType, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
 import ejs from "ejs";
 
 import { useStore } from "@/store";
@@ -67,11 +67,18 @@ const renderOptions = {
         return Object.keys(params)
                 .filter(key => (params[key] !== undefined) && (!(params[key] instanceof Array) || params[key].length > 0))
                 .map(key => {
-                    const value = params[key]
+                    const value = params[key];
+                    if (/[a-z]/.test(key)) {
+                        key = "'" + key;
+                    }
                     if (value === null) {
                         return key;
                     }
                     if (typeof value === "string") {
+                        if (/^{.+}$/.test(value)) {
+                            // expression
+                            return key + value;
+                        }
                         return key + this.escape(value);
                     }
                     if (value instanceof Array) {
@@ -107,25 +114,34 @@ const renderOptions = {
     },
 
     // Ports
-    getPort(fn: ConfigPortFunction, index?: number, secondaryIndex?: number): ConfigPort | null {
+    getPort(fn: ConfigPortFunction, index?: number, secondaryIndex?: number, board?: number): ConfigPort | null {
         let secondaryCounter = 0;
         for (const port of store.data.configTool.ports) {
-            if (port.function === fn && ((index === undefined) || (index === port.index)) && ((secondaryIndex === undefined) || (secondaryIndex === secondaryCounter++))) {
+            if (port.function === fn && (
+                    (index === undefined || index === port.index) &&
+                    (secondaryIndex === undefined || secondaryIndex === secondaryCounter++) &&
+                    (board === undefined || board === port.canBoard)
+                ))
+            {
                 return port;
             }
         }
         return null;
     },
-    getPortString(fn: ConfigPortFunction, index?: number, secondaryIndex?: number): string {
-        const port = this.getPort(fn, index, secondaryIndex);
-        return (port != null) ? port.toString() : "nil";
+    getPortString(fn: ConfigPortFunction, index?: number, secondaryIndex?: number, board?: number): string {
+        const port = this.getPort(fn, index, secondaryIndex, board);
+        return (port !== null) ? port.toString() : "nil";
     },
-    getCombinedPortParam(fns: Array<ConfigPortFunction>, index?: number): string | undefined {
+    getCombinedPortString(fns: ConfigPortFunction | Array<ConfigPortFunction>, index?: number): string | undefined {
+        if (!(fns instanceof Array)) {
+            fns = [fns];
+        }
+
         const ports: Array<string> = [];
         for (const fn of fns) {
             let portFound = false;
             for (const port of store.data.configTool.ports) {
-                if (port.function === fn && ((index === undefined) || (index === port.index))) {
+                if (port.function === fn && (index === undefined || index === port.index)) {
                     if (ports.length === 0) {
                         ports.push(port.toString());
                     } else {
@@ -172,20 +188,41 @@ const renderOptions = {
     ExpansionBoards,
     getExpansionBoardDefinition,
 
-    // Kinematics
+    // Config
     ConfigDriverClosedLoopEncoderType,
     ConfigDriverMode,
     ConfigPortFunction,
+
+    // Kinematics
     CoreKinematics,
+    DeltaKinematics,
+    ScaraKinematics,
     isDefaultCoreKinematics,
     KinematicsName,
 
     // Other
     AnalogSensorType,
+    EndstopType,
     NetworkInterfaceType,
     ProbeType
 };
 Object.defineProperty(renderOptions, "mainboard", { get: () => store.data.boards.find(board => !board.canAddress) });
+
+/**
+ * Retrieve the template filename of a template
+ * @param template Template filename
+ * @returns Full template filename
+ */
+function getRenderFilename(template: string) {
+    if (template === "config" || template === "homeall") {
+        template = template + "/index";                 // config => config/index, homeall => homeall/index
+    } else if (/(\d+)$/.test(template)) {
+        template = template.replace(/(\d+)$/, "");      // deployprobeN => deployprobe, retractprobeN => retractprobe
+    } else if (/home'?[a-zA-Z]$/.test(template)) {
+        template = "homeaxis";                          // homex => homeaxis, home'a => homeaxis
+    }
+    return `${import.meta.env.BASE_URL}templates/${template}.ejs`;
+}
 
 /**
  * Render a file and obtain the result as a string
@@ -195,8 +232,7 @@ Object.defineProperty(renderOptions, "mainboard", { get: () => store.data.boards
  */
 export async function render(template: string, args: Record<string, any> = {}): Promise<string> {
     // Retrieve template
-    const fullFilename = `${import.meta.env.BASE_URL}templates/${template.replace(/(\d+)$/, "")}.ejs`;   // remove potential index at the end
-    const response = await fetch(fullFilename);
+    const fullFilename = getRenderFilename(template), response = await fetch(fullFilename);
     if (!response.ok) {
         throw new Error(`Failed to get ${fullFilename}: ${response.status} ${response.statusText}`);
     }

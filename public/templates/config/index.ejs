@@ -19,14 +19,16 @@ G4 S2
 ; Axes
 <%- await render("config/axes") -%>
 
-<%  if (model.configTool.capabilities.fff) { -%>
+<%  if (model.configTool.capabilities.fff && model.move.extruders.length > 0) { -%>
 ; Extruders
 <%-     await render("config/extruders") -%>
 
 <%  } -%>
+<%  if (model.sensors.probes.some(probe => probe !== null)) { -%>
 ; Probes
-<%- await render("config/probes") -%>
+<%-     await render("config/probes") -%>
 
+<%  } %>
 ; Sensors
 <%- await render("config/sensors") -%>
 
