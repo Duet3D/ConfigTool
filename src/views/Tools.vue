@@ -33,7 +33,7 @@ tr > td:last-child {
 						<th>Extruders</th>
 						<th v-show="mixingToolsConfigured">Mixing Ratio</th>
 						<th>Heaters</th>
-						<th>Fans</th>
+						<th>Print Cooling Fans</th>
 						<th>XYZ Offsets</th>
 					</tr>
 				</thead>
