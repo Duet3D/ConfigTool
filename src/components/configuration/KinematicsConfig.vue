@@ -254,7 +254,7 @@
 
 <script setup lang="ts">
 import {
-	Axis, AxisLetter, KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics, EndstopType
+	Axis, AxisLetter, KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics, EndstopType, initObject
 } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
@@ -346,6 +346,38 @@ function setKinematics(value: KinematicsName) {
 			forwardMatrix: DefaultForwardMatrix[value as CoreKinematicsTypes],
 			inverseMatrix: DefaultInverseMatrix[value as CoreKinematicsTypes]
 		});
+
+		// Ensure U axis for CoreXYU and CoreXYUV
+		if ([KinematicsName.coreXYU, KinematicsName.coreXYUV].includes(value) && (store.data.move.axes.length < 4 || store.data.move.axes[3].letter !== AxisLetter.U)) {
+			if (store.data.move.axes.length < 4) {
+				store.data.move.axes.push(initObject(Axis, {
+					letter: AxisLetter.U
+				}));
+			} else {
+				store.data.move.axes[3].letter = AxisLetter.U;
+				for (let i = 4; i < store.data.move.axes.length; i++) {
+					if (store.data.move.axes[i].letter === AxisLetter.U) {
+						store.data.move.axes[i].letter = AxisLetter.none;
+					}
+				}
+			}
+		}
+
+		// Ensure V axis for CoreXYUV
+		if (value === KinematicsName.coreXYUV && (store.data.move.axes.length < 5 || store.data.move.axes[3].letter !== AxisLetter.V)) {
+			if (store.data.move.axes.length < 5) {
+				store.data.move.axes.push(initObject(Axis, {
+					letter: AxisLetter.V
+				}));
+			} else {
+				store.data.move.axes[4].letter = AxisLetter.V;
+				for (let i = 5; i < store.data.move.axes.length; i++) {
+					if (store.data.move.axes[i].letter === AxisLetter.V) {
+						store.data.move.axes[i].letter = AxisLetter.none;
+					}
+				}
+			}
+		}
 	}
 
 	// Update defaults

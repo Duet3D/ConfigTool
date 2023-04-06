@@ -14,7 +14,7 @@
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.8.3",
     "ejs": "^3.1.8",
-    "monaco-editor": "^0.35.0",
+    "monaco-editor": "^0.37.0",
     "pinia": "^2.0.14",
     "vue": "^3.2.36",
     "vue-router": "^4.0.15"

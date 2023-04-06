@@ -163,7 +163,11 @@ function addAxis() {
 }
 
 // Axis letter
-const isPersistentAxis = (axis: Axis) => [AxisLetter.X, AxisLetter.Y, AxisLetter.Z].includes(axis.letter);
+function isPersistentAxis(axis: Axis) {
+	return [AxisLetter.X, AxisLetter.Y, AxisLetter.Z].includes(axis.letter) ||
+		(axis.letter === AxisLetter.U && [KinematicsName.coreXYU, KinematicsName.coreXYUV].includes(store.data.move.kinematics.name)) ||
+		(axis.letter === AxisLetter.V && store.data.move.kinematics.name === KinematicsName.coreXYUV);
+}
 function getAxisLetterOptions(axis: Axis) {
 	const options: Array<SelectOption> = [];
 	for (const axisLetter of Object.values(AxisLetter)) {

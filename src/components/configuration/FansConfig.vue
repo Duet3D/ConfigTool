@@ -60,7 +60,7 @@
 							</div>
 							<div class="col-2">
 								<sensor-list label="Monitored Sensors" :board="getFanBoard(index)"
-											 :sensors="fan.thermostatic.heaters"
+											 :sensors="fan.thermostatic.sensors"
 											 @sensorAdded="onFanSensorAdded(fan.thermostatic)"
 											 @sensorRemoved="onFanSensorRemoved(fan.thermostatic)" />
 							</div>
@@ -74,7 +74,7 @@
 												  button-title="Control fan within a specified temperature range from 0-100%"
 												  first-title="Lower temperature threshold"
 												  second-title="Upper temperature threshold"
-												  :disabled="fan.thermostatic.heaters.length === 0" :min="-273"
+												  :disabled="fan.thermostatic.sensors.length === 0" :min="-273"
 												  :max="1999" :step="0.1" unit="°C" is-range>
 									<template #button>
 										<i class="bi bi-sliders"></i>
@@ -186,7 +186,7 @@ function onFanSensorAdded(ft: FanThermostaticControl) {
 }
 
 function onFanSensorRemoved(ft: FanThermostaticControl) {
-	if (ft.heaters.length === 0) {
+	if (ft.sensors.length === 0) {
 		ft.lowTemperature = ft.highTemperature = null;
 	}
 }

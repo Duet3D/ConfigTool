@@ -103,7 +103,7 @@ const EndstopLocationOptions: Array<SelectOption> = [
 </script>
 
 <script setup lang="ts">
-import { Axis, Endstop, EndstopType, KinematicsName, ProbeType } from "@duet3d/objectmodel";
+import { Axis, AxisLetter, Endstop, EndstopType, KinematicsName, ProbeType } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import HomingSpeedsInput from "@/components/inputs/HomingSpeedsInput.vue";
@@ -125,12 +125,12 @@ const previewTemplates = computed(() => {
 
 	for (let i = 0; i < store.data.move.axes.length; i++) {
 		if (store.data.sensors.endstops.length > i && store.data.sensors.endstops[i] !== null) {
-			const axis = store.data.move.axes[i], endstop = store.data.sensors.endstops[i]!;
-			if (!store.data.isDelta || !['X', 'Y', 'Z'].includes(axis.letter)) {
-				if (/[A-Z]/.test(axis.letter)) {
-					templates.push(`home${axis.letter.toLowerCase()}`);
-				} else {
+			const axis = store.data.move.axes[i];
+			if (store.data.canHomeIndividualAxis(axis.letter)) {
+				if (/[a-z]/.test(axis.letter)) {
 					templates.push(`home'${axis.letter}`);
+				} else {
+					templates.push(`home${axis.letter.toLowerCase()}`);
 				}
 			}
 		}
@@ -142,8 +142,8 @@ const previewOptions = computed(() => {
 	const options: Array<Record<string, any> | null> = [null, null];
 	for (let i = 0; i < store.data.move.axes.length; i++) {
 		if (store.data.sensors.endstops.length > i && store.data.sensors.endstops[i] !== null) {
-			const axis = store.data.move.axes[i], endstop = store.data.sensors.endstops[i]!;
-			if (!store.data.isDelta || !['X', 'Y', 'Z'].includes(axis.letter)) {
+			const axis = store.data.move.axes[i];
+			if (store.data.canHomeIndividualAxis(axis.letter)) {
 				options.push({
 					axis,
 					axisIndex: i,

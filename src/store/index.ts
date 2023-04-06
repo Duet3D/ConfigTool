@@ -53,9 +53,9 @@ const defaultTemplate = initObject(ConfigModel, {
 		},
 		{
 			thermostatic: initObject(FanThermostaticControl, {
-				heaters: [1],				// sensors, actually
 				lowTemperature: 45,
-				highTemperature: 45
+				highTemperature: 45,
+				sensors: [1]
 			})
 		}
 	]),

@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter } from "@duet3d/objectmodel";
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
@@ -39,6 +39,52 @@ export default class ConfigModel extends ObjectModel {
 	 */
 	get boardDefinition(): BoardDescriptor | null {
 		return getBoardDefinition(this);
+	}
+
+	/** 
+	 * Check if the given axis can be homed individually
+	 * @param letter Axis to check
+	 * @returns Whether the axis can be homed individually
+	 */
+	canHomeIndividualAxis(letter: AxisLetter) {
+		let reservedAxes: Array<AxisLetter> = [];
+		switch (this.move.kinematics.name) {
+			case KinematicsName.cartesian:
+			case KinematicsName.scara:
+			case KinematicsName.fiveBarScara:
+			case KinematicsName.polar:
+			case KinematicsName.unknown:
+				// Cartesian and SCARA setups can home each axis individually
+				break;
+			case KinematicsName.coreXY:
+			case KinematicsName.markForged:
+				// CoreXY requires XY to be homed at once
+				reservedAxes = [AxisLetter.X, AxisLetter.Y];
+				break;
+			case KinematicsName.coreXYU:
+				// CoreXYU requires XYU to be homed at once
+				reservedAxes = [AxisLetter.X, AxisLetter.Y, AxisLetter.U];
+				break;
+			case KinematicsName.coreXYUV:
+				// CoreXYUV requires XYUV to be homed at once
+				reservedAxes = [AxisLetter.X, AxisLetter.Y, AxisLetter.U, AxisLetter.V];
+				break;
+			case KinematicsName.coreXZ:
+				// CoreXZ requires XZ to be homed at once
+				reservedAxes = [AxisLetter.X, AxisLetter.Z];
+				break;
+			case KinematicsName.delta:
+			case KinematicsName.rotaryDelta:
+			case KinematicsName.hangprinter:
+				// Delta setups require XYZ to be homed at once. Hangprinters do not have homing files for XYZ
+				// FIXME This should also check if a parallel delta axis is configured
+				reservedAxes = [AxisLetter.X, AxisLetter.Y, AxisLetter.Z];
+				break;
+			default:
+				const _exhausiveCheck: never = this.move.kinematics.name;
+				break;
+		}
+		return !reservedAxes.includes(letter);
 	}
 
 	/**
