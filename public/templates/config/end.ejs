@@ -1,7 +1,17 @@
-<%  if (model.configTool.configOverride) { -%>
+<%  if (model.configTool.configOverride || (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) || model.configTool.customSettings.trim() !== "") {
+        if (model.configTool.configOverride) { -%>
 M501 ; load saved parameters from non-volatile memory
-<%  }
+<%      }
 
-    if (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) { -%>
+        if (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) { -%>
 T<%- model.tools.findIndex(tool => tool !== null) %> ; select first tool
+<%      }
+    
+        if (!preview && model.configTool.customSettings.trim() !== "") { -%>
+
+; Custom settings
+<%- model.configTool.customSettings %> 
+<%      }
+    } else if (preview) { -%>
+; No content for this section
 <%  } -%>

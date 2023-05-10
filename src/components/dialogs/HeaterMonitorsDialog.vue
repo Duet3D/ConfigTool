@@ -4,9 +4,10 @@
 		<template v-if="props.monitors">
 			<table class="table table-striped mt-1">
 				<colgroup>
+					<col style="width: 22%;">
 					<col style="width: 30%;">
-					<col style="width: 40%;">
-					<col style="width: 30%;">
+					<col style="width: 20%;">
+					<col style="width: 28%;">
 					<col style="width: auto;">
 				</colgroup>
 				<thead>
@@ -18,6 +19,9 @@
 					</th>
 					<th>
 						Limit
+					</th>
+					<th>
+						Sensor
 					</th>
 					<th>
 					</th>
@@ -40,6 +44,12 @@
 										  :disabled="monitor.condition === HeaterMonitorCondition.disabled"
 										  v-model="monitor.limit as number" :preset="getPreset(index, 'limit')" unit="°C"
 										  :min="-273" :max="1999" :step="0.1" />
+						</td>
+						<td>
+							<select-input title="Sensor to monitor"
+										  :disabled="monitor.condition === HeaterMonitorCondition.disabled"
+										  v-model="monitor.sensor" :options="sensors"
+										  :preset="getPreset(index, 'sensor')" />
 						</td>
 						<td>
 							<button type="button" class="btn btn-sm btn-danger mt-1"
@@ -68,6 +78,7 @@
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue"
 import { HeaterMonitorAction, HeaterMonitorCondition } from "@duet3d/objectmodel"
+import { SelectionDirection } from "monaco-editor";
 
 const ConditionOptions: Array<SelectOption> = [
 	{
@@ -144,6 +155,7 @@ function addMonitor() {
 		monitor.condition = HeaterMonitorCondition.tooHigh;
 		monitor.action = HeaterMonitorAction.generateFault;
 		monitor.limit = 285;
+		monitor.sensor = (props.heaterIndex < store.data.heat.heaters.length && store.data.heat.heaters[props.heaterIndex] !== null) ? store.data.heat.heaters[props.heaterIndex]!.sensor : -1;
 	}
 	props.monitors?.push(monitor);
 }
@@ -152,4 +164,18 @@ function getPreset<K extends keyof HeaterMonitor>(index: number, key: K) {
 	return (props.heaterIndex < store.preset.heat.heaters.length) && (store.preset.heat.heaters[props.heaterIndex] !== null) &&
 		(index < store.preset.heat.heaters[props.heaterIndex]!.monitors.length) ? store.preset.heat.heaters[props.heaterIndex]!.monitors[index][key] : null;
 }
+
+const sensors = computed(() => {
+	const result: Array<SelectOption> = [];
+	for (let i = 0; i < store.data.sensors.analog.length; i++) {
+		const sensor = store.data.sensors.analog[i];
+		if (sensor !== null) {
+			result.push({
+				text: sensor.name ? `${sensor.name} (Sensor #${i})` : `Sensor #${i}`,
+				value: i
+			});
+		}
+	}
+	return result;
+});
 </script>

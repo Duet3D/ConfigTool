@@ -8,7 +8,8 @@ export default defineConfig({
 	base: "/next/",
 	build: {
 		commonjsOptions: { include: [] },
-		target: "ES2020"
+		target: "ES2020",
+		chunkSizeWarningLimit: 3145728	// 3MiB
 	},
 	optimizeDeps: {
 		disabled: false,

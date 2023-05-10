@@ -37,11 +37,12 @@ import {
 	Sensors,
 	Tool
 } from "@duet3d/objectmodel";
-import { defineStore } from "pinia";
+import { defineStore, type StoreDefinition } from "pinia";
 
 import ConfigModel from "@/store/model";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { Boards, BoardType } from "@/store/Boards";
+import { watch } from "vue";
 
 const defaultTemplate = initObject(ConfigModel, {
 	boards: initCollection(Board, [
@@ -73,7 +74,8 @@ const defaultTemplate = initObject(ConfigModel, {
 					{
 						action: HeaterMonitorAction.generateFault,
 						condition: HeaterMonitorCondition.tooHigh,
-						limit: 140
+						limit: 140,
+						sensor: 0
 					}
 				]),
 				sensor: 0
@@ -84,7 +86,8 @@ const defaultTemplate = initObject(ConfigModel, {
 					{
 						action: HeaterMonitorAction.generateFault,
 						condition: HeaterMonitorCondition.tooHigh,
-						limit: 285
+						limit: 285,
+						sensor: 1
 					}
 				]),
 				sensor: 1
@@ -253,5 +256,5 @@ export const useStore = defineStore({
 			this.data = newModel;
 			this.dataModified = false;
 		}
-    }
+	}
 });

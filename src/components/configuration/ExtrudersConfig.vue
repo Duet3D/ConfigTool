@@ -1,8 +1,5 @@
 <template>
 	<scroll-item id="extruders" title="Extruders" :preview-templates="['config/extruders']">
-		<template #title>
-			Extruders
-		</template>
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddExtruder" @click.prevent="addExtruder">
 				<i class="bi-plus-circle"></i>

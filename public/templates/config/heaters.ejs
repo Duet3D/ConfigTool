@@ -4,23 +4,69 @@
 M950 <%- params({
     H: i,
     C: getPortString(ConfigPortFunction.heater, i),     // in case it is mapped to multiple ports...
-    Q: (heaterPort.frequency != 250) ? heaterPort.frequency : undefined
+    Q: (heaterPort.frequency != 250) ? heaterPort.frequency : undefined,
+    T: heater.sensor
 }) %> ; create heater #<%- i %>
+<%          for (let k = 0; k < heater.monitors.length; k++) {
+                if (heater.monitors[k].action !== null) {
+                    let condition = 0;
+                    switch (heater.monitors[k].condition) {
+                        case HeaterMonitorCondition.disabled:
+                            condition = -1;
+                            break;
+                        case HeaterMonitorCondition.tooHigh:
+                            condition = 0;
+                            break;
+                        case HeaterMonitorCondition.tooLow:
+                            condition = 1;
+                            break;
+                    } -%>
+M143 <%- params({
+    H: i,
+    P: k,
+    T: heater.monitors[k].sensor,
+    C: condition,
+    S: heater.monitors[k].limit,
+    A: heater.monitors[k].action,
+}) %> ; configure heater monitor #<%- k %> for heater #<%- i %>
+<%              }
+            } -%>
 M307 <%- params({
     H: i,
     R: heater.model.heatingRate,
     D: heater.model.deadTime,
     E: heater.model.coolingExp,
-    K: heater.model.coolingRate,     // TODO also add fanCoolingRate if present [via reduce]
-    B: heater.model.pid.used ? 1 : 0,
+    K: reduce([heater.model.coolingRate, heater.model.fanCoolingRate]),
+    B: heater.model.pid.used ? 0 : 1,
     I: heater.model.inverted ? 1 : undefined,
     S: (heater.model.maxPwm !== 1) ? heater.model.maxPwm : undefined,
-    V: (heater.model.standardVoltage > 0) : heater.model.standardVoltage : undefined
+    V: (heater.model.standardVoltage > 0) ? heater.model.standardVoltage : undefined
 }) %> ; configure model of heater #<%- i %>
 <%          if (heater.model.pid.overridden) { -%>
-foo
+M301 <%- params({
+    H: i,
+    P: heater.model.pid.p,
+    I: heater.model.pid.i,
+    D: heater.model.pid.d
+}) %> ; apply custom PID parameters for heater #<%- i %>
+<%          }
+        }
+    }
+    if (model.heat.bedHeaters.some(bedHeater => bedHeater >= 0)) { -%>
 
-<%-             // TODO configure PID as well
-            }
+; Heated beds
+<%      for (let i = 0; i < model.heat.bedHeaters.length; i++) {
+            if (model.heat.bedHeaters[i] >= 0) { -%>
+M140 P<%- i %> H<%- model.heat.bedHeaters[i] %> ; configure heated bed #<%- i %>
+<%          }
+        }
+    }
+    if (model.heat.chamberHeaters.some(chamberHeater => chamberHeater >= 0)) { -%>
+
+; Heated chambers
+<%      for (let i = 0; i < model.heat.chamberHeaters.length; i++) {
+            if (model.heat.chamberHeaters[i] >= 0) { -%>
+M141 P<%- i %> H<%- model.heat.chamberHeaters[i] %> ; configure heated chamber #<%- i %>
+<%          }
         }
     } -%>

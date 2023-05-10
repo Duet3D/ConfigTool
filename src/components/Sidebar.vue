@@ -84,7 +84,7 @@ aside {
 				<div class="collapse show" id="start-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li><RouterLink to="/" active-class="active" class="link-dark rounded">Introduction</RouterLink></li>
-						<li><RouterLink to="/Templates" active-class="active" class="link-dark rounded">Templates</RouterLink></li>
+						<!--<li><RouterLink to="/Templates" active-class="active" class="link-dark rounded">Templates</RouterLink></li>-->
 					</ul>
 				</div>
 			</li>
@@ -95,6 +95,8 @@ aside {
 				<div class="collapse show" id="home-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li><RouterLink :to="{ name: 'configuration' }" class="link-dark rounded">General</RouterLink></li>
+						<li><RouterLink to="/Configuration#accessories" class="link-dark rounded">Accessories</RouterLink></li>
+						<li v-if="store.data.network.interfaces.length > 0"><RouterLink to="/Configuration#network" class="link-dark rounded">Network</RouterLink></li>
 						<li><RouterLink :to="{ name: 'configuration', hash: '#expansion' }" class="link-dark rounded">Expansion</RouterLink></li>
 						<li><RouterLink :to="{ name: 'configuration', hash: '#kinematics' }" class="link-dark rounded">Kinematics</RouterLink></li>
 						<li><RouterLink to="/Configuration#drivers" class="link-dark rounded">Drivers</RouterLink></li>
@@ -109,8 +111,6 @@ aside {
 						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration#lasers" class="link-dark rounded">Lasers</RouterLink></li>
 						<li><RouterLink to="/Configuration#fans" class="link-dark rounded">Fans</RouterLink></li>
 						<li><RouterLink to="/Configuration#tools" class="link-dark rounded">Tools</RouterLink></li>
-						<li v-if="store.data.network.interfaces.length > 0"><RouterLink to="/Configuration#network" class="link-dark rounded">Network</RouterLink></li>
-						<li><RouterLink to="/Configuration#accessories" class="link-dark rounded">Accessories</RouterLink></li>
 						<li><RouterLink to="/Configuration#miscellaneous" class="link-dark rounded">Miscellaneous</RouterLink></li>
 					</ul>
 				</div>
@@ -122,7 +122,6 @@ aside {
 				<div class="collapse show" id="finish-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li><RouterLink to="/Summary" class="link-dark rounded" active-class="active">Summary</RouterLink></li>
-						<li><RouterLink to="/Finish" class="link-dark rounded" active-class="active">Finish</RouterLink></li>
 					</ul>
 				</div>
 			</li>

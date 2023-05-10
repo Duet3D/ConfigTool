@@ -1,0 +1,20 @@
+<%  for (let i = 0; i < model.fans.length; i++) {
+        const fan = model.fans[i], fanPort = getPort(ConfigPortFunction.fan, i);
+        if (fan !== null && fanPort !== null) { -%>
+M950 <%- params({
+    F: i,
+    C: getCombinedPortString([ConfigPortFunction.fan, ConfigPortFunction.fanTacho], i),
+    Q: (fanPort.frequency != 250) ? fanPort.frequency : undefined
+}) %> ; create fan #<%- i %>
+M106 <%- params({
+    P: i,
+    C: fan.name ? fan.name : undefined,
+    S: fan.requestedValue,
+    L: fan.thermostatic.sensors.length ? undefined : fan.min,
+    X: fan.thermostatic.sensors.length ? undefined : fan.max,
+    B: fan.blip,
+    H: fan.thermostatic.sensors.length ? fan.thermostatic.sensors : undefined,
+    T: fan.thermostatic.sensors.length ? reduce([fan.thermostatic.lowTemperature, fan.thermostatic.highTemperature]) : undefined
+}) %> ; configure fan #<%- i %>
+<%      }
+    } -%>

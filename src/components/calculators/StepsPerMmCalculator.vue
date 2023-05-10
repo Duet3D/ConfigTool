@@ -411,6 +411,7 @@ const extruder = reactive({
 
 <script setup lang="ts">
 import { Axis, AxisLetter, DeltaKinematics, Extruder } from "@duet3d/objectmodel";
+import type { StoreState } from "pinia";
 
 import BaseCalculator from "./BaseCalculator.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue"
@@ -419,8 +420,8 @@ import RatioInput from "@/components/inputs/RatioInput.vue"
 import { useStore } from "@/store";
 
 const props = defineProps<{
-	axis?: Axis
-	extruder?: Extruder,
+	axis?: StoreState<Axis>
+	extruder?: StoreState<Extruder>,
 	index: number
 }>();
 

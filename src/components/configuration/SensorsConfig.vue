@@ -1,8 +1,5 @@
 <template>
-	<scroll-item id="sensors" :preview-templates="['config/sensors']">
-		<template #title>
-			Temperature Sensors
-		</template>
+	<scroll-item id="sensors" title="Temperature Sensors" :preview-templates="['config/sensors']">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddSensor" @click.prevent="addSensor">
 				<i class="bi-plus-circle"></i>
@@ -491,14 +488,14 @@ function getBaseSensorOptions(type: AnalogSensorType, index: number) {
 			if (type === AnalogSensorType.dhtHumidity) {
 				if (sensor.type == AnalogSensorType.dht21 || sensor.type === AnalogSensorType.dht22) {
 					options.push({
-						text: sensor.name ? sensor.name : `Sensor ${i}`,
+						text: sensor.name ? sensor.name : `Sensor #${i}`,
 						value: i
 					});
 				}
 			} else if (type === AnalogSensorType.bme280humidity || type === AnalogSensorType.bme280pressure) {
 				if (sensor.type == AnalogSensorType.bme280) {
 					options.push({
-						text: sensor.name ? sensor.name : `Sensor ${i}`,
+						text: sensor.name ? sensor.name : `Sensor #${i}`,
 						value: i
 					});
 				}

@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="network" title="Network" url-title="Network Configuration"
+	<scroll-item id="network" title="Network" url-title="Network Configuration" :preview-templates="['config/network', 'runonce']"
 				 url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Networking">
 		<div class="row">
 			<!-- Ethernet -->
@@ -37,8 +37,8 @@
 							</div>
 							<div class="col">
 								<ip-input label="DNS Server" title="IPv4 DNS server address"
-										  :disabled="!store.data.state.dsfVersion"
-										  :model-value="store.data.state.dsfVersion ? (lanInterface.dnsServer ?? '') : ''"
+										  :disabled="store.data.sbc === null"
+										  :model-value="store.data.sbc ? (lanInterface.dnsServer ?? '') : ''"
 										  @update:model-value="lanInterface!.dnsServer = $event ? $event : null"
 										  :preset="presetLanInterface?.dnsServer" :required="false" />
 							</div>
@@ -85,8 +85,8 @@
 							</div>
 							<div class="col">
 								<ip-input label="DNS Server" title="IPv4 DNS server address"
-										  :disabled="!store.data.state.dsfVersion"
-										  :model-value="store.data.state.dsfVersion ? (wifiInterface.dnsServer ?? '') : ''"
+										  :disabled="store.data.sbc === null"
+										  :model-value="store.data.sbc ? (wifiInterface.dnsServer ?? '') : ''"
 										  @update:model-value="wifiInterface!.dnsServer = $event ? $event : null"
 										  :preset="presetWifiInterface?.dnsServer" :required="false" />
 							</div>
@@ -106,7 +106,7 @@
 							 :model-value="isProtocolEnabled(NetworkProtocol.HTTP)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.HTTP, $event)"
 							 :preset="isPresetProtocolEnabled(NetworkProtocol.HTTP)" />
-				<check-input v-if="!!store.data.state.dsfVersion" label="Enable HTTPS"
+				<check-input v-if="store.data.sbc !== null" label="Enable HTTPS"
 							 title="Enable HTTPS access using Duet Web Control via self-signed certificate"
 							 :model-value="isProtocolEnabled(NetworkProtocol.HTTPS)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.HTTPS, $event)"
@@ -117,7 +117,7 @@
 							 :model-value="isProtocolEnabled(NetworkProtocol.FTP)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.FTP, $event)"
 							 :preset="isPresetProtocolEnabled(NetworkProtocol.FTP)" />
-				<check-input v-if="!!store.data.state.dsfVersion" label="Enable SFTP" title="Enable SFTP access"
+				<check-input v-if="store.data.sbc !== null" label="Enable SFTP" title="Enable SFTP access"
 							 :model-value="isProtocolEnabled(NetworkProtocol.SFTP)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.SFTP, $event)"
 							 :preset="isPresetProtocolEnabled(NetworkProtocol.SFTP)" />
@@ -127,7 +127,7 @@
 							 :model-value="isProtocolEnabled(NetworkProtocol.Telnet)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.Telnet, $event)"
 							 :preset="isPresetProtocolEnabled(NetworkProtocol.Telnet)" />
-				<check-input v-if="!!store.data.state.dsfVersion" label="Enable SSH" title="Enable SSH access"
+				<check-input v-if="store.data.sbc !== null" label="Enable SSH" title="Enable SSH access"
 							 :model-value="isProtocolEnabled(NetworkProtocol.SSH)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.SSH, $event)"
 							 :preset="isPresetProtocolEnabled(NetworkProtocol.SSH)" />

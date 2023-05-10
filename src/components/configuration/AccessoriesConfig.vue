@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="accessories" title="Accessories">
+	<scroll-item id="accessories" title="Accessories" :preview-templates="['config/accessories']" url-title="Duet3D Accessories" url="https://docs.duet3d.com/en/Duet3D_hardware/Accessories">
 		<div class="row">
 			<!-- Direct Display -->
 			<div class="col-auto">
@@ -18,7 +18,7 @@
 									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.typeName : null" />
 					</div>
 					<div class="col-3">
-						<select-input label="Pulses per click" title="Number of pulses per encoder turn"
+						<select-input label="Encoder pulses per click" title="Number of pulses per encoder turn"
 									  v-model="store.data.boards[0].directDisplay!.pulsesPerClick"
 									  :options="PulsesPerClick"
 									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.pulsesPerClick : null" />
@@ -66,7 +66,6 @@
 
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
-import { defineStore } from "pinia";
 
 const DirectDisplayTypes: Array<SelectOption> = [
 	{

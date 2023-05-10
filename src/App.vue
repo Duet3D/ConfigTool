@@ -74,6 +74,18 @@ import { RouterView } from "vue-router";
 
 import Sidebar from "./components/Sidebar.vue";
 
+import { useStore } from "./store";
+import { MutationType } from "pinia";
+
+// Store observer
+const store = useStore();
+store.$subscribe((mutation) => {
+	if (mutation.type === MutationType.direct) {
+		// When the state is reset, the mutation type is different
+		store.dataModified = true;
+	}
+})
+
 // Theme
 const theme = ref(localStorage.getItem("theme") || "auto");
 const actualTheme = computed(() => {

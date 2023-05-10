@@ -1,0 +1,16 @@
+<%  if (model.network.interfaces.length > 0) {
+        for (let i = 0; i < model.network.interfaces.length; i++) {
+            const iface = model.network.interfaces[i];
+            if (model.network.interfaces.length === 1) {
+                i = undefined;
+            }
+
+            if (iface.type === NetworkInterfaceType.lan) { -%>
+; LAN config goes here
+<%          }
+
+            if (model.network.interfaces.length === 1) {
+                break;
+            }
+        }
+    } -%>

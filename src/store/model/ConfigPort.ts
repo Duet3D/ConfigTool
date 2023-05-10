@@ -36,7 +36,7 @@ export class ConfigPort extends ModelObject {
 	 */
 	constructor(value: string = "", canBoard: number | null = null, capability: PortType | null = null) {
 		super();
-        this.canBoard = canBoard;
+		this.canBoard = canBoard;
 		if (canBoard !== null && canBoard > 0) {
 			this.ports = value.split('+').map(port => `${canBoard}.${port}`);
 		} else {
@@ -54,9 +54,9 @@ export class ConfigPort extends ModelObject {
 	 */
 	capabilities: Set<PortType> = new Set<PortType>();
 
-    /**
-     * CAN address of this port
-     */
+	/**
+	 * CAN address of this port
+	 */
 	canBoard: number | null = null;
 
 	/**

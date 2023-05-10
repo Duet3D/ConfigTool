@@ -135,7 +135,7 @@ export default class ConfigModel extends ObjectModel {
 			this.boards.push(newBoard);
 		}
 
-		if (this.state.dsfVersion === null) {
+		if (this.sbc === null) {
 			for (const networkInterfacePreset of boardDefinition.objectModelNetworkInterfaces) {
 				const newNetworkInterface = new NetworkInterface();
 				newNetworkInterface.update(networkInterfacePreset);

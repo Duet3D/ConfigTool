@@ -1,7 +1,6 @@
 <template>
-	<scroll-item id="fans">
-		<template #title>
-			Fans
+	<scroll-item id="fans" title="Fans" :preview-templates="['config/fans']">
+		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddFan" @click.prevent="addFan">
 				<i class="bi-plus-circle"></i>
 				Add Fan

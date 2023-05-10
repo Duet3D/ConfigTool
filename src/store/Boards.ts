@@ -1,4 +1,4 @@
-import { Board, initObject, Limits, MinMaxCurrent, NetworkInterface, NetworkInterfaceType } from "@duet3d/objectmodel";
+import { Board, initObject, Limits, MinMaxCurrent, Network, NetworkInterface, NetworkInterfaceType } from "@duet3d/objectmodel";
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
@@ -86,7 +86,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 32,
 			heaters: 32,
 			heatersPerTool: 2,
+			ledStrips: 5,
 			monitorsPerHeater: 3,
+			portsPerHeater: 2,
 			restorePoints: 6,
 			sensors: 56,
 			spindles: 4,
@@ -161,7 +163,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 32,
 			heaters: 32,
 			heatersPerTool: 2,
+			ledStrips: 5,
 			monitorsPerHeater: 3,
+			portsPerHeater: 2,
 			restorePoints: 6,
 			sensors: 56,
 			spindles: 4,
@@ -234,7 +238,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 32,
 			heaters: 32,
 			heatersPerTool: 20,
+			ledStrips: 5,
 			monitorsPerHeater: 3,
+			portsPerHeater: 3,
 			restorePoints: 6,
 			sensors: 56,
 			spindles: 4,
@@ -306,7 +312,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 32,
 			heaters: 32,
 			heatersPerTool: 8,
+			ledStrips: 5,
 			monitorsPerHeater: 3,
+			portsPerHeater: 3,
 			restorePoints: 6,
 			sensors: 56,
 			spindles: 4,
@@ -376,7 +384,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 20,
 			heaters: 10,
 			heatersPerTool: 8,
+			ledStrips: 2,
 			monitorsPerHeater: 3,
+			portsPerHeater: 2,
 			restorePoints: 6,
 			sensors: 32,
 			spindles: 4,
@@ -450,7 +460,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 20,
 			heaters: 10,
 			heatersPerTool: 8,
+			ledStrips: 2,
 			monitorsPerHeater: 3,
+			portsPerHeater: 2,
 			restorePoints: 6,
 			sensors: 32,
 			spindles: 4,
@@ -524,7 +536,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 20,
 			heaters: 10,
 			heatersPerTool: 8,
+			ledStrips: 2,
 			monitorsPerHeater: 3,
+			portsPerHeater: 2,
 			restorePoints: 6,
 			sensors: 32,
 			spindles: 4,
@@ -594,7 +608,9 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			gpOutPorts: 10,
 			heaters: 4,
 			heatersPerTool: 2,
+			ledStrips: 2,
 			monitorsPerHeater: 3,
+			portsPerHeater: 2,
 			restorePoints: 6,
 			sensors: 32,
 			spindles: 2,
@@ -666,7 +682,7 @@ export function getBoardType(model: ConfigModel): BoardType | null {
 			}
 		}
 
-		// It is obvious which board it is in case there is only one matching board
+		// It is obvious which board it is in case there is only one match
 		if (matches.length === 1) {
 			return matches[0].key as BoardType;
 		}
@@ -674,16 +690,21 @@ export function getBoardType(model: ConfigModel): BoardType | null {
 		// If we have more than one match, check the SBC and network connectivity as well
 		if (matches.length > 0) {
 			// Try to find the SBC variant if running in SBC mode
-			if (model.state.dsfVersion !== null) {
+			if (model.sbc !== null) {
 				const sbcMatch = matches.find(({ value }) => value.objectModelBoard.shortName.includes("SBC"));
 				if (sbcMatch) {
 					return sbcMatch.key as BoardType;
 				}
-			}
 
-			// If there is at least one active network interface, check which candidate matches it
-			// FIXME For Duet 3 Mini we cannot determine if it is a WiFi or Ethernet board in SBC mode...
-			if (model.network.interfaces.length > 0) {
+				// WiFi boards expose the WiFi firmware filename even in SBC mode.
+				// That way, we can check if the board is a WiFi or LAN variant
+				const netType = (model.boards.find(board => !!board.canAddress)?.wifiFirmwareFileName !== null) ? NetworkInterfaceType.wifi : NetworkInterfaceType.lan;
+				const netMatch = matches.find(({ value }) => value.objectModelNetworkInterfaces.length > 0 && value.objectModelNetworkInterfaces[0].type === netType);
+				if (netMatch) {
+					return netMatch.key as BoardType;
+				}
+			} else if (model.network.interfaces.length > 0) {
+				// If there is at least one active network interface, check which candidate matches it
 				const netType = model.network.interfaces[0].type;
 				const netMatch = matches.find(({ value }) => value.objectModelNetworkInterfaces.length > 0 && value.objectModelNetworkInterfaces[0].type === netType);
 				if (netMatch) {

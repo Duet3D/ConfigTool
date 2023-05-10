@@ -1,7 +1,6 @@
 <template>
-	<scroll-item id="spindles">
-		<template #title>
-			Spindles
+	<scroll-item id="spindles" title="Spindles" :preview-templates="['config/spindles']">
+		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddSpindle" @click.prevent="addSpindle">
 				<i class="bi-plus-circle"></i>
 				Add Spindle

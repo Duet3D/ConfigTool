@@ -1,0 +1,65 @@
+<%  if (model.boards.length > 0 && model.boards[0].supportsDirectDisplay) {
+        const directDisplay = model.boards[0].directDisplay;
+        if (directDisplay !== null) {
+            let typeCode = 0;
+            switch (directDisplay.typeName) {
+                case "128x64 mono graphics with ST7920 controller":
+                    typeCode = 1;
+                    break;
+                case "128x64 mono graphics with ST7567 controller":
+                    typeCode = 2;
+                    break;
+            } -%>
+M918 <%- params({
+    P: typeCode,
+    E: directDisplay.pulsesPerClick,
+    F: directDisplay.spiFreq
+}) %> ; configure direct-connect display
+<%      }
+    }
+
+    // Get the UART channel for PanelDue
+    let panelDueChannel = -1;
+    if (model.boardDefinition !== null) {
+        for (let channel = 0; channel < model.boardDefinition.ports.uart.length; channel++) {
+            const uartPorts = model.boardDefinition.ports.uart[channel];
+
+            // USB isn't a valid choice
+            if (uartPorts === "usb") {
+                continue;
+            }
+
+            // Check if the given UART ports are all assigned to function UART
+            let isAssignedToUart = true;
+            for (const uartPort of uartPorts.split("+")) {
+                for (const item of model.configTool.ports) {
+                    if (item.equals(uartPort)) {
+                        if (item.function !== ConfigPortFunction.uart) {
+                            isAssignedToUart = false;
+                        }
+                        break;
+                    }
+                }
+
+                if (!isAssignedToUart) {
+                    break;
+                }
+            }
+            if (isAssignedToUart) {
+                panelDueChannel = channel;
+                break;
+			}
+		}
+    }
+
+    if (panelDueChannel >= 0) { -%>
+M575 <%- params({
+    P: panelDueChannel,
+    S: model.configTool.panelDueChecksum ? 1 : 0,
+    B: model.configTool.panelDueBaudRate
+}) %> ; configure PanelDue support
+<%  }
+
+    if ((model.boards.length === 0 || !model.boards[0].supportsDirectDisplay || model.boards[0].directDisplay === null) && (panelDueChannel < 0)) { -%>
+; No content for this section
+<%  } -%>

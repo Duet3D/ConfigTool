@@ -1,7 +1,6 @@
 <template>
-	<scroll-item id="heaters">
-		<template #title>
-			Heaters
+	<scroll-item id="heaters" title="Heaters" :preview-templates="['config/heaters']">
+		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddHeater" @click.prevent="addHeater">
 				<i class="bi-plus-circle"></i>
 				Add Heater
@@ -334,8 +333,9 @@ const HeaterControlOptions: Array<SelectOption> = [
 </script>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import { Heater, HeaterModel, HeaterMonitor, HeaterMonitorCondition, ModelObject } from "@duet3d/objectmodel";
+import type { StoreState } from "pinia";
+import { computed, ref } from "vue";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import HeaterModelDialog from "@/components/dialogs/HeaterModelDialog.vue";
@@ -406,9 +406,10 @@ function setHeaterNumber(index: number, newIndex: number) {
 const sensorOptions = computed(() => {
 	const result: Array<SelectOption> = [];
 	for (let i = 0; i < store.data.sensors.analog.length; i++) {
-		if (store.data.sensors.analog[i] !== null) {
+		const sensor = store.data.sensors.analog[i];
+		if (sensor !== null) {
 			result.push({
-				text: !!store.data.sensors.analog[i]?.name ? `${store.data.sensors.analog[i]!.name} (Sensor #${i})` : `Sensor #${i}`,
+				text: sensor.name ? `${sensor.name} (Sensor #${i})` : `Sensor #${i}`,
 				value: i
 			})
 		}
@@ -433,7 +434,7 @@ function getSensorBoard(sensor: number) {
 	return undefined;
 }
 
-function getHeaterMaxTemperature(heater: Heater) {
+function getHeaterMaxTemperature(heater: StoreState<Heater>) {
 	for (const monitor of heater.monitors) {
 		if (monitor.condition === HeaterMonitorCondition.tooHigh) {
 			return monitor.limit!;
@@ -442,7 +443,7 @@ function getHeaterMaxTemperature(heater: Heater) {
 	return NaN;
 }
 
-function setHeaterMaxTemperature(heater: Heater, temperature: number) {
+function setHeaterMaxTemperature(heater: StoreState<Heater>, temperature: number) {
 	heater.max = temperature;
 	for (const monitor of heater.monitors) {
 		if (monitor.condition === HeaterMonitorCondition.tooHigh) {
@@ -477,7 +478,11 @@ function configureHeaterMonitors(index: number, monitors: Array<HeaterMonitor>) 
 function getHeaterMonitorClasses(monitors: Array<HeaterMonitor>) {
 	let isValid = true;
 	for (const monitor of monitors) {
-		if (monitor.condition !== HeaterMonitorCondition.disabled && (monitor.action === null || !isFinite(monitor.limit!))) {
+		if (monitor.condition !== HeaterMonitorCondition.disabled && (
+				(monitor.action === null) || !isFinite(monitor.limit!) ||
+				(monitor.sensor < 0) || (monitor.sensor >= store.data.sensors.analog.length) || (store.data.sensors.analog[monitor.sensor] === null)
+			)
+		) {
 			isValid = false;
 			break;
 		}
@@ -499,7 +504,7 @@ function canAddHeaterPort(heaterIndex: number) {
 			numPorts++;
 		}
 	}
-	return numPorts < store.data.limits.heaters!;
+	return numPorts < store.data.limits.portsPerHeater!;
 }
 
 function getAdditionalHeaterPorts(heaterIndex: number) {

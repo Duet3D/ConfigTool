@@ -1,6 +1,6 @@
 <template>
 	<scroll-item id="general" title="General"
-				 :preview-templates="(store.data.state.dsfVersion === null) ? ['config/general', 'runonce'] : ['config/general']"
+				 :preview-templates="(store.data.sbc === null) ? ['config/general', 'runonce'] : ['config/general']"
 				 url-title="Getting Started" url="https://docs.duet3d.com/en/User_manual/Overview">
 		<div class="row">
 			<div class="col">
@@ -12,12 +12,14 @@
 							title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local"
 							:max-length="50" v-model="store.data.network.name" :preset="store.preset.network.name" />
 			</div>
+			<div v-if="supportsSbcMode" class="col">
+				<select-input label="Operation Mode"
+							title="Operation mode of your printer. Newer boards allow networking and plugin functionality to be handled by an extra SBC" :options="ModeOptions"
+							v-model="standaloneMode" :preset="store.preset.sbc === null" :required="false" />
+			</div>
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
-				<check-input v-if="supportsSbcMode" label="Run in standalone mode without SBC (Raspberry Pi)"
-							 title="Run RepRapFirmware in stand-alone mode without an attached single-board computer"
-							 v-model="standaloneMode" :preset="store.preset.state.dsfVersion !== null" />
 				<check-input label="Select the first tool on start-up"
 							 title="Select the first available tool on start-up"
 							 v-model="store.data.configTool.autoSelectFirstTool"
@@ -93,14 +95,29 @@
 	</scroll-item>
 </template>
 
+<script lang="ts">
+import type { SelectOption } from "@/components/inputs/SelectInput.vue";
+
+const ModeOptions: Array<SelectOption> = [
+	{
+		text: "Standalone mode (without SBC)",
+		value: true
+	},
+	{
+		text: "SBC mode",
+		value: false
+	}
+];
+</script>
+
 <script setup lang="ts">
-import { NetworkInterface, NetworkInterfaceType } from "@duet3d/objectmodel";
+import { NetworkInterface, NetworkInterfaceType, SBC } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ScrollItem from "@/components/ScrollItem.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
-import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
+import SelectInput from "@/components/inputs/SelectInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
 
 import { BoardType, UnsupportedBoardType } from "@/store/Boards";
@@ -109,7 +126,6 @@ import { useStore } from "@/store";
 
 import { version } from "../../../package.json";
 
-const dsfVersion = `${version.split('.')[0]}.${version.split('.')[1]}`;
 const store = useStore();
 
 // Board options
@@ -169,9 +185,9 @@ const boardPreset = computed(() => store.preset.boardType as string);
 // SBC mode
 const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC);
 const standaloneMode = computed<boolean>({
-	get() { return !store.data.state.dsfVersion; },
+	get() { return store.data.sbc === null; },
 	set(value) {
-		store.data.state.dsfVersion = value ? null : dsfVersion;
+		store.data.sbc = value ? null : new SBC();
 		if (value) {
 			if (store.data.boardDefinition) {
 				// Delete interfaces that are not present in the original board

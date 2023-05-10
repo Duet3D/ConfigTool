@@ -25,11 +25,6 @@ const router = createRouter({
 			path: "/Summary",
 			name: "summary",
 			component: () => import('../views/SummaryView.vue')
-		},
-		{
-			path: "/Finish",
-			name: "finish",
-			component: () => import('../views/FinishView.vue')
 		}
 	],
 	scrollBehavior(to, from, savedPosition) {
@@ -41,6 +36,14 @@ const router = createRouter({
         }
 		return { left: 0, top: 0 };
     }
+});
+
+router.beforeEach((to) => {
+	if (to.path.startsWith("/Summary") && document.body.querySelector(".is-invalid") !== null) {
+		alert("There are errors in your configuration. You must fix them first before you can continue.");
+		return false;
+	}
+	return true;
 });
 
 export default router;

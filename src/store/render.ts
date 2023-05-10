@@ -1,4 +1,4 @@
-import { AnalogSensorType, CoreKinematics, DeltaKinematics, EndstopType, KinematicsName, NetworkInterfaceType, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, DeltaKinematics, EndstopType, HeaterMonitorCondition, KinematicsName, NetworkInterfaceType, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
 import ejs from "ejs";
 
 import { useStore } from "@/store";
@@ -13,7 +13,7 @@ import { ExpansionBoards, getExpansionBoardDefinition } from "./ExpansionBoards"
 const store = useStore();
 
 /**
- * Indent the comments in a G-code file
+ * Indent comments in a G-code file
  * @param content File content
  * @returns Indented file content
  */
@@ -203,6 +203,7 @@ const renderOptions = {
     // Other
     AnalogSensorType,
     EndstopType,
+    HeaterMonitorCondition,
     NetworkInterfaceType,
     ProbeType
 };
@@ -217,7 +218,7 @@ function getRenderFilename(template: string) {
     if (template === "config" || template === "homeall") {
         template = template + "/index";                 // config => config/index, homeall => homeall/index
     } else if (/(\d+)$/.test(template)) {
-        template = template.replace(/(\d+)$/, "");      // deployprobeN => deployprobe, retractprobeN => retractprobe
+        template = template.replace(/(\d+)$/, "");      // deployprobeN => deployprobe, retractprobeN => retractprobe, tpreN => tpre, tpostN => tpost, tfreeN => tfree
     } else if (/home'?[a-zA-Z]$/.test(template)) {
         template = "homeaxis";                          // homex => homeaxis, home'a => homeaxis
     }

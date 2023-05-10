@@ -1,0 +1,38 @@
+<%  for (let i = 0; i < model.tools.length; i++) {
+        const tool = model.tools[i];
+        if (tool !== null) { -%>
+M563 <%- params({
+    P: i,
+    S: tool.name ? tool.name : undefined,
+    D: tool.extruders,
+    H: tool.heaters,
+    F: tool.fans,
+    X: (tool.axes.length > 0 && tool.axes[0].length > 0 && tool.axes[0][0] !== model.move.axes.findIndex(axis => axis.letter === 'X')) ? tool.axes[0] : undefined,
+    Y: (tool.axes.length > 1 && tool.axes[0].length > 0 && tool.axes[1][0] !== model.move.axes.findIndex(axis => axis.letter === 'Y')) ? tool.axes[1] : undefined,
+    L: (tool.extruders.length !== 1 && tool.extruders[0] !== tool.filamentExtruder && tool.filamentExtruder >= 0) ? tool.filamentExtruder : undefined,
+    R: (tool.spindle >= 0) ? tool.spindle : undefined
+}) %> ; create tool #<%- i %>
+<%          const offsets = {};
+            for (let k = 0; k < Math.min(tool.offsets.length, model.move.axes.length); k++) {
+                const axisLetter = model.move.axes[k].letter;
+                offsets[axisLetter] = tool.offsets[k];
+            }
+            if (Object.keys(offsets).length > 0) { -%>
+M568 <%- params({
+    P: i,
+    ...offsets
+}) -%> ; set custom offsets for tool #<%- i %>
+<%          }
+
+            if (tool.heaters.length > 0) { -%>
+M568 P<%- tool.number %> R0 S0 ; set initial tool #<%- i %> active and standby temperatures to 0C
+<%          }
+
+		    if (tool.extruders.length > 1) { -%>
+M567 <%- params({
+    P: i,
+    E: tool.mix
+}) %> ; set mixing ratios for tool #<%- i %>
+<%		    }
+        }
+    } -%>

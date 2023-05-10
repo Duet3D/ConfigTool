@@ -1,7 +1,6 @@
 <template>
-	<scroll-item id="tools">
-		<template #title>
-			Tools
+	<scroll-item id="tools" title="Tools" :preview-templates="previewTemplates" :preview-options="previewOptions">
+		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddTool" @click.prevent="addTool">
 				<i class="bi-plus-circle"></i>
 				Add Tool
@@ -157,6 +156,31 @@ function addTool() {
 	}
 	store.data.tools.push(tool);
 }
+
+// G-code preview
+const previewTemplates = computed(() => {
+	const templates = ["config/tools"];
+	for (let i = 0; i < store.data.tools.length; i++) {
+		if (store.data.tools[i] !== null) {
+			templates.push(`tpre${i}`);
+			templates.push(`tpost${i}`);
+			templates.push(`tfree${i}`);
+		}
+	}
+	return templates;
+});
+
+const previewOptions = computed(() => {
+	const options: Array<Record<string, any> | null> = [null];
+	for (let i = 0; i < store.data.tools.length; i++) {
+		if (store.data.tools[i] !== null) {
+			for (let k = 0; k < 3; k++) {
+				options.push({ toolNumber: i });
+			}
+		}
+	}
+	return options;
+});
 
 // Tools
 function getToolNumbers(tool: Tool) {

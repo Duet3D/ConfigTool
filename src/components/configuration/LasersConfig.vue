@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="laser" title="Laser" url-title="Configuring Laser Cutters"
+	<scroll-item id="laser" title="Laser" :preview-templates="['config/lasers']" url-title="Configuring Laser Cutters"
 				 url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Configuration_laser">
 		<div class="row">
 			<div class="col">

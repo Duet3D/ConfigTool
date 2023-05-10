@@ -5,11 +5,7 @@
 </style>
 
 <template>
-	<scroll-item id="expansion">
-		<template #title>
-			Expansion
-		</template>
-
+	<scroll-item id="expansion" title="Expansion">
 		<template #append-title>
 			<a v-if="isDuet2" href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_2_family" target="_blank">
 				<i class="bi-info-circle"></i>

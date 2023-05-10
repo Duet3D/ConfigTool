@@ -37,7 +37,8 @@ onMounted(() => {
         renderLineHighlightOnlyWhenFocus: true,
         rulers: [255],
         scrollBeyondLastLine: false,
-        value: props.modelValue
+        value: props.modelValue,
+        wordBasedSuggestions: false
     });
     editor.onDidBlurEditorText(() => emit("update:modelValue", editor!.getValue()));
 });
