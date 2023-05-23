@@ -383,7 +383,7 @@ export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
 	const mainboard = model.boards[0];
 	if (mainboard.supportsDirectDisplay && input.display.type !== 0) {
 		mainboard.directDisplay = new DirectDisplay();
-		mainboard.directDisplay.pulsesPerClick = input.display.encoder_steps;
+		mainboard.directDisplay.encoder!.pulsesPerClick = input.display.encoder_steps;
 	}
 	for (const legacyDisplayMenu of input.display.menus) {
 		model.configTool.displayFiles.menus.set(legacyDisplayMenu.name, legacyDisplayMenu.value);

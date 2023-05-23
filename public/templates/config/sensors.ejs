@@ -1,4 +1,13 @@
-<%  for (let i = 0; i < model.sensors.analog.length; i++) {
+<%  function sensorSupportsADCAutoCalibration(index) {
+        const port = model.configTool.ports.find(port => port.function === ConfigPortFunction.thermistor && port.index === index);
+        if (port) {
+            const boardDefinition = model.getBoardDefinition(port.canBoard);
+            return (boardDefinition !== null) && boardDefinition.hasADCAutoCalibration;
+        }
+        return false;
+    }
+
+    for (let i = 0; i < model.sensors.analog.length; i++) {
         const sensor = model.sensors.analog[i], configSensor = model.configTool.sensors[i];
         if (sensor !== null) {
             let port = undefined, sensorOptions = {};
@@ -8,16 +17,16 @@
                     T: configSensor.r25,
                     B: configSensor.beta,
                     C: (configSensor.shC !== 0) ? configSensor.shC : undefined,
-                    R: (configSensor.seriesR !== null) ? configSensor.seriesR : undefined,
-                    L: (configSensor.adcLowOffset !== null) ? configSensor.adcLowOffset : undefined,
-                    H: (configSensor.adcHighOffset !== null) ? configSensor.adcHighOffset : undefined
+                    //R: (configSensor.seriesR !== null) ? configSensor.seriesR : undefined,
+                    L: (!sensorSupportsADCAutoCalibration(i) && configSensor.adcLowOffset !== null) ? configSensor.adcLowOffset : undefined,
+                    H: (!sensorSupportsADCAutoCalibration(i) && configSensor.adcHighOffset !== null) ? configSensor.adcHighOffset : undefined
                 };
             } else if (sensor.type === AnalogSensorType.pt1000) {
                 port = getPortString(ConfigPortFunction.thermistor, i);
                 sensorOptions = {
-                    R: (configSensor.seriesR !== null) ? configSensor.seriesR : undefined,
-                    L: (configSensor.adcLowOffset !== null) ? configSensor.adcLowOffset : undefined,
-                    H: (configSensor.adcHighOffset !== null) ? configSensor.adcHighOffset : undefined
+                    //R: (configSensor.seriesR !== null) ? configSensor.seriesR : undefined,
+                    L: (!sensorSupportsADCAutoCalibration(i) && configSensor.adcLowOffset !== null) ? configSensor.adcLowOffset : undefined,
+                    H: (!sensorSupportsADCAutoCalibration(i) && configSensor.adcHighOffset !== null) ? configSensor.adcHighOffset : undefined
                 };
             } else if (sensor.type === AnalogSensorType.max31856) {
                 port = getPortString(ConfigPortFunction.spiCs, i);

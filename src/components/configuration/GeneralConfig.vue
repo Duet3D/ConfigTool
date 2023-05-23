@@ -124,8 +124,6 @@ import { BoardType, UnsupportedBoardType } from "@/store/Boards";
 import { preconfigureNetworkInterface } from "@/store/defaults";
 import { useStore } from "@/store";
 
-import { version } from "../../../package.json";
-
 const store = useStore();
 
 // Board options

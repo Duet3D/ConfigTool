@@ -14,9 +14,11 @@
 				</div>
 				<slot name="body" />
 				<div class="modal-footer justify-content-center">
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">
-						Close
-					</button>
+					<slot name="buttons">
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+							Close
+						</button>
+					</slot>
 				</div>
 			</div>
 		</div>

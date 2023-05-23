@@ -4,6 +4,7 @@ import type { Board } from "@duet3d/objectmodel";
  * Basic descriptor interface for supported main or expansion boards
  */
 export interface BaseBoardDescriptor {
+	hasADCAutoCalibration: boolean;
 	hasClosedLoopDrivers: boolean;              // TODO add this to object model -> boards
 	hasInputPullUps: boolean;
 	hasSmartDrivers: boolean;                   // TODO add this to object model -> boards

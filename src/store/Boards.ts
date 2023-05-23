@@ -19,7 +19,7 @@ export enum BoardType {
 	Duet2WiFi = "Duet 2 WiFi",
 
 	// Unofficially supported or discontinued boards
-	Duet2SBC = "Duet 2 SBC (customised)",
+	Duet2SBC = "Duet 2 SBC (unofficial mod)",
 	Duet2Maestro = "Duet 2 Maestro (discontinued)"
 }
 
@@ -48,6 +48,7 @@ export interface BoardDescriptor extends BaseBoardDescriptor {
  */
 export const Boards: Record<BoardType, BoardDescriptor> = {
 	[BoardType.Duet3Mini5PlusEthernet]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -125,6 +126,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: true
 	},
 	[BoardType.Duet3Mini5PlusWiFi]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -202,6 +204,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: true
 	},
 	[BoardType.Duet3MB6HC]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -275,6 +278,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: true
 	},
 	[BoardType.Duet3MB6XD]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: false,
@@ -349,6 +353,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: true
 	},
 	[BoardType.Duet2Ethernet]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
@@ -425,6 +430,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: false
 	},
 	[BoardType.Duet2WiFi]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
@@ -501,6 +507,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: false
 	},
 	[BoardType.Duet2SBC]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
@@ -573,6 +580,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: false
 	},
 	[BoardType.Duet2Maestro]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,

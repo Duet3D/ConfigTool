@@ -11,6 +11,7 @@ export enum ExpansionBoardType {
 	EXP3HC = "Duet 3 Expansion Board 3HC",
 	EXP1XD = "Duet 3 Expansion Board 1XD",
 	EXP1HCL = "Duet 3 Expansion Board 1HCL",
+	M23CL = "Duet 3 Motor 23CL",
 	TOOL1LC = "Duet 3 Tool Board",
 
 	Mini5plus = "Duet 3 Mini 5+",
@@ -38,6 +39,7 @@ export interface ExpansionBoardDescriptor extends BaseBoardDescriptor {
  */
 export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescriptor> = {
 	[ExpansionBoardType.EXP3HC]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -71,6 +73,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.EXP1XD]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: false,
@@ -104,6 +107,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.EXP1HCL]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: true,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -136,7 +140,42 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.uart]: []
 		}
 	},
+	[ExpansionBoardType.M23CL]: {
+		hasADCAutoCalibration: true,
+		hasClosedLoopDrivers: true,
+		hasInputPullUps: true,
+		hasSmartDrivers: true,
+		hasVrefMonitor: true,
+		motorWarnCurrent: 2300,
+		motorMaxCurrent: 2800,
+		minVoltage: 12,
+		maxVoltage: 24,
+		numDrivers: 1,
+		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+
+		objectModelBoard: initObject(Board, {
+			canAddress: 123,
+			firmwareFileName: "Duet3Firmware_M23CL.bin",
+			maxHeaters: 0,
+			maxMotors: 1,
+			shortName: "M23CL"
+		}),
+
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: [],
+			[PortType.gpOut]: [],
+			[PortType.heater]: [],
+			[PortType.pwm]: [],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: [],
+			[PortType.uart]: []
+		}
+	},
 	[ExpansionBoardType.TOOL1LC]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -170,6 +209,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.Mini5plus]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -203,6 +243,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		},
 	},
 	[ExpansionBoardType.MB6HC]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -236,6 +277,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.MB6XD]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: false,
@@ -269,6 +311,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.Duet3Mini2Plus]: {
+		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
@@ -298,6 +341,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.DueX5]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
@@ -328,6 +372,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.Duet2ExpansionBreakout]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: false,
@@ -358,6 +403,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.DueX2]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
@@ -388,6 +434,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}
 	},
 	[ExpansionBoardType.Duet2Maestro2Plus]: {
+		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,

@@ -248,6 +248,11 @@ export default class ConfigModel extends ObjectModel {
 					extruder.driver.board = newBoard;
 				}
 			}
+			for (const driver of this.configTool.drivers) {
+				if (!driver.id.board) {
+					driver.id.board = newBoard;
+				}
+			}
 
 			// Add mainboard drivers
 			for (let i = 0; i < mainboardDefinition.numDrivers; i++) {
@@ -311,7 +316,7 @@ export default class ConfigModel extends ObjectModel {
 		// Delete unsupported drivers
 		for (let i = this.configTool.drivers.length - 1; i >= 0; i--) {
 			const existingDriver = this.configTool.drivers[i];
-			if (!driverList.some(driver => driver.board === existingDriver.id.board && driver.driver === existingDriver.id.driver)) {
+			if (!driverList.some(driver => existingDriver.id.equals(driver))) {
 				// Remove it from axes and extruders
 				for (const axis of this.move.axes) {
 					for (let i = axis.drivers.length - 1; i >= 0; i--) {

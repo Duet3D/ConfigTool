@@ -101,6 +101,9 @@
 						</span> 
 					</li>
 				</ul>
+				<h5 v-if="calculatedShC < 0" class="mb-3">
+					Error: Negative C values are not supported by this calculator. Please check your inputs.
+				</h5>
 				<span class="text-muted">
 					See also <a href="https://en.wikipedia.org/wiki/Steinhart%E2%80%93Hart_equation" target="_blank">Steinhart-Hart</a> and <a href="https://en.wikipedia.org/wiki/Thermistor#B_or_%CE%B2_parameter_equation">β parameter</a> equations.
 				</span>
@@ -175,6 +178,7 @@ const calculatedR25 = computed(() => {
 		// Calculate R25
 		const x = 1 / (2 * c) * (a - 1 / 298.15);
 		const y = Math.sqrt(Math.pow(b / (3 * c), 3) + Math.pow(x, 2));
+
 		return Math.round(Math.exp(Math.pow(y - x, 1 / 3) - Math.pow(y + x, 1 / 3)));
 	}
 

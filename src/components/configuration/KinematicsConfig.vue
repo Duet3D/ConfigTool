@@ -254,7 +254,7 @@
 
 <script setup lang="ts">
 import {
-	Axis, AxisLetter, KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, PolarKinematics, ScaraKinematics, EndstopType, initObject
+	Axis, AxisLetter, KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, EndstopType, initObject
 } from "@duet3d/objectmodel";
 
 import ScrollItem from "@/components/ScrollItem.vue";

@@ -67,31 +67,25 @@
 													  unit="e-7" />
 									</div>
 								</template>
-								<!-- Thermistor and PT1000 Options-->
-								<div class="col-4">
-									<optional-number-input label="Series resistor"
-														   title="Optional configuration of the on-board series resistor. In general this setting should be used"
-														   :model-value="getConfigSensorValue(index, 'seriesR')"
-														   @update:model-value="setConfigSensorValue(index, 'seriesR', $event)"
-														   :preset="getPresetConfigSensorValue(index, 'seriesR')"
-														   :min="1" :max="1000000" step="any" unit="Ω" />
-								</div>
-								<div class="col-4">
-									<optional-number-input label="ADC Low Offset"
-														   title="ADC low offset correction. This is automatically calibrated on most boards, so this option is usually not required"
-														   :model-value="getConfigSensorValue(index, 'adcLowOffset')"
-														   @update:model-value="setConfigSensorValue(index, 'adcLowOffset', $event)"
-														   :preset="getPresetConfigSensorValue(index, 'adcLowOffset')"
-														   :min="-128" :max="127" :step="1" />
-								</div>
-								<div class="col-4">
-									<optional-number-input label="ADC High Offset"
-														   title="ADC high offset correction. This is automatically calibrated on most boards, so this option is usually not required"
-														   :model-value="getConfigSensorValue(index, 'adcHighOffset')"
-														   @update:model-value="setConfigSensorValue(index, 'adcHighOffset', $event)"
-														   :preset="getPresetConfigSensorValue(index, 'adcHighOffset')"
-														   :min="-128" :max="127" :step="1" />
-								</div>
+								<!-- Thermistor and PT1000 Options -->
+								<template v-if="!sensorSupportsADCAutoCalibration(index)">
+									<div class="col-6">
+										<optional-number-input label="ADC Low Offset"
+															title="ADC low offset correction. This is automatically calibrated on most boards, so this option is usually not required"
+															:model-value="getConfigSensorValue(index, 'adcLowOffset')"
+															@update:model-value="setConfigSensorValue(index, 'adcLowOffset', $event)"
+															:preset="getPresetConfigSensorValue(index, 'adcLowOffset')"
+															:min="-128" :max="127" :step="1" />
+									</div>
+									<div class="col-6">
+										<optional-number-input label="ADC High Offset"
+															title="ADC high offset correction. This is automatically calibrated on most boards, so this option is usually not required"
+															:model-value="getConfigSensorValue(index, 'adcHighOffset')"
+															@update:model-value="setConfigSensorValue(index, 'adcHighOffset', $event)"
+															:preset="getPresetConfigSensorValue(index, 'adcHighOffset')"
+															:min="-128" :max="127" :step="1" />
+									</div>
+								</template>
 							</template>
 							<!-- Linear Analog Sensor -->
 							<template v-else-if="sensor.type === AnalogSensorType.linearAnalog">
@@ -175,6 +169,7 @@
 
 <script lang="ts">
 import type { SelectOption } from "../inputs/SelectInput.vue";
+import { getBoardDefinition, getBoardType } from "@/store/Boards";
 
 const ThermocoupleTypeOptions: Array<SelectOption> = "BEJKNRST".split("").map(letter => ({
 	text: `Type ${letter}`,
@@ -503,5 +498,14 @@ function getBaseSensorOptions(type: AnalogSensorType, index: number) {
 		}
 	}
 	return options;
+}
+
+function sensorSupportsADCAutoCalibration(index: number) {
+	const port = store.data.configTool.ports.find(port => port.function === ConfigPortFunction.thermistor && port.index === index);
+	if (port) {
+		const boardDefinition = store.data.getBoardDefinition(port.canBoard);
+		return (boardDefinition !== null) && boardDefinition.hasADCAutoCalibration;
+	}
+	return false;
 }
 </script>

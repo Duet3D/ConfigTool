@@ -44,8 +44,8 @@
 </template>
 
 <script setup lang="ts">
-import { AnalogSensorType, DriverId, EndstopType, initObject, ProbeType, ZLeadscrewKinematics } from "@duet3d/objectmodel";
-import { computed, onBeforeUnmount, onMounted, ref, watch, type PropType, type Ref } from "vue";
+import { AnalogSensorType, DriverId, EndstopType, initObject, ProbeType } from "@duet3d/objectmodel";
+import { computed, ref, watch } from "vue";
 
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
@@ -151,7 +151,7 @@ const allowPullUp = computed(() => {
 
 const hasInputPullUps = computed(() => {
 	if (realPort.value !== null) {
-		const boardDefinition = store.data.getBoardDefinition();
+		const boardDefinition = store.data.getBoardDefinition(realPort.value.canBoard);
 		return (boardDefinition !== null) && boardDefinition.hasInputPullUps;
 	}
 	return false;

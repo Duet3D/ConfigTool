@@ -13,21 +13,35 @@
 				<div v-if="configureDirectDisplay" class="row ms-3 my-2">
 					<div class="col-6">
 						<select-input label="Direct display type" title="Type of the connected display"
-									  v-model="store.data.boards[0].directDisplay!.typeName"
+									  v-model="directDisplayController"
 									  :options="DirectDisplayTypes"
-									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.typeName : null" />
+									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.screen.controller : null" />
 					</div>
-					<div class="col-3">
+					<div v-if="store.data.boards[0].directDisplay?.encoder" class="col-3">
 						<select-input label="Encoder pulses per click" title="Number of pulses per encoder turn"
-									  v-model="store.data.boards[0].directDisplay!.pulsesPerClick"
+									  v-model="store.data.boards[0].directDisplay!.encoder!.pulsesPerClick"
 									  :options="PulsesPerClick"
-									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.pulsesPerClick : null" />
+									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.encoder?.pulsesPerClick : null" />
 					</div>
 					<div class="col-3">
 						<number-input label="SPI frequency" title="Frequency of the SPI link"
-									  v-model="store.data.boards[0].directDisplay!.spiFreq"
-									  :preset="(store.preset.boards.length > 0) ? store.data.boards[0].directDisplay?.spiFreq : null"
+									  v-model="store.data.boards[0].directDisplay!.screen.spiFreq"
+									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.screen.spiFreq : null"
 									  unit="Hz" :min="100000" :max="8000000" :step="1" />
+					</div>
+				</div>
+				<div v-if="store.data.boards[0].directDisplay?.screen.controller === DirectDisplayController.ST7567" class="row ms-3 my-2">
+					<div class="col">
+						<number-input label="Contrast ratio" title="Contrast ratio of this display"
+									  v-model="(store.data.boards[0].directDisplay!.screen as DirectDisplayScreenST7567).contrast"
+									  :preset="(store.preset.boards.length > 0) ? (store.preset.boards[0].directDisplay?.screen as DirectDisplayScreenST7567 | null)?.contrast : null"
+									  :min="0" :max="100" :step="1" />
+					</div>
+					<div class="col">
+						<number-input label="Resistor ratio" title="Resistor ratio of this display"
+									  v-model="(store.data.boards[0].directDisplay!.screen as DirectDisplayScreenST7567).resistorRatio"
+									  :preset="(store.preset.boards.length > 0) ? (store.preset.boards[0].directDisplay?.screen as DirectDisplayScreenST7567 | null)?.resistorRatio : null"
+									  :min="1" :max="7" :step="1" />
 					</div>
 				</div>
 			</div>
@@ -70,11 +84,16 @@ import type { SelectOption } from "@/components/inputs/SelectInput.vue";
 const DirectDisplayTypes: Array<SelectOption> = [
 	{
 		text: "ST7920 (RepRapDiscount Full Graphic Smart Controller)",
-		value: "128x64 mono graphics with ST7920 controller"
+		value: DirectDisplayController.ST7920
 	},
 	{
 		text: "ST7567 (Fysetc Mini 12864 Panel)",
-		value: "128x64 mono graphics with ST7567 controller"
+		value: DirectDisplayController.ST7567
+	},
+	{
+		disabled: true,
+		text: "ILI9488 (not yet officially supported)",
+		value: DirectDisplayController.ILI9488
 	}
 ];
 
@@ -130,7 +149,7 @@ const BaudRates: Array<SelectOption> = [
 </script>
 					 
 <script setup lang="ts">
-import { DirectDisplay, initObject } from "@duet3d/objectmodel";
+import { DirectDisplay, DirectDisplayController, DirectDisplayScreenST7567 } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ScrollItem from "@/components/ScrollItem.vue";
@@ -146,17 +165,12 @@ const store = useStore();
 // Direct Display
 const configureDirectDisplay = computed({
 	get() { return (store.data.boards.length > 0) && store.data.boards[0].supportsDirectDisplay && (store.data.boards[0].directDisplay !== null); },
-	set(value) {
-		if (value) {
-			store.data.boards[0].directDisplay = initObject(DirectDisplay, {
-				pulsesPerClick: 4,
-				spiFreq: 2000000,
-				typeName: DirectDisplayTypes[0].value
-			});
-		} else {
-			store.data.boards[0].directDisplay = null;
-		}
-	}
+	set(value) { store.data.boards[0].directDisplay = value ? new DirectDisplay() : null; }
+});
+
+const directDisplayController = computed({
+	get() { return (store.data.boards.length > 0) && store.data.boards[0].directDisplay!.screen.controller; },
+	set(value) { store.data.boards[0].directDisplay!.update({ screen: { controller: value } }); }
 });
 
 // PanelDue

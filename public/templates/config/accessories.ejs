@@ -2,18 +2,23 @@
         const directDisplay = model.boards[0].directDisplay;
         if (directDisplay !== null) {
             let typeCode = 0;
-            switch (directDisplay.typeName) {
-                case "128x64 mono graphics with ST7920 controller":
+            switch (directDisplay.screen.controller) {
+                case DirectDisplayController.ST7290:
                     typeCode = 1;
                     break;
-                case "128x64 mono graphics with ST7567 controller":
+                case DirectDisplayController.ST7567:
                     typeCode = 2;
+                    break;
+                case DirectDisplayController.ILI9488:
+                    typeCode = 3;
                     break;
             } -%>
 M918 <%- params({
     P: typeCode,
-    E: directDisplay.pulsesPerClick,
-    F: directDisplay.spiFreq
+    E: directDisplay.encoder?.pulsesPerClick,
+    F: directDisplay.screen.spiFreq,
+    C: directDisplay.screen.contrast,
+    R: directDisplay.screen.resistorRatio
 }) %> ; configure direct-connect display
 <%      }
     }

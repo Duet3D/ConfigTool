@@ -1,4 +1,4 @@
-import { AnalogSensorType, CoreKinematics, DeltaKinematics, EndstopType, HeaterMonitorCondition, KinematicsName, NetworkInterfaceType, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, NetworkInterfaceType, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
 import ejs from "ejs";
 
 import { useStore } from "@/store";
@@ -202,6 +202,7 @@ const renderOptions = {
 
     // Other
     AnalogSensorType,
+    DirectDisplayController,
     EndstopType,
     HeaterMonitorCondition,
     NetworkInterfaceType,
