@@ -6,6 +6,9 @@
 				Add Tool
 			</button>
 		</template>
+		<check-input v-if="store.data.tools.length > 0" label="Select the first tool on start-up"
+					 title="Select the first available tool on start-up" v-model="store.data.configTool.autoSelectFirstTool"
+					 :preset="store.preset.configTool.autoSelectFirstTool" />
 		<template #body>
 			<table class="table table-striped table-extruders mb-0">
 				<colgroup>
@@ -85,13 +88,14 @@
 								<fan-list class="mt-1" :fans="tool.fans" />
 							</td>
 							<td>
-								<button class="btn btn-sm mt-1" :class="getToolClass(tool)" @click.prevent="configureTool(tool)">
+								<button class="btn btn-sm mt-1" :class="getToolClass(tool)"
+										@click.prevent="configureTool(tool)">
 									<i class="bi bi-gear"></i>
 								</button>
 							</td>
 							<td>
 								<button class="btn btn-sm btn-danger mt-1"
-										@click.prevent="store.data.tools.splice(tool.number, 1)">
+										@click.prevent="removeTool(tool)">
 									<i class="bi bi-trash"></i>
 								</button>
 							</td>
@@ -110,6 +114,7 @@ import { computed, ref } from "vue";
 
 import { useStore } from "@/store";
 import type { SelectOption } from "../inputs/SelectInput.vue";
+import StepsPerMmCalculator from "../calculators/StepsPerMmCalculator.vue";
 
 const store = useStore();
 
@@ -138,6 +143,7 @@ import { Tool } from "@duet3d/objectmodel";
 
 import ConfigSection from "@/components/ConfigSection.vue";
 import ToolDialog from "@/components/dialogs/ToolDialog.vue";
+import CheckInput from "@/components/inputs/CheckInput.vue";
 import ExtruderList from "@/components/inputs/ExtruderList.vue";
 import FanList from "@/components/inputs/FanList.vue";
 import HeaterList from "@/components/inputs/HeaterList.vue";
@@ -156,7 +162,15 @@ function addTool() {
 	} else if (store.preset.tools.length > 0) {
 		tool.update(store.preset.tools[0]);
 	}
+	tool.number = store.data.tools.length;
 	store.data.tools.push(tool);
+}
+
+function removeTool(tool: Tool) {
+	store.data.tools[tool.number] = null;
+	while (store.data.tools[store.data.tools.length - 1] === null) {
+		store.data.tools.pop();
+	}
 }
 
 // Tools

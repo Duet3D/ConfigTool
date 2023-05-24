@@ -20,9 +20,6 @@
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
-				<check-input label="Select the first tool on start-up" title="Select the first available tool on start-up"
-							 v-model="store.data.configTool.autoSelectFirstTool"
-							 :preset="store.preset.configTool.autoSelectFirstTool" />
 				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)"
 							 title="Enable auto-save facility" v-model="store.data.configTool.configOverride"
 							 :preset="store.preset.configTool.configOverride" />

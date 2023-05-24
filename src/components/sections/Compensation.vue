@@ -193,7 +193,7 @@
 		</card>
 
 		<!-- Orthogonal Axis Compensation -->
-		<card title="Orthogonal Axis Compensation" :preview-templates="['config/compensation/orthogonal']"
+		<card title="Orthogonal Axis Compensation" :preview-templates="orthogonalCompensation ? ['config/compensation/orthogonal'] : null"
 			  url-title="Further Information"
 			  url="https://docs.duet3d.com/en/User_manual/Tuning/Orthogonal_axis_compensation">
 			<div class="row">

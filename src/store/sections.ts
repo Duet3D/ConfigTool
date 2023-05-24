@@ -139,7 +139,7 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             result.push({ template: "config/axes", data: null });
             break;
         case ConfigSectionType.Extruders:
-            result.push({ template: "config/extuders", data: null });
+            result.push({ template: "config/extruders", data: null });
             break;
         case ConfigSectionType.Probes:
             result.push({ template: "config/probes", data: null });

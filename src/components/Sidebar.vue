@@ -137,5 +137,5 @@ import { ConfigSectionType, getSections } from "@/store/sections";
 
 const store = useStore();
 
-const sections = computed(() => getSections(store.data));
+const sections = computed(() => getSections());
 </script>
