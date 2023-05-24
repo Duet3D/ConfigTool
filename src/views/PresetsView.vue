@@ -2,10 +2,10 @@
 	<main class="container mt-3">
 		<div v-if="loading" class="w-100 text-center text-muted">
 			<h4 class="mb-3">
-				Loading templates...
+				Loading presets...
 			</h4>
 			<div class="spinner-border" role="status">
-				<span class="visually-hidden">Loading templates...</span>
+				<span class="visually-hidden">Loading presets...</span>
 			</div>
 		</div>
 		<template v-else>
@@ -18,10 +18,10 @@
 				{{ errorMessage }}
 			</div>
 
-			<div v-for="(group, groupName) in templates" class="ms-1 mt-2">
+			<div v-for="(group, groupName) in presets" class="ms-1 mt-2">
 				{{ groupName }}
 				<div v-for="(filename, template) in group" class="form-check">
-					<input class="form-check-input" type="radio" name="template" :id="template.toString()" :value="filename" v-model="selectedTemplate">
+					<input class="form-check-input" type="radio" name="template" :id="template.toString()" :value="filename" v-model="selectedPreset">
 					<label class="form-check-label" :for="template.toString()">
 						{{ template }}
 					</label>
@@ -29,17 +29,17 @@
 			</div>
 
 			<div class="text-muted ml-1 mt-2">
-				* Some templates were contributed by independent users. Use them at your own risk.
+				* Some presets were contributed by independent users. Use them at your own risk.
 			</div>
 		</template>
 
 		<div class="d-flex justify-content-center mt-3">
 			<button type="button" class="btn btn-lg btn-secondary me-1" @click.prevent="inputJsonFile!.click()">
 				<i class="bi bi-cloud-arrow-up"></i>
-				Import Existing Template
+				Import Existing Preset
 			</button>
-			<button type="button" class="btn btn-lg btn-primary ms-1" :disabled="loadingTemplate || selectedTemplateContent === null">
-				<template v-if="loadingTemplate">
+			<button type="button" class="btn btn-lg btn-primary ms-1" :disabled="loadingPreset || selectedPresetContent === null">
+				<template v-if="loadingPreset">
 					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
 					Loading...
 				</template>
@@ -60,19 +60,19 @@ import { useRouter } from "vue-router";
 
 import { useStore } from "@/store";
 import ConfigModel from "@/store/model";
-import { convertLegacyTemplate} from "@/store/compatibility";
-import type { LegacyTemplate } from "@/store/compatibility/LegacyTemplate";
+import { convertLegacyPreset} from "@/store/compatibility";
+import type { LegacyPreset } from "@/store/compatibility/LegacyPreset";
 
 const router = useRouter();
 const store = useStore();
 
-// Template list
+// Preset list
 const loading = ref(true), errorMessage = ref<string | null>(null);
-const templates = ref({});
+const presets = ref({});
 onMounted(async () => {
-	// Try to fetch the list of available templates
+	// Try to fetch the list of available presets
 	try {
-		templates.value = await fetch("templates.json", {
+		presets.value = await fetch("presets.json", {
 			cache: "no-cache",
 			headers: {
 				Accept: "application/json",
@@ -85,20 +85,20 @@ onMounted(async () => {
 	loading.value = false;
 });
 
-// Template selection
-const selectedTemplate = ref<null | string>(null);
-const loadingTemplate = ref(false), selectedTemplateContent = ref<null | object>(null);
-watch(() => selectedTemplate.value, async () => {
-	// Reset the template selection
-	selectedTemplateContent.value = null;
-	if (selectedTemplate.value === null) {
+// Preset selection
+const selectedPreset = ref<null | string>(null);
+const loadingPreset = ref(false), selectedPresetContent = ref<null | object>(null);
+watch(() => selectedPreset.value, async () => {
+	// Reset the preset selection
+	selectedPresetContent.value = null;
+	if (selectedPreset.value === null) {
 		return;
 	}
 
 	// Attempt to download the file
-	loadingTemplate.value = true;
+	loadingPreset.value = true;
 	try {
-		selectedTemplateContent.value = await fetch(selectedTemplate.value, {
+		selectedPresetContent.value = await fetch(selectedPreset.value, {
 			cache: "no-cache",
 			headers: {
 				Accept: "application/json",
@@ -106,10 +106,10 @@ watch(() => selectedTemplate.value, async () => {
 		}).then(r => r.json());
 	} catch (e) {
 		console.error(e);
-		alert(`Failed to download template file ${selectedTemplate.value}:\n\n${e}`);
-		selectedTemplate.value = null;
+		alert(`Failed to download template file ${selectedPreset.value}:\n\n${e}`);
+		selectedPreset.value = null;
 	}
-	loadingTemplate.value = false;
+	loadingPreset.value = false;
 });
 
 const inputJsonFile = ref<HTMLInputElement>();
@@ -128,7 +128,7 @@ const fileSelected = () => {
 						newModel.validate();
 					} else {
 						// Old format
-						newModel = convertLegacyTemplate(jsonContent as LegacyTemplate);
+						newModel = convertLegacyPreset(jsonContent as LegacyPreset);
 					}
 					store.setModel(newModel);
 					router.push("/Configuration");

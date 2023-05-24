@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="extruders" title="Extruders" :preview-templates="['config/extruders']">
+	<config-section :type="ConfigSectionType.Extruders" title="Extruders">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddExtruder" @click.prevent="addExtruder">
 				<i class="bi-plus-circle"></i>
@@ -111,20 +111,21 @@
 				No Extruders defined
 			</div>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
 import { Extruder, type DriverId } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import StepsPerMmCalculator from "@/components/calculators/StepsPerMmCalculator.vue";
 import DriverSelection from "@/components/inputs/DriverSelection.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

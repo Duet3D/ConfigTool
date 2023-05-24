@@ -1,6 +1,6 @@
 <template>
-	<scroll-item id="laser" title="Laser" :preview-templates="['config/lasers']" url-title="Configuring Laser Cutters"
-				 url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Configuration_laser">
+	<config-section :type="ConfigSectionType.Lasers" title="Lasers" url-title="Configuring Laser Cutters"
+					url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Configuration_laser">
 		<div class="row">
 			<div class="col">
 				<port-input label="Laser Output Port" :function="ConfigPortFunction.laser" :index="0" />
@@ -18,17 +18,18 @@
 							 :preset="store.preset.configTool.laser.sParamSticky" />
 			</div>
 		</div>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 
-import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { useStore } from "@/store";
+import { ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 </script>

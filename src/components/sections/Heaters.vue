@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="heaters" title="Heaters" :preview-templates="['config/heaters']">
+	<config-section :type="ConfigSectionType.Heaters" title="Heaters">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddHeater" @click.prevent="addHeater">
 				<i class="bi-plus-circle"></i>
@@ -164,7 +164,7 @@
 			<heater-monitors-dialog v-model="showHeaterMonitorsDialog" :heater-index="heaterMonitorIndex"
 									:monitors="heaterMonitors" />
 		</template>
-	</scroll-item>
+	</config-section>
 
 	<div class="row mt-3">
 		<!-- Bed Heaters-->
@@ -337,7 +337,7 @@ import { Heater, HeaterModel, HeaterMonitor, HeaterMonitorCondition, ModelObject
 import type { StoreState } from "pinia";
 import { computed, ref } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import HeaterModelDialog from "@/components/dialogs/HeaterModelDialog.vue";
 import HeaterMonitorsDialog from "@/components/dialogs/HeaterMonitorsDialog.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
@@ -346,6 +346,7 @@ import SelectInput from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
 import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

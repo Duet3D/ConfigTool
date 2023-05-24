@@ -1,15 +1,13 @@
 import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter } from "@duet3d/objectmodel";
 
+import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigDriver } from "@/store/model/ConfigDriver";
+import { ConfigToolModel } from "@/store/model/ConfigToolModel";
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 
 import { preconfigureNetworkInterface } from "../defaults";
-
-import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
-import { ConfigDriver } from "@/store/model/ConfigDriver";
-import { ConfigToolModel } from "@/store/model/ConfigToolModel";
-
 import { ConfigTempSensor } from "./ConfigTempSensor";
 
 /**
@@ -568,5 +566,73 @@ export default class ConfigModel extends ObjectModel {
 	 */
 	get isDelta(): boolean {
 		return [KinematicsName.delta, KinematicsName.rotaryDelta].includes(this.move.kinematics.name);
+	}
+	
+	/**
+	 * Get the configured PanelDue channel. If no PanelDue is configured, -1 is returned
+	 */
+	get panelDueChannel() {
+		if (this.boardDefinition !== null) {
+			for (let channel = 0; channel < this.boardDefinition.ports.uart.length; channel++) {
+				const uartPorts = this.boardDefinition.ports.uart[channel];
+	
+				// USB isn't a valid choice
+				if (uartPorts === "usb") {
+					continue;
+				}
+	
+				// Check if the given UART ports are all assigned to function UART
+				let isAssignedToUart = true;
+				for (const uartPort of uartPorts.split("+")) {
+					for (const item of this.configTool.ports) {
+						if (item.equals(uartPort)) {
+							if (item.function !== ConfigPortFunction.uart) {
+								isAssignedToUart = false;
+							}
+							break;
+						}
+					}
+	
+					if (!isAssignedToUart) {
+						break;
+					}
+				}
+				if (isAssignedToUart) {
+					return channel;
+				}
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Set the configured PanelDue channel. If no PanelDue is supposed to be configured, -1 may be used
+	 */
+	set panelDueChannel(value: number) {
+		if (this.boardDefinition !== null) {
+			for (let channel = 0; channel < this.boardDefinition.ports.uart.length; channel++) {
+				const uartPorts = this.boardDefinition.ports.uart[channel];
+
+				// USB isn't a valid choice
+				if (uartPorts === "usb") {
+					continue;
+				}
+
+				// Check if the given UART ports are all assigned to function UART
+				for (const uartPort of uartPorts.split("+")) {
+					for (const item of this.configTool.ports) {
+						if (item.equals(uartPort)) {
+							if (channel === value) {
+								// Reassign UART port of this channel
+								item.function = ConfigPortFunction.uart;
+							} else if (item.function === ConfigPortFunction.uart) {
+								// Free previously assigned UART ports
+								item.function = null;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

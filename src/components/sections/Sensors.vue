@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="sensors" title="Temperature Sensors" :preview-templates="['config/sensors']">
+	<config-section :type="ConfigSectionType.Sensors" title="Temperature Sensors">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddSensor" @click.prevent="addSensor">
 				<i class="bi-plus-circle"></i>
@@ -164,12 +164,11 @@
 				No Sensors defined
 			</div>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script lang="ts">
 import type { SelectOption } from "../inputs/SelectInput.vue";
-import { getBoardDefinition, getBoardType } from "@/store/Boards";
 
 const ThermocoupleTypeOptions: Array<SelectOption> = "BEJKNRST".split("").map(letter => ({
 	text: `Type ${letter}`,
@@ -207,7 +206,7 @@ const MainsFrequencies: Array<SelectOption> = [
 import { AnalogSensor, AnalogSensorType } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import ThermistorCalculator from "@/components/calculators/ThermistorCalculator.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
@@ -221,6 +220,7 @@ import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
 import { PortType } from "@/store/BaseBoard";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

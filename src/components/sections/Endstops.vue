@@ -1,7 +1,6 @@
 <template>
-	<scroll-item id="endstops" title="Endstops" :preview-templates="previewTemplates" :preview-options="previewOptions"
-				 url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Sensors_endstops"
-				 url-title="Connecting Endstops">
+	<config-section :type="ConfigSectionType.Endstops" title="Endstops" url-title="Connecting Endstops"
+					url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Sensors_endstops">
 		<template #body>
 			<table class="table table-striped mb-0">
 				<colgroup>
@@ -83,12 +82,11 @@
 				</tbody>
 			</table>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
-import { computed } from "vue";
 
 const EndstopLocationOptions: Array<SelectOption> = [
 	{
@@ -106,7 +104,7 @@ const EndstopLocationOptions: Array<SelectOption> = [
 import { Axis, Endstop, EndstopType, KinematicsName, ProbeType } from "@duet3d/objectmodel";
 import type { StoreState } from "pinia";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import HomingSpeedsInput from "@/components/inputs/HomingSpeedsInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
@@ -114,47 +112,9 @@ import SelectInput from "@/components/inputs/SelectInput.vue";
 import { useStore } from "@/store";
 import type { ConfigDriver } from "@/store/model/ConfigDriver";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
-
-// G-code preview
-const previewTemplates = computed(() => {
-	const templates = [
-		"config/endstops",
-		store.data.isDelta ? "homedelta" : "homeall"
-	];
-
-	for (let i = 0; i < store.data.move.axes.length; i++) {
-		if (store.data.sensors.endstops.length > i && store.data.sensors.endstops[i] !== null) {
-			const axis = store.data.move.axes[i];
-			if (store.data.canHomeIndividualAxis(axis.letter)) {
-				if (/[a-z]/.test(axis.letter)) {
-					templates.push(`home'${axis.letter}`);
-				} else {
-					templates.push(`home${axis.letter.toLowerCase()}`);
-				}
-			}
-		}
-	}
-	return templates;
-});
-
-const previewOptions = computed(() => {
-	const options: Array<Record<string, any> | null> = [null, null];
-	for (let i = 0; i < store.data.move.axes.length; i++) {
-		if (store.data.sensors.endstops.length > i && store.data.sensors.endstops[i] !== null) {
-			const axis = store.data.move.axes[i];
-			if (store.data.canHomeIndividualAxis(axis.letter)) {
-				options.push({
-					axis,
-					axisIndex: i,
-					axisLetter: axis.letter
-				});
-			}
-		}
-	}
-	return options;
-});
 
 // Driver Enumeration
 function getConfigDrivers(axis: StoreState<Axis>) {

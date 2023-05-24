@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import StartView from "@/views/StartView.vue";
-import TemplatesView from "@/views/TemplatesView.vue";
+import PresetsView from "@/views/PresetsView.vue";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,9 +12,9 @@ const router = createRouter({
 			component: StartView
 		},
 		{
-			path: "/Templates",
-			name: "templates",
-			component: TemplatesView,
+			path: "/Presets",
+			name: "presets",
+			component: PresetsView,
 		},
 		{
 			path: "/Configuration",

@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="fans" title="Fans" :preview-templates="['config/fans']">
+	<config-section :type="ConfigSectionType.Fans" title="Fans">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddFan" @click.prevent="addFan">
 				<i class="bi-plus-circle"></i>
@@ -93,14 +93,14 @@
 				No Fans defined
 			</div>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
 import { Fan, FanThermostaticControl } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
@@ -109,7 +109,8 @@ import TextInput from "@/components/inputs/TextInput.vue";
 import TwoNumberInput from "@/components/inputs/TwoNumberInput.vue";
 
 import { useStore } from "@/store";
-import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

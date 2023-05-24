@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="spindles" title="Spindles" :preview-templates="['config/spindles']">
+	<config-section :type="ConfigSectionType.Spindles" title="Spindles">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddSpindle" @click.prevent="addSpindle">
 				<i class="bi-plus-circle"></i>
@@ -59,8 +59,8 @@
 						<tr v-if="spindle !== null">
 							<td>
 								<select-input title="Number of this spindle" :model-value="index"
-										  @update:model-value="setSpindleNumber(index, $event)"
-										  :options="getSpindleNumbers(index)" />
+											  @update:model-value="setSpindleNumber(index, $event)"
+											  :options="getSpindleNumbers(index)" />
 							</td>
 							<td>
 								<port-input :function="ConfigPortFunction.spindlePwm" :index="index" />
@@ -72,12 +72,12 @@
 								<port-input :function="ConfigPortFunction.spindleBackwards" :index="index" />
 							</td>
 							<td>
-								<number-input title="Minimum rotations per minute when turned on"
-											  v-model="spindle.min" :preset="getPresetSpindleValue(index, 'min')" />
+								<number-input title="Minimum rotations per minute when turned on" v-model="spindle.min"
+											  :preset="getPresetSpindleValue(index, 'min')" />
 							</td>
 							<td>
-								<number-input title="Maximum rotations per minuate"
-											  v-model="spindle.max" :preset="getPresetSpindleValue(index, 'max')" />
+								<number-input title="Maximum rotations per minuate" v-model="spindle.max"
+											  :preset="getPresetSpindleValue(index, 'max')" />
 							</td>
 							<!--
 							<td>
@@ -109,20 +109,21 @@
 				No Spindles defined
 			</div>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
 import { Spindle } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

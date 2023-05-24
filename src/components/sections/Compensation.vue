@@ -2,8 +2,8 @@
 	<section id="compensation" class="pt-3">
 		<!-- Delta Calibration -->
 		<card v-if="showDeltaOptions" class="mb-3" :preview-templates="['config/compensation/delta']"
-			  title="Automatic Delta Calibration" url="https://docs.duet3d.com/en/User_manual/Tuning/Delta_calibration"
-			  url-title="Delta Calibration">
+			  title="Automatic Delta Calibration" url-title="Delta Calibration"
+			  url="https://docs.duet3d.com/en/User_manual/Tuning/Delta_calibration">
 			<div class="row g-3">
 				<div class="col-3">
 					<select-input label="Number of Peripheral Points" title="Number of outer probe points"
@@ -86,9 +86,8 @@
 
 		<!-- Mesh Bed Compensation -->
 		<card v-if="store.data.sensors.probes.length > 0" class="mb-3" title="Mesh Bed Compensation"
-			  :preview-templates="['config/compensation/mesh']"
-			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_mesh_bed"
-			  url-title="Further Information">
+			  :preview-templates="['config/compensation/mesh']" url-title="Further Information"
+			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_mesh_bed">
 			<!-- Delta Mesh Options-->
 			<div v-if="showDeltaOptions" class="row g-3">
 				<div class="col-auto">
@@ -195,8 +194,8 @@
 
 		<!-- Orthogonal Axis Compensation -->
 		<card title="Orthogonal Axis Compensation" :preview-templates="['config/compensation/orthogonal']"
-			  url="https://docs.duet3d.com/en/User_manual/Tuning/Orthogonal_axis_compensation"
-			  url-title="Further Information">
+			  url-title="Further Information"
+			  url="https://docs.duet3d.com/en/User_manual/Tuning/Orthogonal_axis_compensation">
 			<div class="row">
 				<div class="col-auto">
 					<check-input label="Enable Orthogonal Axis Compensation"

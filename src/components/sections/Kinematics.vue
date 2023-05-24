@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="kinematics" title="Kinematics" :preview-templates="['config/kinematics']">
+	<config-section :type="ConfigSectionType.Kinematics" title="Kinematics">
 		<template #append-title>
 			<a v-if="store.data.move.kinematics.name === KinematicsName.cartesian"
 			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_cartesian" target="_blank">
@@ -249,27 +249,26 @@
 			Maximum turntable acceleration in degrees per second per second
 			-->
 		</div>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
-import {
-	Axis, AxisLetter, KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, EndstopType, initObject
-} from "@duet3d/objectmodel";
+import { Axis, AxisLetter, KinematicsName, CoreKinematics, DeltaKinematics, HangprinterKinematics, EndstopType, initObject } from "@duet3d/objectmodel";
+import { computed, ref } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
+import CoreKinematicsDialog from "@/components/dialogs/CoreKinematicsDialog.vue";
+import DeltaKinematicsDialog from "@/components/dialogs/DeltaKinematicsDialog.vue";
+import PolarKinematicsDialog from "@/components/dialogs/PolarKinematicsDialog.vue";
+import ScaraKinematicsDialog from "@/components/dialogs/ScaraKinematicsDialog.vue";
+import HangprinterKinematicsDialog from "@/components/dialogs/HangprinterKinematicsDialog.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
-import { computed, ref } from "vue";
-import CoreKinematicsDialog from "@/components/dialogs/CoreKinematicsDialog.vue";
 import { type CoreKinematicsTypes, DefaultForwardMatrix, DefaultInverseMatrix, DefaultDeltaKinematics } from "@/store/defaults";
-import DeltaKinematicsDialog from "@/components/dialogs/DeltaKinematicsDialog.vue";
-import PolarKinematicsDialog from "@/components/dialogs/PolarKinematicsDialog.vue";
-import ScaraKinematicsDialog from "@/components/dialogs/ScaraKinematicsDialog.vue";
-import HangprinterKinematicsDialog from "@/components/dialogs/HangprinterKinematicsDialog.vue";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

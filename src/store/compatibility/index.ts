@@ -27,13 +27,13 @@ import ConfigModel from "@/store/model";
 import { BoardType } from "@/store/Boards";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
 
-import type { LegacyTemplate } from "@/store/compatibility/LegacyTemplate";
+import type { LegacyPreset } from "@/store/compatibility/LegacyPreset";
 import {
     LegacyEndstopLocation,
     LegacyEndstopType,
     LegacyGeometry,
     LegacyProbeType
-} from "@/store/compatibility/LegacyTemplate";
+} from "@/store/compatibility/LegacyPreset";
 import { LegacyBoardType } from "@/store/compatibility/LegacyBoards";
 import { LegacyExpansionBoardType } from "@/store/compatibility/LegacyExpansionBoards";
 import { ConfigDeltaProbePoint } from "@/store/model/ConfigToolModel";
@@ -41,11 +41,11 @@ import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
 
 /**
- * Convert a legacy template (configtool < 3.4) to a config model object
+ * Convert a legacy preset (configtool < 3.4) to a config model object
  * @param input Input object
  * @returns Output object
  */
-export function convertLegacyTemplate(input: LegacyTemplate): ConfigModel {
+export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 	const model = new ConfigModel();
 
 	// Only templates for RRF 3 are supported...

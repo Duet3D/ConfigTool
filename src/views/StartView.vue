@@ -49,9 +49,9 @@
 			The selected firmware version is not compatible with this version of the Config Tool.
 			For this reason, you will be forwarded to the previous version of the Config Tool as soon as you click OK.
 			<template #buttons>
-				<button type="button" class="btn btn-primary" @click.prevent="goToOldConfigTool">
+				<a href="https://configtool.reprapfirmware.org/General" class="btn btn-primary">
 					OK
-				</button>
+				</a>
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 					Cancel
 				</button>
@@ -88,8 +88,4 @@ const startFromScratch = () => {
 		router.push("/Configuration");
 	}
 };
-
-function goToOldConfigTool() {
-	location.href = "https://configtool.reprapfirmware.org/General";
-}
 </script>

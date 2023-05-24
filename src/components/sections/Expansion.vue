@@ -5,7 +5,7 @@
 </style>
 
 <template>
-	<scroll-item id="expansion" title="Expansion">
+	<config-section :type="ConfigSectionType.Expansion" title="Expansion">
 		<template #append-title>
 			<a v-if="isDuet2" href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_2_family" target="_blank">
 				<i class="bi-info-circle"></i>
@@ -111,19 +111,20 @@
 				</tbody>
 			</table>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
 import type { Board } from "@duet3d/objectmodel";
 import { computed, ref } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
 import { PortType } from "@/store/BaseBoard";
+import { ConfigSectionType } from "@/store/sections";
 import { ExpansionBoards, ExpansionBoardType } from "@/store/ExpansionBoards";
 
 const store = useStore();

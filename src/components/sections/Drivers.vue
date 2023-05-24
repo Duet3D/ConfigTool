@@ -223,6 +223,7 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 import { useStore } from "@/store";
 import { ConfigDriver, ConfigDriverClosedLoopEncoderType, ConfigDriverMode } from "@/store/model/ConfigDriver";
 import { ExpansionBoards, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

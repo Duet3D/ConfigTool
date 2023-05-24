@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="network" title="Network" url-title="Network Configuration" :preview-templates="['config/network', 'runonce']"
+	<config-section id="network" :type="ConfigSectionType.Network" title="Network" url-title="Network Configuration"
 				 url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Networking">
 		<div class="row">
 			<!-- Ethernet -->
@@ -133,19 +133,20 @@
 							 :preset="isPresetProtocolEnabled(NetworkProtocol.SSH)" />
 			</div>
 		</div>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
 import { NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
 import IpInput from "@/components/inputs/IpInput.vue";
 
 import { useStore } from "@/store";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

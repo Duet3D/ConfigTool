@@ -1,5 +1,6 @@
 <template>
-	<scroll-item id="accessories" title="Accessories" :preview-templates="['config/accessories']" url-title="Duet3D Accessories" url="https://docs.duet3d.com/en/Duet3D_hardware/Accessories">
+	<config-section :type="ConfigSectionType.Accessories" title="Accessories" url-title="Duet3D Accessories"
+					url="https://docs.duet3d.com/en/Duet3D_hardware/Accessories">
 		<div class="row">
 			<!-- Direct Display -->
 			<div class="col-auto">
@@ -13,8 +14,7 @@
 				<div v-if="configureDirectDisplay" class="row ms-3 my-2">
 					<div class="col-6">
 						<select-input label="Direct display type" title="Type of the connected display"
-									  v-model="directDisplayController"
-									  :options="DirectDisplayTypes"
+									  v-model="directDisplayController" :options="DirectDisplayTypes"
 									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.screen.controller : null" />
 					</div>
 					<div v-if="store.data.boards[0].directDisplay?.encoder" class="col-3">
@@ -30,7 +30,8 @@
 									  unit="Hz" :min="100000" :max="8000000" :step="1" />
 					</div>
 				</div>
-				<div v-if="store.data.boards[0].directDisplay?.screen.controller === DirectDisplayController.ST7567" class="row ms-3 my-2">
+				<div v-if="store.data.boards[0].directDisplay?.screen.controller === DirectDisplayController.ST7567"
+					 class="row ms-3 my-2">
 					<div class="col">
 						<number-input label="Contrast ratio" title="Contrast ratio of this display"
 									  v-model="(store.data.boards[0].directDisplay!.screen as DirectDisplayScreenST7567).contrast"
@@ -49,15 +50,15 @@
 			<div class="col-auto">
 				<check-input v-if="panelDueChannels.length > 0" class="mt-1" label="Enable PanelDue"
 							 title="Check this option if you have a PanelDue connected to your Duet"
-							 :model-value="panelDueChannel >= 0"
-							 @update:model-value="panelDueChannel = $event ? panelDueChannels[0].value : -1"
-							 :preset="presetPanelDueChannel >= 0" />
+							 :model-value="store.data.panelDueChannel >= 0"
+							 @update:model-value="store.data.panelDueChannel = $event ? panelDueChannels[0].value : -1"
+							 :preset="store.preset.panelDueChannel >= 0" />
 			</div>
 			<div class="col-12">
-				<div v-if="(panelDueChannels.length > 0) && (panelDueChannel >= 0)" class="row ms-3 mt-2">
+				<div v-if="(panelDueChannels.length > 0) && (store.data.panelDueChannel >= 0)" class="row ms-3 mt-2">
 					<div class="col-6">
 						<select-input label="UART Channel" title="Channel number to use for PanelDue"
-									  v-model="panelDueChannel" :preset="presetPanelDueChannel"
+									  v-model="store.data.panelDueChannel" :preset="store.preset.panelDueChannel"
 									  :options="panelDueChannels" />
 					</div>
 					<div class="col-3">
@@ -75,11 +76,12 @@
 				</div>
 			</div>
 		</div>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
+import { ConfigSectionType } from "@/store/sections";
 
 const DirectDisplayTypes: Array<SelectOption> = [
 	{
@@ -152,13 +154,12 @@ const BaudRates: Array<SelectOption> = [
 import { DirectDisplay, DirectDisplayController, DirectDisplayScreenST7567 } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 
 import { useStore } from "@/store";
-import { ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const store = useStore();
 
@@ -174,103 +175,6 @@ const directDisplayController = computed({
 });
 
 // PanelDue
-const panelDueChannel = computed({
-	get() {
-		if (store.data.boardDefinition !== null) {
-			for (let channel = 0; channel < store.data.boardDefinition.ports.uart.length; channel++) {
-				const uartPorts = store.data.boardDefinition.ports.uart[channel];
-
-				// USB isn't a valid choice
-				if (uartPorts === "usb") {
-					continue;
-				}
-
-				// Check if the given UART ports are all assigned to function UART
-				let isAssignedToUart = true;
-				for (const uartPort of uartPorts.split("+")) {
-					for (const item of store.data.configTool.ports) {
-						if (item.equals(uartPort)) {
-							if (item.function !== ConfigPortFunction.uart) {
-								isAssignedToUart = false;
-							}
-							break;
-						}
-					}
-
-					if (!isAssignedToUart) {
-						break;
-					}
-				}
-				if (isAssignedToUart) {
-					return channel;
-				}
-			}
-		}
-		return -1;
-	},
-	set(value) {
-		if (store.data.boardDefinition !== null) {
-			for (let channel = 0; channel < store.data.boardDefinition.ports.uart.length; channel++) {
-				const uartPorts = store.data.boardDefinition.ports.uart[channel];
-
-				// USB isn't a valid choice
-				if (uartPorts === "usb") {
-					continue;
-				}
-
-				// Check if the given UART ports are all assigned to function UART
-				for (const uartPort of uartPorts.split("+")) {
-					for (const item of store.data.configTool.ports) {
-						if (item.equals(uartPort)) {
-							if (channel === value) {
-								// Reassign UART port of this channel
-								item.function = ConfigPortFunction.uart;
-							} else if (item.function === ConfigPortFunction.uart) {
-								// Free previously assigned UART ports
-								item.function = null;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-});
-
-const presetPanelDueChannel = computed(() => {
-	if (store.preset.boardDefinition !== null) {
-		for (let channel = 0; channel < store.preset.boardDefinition.ports.uart.length; channel++) {
-			const uartPorts = store.preset.boardDefinition.ports.uart[channel];
-
-			// USB isn't a valid choice
-			if (uartPorts === "usb") {
-				continue;
-			}
-
-			// Check if the given UART ports are all assigned to function UART
-			let isAssignedToUart = true;
-			for (const uartPort of uartPorts.split("+")) {
-				for (const item of store.data.configTool.ports) {
-					if (item.equals(uartPort)) {
-						if (item.function !== ConfigPortFunction.uart) {
-							isAssignedToUart = false;
-						}
-						break;
-					}
-				}
-
-				if (!isAssignedToUart) {
-					break;
-				}
-			}
-			if (isAssignedToUart) {
-				return channel;
-			}
-		}
-	}
-	return -1;
-});
-
 const panelDueChannels = computed(() => {
 	const result: Array<SelectOption> = [];
 	if (store.data.boardDefinition !== null) {

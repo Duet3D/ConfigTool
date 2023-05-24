@@ -1,23 +1,8 @@
 <template>
 	<main class="container">
-		<general-config />
-		<accessories-config />
-		<network-config v-if="store.data.network.interfaces.length > 0" />
-		<expansion-config />
-		<kinematics-config />
-		<drivers-config />
-		<axes-config />
-		<extruders-config v-if="store.data.configTool.capabilities.fff" />
-		<probes-config />
-		<endstops-config />
-		<compensation-config />
-		<sensors-config />
-		<heaters-config v-if="store.data.configTool.capabilities.fff" />
-		<spindles-config v-if="store.data.configTool.capabilities.cnc" />
-		<lasers-config v-if="store.data.configTool.capabilities.laser" />
-		<fans-config />
-		<tools-config />
-		<miscellaneous-config />
+		<component v-for="section in sectionComponents" :is="section"></component>
+		
+		<div class="mt-3"></div>
 
 		<div v-if="firstErrorNode !== null" class="alert alert-danger d-flex justify-content-between mt-2">
 			<span>
@@ -40,32 +25,100 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import GeneralConfig from "@/components/configuration/GeneralConfig.vue";
-import AccessoriesConfig from "@/components/configuration/AccessoriesConfig.vue";
-import NetworkConfig from "@/components/configuration/NetworkConfig.vue";
-import ExpansionConfig from "@/components/configuration/ExpansionConfig.vue";
-import KinematicsConfig from "@/components/configuration/KinematicsConfig.vue";
-import DriversConfig from "@/components/configuration/DriversConfig.vue";
-import AxesConfig from "@/components/configuration/AxesConfig.vue";
-import ProbesConfig from "@/components/configuration/ProbesConfig.vue";
-import EndstopsConfig from "@/components/configuration/EndstopsConfig.vue";
-import CompensationConfig from "@/components/configuration/CompensationConfig.vue";
-import SensorsConfig from "@/components/configuration/SensorsConfig.vue";
-import HeatersConfig from "@/components/configuration/HeatersConfig.vue";
-import ExtrudersConfig from "@/components/configuration/ExtrudersConfig.vue";
-import SpindlesConfig from "@/components/configuration/SpindlesConfig.vue";
-import LasersConfig from "@/components/configuration/LasersConfig.vue";
-import FansConfig from "@/components/configuration/FansConfig.vue";
-import ToolsConfig from "@/components/configuration/ToolsConfig.vue";
-import MiscellaneousConfig from "@/components/configuration/MiscellaneousConfig.vue";
+import Accessories from "@/components/sections/Accessories.vue";
+import General from "@/components/sections/General.vue";
+import Network from "@/components/sections/Network.vue";
+import Expansion from "@/components/sections/Expansion.vue";
+import Drivers from "@/components/sections/Drivers.vue";
+import Axes from "@/components/sections/Axes.vue";
 
 import { useStore } from "@/store";
+import { ConfigSectionType, getSections } from "@/store/sections";
+import Extruders from "@/components/sections/Extruders.vue";
+import Probes from "@/components/sections/Probes.vue";
+import Endstops from "@/components/sections/Endstops.vue";
+import Compensation from "@/components/sections/Compensation.vue";
+import Sensors from "@/components/sections/Sensors.vue";
+import Heaters from "@/components/sections/Heaters.vue";
+import Spindles from "@/components/sections/Spindles.vue";
+import Lasers from "@/components/sections/Lasers.vue";
+import Fans from "@/components/sections/Fans.vue";
+import Tools from "@/components/sections/Tools.vue";
+import Miscellaneous from "@/components/sections/Miscellaneous.vue";
+import Kinematics from "@/components/sections/Kinematics.vue";
 
 const router = useRouter();
 const store = useStore();
+
+// Sections
+const sectionComponents = computed(() => {
+	const sections = getSections(), components = [];
+	for (const section of sections) {
+		switch (section) {
+			case ConfigSectionType.General:
+				components.push(General);
+				break;
+			case ConfigSectionType.Accessories:
+				components.push(Accessories);
+				break;
+			case ConfigSectionType.Network:
+				components.push(Network);
+				break;
+			case ConfigSectionType.Expansion:
+				components.push(Expansion);
+				break;
+			case ConfigSectionType.Kinematics:
+				components.push(Kinematics);
+				break;
+			case ConfigSectionType.Drivers:
+				components.push(Drivers);
+				break;
+			case ConfigSectionType.Axes:
+				components.push(Axes);
+				break;
+			case ConfigSectionType.Extruders:
+				components.push(Extruders);
+				break;
+			case ConfigSectionType.Probes:
+				components.push(Probes);
+				break;
+			case ConfigSectionType.Endstops:
+				components.push(Endstops);
+				break;
+			case ConfigSectionType.Compensation:
+				components.push(Compensation);
+				break;
+			case ConfigSectionType.Sensors:
+				components.push(Sensors);
+				break;
+			case ConfigSectionType.Heaters:
+				components.push(Heaters);
+				break;
+			case ConfigSectionType.Spindles:
+				components.push(Spindles);
+				break;
+			case ConfigSectionType.Lasers:
+				components.push(Lasers);
+				break;
+			case ConfigSectionType.Fans:
+				components.push(Fans);
+				break;
+			case ConfigSectionType.Tools:
+				components.push(Tools);
+				break;
+			case ConfigSectionType.Miscellaneous:
+				components.push(Miscellaneous);
+				break;
+			default:
+				const _exhaustiveCheck: never = section;
+				break;
+		}
+	}
+	return components;
+});
 
 // Scrollspy
 const observer = new IntersectionObserver(entries => {
@@ -125,5 +178,4 @@ onBeforeUnmount(() => {
 	observer.disconnect();
 	classObserver.disconnect();
 });
-
 </script>

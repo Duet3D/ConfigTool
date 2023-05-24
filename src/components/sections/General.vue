@@ -1,7 +1,6 @@
 <template>
-	<scroll-item id="general" title="General"
-				 :preview-templates="(store.data.sbc === null) ? ['config/general', 'runonce'] : ['config/general']"
-				 url-title="Getting Started" url="https://docs.duet3d.com/en/User_manual/Overview">
+	<config-section :type="ConfigSectionType.General" title="General" url-title="Getting Started"
+					url="https://docs.duet3d.com/en/User_manual/Overview">
 		<div class="row">
 			<div class="col">
 				<select-input label="Board" title="Mainboard of your setup" v-model="board" :options="boardOptions"
@@ -14,14 +13,14 @@
 			</div>
 			<div v-if="supportsSbcMode" class="col">
 				<select-input label="Operation Mode"
-							title="Operation mode of your printer. Newer boards allow networking and plugin functionality to be handled by an extra SBC" :options="ModeOptions"
-							v-model="standaloneMode" :preset="store.preset.sbc === null" :required="false" />
+							  title="Operation mode of your printer. Newer boards allow networking and plugin functionality to be handled by an extra SBC"
+							  :options="ModeOptions" v-model="standaloneMode" :preset="store.preset.sbc === null"
+							  :required="false" />
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
-				<check-input label="Select the first tool on start-up"
-							 title="Select the first available tool on start-up"
+				<check-input label="Select the first tool on start-up" title="Select the first available tool on start-up"
 							 v-model="store.data.configTool.autoSelectFirstTool"
 							 :preset="store.preset.configTool.autoSelectFirstTool" />
 				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)"
@@ -92,7 +91,7 @@
 							 :preset="store.preset.configTool.capabilities.laser" />
 			</div>
 		</div>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script lang="ts">
@@ -114,7 +113,7 @@ const ModeOptions: Array<SelectOption> = [
 import { NetworkInterface, NetworkInterfaceType, SBC } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
@@ -122,6 +121,7 @@ import TextInput from "@/components/inputs/TextInput.vue";
 
 import { BoardType, UnsupportedBoardType } from "@/store/Boards";
 import { preconfigureNetworkInterface } from "@/store/defaults";
+import { ConfigSectionType } from "@/store/sections";
 import { useStore } from "@/store";
 
 const store = useStore();

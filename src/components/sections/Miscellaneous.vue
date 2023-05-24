@@ -5,21 +5,23 @@
 </style>
 
 <template>
-	<scroll-item id="miscellaneous" title="Miscellaneous" class="mb-3">
+	<config-section :type="ConfigSectionType.Miscellaneous" title="Miscellaneous">
 		<check-input label="Configure custom settings in config.g"
 					 title="Add custom configuration commands to config.g. This is typically only needed by advanced users"
 					 v-model="showCustomSettings" :preset="store.preset.configTool.customSettings !== ''" />
 		<g-code-input v-if="showCustomSettings || store.data.configTool.customSettings.trim() !== ''" class="editor ms-4 mt-1"
 					  v-model="store.data.configTool.customSettings" />
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
-import ScrollItem from "@/components/ScrollItem.vue";
+import { defineAsyncComponent, ref } from "vue";
+
+import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "../inputs/CheckInput.vue";
 
 import { useStore } from "@/store";
-import { defineAsyncComponent, ref } from "vue";
+import { ConfigSectionType } from "@/store/sections";
 
 const GCodeInput = defineAsyncComponent(() => import("../monaco/GCodeInput.vue"));
 const store = useStore();

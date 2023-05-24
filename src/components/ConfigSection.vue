@@ -1,7 +1,7 @@
 <template>
-	<section :id="id" class="pt-3">
-		<card v-bind="$attrs" :title="props.title" :preview-templates="props.previewTemplates"
-			  :preview-options="props.previewOptions" :url="props.url" :url-title="props.urlTitle">
+	<section :id="type" class="pt-3">
+		<card v-bind="$attrs" :title="props.title" :preview-templates="previewTemplates.map(item => item.template)"
+			  :preview-options="previewTemplates.map(item => item.data)" :url="props.url" :url-title="props.urlTitle">
 			<template #title>
 				<slot name="title" />
 			</template>
@@ -20,14 +20,18 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
+import { type ConfigSectionType, getSectionTemplates } from "@/store/sections";
+
 import Card from "./Card.vue";
 
 const props = defineProps<{
-	id: string,
+	type: ConfigSectionType,
 	title?: string,
-	previewTemplates?: Array<string>,
-	previewOptions?: Record<string, any>,
 	url?: string
 	urlTitle?: string
 }>();
+
+const previewTemplates = computed(() => getSectionTemplates(props.type));
 </script>

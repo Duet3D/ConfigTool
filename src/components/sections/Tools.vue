@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="tools" title="Tools" :preview-templates="previewTemplates" :preview-options="previewOptions">
+	<config-section :type="ConfigSectionType.Tools" title="Tools">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddTool" @click.prevent="addTool">
 				<i class="bi-plus-circle"></i>
@@ -102,7 +102,7 @@
 
 			<tool-dialog v-model="toolDialogShown" :tool="toolToConfigure" />
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script lang="ts">
@@ -136,13 +136,15 @@ const spindleOptions = computed(() => {
 <script setup lang="ts">
 import { Tool } from "@duet3d/objectmodel";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import ToolDialog from "@/components/dialogs/ToolDialog.vue";
 import ExtruderList from "@/components/inputs/ExtruderList.vue";
 import FanList from "@/components/inputs/FanList.vue";
 import HeaterList from "@/components/inputs/HeaterList.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
+
+import { ConfigSectionType } from "@/store/sections";
 
 // Tool management
 const canAddTool = computed(() => store.data.tools.length < store.data.limits.tools!);
@@ -156,31 +158,6 @@ function addTool() {
 	}
 	store.data.tools.push(tool);
 }
-
-// G-code preview
-const previewTemplates = computed(() => {
-	const templates = ["config/tools"];
-	for (let i = 0; i < store.data.tools.length; i++) {
-		if (store.data.tools[i] !== null) {
-			templates.push(`tpre${i}`);
-			templates.push(`tpost${i}`);
-			templates.push(`tfree${i}`);
-		}
-	}
-	return templates;
-});
-
-const previewOptions = computed(() => {
-	const options: Array<Record<string, any> | null> = [null];
-	for (let i = 0; i < store.data.tools.length; i++) {
-		if (store.data.tools[i] !== null) {
-			for (let k = 0; k < 3; k++) {
-				options.push({ toolNumber: i });
-			}
-		}
-	}
-	return options;
-});
 
 // Tools
 function getToolNumbers(tool: Tool) {

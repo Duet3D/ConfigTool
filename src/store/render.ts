@@ -1,16 +1,17 @@
 import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, NetworkInterfaceType, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
 import ejs from "ejs";
+import type { StoreState } from "pinia";
 
-import { useStore } from "@/store";
 import { precise } from "@/utils";
-
 import packageInfo from "../../package.json";
+
 import { ConfigDriverClosedLoopEncoderType, ConfigDriverMode } from "./model/ConfigDriver";
 import { ConfigPort, ConfigPortFunction, stripBoard } from "./model/ConfigPort";
+import type ConfigModel from "./model";
+
 import { isDefaultCoreKinematics } from "./defaults";
 import { ExpansionBoards, getExpansionBoardDefinition } from "./ExpansionBoards";
-
-const store = useStore();
+import { useStore } from ".";
 
 /**
  * Indent comments in a G-code file
@@ -52,7 +53,8 @@ export function indent(content: string): string {
 const renderOptions = {
     // Basics
     /* filename, */
-    model: store.data,
+    model: null as any as StoreState<ConfigModel>,
+    /* model, */
     /* render, */
     version: packageInfo.version,
 
@@ -65,28 +67,28 @@ const renderOptions = {
     },
     params(params: Record<string, any>) {
         return Object.keys(params)
-                .filter(key => (params[key] !== undefined) && (!(params[key] instanceof Array) || params[key].length > 0))
-                .map(key => {
-                    const value = params[key];
-                    if (/[a-z]/.test(key)) {
-                        key = "'" + key;
+            .filter(key => (params[key] !== undefined) && (!(params[key] instanceof Array) || params[key].length > 0))
+            .map(key => {
+                const value = params[key];
+                if (/[a-z]/.test(key)) {
+                    key = "'" + key;
+                }
+                if (value === null) {
+                    return key;
+                }
+                if (typeof value === "string") {
+                    if (/^{.+}$/.test(value)) {
+                        // expression
+                        return key + value;
                     }
-                    if (value === null) {
-                        return key;
-                    }
-                    if (typeof value === "string") {
-                        if (/^{.+}$/.test(value)) {
-                            // expression
-                            return key + value;
-                        }
-                        return key + this.escape(value);
-                    }
-                    if (value instanceof Array) {
-                        return key + value.join(':');
-                    }
-                    return key + value;
-                }, this)
-                .join(' ');
+                    return key + this.escape(value);
+                }
+                if (value instanceof Array) {
+                    return key + value.join(':');
+                }
+                return key + value;
+            }, this)
+            .join(' ');
     },
     precise,
     reduce(array: Array<any>) {
@@ -116,13 +118,12 @@ const renderOptions = {
     // Ports
     getPort(fn: ConfigPortFunction, index?: number, secondaryIndex?: number, board?: number): ConfigPort | null {
         let secondaryCounter = 0;
-        for (const port of store.data.configTool.ports) {
+        for (const port of this.model.configTool.ports) {
             if (port.function === fn && (
-                    (index === undefined || index === port.index) &&
-                    (secondaryIndex === undefined || secondaryIndex === secondaryCounter++) &&
-                    (board === undefined || board === port.canBoard)
-                ))
-            {
+                (index === undefined || index === port.index) &&
+                (secondaryIndex === undefined || secondaryIndex === secondaryCounter++) &&
+                (board === undefined || board === port.canBoard)
+            )) {
                 return port;
             }
         }
@@ -140,7 +141,7 @@ const renderOptions = {
         const ports: Array<string> = [];
         for (const fn of fns) {
             let portFound = false;
-            for (const port of store.data.configTool.ports) {
+            for (const port of this.model.configTool.ports) {
                 if (port.function === fn && (index === undefined || index === port.index)) {
                     if (ports.length === 0) {
                         ports.push(port.toString());
@@ -171,7 +172,7 @@ const renderOptions = {
                 if (servoIndex <= port.index) {
                     // First probe servo index must be greater than last user-defined servo index
                     servoIndex = port.index + 1;
-                }   
+                }
             }
         }
         for (let i = 0; i < probeIndex; i++) {
@@ -184,7 +185,6 @@ const renderOptions = {
     },
 
     // Boards
-    mainboard: null,
     ExpansionBoards,
     getExpansionBoardDefinition,
 
@@ -208,7 +208,6 @@ const renderOptions = {
     NetworkInterfaceType,
     ProbeType
 };
-Object.defineProperty(renderOptions, "mainboard", { get: () => store.data.boards.find(board => !board.canAddress) });
 
 /**
  * Retrieve the template filename of a template
@@ -243,6 +242,7 @@ export async function render(template: string, args: Record<string, any> = {}): 
     // Prepare args
     const renderArgs: Record<string, any> = { ...renderOptions, ...args };
     renderArgs.filename = template.split('/')[0] + ".g";
+    renderArgs.model = useStore().data;
     renderArgs.preview ??= true;
     renderArgs.render = (file: string, subArgs: Record<string, any> = {}) => render(file, { ...renderArgs, ...subArgs });
 

@@ -30,6 +30,7 @@ aside {
 	background-color: transparent;
 	border: 0;
 }
+
 .btn-toggle:hover {
 	color: rgba(0, 0, 0, .85);
 	background-color: #dae1f5;
@@ -50,6 +51,7 @@ aside {
 .btn-toggle[aria-expanded="true"] {
 	color: rgba(0, 0, 0, .85);
 }
+
 .btn-toggle[aria-expanded="true"]::before {
 	transform: rotate(90deg);
 }
@@ -71,57 +73,54 @@ aside {
 }
 
 .active,
-.fw-semibold { font-weight: 600; }
+.fw-semibold {
+	font-weight: 600;
+}
 </style>
 
 <template>
 	<aside class="bg-white">
 		<ul class="list-unstyled ps-0">
 			<li class="mb-1">
-				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#start-collapse" aria-expanded="true">
+				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse"
+						data-bs-target="#start-collapse" aria-expanded="true">
 					Start
 				</button>
 				<div class="collapse show" id="start-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-						<li><RouterLink to="/" active-class="active" class="link-dark rounded">Introduction</RouterLink></li>
-						<!--<li><RouterLink to="/Templates" active-class="active" class="link-dark rounded">Templates</RouterLink></li>-->
+						<li>
+							<RouterLink to="/" active-class="active" class="link-dark rounded">Introduction</RouterLink>
+						</li>
+						<!--<li><RouterLink to="/Presets" active-class="active" class="link-dark rounded">Presets</RouterLink></li>-->
 					</ul>
 				</div>
 			</li>
 			<li class="mb-1">
-				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse"
+						data-bs-target="#home-collapse" aria-expanded="true">
 					Configuration
 				</button>
 				<div class="collapse show" id="home-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-						<li><RouterLink :to="{ name: 'configuration' }" class="link-dark rounded">General</RouterLink></li>
-						<li><RouterLink to="/Configuration#accessories" class="link-dark rounded">Accessories</RouterLink></li>
-						<li v-if="store.data.network.interfaces.length > 0"><RouterLink to="/Configuration#network" class="link-dark rounded">Network</RouterLink></li>
-						<li><RouterLink :to="{ name: 'configuration', hash: '#expansion' }" class="link-dark rounded">Expansion</RouterLink></li>
-						<li><RouterLink :to="{ name: 'configuration', hash: '#kinematics' }" class="link-dark rounded">Kinematics</RouterLink></li>
-						<li><RouterLink to="/Configuration#drivers" class="link-dark rounded">Drivers</RouterLink></li>
-						<li><RouterLink to="/Configuration#axes" class="link-dark rounded">Axes</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration#extruders" class="link-dark rounded">Extruders</RouterLink></li>
-						<li><RouterLink to="/Configuration#probes" class="link-dark rounded">Z-Probes</RouterLink></li>
-						<li><RouterLink to="/Configuration#endstops" class="link-dark rounded">Endstops</RouterLink></li>
-						<li><RouterLink to="/Configuration#compensation" class="link-dark rounded">Compensation</RouterLink></li>
-						<li><RouterLink to="/Configuration#sensors" class="link-dark rounded">Sensors</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.fff"><RouterLink to="/Configuration#heaters" class="link-dark rounded">Heaters</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.cnc"><RouterLink to="/Configuration#spindles" class="link-dark rounded">Spindles</RouterLink></li>
-						<li v-if="store.data.configTool.capabilities.laser"><RouterLink to="/Configuration#lasers" class="link-dark rounded">Lasers</RouterLink></li>
-						<li><RouterLink to="/Configuration#fans" class="link-dark rounded">Fans</RouterLink></li>
-						<li><RouterLink to="/Configuration#tools" class="link-dark rounded">Tools</RouterLink></li>
-						<li><RouterLink to="/Configuration#miscellaneous" class="link-dark rounded">Miscellaneous</RouterLink></li>
+						<li v-for="section in sections">
+							<RouterLink :to="{ name: 'configuration', hash: (section !== ConfigSectionType.General) ? '#' + section : undefined }"
+										class="link-dark rounded">
+								{{ section[0].toUpperCase() + section.substring(1) }}
+							</RouterLink>
+						</li>
 					</ul>
 				</div>
 			</li>
 			<li class="mb-1">
-				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#finish-collapse" aria-expanded="true">
+				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse"
+						data-bs-target="#finish-collapse" aria-expanded="true">
 					Finish
 				</button>
 				<div class="collapse show" id="finish-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-						<li><RouterLink to="/Summary" class="link-dark rounded" active-class="active">Summary</RouterLink></li>
+						<li>
+							<RouterLink to="/Summary" class="link-dark rounded" active-class="active">Summary</RouterLink>
+						</li>
 					</ul>
 				</div>
 			</li>
@@ -130,9 +129,13 @@ aside {
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { RouterLink } from "vue-router"
 
 import { useStore } from "@/store";
+import { ConfigSectionType, getSections } from "@/store/sections";
 
 const store = useStore();
+
+const sections = computed(() => getSections(store.data));
 </script>

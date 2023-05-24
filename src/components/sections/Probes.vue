@@ -1,7 +1,6 @@
 <template>
-	<scroll-item id="probes" :preview-templates="previewTemplates" :preview-options="previewOptions"
-				 url-title="Connecting a Z probe"
-				 url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_connecting">
+	<config-section :type="ConfigSectionType.Probes" url-title="Connecting a Z probe"
+					url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_connecting">
 		<template #title>
 			{{ store.data.configTool.capabilities.cnc ? "Probes" : "Z-Probes" }}
 		</template>
@@ -104,7 +103,7 @@
 				No Probes defined
 			</div>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
@@ -116,10 +115,11 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 import HomingSpeedsInput from "@/components/inputs/HomingSpeedsInput.vue";
 import ProbeTypeInput from "@/components/inputs/ProbeTypeInput.vue";
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 
 import { useStore } from "@/store";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 
@@ -142,40 +142,6 @@ function getPresetProbeValue<K extends keyof Probe>(index: number, key: K, subIn
 	}
 	return undefined;
 }
-
-const previewTemplates = computed(() => {
-	const templates = ["config/probes"]
-	for (let i = 0; i < store.data.sensors.probes.length; i++) {
-		const probe = store.data.sensors.probes[i];
-		if ((probe !== null) && (store.data.configTool.deployRetractProbes.has(i) || probe.type === ProbeType.blTouch)) {
-			if (store.data.sensors.probes.length === 1) {
-				templates.push("deployprobe");
-				templates.push("retractprobe");
-			} else {
-				templates.push(`deployprobe${i}`);
-				templates.push(`retractprobe${i}`);
-			}
-		}
-	}
-	return templates;
-});
-
-const previewOptions = computed(() => {
-	const options: Array<Record<string, any> | null> = [null];
-	for (let i = 0; i < store.data.sensors.probes.length; i++) {
-		const probe = store.data.sensors.probes[i];
-		if ((probe !== null) && (store.data.configTool.deployRetractProbes.has(i) || probe.type === ProbeType.blTouch)) {
-			for (let k = 0; k < 2; k++) {
-				// add it twice, once for deployprobe.g and once again for retractprobe.g
-				options.push({
-					probe,
-					probeIndex: store.data.sensors.probes.findIndex(item => item !== null)
-				});
-			}
-		}
-	}
-	return options;
-});
 
 function probeUsesDeployRetract(index: number) {
 	return store.data.sensors.probes[index]!.type === ProbeType.blTouch || store.data.configTool.deployRetractProbes.has(index);

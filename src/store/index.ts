@@ -37,12 +37,11 @@ import {
 	Sensors,
 	Tool
 } from "@duet3d/objectmodel";
-import { defineStore, type StoreDefinition } from "pinia";
+import { defineStore } from "pinia";
 
 import ConfigModel from "@/store/model";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { Boards, BoardType } from "@/store/Boards";
-import { watch } from "vue";
 
 const defaultTemplate = initObject(ConfigModel, {
 	boards: initCollection(Board, [

@@ -1,5 +1,5 @@
 <template>
-	<scroll-item id="axes" title="Axes" :preview-templates="['config/axes']">
+	<config-section :type="ConfigSectionType.Axes" title="Axes">
 		<template #append-title>
 			<button class="btn btn-sm btn-primary" :disabled="!canAddAxis" @click.prevent="addAxis">
 				<i class="bi-plus-circle"></i>
@@ -115,14 +115,14 @@
 				</tbody>
 			</table>
 		</template>
-	</scroll-item>
+	</config-section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { Axis, AxisLetter, DriverId, Endstop, KinematicsName } from "@duet3d/objectmodel";
+import { computed } from "vue";
+import { Axis, AxisLetter, Endstop, KinematicsName } from "@duet3d/objectmodel";
 
-import ScrollItem from "@/components/ScrollItem.vue";
+import ConfigSection from "@/components/ConfigSection.vue";
 import StepsPerMmCalculator from "@/components/calculators/StepsPerMmCalculator.vue";
 import DriverList from "@/components/inputs/DriverList.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
@@ -130,6 +130,7 @@ import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.
 
 import { useStore } from "@/store";
 import type { StoreState } from "pinia";
+import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
 

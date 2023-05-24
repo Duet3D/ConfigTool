@@ -93,7 +93,7 @@ export enum LegacyProbeType {
 	BLTouch = "bltouch"
 }
 
-export interface LegacyTemplate {
+export interface LegacyPreset {
 	board: string;
 	expansion_boards: Array<string>;
 	firmware: number;

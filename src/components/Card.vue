@@ -18,7 +18,7 @@
 				{{ props.title }}
 			</slot>
 
-			<a v-if="previewTemplates" href="javascript:void(0)" @click="previewVisible = !previewVisible">
+			<a v-if="previewTemplates && previewTemplates.length > 0" href="javascript:void(0)" @click="previewVisible = !previewVisible">
 				<i class="bi" :class="previewVisible ? 'bi-code-slash' : 'bi-code'"></i>
 				{{ previewVisible? "Hide G-code preview": "Show G-code preview" }}
 			</a>
