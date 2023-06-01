@@ -33,7 +33,7 @@ export class ConfigDeltaProperties extends ModelObject {
 	lowDiveHeight: boolean = true;
 	probeRadius: number = 85;
 	readonly probePoints: ModelCollection<ConfigDeltaProbePoint> = new ModelCollection(ConfigDeltaProbePoint);
-	homeFirst: boolean = false;
+	homeFirst: boolean = true;
 
 	/**
 	 * Recalculate the Delta probe points
@@ -130,7 +130,7 @@ export class ConfigToolModel extends ModelObject {
 	skewOffset: number = 100;
 	readonly sensors: ModelCollection<ConfigTempSensor | null> = new ModelCollection(ConfigTempSensor);
 	waitForToolTemperatures: boolean = true;
-	readonly wiFi: ConfigWiFi = new ConfigWiFi();
+	readonly wifi: ConfigWiFi = new ConfigWiFi();
 
 	assignPort(port: string, fn: ConfigPortFunction | null, index: number, frequency?: number): ConfigPort {
 		for (const item of this.ports) {

@@ -150,14 +150,6 @@ const defaultTemplate = initObject(ConfigModel, {
 				stepsPerMm: 400
 			}
 		]),
-		compensation: initObject(MoveCompensation, {
-			probeGrid: initObject(ProbeGrid, {
-				mins: [20, 20],
-				maxs: [180, 180],
-				radius: 85,
-				spacings: [80, 80]
-			})
-		}),
 		extruders: initCollection(Extruder, [
 			{
 				acceleration: 250,

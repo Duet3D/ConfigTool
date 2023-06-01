@@ -52,7 +52,7 @@
                     break;
             } -%>
 M558 <%- params(probeConfig) %> ; configure <%- type %> probe via slot #<%- probeIndex %>
-<%          if (model.isDelta && model.delta.lowDiveHeight) { -%>
+<%          if (model.isDelta && model.configTool.delta.lowDiveHeight) { -%>
 M558 H30 ;*** Remove this line after delta calibration has been done and new delta parameters have been saved
 <%		    } -%>
 G31 <%- params({

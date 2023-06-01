@@ -1,4 +1,4 @@
-import { ProbeType } from "@duet3d/objectmodel";
+import { MachineMode, NetworkInterfaceState, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
 
 import { useStore } from ".";
 
@@ -10,8 +10,8 @@ export enum ConfigSectionType {
     Accessories = "accessories",
     Network = "network",
     Expansion = "expansion",
-    Kinematics = "kinematics",
     Drivers = "drivers",
+    Kinematics = "kinematics",
     Axes = "axes",
     Extruders = "extruders",
     Probes = "probes",
@@ -38,8 +38,8 @@ export function getSections() {
         ConfigSectionType.Accessories,
         (store.data.network.interfaces.length > 0) ? ConfigSectionType.Network : null,
         ConfigSectionType.Expansion,
-        ConfigSectionType.Kinematics,
         ConfigSectionType.Drivers,
+        ConfigSectionType.Kinematics,
         ConfigSectionType.Axes,
         (store.data.configTool.capabilities.fff) ? ConfigSectionType.Extruders : null,
         ConfigSectionType.Probes,
@@ -123,26 +123,39 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             }
             break;
         case ConfigSectionType.Network:
-            result.push({ template: "config/network", data: null });
-            result.push({ template: "runonce", data: null }); // FIXME
+            if (store.data.configTool.password !== "" || (store.data.sbc === null && store.data.network.interfaces.some(iface => iface.state !== NetworkInterfaceState.disabled))) {
+                // Configure machine password (if set) and in standalone mode network adapters via config.g
+                result.push({ template: "config/network", data: null });
+            }
+
+            if ((store.data.sbc === null && store.data.configTool.wifi.ssid.trim() !== "" && store.data.network.interfaces.some(iface => iface.state !== NetworkInterfaceState.disabled && iface.type === NetworkInterfaceType.wifi)) ||
+                (store.data.sbc !== null && store.data.network.interfaces.some(iface => iface.state !== NetworkInterfaceState.disabled)))
+            {
+                // WiFi and SBC network interfaces are configured using runonce.g
+                result.push({ template: "runonce", data: null });
+            }
             break;
         case ConfigSectionType.Expansion:
             // no templates
             break;
-        case ConfigSectionType.Kinematics:
-            result.push({ template: "config/kinematics", data: null });
-            break;
         case ConfigSectionType.Drivers:
             // defined using sub-sections
+            break;
+        case ConfigSectionType.Kinematics:
+            result.push({ template: "config/kinematics", data: null });
             break;
         case ConfigSectionType.Axes:
             result.push({ template: "config/axes", data: null });
             break;
         case ConfigSectionType.Extruders:
-            result.push({ template: "config/extruders", data: null });
+            if (store.data.move.extruders.length > 0) {
+                result.push({ template: "config/extruders", data: null });
+            }
             break;
         case ConfigSectionType.Probes:
-            result.push({ template: "config/probes", data: null });
+            if (store.data.sensors.probes.some(probe => probe !== null)) {
+                result.push({ template: "config/probes", data: null });
+            }
             addDeployRetractProbeTemplates();
             break;
         case ConfigSectionType.Endstops:
@@ -154,26 +167,42 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             // defined using sub-sections
             break;
         case ConfigSectionType.Sensors:
-            result.push({ template: "config/sensors", data: null });
+            if (store.data.sensors.analog.some(sensor => sensor !== null)) {
+                result.push({ template: "config/sensors", data: null });
+            }
             break;
         case ConfigSectionType.Heaters:
-            result.push({ template: "config/heaters", data: null });
+            if (store.data.heat.heaters.some(heater => heater !== null)) {
+                result.push({ template: "config/heaters", data: null });
+            }
             break;
         case ConfigSectionType.Spindles:
-            result.push({ template: "config/spindles", data: null });
+            if (store.data.spindles.some(spindle => spindle !== null)) {
+                result.push({ template: "config/spindles", data: null });
+            }
             break;
         case ConfigSectionType.Lasers:
             result.push({ template: "config/lasers", data: null });
             break;
         case ConfigSectionType.Fans:
-            result.push({ template: "config/fans", data: null });
+            if (store.data.fans.some(fan => fan !== null)) {
+                result.push({ template: "config/fans", data: null });
+            }
             break;
         case ConfigSectionType.Tools:
-            result.push({ template: "config/tools", data: null });
+            if (store.data.tools.some(tool => tool !== null)) {
+                result.push({ template: "config/tools", data: null });
+            }
             addToolChangeMacros();
             break;
         case ConfigSectionType.Miscellaneous:
-            result.push({ template: "config/miscellaneous", data: null });
+            if (store.data.configTool.configOverride ||
+                store.data.state.machineMode !== MachineMode.fff || store.data.configTool.capabilities.laser ||
+                (store.data.configTool.autoSelectFirstTool && store.data.tools.some(tool => tool !== null)) ||
+                store.data.configTool.customSettings.trim() !== "")
+            {
+                result.push({ template: "config/miscellaneous", data: null });
+            }
             break;
         
         case undefined:
@@ -183,6 +212,7 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             }
             addDeployRetractProbeTemplates();
             result.push({ template: store.data.isDelta ? "homedelta" : "homeall", data: null });
+            result.push({ template: "bed", data: null });
             addHomingTemplates();
             addToolChangeMacros();
             break;

@@ -1,15 +1,63 @@
-<%  if (model.network.interfaces.length > 0) {
+<%  if (model.configTool.password !== "") { -%>
+M551 P<%- escape(model.configTool.password) %> ; set <%- (model.sbc === null) ? "machine" : "UI" %> password
+<%  }
+
+    if (model.sbc === null) {
         for (let i = 0; i < model.network.interfaces.length; i++) {
             const iface = model.network.interfaces[i];
             if (model.network.interfaces.length === 1) {
                 i = undefined;
             }
 
-            if (iface.type === NetworkInterfaceType.lan) { -%>
-; LAN config goes here
-<%          }
+            if (iface.state !== NetworkInterfaceState.disabled) {
+                // Configure network interface in standalone mode
+                // TODO: Add support for MAC address
+                if (iface.type === NetworkInterfaceType.lan) { -%>
+M552 <%- params({
+    I: i,
+    P: [iface.configuredIP ?? "0.0.0.0"],
+    S: 1
+}) %> ; configure Ethernet adapter
+<%                  if (iface.configuredIP && iface.configuredIP !== "0.0.0.0") { -%>
+M553 P<%- iface.subnet %> ; set netmask
+M554 P<%- iface.gateway %> ; set gateway
+<%                  }
+                } else if (iface.type === NetworkInterfaceType.wifi) { -%>
+M552 <%- params({
+    I: i,
+    S: 1
+}) %> ; configure WiFi adapter
+<%              }
 
-            if (model.network.interfaces.length === 1) {
+                // Configure network protocols
+                for (const protocol of iface.activeProtocols) {
+                    let protocolNumber = undefined, protocolName = undefined;
+                    switch (protocol) {
+                        case NetworkProtocol.HTTP:
+                            protocolNumber = 0;
+                            protocolName = "HTTP";
+                            break;
+                        case NetworkProtocol.FTP:
+                            protocolNumber = 1;
+                            protocolName = "FTP";
+                            break;
+                        case NetworkProtocol.Telnet:
+                            protocolNumber = 2;
+                            protocolName = "Telnet";
+                            break;
+                    }
+
+                    if (protocolNumber !== undefined) { -%>
+M586 <%- params({
+    I: i,
+    P: protocolNumber,
+    S: 1
+}) %> ; configure <%- protocolName %>
+<%                  }
+                }
+            }
+
+            if (i === undefined) {
                 break;
             }
         }

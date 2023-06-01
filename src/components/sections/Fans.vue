@@ -90,7 +90,7 @@
 
 			<div v-if="store.data.fans.length === 0" class="alert alert-info mb-0">
 				<i class="bi-info-circle"></i>
-				No Fans defined
+				No Fans
 			</div>
 		</template>
 	</config-section>

@@ -1,17 +1,24 @@
-<%  if (model.configTool.configOverride || (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) || model.configTool.customSettings.trim() !== "") {
-        if (model.configTool.configOverride) { -%>
+<%  if (model.configTool.configOverride) { -%>
 M501 ; load saved parameters from non-volatile memory
-<%      }
+<%  }
 
-        if (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) { -%>
-T<%- model.tools.findIndex(tool => tool !== null) %> ; select first tool
+    // FIXME The following second conition can be removed when lasers are defined using M950
+    if (model.state.machineMode !== MachineMode.fff || model.configTool.capabilities.laser) {
+        if (model.state.machineMode === MachineMode.fff) { -%>
+M451 ; select FFF mode
+<%      } else if (model.state.machineMode === MachineMode.cnc) { -%>
+M453 ; select CNC mode
+<%      } else if (model.state.machineMode === MachineMode.laser) { -%>
+M452 ; select Laser mode
 <%      }
+    }
+
+    if (model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) { -%>
+T<%- model.tools.findIndex(tool => tool !== null) %> ; select first tool
+<%  }
     
-        if (!preview && model.configTool.customSettings.trim() !== "") { -%>
+    if (model.configTool.customSettings.trim() !== "") { -%>
 
 ; Custom settings
 <%- model.configTool.customSettings %> 
-<%      }
-    } else if (preview) { -%>
-; No content for this section
-<%  } -%>
+<%   } -%>

@@ -1,14 +1,13 @@
 <template>
 	<config-section id="network" :type="ConfigSectionType.Network" title="Network" url-title="Network Configuration"
-				 url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Networking">
+					url="https://docs.duet3d.com/en/User_manual/Machine_configuration/Networking">
 		<div class="row">
 			<!-- Ethernet -->
 			<div v-if="lanInterface" class="col-12">
 				<check-input label="Configure Ethernet"
-							 title="Check this option to configure a LAN connection over Ethernet"
-							 v-model="configureLan"
+							 title="Check this option to configure a LAN connection over Ethernet" v-model="configureLan"
 							 :preset="presetLanInterface?.state !== NetworkInterfaceState.disabled" />
-				<div class="row ms-3 mt-2">
+				<div v-if="configureLan" class="row ms-3 mt-2">
 					<div class="col-12">
 						<check-input label="Acquire dynamic IP address via DHCP"
 									 title="Check this option to use DHCP for automatic IPv4 configuration"
@@ -47,15 +46,28 @@
 				</div>
 			</div>
 
+			<!-- Spacer-->
+			<div v-if="lanInterface && wifiInterface" class="mt-3"></div>
+
 			<!-- WiFi -->
-			<div v-if="wifiInterface" class="col-12 mt-3">
+			<div v-if="wifiInterface" class="col-12">
 				<check-input label="Configure WiFi" title="Check this option to configure a WiFi connection"
 							 v-model="configureWifi"
 							 :preset="presetWifiInterface?.state !== NetworkInterfaceState.disabled" />
 
-				<div class="row ms-3 mt-2">
-					<div class="col-12">
-						WiFi AP / Pass / Standalone mode?
+				<div v-if="configureWifi" class="row ms-3 mt-2">
+					<div class="col-12 mb-3">
+						<div class="row">
+							<div class="col-4">
+								<text-input label="WiFi SSID" placeholder="optional"
+											title="WiFi SSID to connect to" :max-length="32"
+											v-model="store.data.configTool.wifi.ssid" :required="false" />
+							</div>
+							<div class="col-8">
+								<text-input password label="WiFi Password" title="Optional PSK used for connecting to the specified WiFi"
+											:max-length="64" v-model="store.data.configTool.wifi.psk" :required="false" />
+							</div>
+						</div>
 					</div>
 					<div class="col-12">
 						<check-input label="Acquire dynamic IP address via DHCP"
@@ -97,9 +109,8 @@
 		</div>
 		<div v-if="configureLan || configureWifi" class="row mt-3">
 			<div class="col">
-				<text-input password label="Machine Password" title="Required password when connecting over HTTP"
-							:max-length="20" placeholder="reprap" v-model="store.data.configTool.password"
-							:required="false" />
+				<text-input password label="Machine Password" title="Required password for network access" :max-length="20"
+							placeholder="reprap" v-model="store.data.configTool.password" :required="false" />
 			</div>
 			<div class="col d-flex flex-column justify-content-end">
 				<check-input label="Enable HTTP" title="Enable HTTP access using Duet Web Control"

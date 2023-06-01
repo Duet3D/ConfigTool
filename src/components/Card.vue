@@ -90,7 +90,7 @@ function hasSlotContent(slot: Slot | undefined, slotProps = {}): boolean {
 
 // Preview
 const previewVisible = ref(false);
-const selectedTemplate = ref<string>(props.previewTemplates ? props.previewTemplates[0] : "");
+const selectedTemplate = ref<string>((props.previewTemplates && props.previewTemplates.length > 0) ? props.previewTemplates[0] : "");
 
 // Partial preview
 const generatedCode = ref(""), previewRendering = ref(false);
@@ -106,6 +106,17 @@ const renderArgs = computed(() => {
 		renderArgs = { preview: true };
 	}
 	return renderArgs;
+});
+
+watch(() => props.previewTemplates, () => {
+	if (!props.previewTemplates || props.previewTemplates?.length === 0) {
+		selectedTemplate.value = "";
+		if (previewVisible.value) {
+			previewVisible.value = false;
+		}
+	} else if (selectedTemplate.value === "") {
+		selectedTemplate.value = props.previewTemplates[0];
+	}
 });
 
 watch(() => previewVisible.value && selectedTemplate.value, async () => {

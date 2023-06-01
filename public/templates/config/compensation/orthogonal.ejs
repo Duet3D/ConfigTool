@@ -1,1 +1,14 @@
-; orthogonal compensation goes here
+<%  if (model.move.compensation.skew.tanXY !== 0 ||
+        model.move.compensation.skew.tanXZ !== 0 ||
+        model.move.compensation.skew.tanYZ !== 0) {
+            const xParam = model.configTool.orthogonalDistance * model.move.compensation.skew.tanXY;
+            const yParam = model.configTool.orthogonalDistance * model.move.compensation.skew.tanYZ;
+            const zParam = model.configTool.orthogonalDistance * model.move.compensation.skew.tanXZ; -%>
+M556 <%- params({
+    S: model.configTool.orthogonalDistance,
+    X: precise(xParam, 5),
+    Y: precise(yParam, 5),
+    Z: precise(zParam, 5),
+    P: model.move.compensation.skew.compensateXY ? undefined : 1
+}) %> ; configure orthogonal axis compensation parameters
+<%  } %>

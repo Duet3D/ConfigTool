@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from "vue";
+import { defineAsyncComponent, ref, watch } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "../inputs/CheckInput.vue";
@@ -27,4 +27,10 @@ const GCodeInput = defineAsyncComponent(() => import("../monaco/GCodeInput.vue")
 const store = useStore();
 
 const showCustomSettings = ref(false);
+
+watch(() => showCustomSettings.value, () => {
+	if (!showCustomSettings.value) {
+		store.data.configTool.customSettings = "";
+	}
+});
 </script>

@@ -100,7 +100,7 @@
 
 			<div v-if="store.data.sensors.probes.length === 0" class="alert alert-info mb-0">
 				<i class="bi-info-circle"></i>
-				No Probes defined
+				No Probes
 			</div>
 		</template>
 	</config-section>

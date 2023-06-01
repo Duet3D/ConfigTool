@@ -394,8 +394,8 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 
 	// Network Settings (only applicable in standalone mode)
 	model.configTool.password = input.network.password;
-	model.configTool.wiFi.ssid = input.network.ssid;
-	model.configTool.wiFi.psk = input.network.ssid_password;
+	model.configTool.wifi.ssid = input.network.ssid;
+	model.configTool.wifi.psk = input.network.ssid_password;
 	if (input.network.enabled && input.standalone && model.network.interfaces.length > 0) {
 		const networkInterface = model.network.interfaces[0];
 		networkInterface.state = NetworkInterfaceState.active;

@@ -161,7 +161,7 @@
 
 			<div v-if="!store.data.sensors.analog.some(sensor => sensor !== null)" class="alert alert-info mb-0">
 				<i class="bi-info-circle"></i>
-				No Sensors defined
+				No Sensors
 			</div>
 		</template>
 	</config-section>

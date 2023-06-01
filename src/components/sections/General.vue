@@ -14,7 +14,7 @@
 			<div v-if="supportsSbcMode" class="col">
 				<select-input label="Operation Mode"
 							  title="Operation mode of your printer. Newer boards allow networking and plugin functionality to be handled by an extra SBC"
-							  :options="ModeOptions" v-model="standaloneMode" :preset="store.preset.sbc === null"
+							  :options="SbcModeOptions" v-model="store.data.sbcMode" :preset="store.preset.sbcMode"
 							  :required="false" />
 			</div>
 		</div>
@@ -64,28 +64,38 @@
 			</div>
 		</div>
 		<div class="row mt-2 mb-1">
-			<div class="col-12">
+			<div class="col-8">
 				Machine Capabilities:
+
+				<div class="row mt-3">
+					<div class="col">
+						<check-input label="FFF (3D Printing)" title="Enable FFF printing"
+									 :disabled="!store.data.configTool.capabilities.cnc && !store.data.configTool.capabilities.laser"
+									 :model-value="store.data.configTool.capabilities.fff"
+									 @update:model-value="store.data.setFFF($event)"
+									 :preset="store.preset.configTool.capabilities.fff" />
+					</div>
+					<div class="col">
+						<check-input label="CNC (Milling)" title="Enable CNC functionality"
+									 :disabled="!store.data.configTool.capabilities.fff && !store.data.configTool.capabilities.laser"
+									 :model-value="store.data.configTool.capabilities.cnc"
+									 @update:model-value="store.data.setCNC($event)"
+									 :preset="store.preset.configTool.capabilities.cnc" />
+					</div>
+					<div class="col">
+						<check-input label="Laser (Cutting/Etching)" title="Enable Laser functionality"
+									 :disabled="!store.data.configTool.capabilities.fff && !store.data.configTool.capabilities.cnc"
+									 :model-value="store.data.configTool.capabilities.laser"
+									 @update:model-value="store.data.setLaser($event)"
+									 :preset="store.preset.configTool.capabilities.laser" />
+					</div>
+				</div>
 			</div>
-		</div>
-		<div class="row">
 			<div class="col-4">
-				<check-input label="FFF (3D Printing)" title="Enable FFF printing"
-							 :model-value="store.data.configTool.capabilities.fff"
-							 @update:model-value="store.data.setFFF($event)"
-							 :preset="store.preset.configTool.capabilities.fff" />
-			</div>
-			<div class="col-4">
-				<check-input label="CNC (Milling)" title="Enable CNC functionality"
-							 :model-value="store.data.configTool.capabilities.cnc"
-							 @update:model-value="store.data.setCNC($event)"
-							 :preset="store.preset.configTool.capabilities.cnc" />
-			</div>
-			<div class="col-4">
-				<check-input label="Laser (Cutting/Etching)" title="Enable Laser functionality"
-							 :model-value="store.data.configTool.capabilities.laser"
-							 @update:model-value="store.data.setLaser($event)"
-							 :preset="store.preset.configTool.capabilities.laser" />
+				<select-input label="Mode on start-up"
+							  title="Designated mode after start-up of the machine (only applicable if this machine supports multiple processes)"
+							  v-model="store.data.state.machineMode" :options="machineModeOptions"
+							  :preset="store.preset.state.machineMode" />
 			</div>
 		</div>
 	</config-section>
@@ -93,21 +103,21 @@
 
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
+import { MachineMode } from "@duet3d/objectmodel";
 
-const ModeOptions: Array<SelectOption> = [
+const SbcModeOptions: Array<SelectOption> = [
 	{
 		text: "Standalone mode (without SBC)",
-		value: true
+		value: false
 	},
 	{
 		text: "SBC mode",
-		value: false
+		value: true
 	}
 ];
 </script>
 
 <script setup lang="ts">
-import { NetworkInterface, NetworkInterfaceType, SBC } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
@@ -117,7 +127,6 @@ import SelectInput from "@/components/inputs/SelectInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
 
 import { BoardType, UnsupportedBoardType } from "@/store/Boards";
-import { preconfigureNetworkInterface } from "@/store/defaults";
 import { ConfigSectionType } from "@/store/sections";
 import { useStore } from "@/store";
 
@@ -177,56 +186,26 @@ const board = computed({
 });
 const boardPreset = computed(() => store.preset.boardType as string);
 
-// SBC mode
+// Misc
 const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC);
-const standaloneMode = computed<boolean>({
-	get() { return store.data.sbc === null; },
-	set(value) {
-		store.data.sbc = value ? null : new SBC();
-		if (value) {
-			if (store.data.boardDefinition) {
-				// Delete interfaces that are not present in the original board
-				for (let i = store.data.network.interfaces.length - 1; i >= 0; i--) {
-					if (!store.data.boardDefinition.objectModelNetworkInterfaces.some(iface => iface.type === store.data.network.interfaces[i].type)) {
-						store.data.network.interfaces.splice(i, 1);
-					}
-				}
-
-				// Add missing interface types
-				for (const networkInterfacePreset of store.data.boardDefinition.objectModelNetworkInterfaces) {
-					if (!store.data.network.interfaces.some(iface => iface.type === networkInterfacePreset.type)) {
-						const newNetworkInterface = new NetworkInterface();
-						newNetworkInterface.update(networkInterfacePreset);
-						preconfigureNetworkInterface(newNetworkInterface);
-						store.data.network.interfaces.push(newNetworkInterface);
-					}
-				}
-			}
-		} else {
-			// Assume a standard Raspberry Pi with LAN and WiFi is the SBC to use
-			if (store.data.network.interfaces.length === 0 || store.data.network.interfaces[0].type !== NetworkInterfaceType.lan) {
-				const lanInterface = new NetworkInterface();
-				preconfigureNetworkInterface(lanInterface);
-				lanInterface.type = NetworkInterfaceType.lan;
-				if (store.data.network.interfaces.length === 0) {
-					store.data.network.interfaces.push(lanInterface);
-				} else {
-					store.data.network.interfaces[0].update(lanInterface);
-				}
-			}
-
-			if (store.data.network.interfaces.length === 1 || store.data.network.interfaces[1].type !== NetworkInterfaceType.wifi) {
-				const wifiInterface = new NetworkInterface();
-				preconfigureNetworkInterface(wifiInterface);
-				wifiInterface.type = NetworkInterfaceType.wifi;
-				if (store.data.network.interfaces.length === 1) {
-					store.data.network.interfaces.push(wifiInterface);
-				} else {
-					store.data.network.interfaces[1].update(wifiInterface);
-				}
-			}
-		}
-	}
-});
 const supportsAutoSave = computed(() => !!store.data.boardDefinition?.objectModelBoard.vIn);
+
+// Machine Mode
+const machineModeOptions = computed(() => [
+	{
+		disabled: !store.data.configTool.capabilities.fff,
+		text: "FFF (default)",
+		value: MachineMode.fff
+	},
+	{
+		disabled: !store.data.configTool.capabilities.cnc,
+		text: "CNC",
+		value: MachineMode.cnc
+	},
+	{
+		disabled: !store.data.configTool.capabilities.laser,
+		text: "Laser",
+		value: MachineMode.laser
+	}
+] as Array<SelectOption>);
 </script>

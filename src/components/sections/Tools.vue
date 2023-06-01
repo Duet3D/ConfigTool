@@ -10,7 +10,7 @@
 					 title="Select the first available tool on start-up" v-model="store.data.configTool.autoSelectFirstTool"
 					 :preset="store.preset.configTool.autoSelectFirstTool" />
 		<template #body>
-			<table class="table table-striped table-extruders mb-0">
+			<table v-if="store.data.tools.length > 0" class="table table-striped table-extruders mb-0">
 				<colgroup>
 					<col style="width: 15%;">
 					<col style="width: 20%;">
@@ -103,6 +103,11 @@
 					</template>
 				</tbody>
 			</table>
+			
+			<div v-else class="alert alert-info mb-0">
+				<i class="bi-info-circle"></i>
+				No Tools
+			</div>
 
 			<tool-dialog v-model="toolDialogShown" :tool="toolToConfigure" />
 		</template>

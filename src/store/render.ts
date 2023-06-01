@@ -1,4 +1,4 @@
-import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, NetworkInterfaceType, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
 import ejs from "ejs";
 import type { StoreState } from "pinia";
 
@@ -103,16 +103,14 @@ const renderOptions = {
         for (const key in sections) {
             const value = sections[key].trimEnd();
             if (value !== "") {
-                result.push(this.title(key, value));
+                if (key.startsWith('!')) {
+                    result.push(value.trimEnd() + '\n');
+                } else {
+                    result.push(`; ${key}\n${value.trimEnd()}\n`);
+                }
             }
         }
-        return result.join("\n");
-    },
-    title(title: string, section: string) {
-        if (section.trim() !== "") {
-            return `; ${title}\n${section.trimEnd()}\n`;
-        }
-        return "";
+        return result.join("\n").trimEnd();
     },
 
     // Ports
@@ -205,7 +203,10 @@ const renderOptions = {
     DirectDisplayController,
     EndstopType,
     HeaterMonitorCondition,
+    MachineMode,
+    NetworkInterfaceState,
     NetworkInterfaceType,
+    NetworkProtocol,
     ProbeType
 };
 

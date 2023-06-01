@@ -8,8 +8,12 @@ M911 <%- params({
 <%  }
 
     // Preview shows end of config.g
-    if (preview && ((model.configTool.autoSelectFirstTool && model.tools.some(tool => tool !== null)) || model.configTool.configOverride)) { -%>
+    if (preview) { 
+        const miscContent = await render("config/miscellaneous");
+        if (miscContent.trim() !== "") { -%>
 
 ; ... generated at the end of config.g:
-<%- await render("config/end") -%>
-<%  } -%>
+
+<%- miscContent -%>
+<%      }
+    } -%>

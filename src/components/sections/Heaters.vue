@@ -7,7 +7,7 @@
 			</button>
 		</template>
 		<template #body>
-			<table class="table table-striped mb-0">
+			<table v-if="store.data.heat.heaters.length > 0" class="table table-striped mb-0">
 				<colgroup>
 					<col style="width: 12%;">
 					<col style="width: 25%;">
@@ -151,6 +151,11 @@
 					</template>
 				</tbody>
 			</table>
+			<div v-else class="alert alert-info mb-0">
+				<i class="bi-info-circle"></i>
+				No Heaters
+			</div>
+
 			<div v-if="store.data.heat.heaters.some(heater => heater?.model.pid.used)" class="alert alert-info mb-0">
 				<i class="bi bi-info-circle"></i>
 				Because you have PID heaters configured, it is highly recommended to <a
@@ -159,6 +164,7 @@
 				   href="https://docs.duet3d.com/en/User_manual/Reference/Gcodes#m303-run-heater-tuning"
 				   target="_blank">M303</a>.
 			</div>
+
 			<heater-model-dialog v-model="showHeaterModelDialog" :heater-index="heaterModelIndex"
 								 :model="heaterModel" />
 			<heater-monitors-dialog v-model="showHeaterMonitorsDialog" :heater-index="heaterMonitorIndex"
@@ -203,7 +209,7 @@
 												  :options="getBedHeaterNumbers(index)" />
 								</td>
 								<td>
-									<select-input :model-value="bedHeater"
+									<select-input title="Mapped heater of this bed" :model-value="bedHeater"
 												  @update:model-value="changeBedHeater(index, $event)"
 												  :options="getSlowHeaters(bedHeater)" />
 								</td>
@@ -222,7 +228,7 @@
 											  :options="getBedHeaterNumbers(bedHeaterToAdd)" />
 							</td>
 							<td>
-								<select-input :model-value="-1"
+								<select-input title="Mapped heater of this bed" :model-value="-1"
 											  @update:model-value="changeBedHeater(bedHeaterToAdd, $event)"
 											  :options="getSlowHeaters(-1)" />
 							</td>
@@ -277,7 +283,7 @@
 												  :options="getChamberHeaterNumbers(index)" />
 								</td>
 								<td>
-									<select-input :model-value="chamberHeater"
+									<select-input title="Mapped heater of this chamber" :model-value="chamberHeater"
 												  @update:model-value="changeChamberHeater(index, $event)"
 												  :options="getSlowHeaters(chamberHeater)" />
 								</td>
@@ -296,7 +302,7 @@
 											  :options="getChamberHeaterNumbers(chamberHeaterToAdd)" />
 							</td>
 							<td>
-								<select-input :model-value="-1"
+								<select-input title="Mapped heater of this chamber" :model-value="-1"
 											  @update:model-value="changeChamberHeater(chamberHeaterToAdd, $event)"
 											  :options="getSlowHeaters(-1)" />
 							</td>

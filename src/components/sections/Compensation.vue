@@ -1,7 +1,7 @@
 <template>
 	<section id="compensation" class="pt-3">
 		<!-- Delta Calibration -->
-		<card v-if="showDeltaOptions" class="mb-3" :preview-templates="['config/compensation/delta']"
+		<card v-if="showDeltaOptions" class="mb-3" :preview-templates="['bed']"
 			  title="Automatic Delta Calibration" url-title="Delta Calibration"
 			  url="https://docs.duet3d.com/en/User_manual/Tuning/Delta_calibration">
 			<div class="row g-3">
@@ -86,68 +86,38 @@
 
 		<!-- Mesh Bed Compensation -->
 		<card v-if="store.data.sensors.probes.length > 0" class="mb-3" title="Mesh Bed Compensation"
-			  :preview-templates="['config/compensation/mesh']" url-title="Further Information"
+			  :preview-templates="meshBedCompensation ? ['config/compensation/mesh'] : null" url-title="Further Information"
 			  url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_mesh_bed">
-			<!-- Delta Mesh Options-->
-			<div v-if="showDeltaOptions" class="row g-3">
+			<div class="row">
 				<div class="col-auto">
-					<select-input label="First Axis" title="First axis to use for mesh grid compensation"
-								  v-model="store.data.move.compensation.probeGrid.axes[0]" :options="getAxisLetters(0)"
-								  :preset="store.preset.move.compensation.probeGrid.axes[0]" />
-				</div>
-				<div class="col-auto">
-					<select-input label="Second Axis" title="Second axis to use for mesh grid compensation"
-								  v-model="store.data.move.compensation.probeGrid.axes[1]" :options="getAxisLetters(1)"
-								  :preset="store.preset.move.compensation.probeGrid.axes[1]" />
-				</div>
-
-				<div class="col">
-					<number-input label="Probe Radius" title="Probe radius of the mesh grid for automatic bed compensation"
-								  v-model="store.data.move.compensation.probeGrid.radius" :min="1"
-								  :max="store.data.move.compensation.probeGrid.maxs[0]" :step="0.1" unit="mm"
-								  :preset="store.preset.move.compensation.probeGrid.mins[0]" />
-				</div>
-
-				<div class="col">
-					<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[0]} Direction`"
-								  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[0]} axis between the probe points for automatic bed compensation`"
-								  v-model="store.data.move.compensation.probeGrid.spacings[0]" :min="1"
-								  :max="store.data.move.compensation.probeGrid.maxs[0] - store.data.move.compensation.probeGrid.mins[0]"
-								  :step="0.1" unit="mm" :preset="store.preset.move.compensation.probeGrid.spacings[0]" />
-				</div>
-				<div class="col">
-					<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[1]} Direction`"
-								  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[1]} axis between the probe points for automatic bed compensation`"
-								  v-model="store.data.move.compensation.probeGrid.spacings[1]" :min="1"
-								  :max="store.data.move.compensation.probeGrid.maxs[1] - store.data.move.compensation.probeGrid.mins[1]"
-								  :step="0.1" unit="mm" :preset="store.preset.move.compensation.probeGrid.spacings[1]" />
+					<check-input label="Enable Mesh Bed Compensation"
+								 title="Check this to enable mesh bed compensation"
+								 v-model="meshBedCompensation" :preset="presetMeshBedCompensation" />
 				</div>
 			</div>
 
-			<!-- Other Mesh Options -->
-			<template v-else>
-				<div class="row mb-3">
+			<div v-if="meshBedCompensation" class="row ms-3 mt-2">
+				<!-- Delta Mesh Options-->
+				<div v-if="showDeltaOptions" class="row g-3">
 					<div class="col-auto">
 						<select-input label="First Axis" title="First axis to use for mesh grid compensation"
 									  v-model="store.data.move.compensation.probeGrid.axes[0]" :options="getAxisLetters(0)"
 									  :preset="store.preset.move.compensation.probeGrid.axes[0]" />
 					</div>
+					<div class="col-auto">
+						<select-input label="Second Axis" title="Second axis to use for mesh grid compensation"
+									  v-model="store.data.move.compensation.probeGrid.axes[1]" :options="getAxisLetters(1)"
+									  :preset="store.preset.move.compensation.probeGrid.axes[1]" />
+					</div>
+
 					<div class="col">
-						<number-input :label="`${store.data.move.compensation.probeGrid.axes[0]} Minimum`"
-									  :title="`Minimum ${store.data.move.compensation.probeGrid.axes[0]} coordinate of the mesh grid for automatic bed compensation`"
-									  v-model="store.data.move.compensation.probeGrid.mins[0]"
-									  :min="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[0])?.min"
+						<number-input label="Probe Radius"
+									  title="Probe radius of the mesh grid for automatic bed compensation"
+									  v-model="store.data.move.compensation.probeGrid.radius" :min="1"
 									  :max="store.data.move.compensation.probeGrid.maxs[0]" :step="0.1" unit="mm"
 									  :preset="store.preset.move.compensation.probeGrid.mins[0]" />
 					</div>
-					<div class="col">
-						<number-input :label="`${store.data.move.compensation.probeGrid.axes[0]} Maximum`"
-									  :title="`Maximum ${store.data.move.compensation.probeGrid.axes[0]} coordinate of the mesh grid for automatic bed compensation`"
-									  v-model="store.data.move.compensation.probeGrid.maxs[0]"
-									  :min="store.data.move.compensation.probeGrid.mins[0]"
-									  :max="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[0])?.max"
-									  :step="0.1" unit="mm" :preset="store.preset.move.compensation.probeGrid.maxs[0]" />
-					</div>
+
 					<div class="col">
 						<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[0]} Direction`"
 									  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[0]} axis between the probe points for automatic bed compensation`"
@@ -155,30 +125,6 @@
 									  :max="store.data.move.compensation.probeGrid.maxs[0] - store.data.move.compensation.probeGrid.mins[0]"
 									  :step="0.1" unit="mm"
 									  :preset="store.preset.move.compensation.probeGrid.spacings[0]" />
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col-auto">
-						<select-input label="Second Axis" title="Second axis to use for mesh grid compensation"
-									  v-model="store.data.move.compensation.probeGrid.axes[1]" :options="getAxisLetters(1)"
-									  :preset="store.preset.move.compensation.probeGrid.axes[1]" />
-					</div>
-					<div class="col">
-						<number-input :label="`${store.data.move.compensation.probeGrid.axes[1]} Minimum`"
-									  :title="`Minimum ${store.data.move.compensation.probeGrid.axes[1]} coordinate of the mesh grid for automatic bed compensation`"
-									  v-model="store.data.move.compensation.probeGrid.mins[1]"
-									  :min="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[1])?.min"
-									  :max="store.data.move.compensation.probeGrid.maxs[1]" :step="0.1" unit="mm"
-									  :preset="store.preset.move.compensation.probeGrid.mins[1]" />
-					</div>
-					<div class="col">
-						<number-input :label="`${store.data.move.compensation.probeGrid.axes[1]} Maximum`"
-									  :title="`Maximum ${store.data.move.compensation.probeGrid.axes[1]} coordinate of the mesh grid for automatic bed compensation`"
-									  v-model="store.data.move.compensation.probeGrid.maxs[1]"
-									  :min="store.data.move.compensation.probeGrid.mins[1]"
-									  :max="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[1])?.max"
-									  :step="0.1" unit="mm" :preset="store.preset.move.compensation.probeGrid.maxs[1]" />
 					</div>
 					<div class="col">
 						<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[1]} Direction`"
@@ -189,11 +135,83 @@
 									  :preset="store.preset.move.compensation.probeGrid.spacings[1]" />
 					</div>
 				</div>
-			</template>
+
+				<!-- Other Mesh Options -->
+				<template v-else>
+					<div class="row mb-3">
+						<div class="col-auto">
+							<select-input label="First Axis" title="First axis to use for mesh grid compensation"
+										  v-model="store.data.move.compensation.probeGrid.axes[0]"
+										  :options="getAxisLetters(0)"
+										  :preset="store.preset.move.compensation.probeGrid.axes[0]" />
+						</div>
+						<div class="col">
+							<number-input :label="`${store.data.move.compensation.probeGrid.axes[0]} Minimum`"
+										  :title="`Minimum ${store.data.move.compensation.probeGrid.axes[0]} coordinate of the mesh grid for automatic bed compensation`"
+										  v-model="store.data.move.compensation.probeGrid.mins[0]"
+										  :min="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[0])?.min"
+										  :max="store.data.move.compensation.probeGrid.maxs[0]" :step="0.1" unit="mm"
+										  :preset="store.preset.move.compensation.probeGrid.mins[0]" />
+						</div>
+						<div class="col">
+							<number-input :label="`${store.data.move.compensation.probeGrid.axes[0]} Maximum`"
+										  :title="`Maximum ${store.data.move.compensation.probeGrid.axes[0]} coordinate of the mesh grid for automatic bed compensation`"
+										  v-model="store.data.move.compensation.probeGrid.maxs[0]"
+										  :min="store.data.move.compensation.probeGrid.mins[0]"
+										  :max="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[0])?.max"
+										  :step="0.1" unit="mm"
+										  :preset="store.preset.move.compensation.probeGrid.maxs[0]" />
+						</div>
+						<div class="col">
+							<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[0]} Direction`"
+										  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[0]} axis between the probe points for automatic bed compensation`"
+										  v-model="store.data.move.compensation.probeGrid.spacings[0]" :min="1"
+										  :max="store.data.move.compensation.probeGrid.maxs[0] - store.data.move.compensation.probeGrid.mins[0]"
+										  :step="0.1" unit="mm"
+										  :preset="store.preset.move.compensation.probeGrid.spacings[0]" />
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-auto">
+							<select-input label="Second Axis" title="Second axis to use for mesh grid compensation"
+										  v-model="store.data.move.compensation.probeGrid.axes[1]"
+										  :options="getAxisLetters(1)"
+										  :preset="store.preset.move.compensation.probeGrid.axes[1]" />
+						</div>
+						<div class="col">
+							<number-input :label="`${store.data.move.compensation.probeGrid.axes[1]} Minimum`"
+										  :title="`Minimum ${store.data.move.compensation.probeGrid.axes[1]} coordinate of the mesh grid for automatic bed compensation`"
+										  v-model="store.data.move.compensation.probeGrid.mins[1]"
+										  :min="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[1])?.min"
+										  :max="store.data.move.compensation.probeGrid.maxs[1]" :step="0.1" unit="mm"
+										  :preset="store.preset.move.compensation.probeGrid.mins[1]" />
+						</div>
+						<div class="col">
+							<number-input :label="`${store.data.move.compensation.probeGrid.axes[1]} Maximum`"
+										  :title="`Maximum ${store.data.move.compensation.probeGrid.axes[1]} coordinate of the mesh grid for automatic bed compensation`"
+										  v-model="store.data.move.compensation.probeGrid.maxs[1]"
+										  :min="store.data.move.compensation.probeGrid.mins[1]"
+										  :max="store.data.move.axes.find(axis => axis.letter === store.data.move.compensation.probeGrid.axes[1])?.max"
+										  :step="0.1" unit="mm"
+										  :preset="store.preset.move.compensation.probeGrid.maxs[1]" />
+						</div>
+						<div class="col">
+							<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[1]} Direction`"
+										  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[1]} axis between the probe points for automatic bed compensation`"
+										  v-model="store.data.move.compensation.probeGrid.spacings[1]" :min="1"
+										  :max="store.data.move.compensation.probeGrid.maxs[1] - store.data.move.compensation.probeGrid.mins[1]"
+										  :step="0.1" unit="mm"
+										  :preset="store.preset.move.compensation.probeGrid.spacings[1]" />
+						</div>
+					</div>
+				</template>
+			</div>
 		</card>
 
 		<!-- Orthogonal Axis Compensation -->
-		<card title="Orthogonal Axis Compensation" :preview-templates="orthogonalCompensation ? ['config/compensation/orthogonal'] : null"
+		<card title="Orthogonal Axis Compensation"
+			  :preview-templates="showOrthogonalCompensationPreview ? ['config/compensation/orthogonal'] : null"
 			  url-title="Further Information"
 			  url="https://docs.duet3d.com/en/User_manual/Tuning/Orthogonal_axis_compensation">
 			<div class="row">
@@ -243,7 +261,7 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
-import { DeltaKinematics } from "@duet3d/objectmodel";
+import { DeltaKinematics, ProbeGrid } from "@duet3d/objectmodel";
 
 const store = useStore();
 
@@ -357,14 +375,58 @@ function getAxisLetters(index: number) {
 	}));
 }
 
+const meshBedCompensation = computed<boolean>({
+	get() {
+		if (store.data.isDelta) {
+			return (store.data.move.compensation.probeGrid.radius > 0 &&
+					store.data.move.compensation.probeGrid.spacings[0] > 0);
+		}
+		return (store.data.move.compensation.probeGrid.maxs[0] > store.data.move.compensation.probeGrid.mins[0] &&
+				store.data.move.compensation.probeGrid.maxs[1] > store.data.move.compensation.probeGrid.mins[1] &&
+				store.data.move.compensation.probeGrid.spacings[0] > 0 &&
+				store.data.move.compensation.probeGrid.spacings[1] > 0);
+	},
+	set(value) {
+		if (value) {
+			store.data.move.compensation.probeGrid.axes[0] = 'X';
+			store.data.move.compensation.probeGrid.axes[1] = 'Y';
+			if (store.data.isDelta) {
+				store.data.move.compensation.probeGrid.radius = (store.data.move.kinematics as DeltaKinematics).deltaRadius * 0.9;
+			} else {
+				store.data.move.compensation.probeGrid.mins[0] = store.data.move.axes[0].min + 25;
+				store.data.move.compensation.probeGrid.mins[1] = store.data.move.axes[1].min + 25;
+				store.data.move.compensation.probeGrid.maxs[0] = store.data.move.axes[0].max - 25;
+				store.data.move.compensation.probeGrid.maxs[1] = store.data.move.axes[1].max - 25;
+			}
+			store.data.move.compensation.probeGrid.spacings[0] = store.data.move.compensation.probeGrid.spacings[1] = 40;
+		} else {
+			store.data.move.compensation.probeGrid.radius = -1;
+			store.data.move.compensation.probeGrid.mins[0] = store.data.move.compensation.probeGrid.mins[1] = 0;
+			store.data.move.compensation.probeGrid.maxs[0] = store.data.move.compensation.probeGrid.maxs[1] = -1;
+			store.data.move.compensation.probeGrid.spacings[0] = store.data.move.compensation.probeGrid.spacings[1] = 0;
+		}
+	}
+});
+
+const presetMeshBedCompensation = computed(() => {
+	if (store.preset.isDelta) {
+		return (store.preset.move.compensation.probeGrid.radius === 0 &&
+				store.preset.move.compensation.probeGrid.spacings[0] === 0);
+	}
+	return (store.preset.move.compensation.probeGrid.maxs[0] < store.data.move.compensation.probeGrid.mins[0] &&
+			store.preset.move.compensation.probeGrid.maxs[1] < store.data.move.compensation.probeGrid.mins[1] &&
+			store.preset.move.compensation.probeGrid.spacings[0] === 0 &&
+			store.preset.move.compensation.probeGrid.spacings[1] === 0);
+});
+
 // Orthogonal Axis Compensation
-const configureOrthogonoalCompensation = ref<boolean>(false);
+const configureOrthogonalCompensation = ref<boolean>(false);
 const orthogonalCompensation = computed<boolean>({
 	get() {
 		return (store.data.move.compensation.skew.tanXY !== 0) ||
 			(store.data.move.compensation.skew.tanXZ !== 0) ||
 			(store.data.move.compensation.skew.tanYZ !== 0) ||
-			configureOrthogonoalCompensation.value;
+			configureOrthogonalCompensation.value;
 	},
 	set(value) {
 		if (!value) {
@@ -372,17 +434,27 @@ const orthogonalCompensation = computed<boolean>({
 			store.data.move.compensation.skew.tanXZ = 0;
 			store.data.move.compensation.skew.tanYZ = 0;
 		}
-		configureOrthogonoalCompensation.value = value;
+		configureOrthogonalCompensation.value = value;
 	}
 });
 const presetOrthogonalCompensation = computed(() => (store.preset.move.compensation.skew.tanXY !== 0) || (store.preset.move.compensation.skew.tanXZ !== 0) || (store.preset.move.compensation.skew.tanYZ !== 0));
+const showOrthogonalCompensationPreview = computed(() => (store.data.move.compensation.skew.tanXY !== 0) || (store.data.move.compensation.skew.tanXZ !== 0) || (store.data.move.compensation.skew.tanYZ !== 0));
 
-const orthogonalDeviationX = computed(() => store.data.configTool.orthogonalDistance * store.data.move.compensation.skew.tanXY);
+const orthogonalDeviationX = computed({
+	get() { return store.data.configTool.orthogonalDistance * store.data.move.compensation.skew.tanXY; },
+	set(value: number) { store.data.move.compensation.skew.tanXY = value / store.data.configTool.orthogonalDistance; }
+});
 const presetOrthogonalDeviationX = computed(() => store.preset.configTool.orthogonalDistance * store.preset.move.compensation.skew.tanXY);
 
-const orthogonalDeviationY = computed(() => store.data.configTool.orthogonalDistance * store.data.move.compensation.skew.tanYZ);
+const orthogonalDeviationY = computed({
+	get() { return store.data.configTool.orthogonalDistance * store.data.move.compensation.skew.tanYZ; },
+	set(value: number) { store.data.move.compensation.skew.tanYZ = value / store.data.configTool.orthogonalDistance; }
+});
 const presetOrthogonalDeviationY = computed(() => store.preset.configTool.orthogonalDistance * store.preset.move.compensation.skew.tanYZ);
 
-const orthogonalDeviationZ = computed(() => store.data.configTool.orthogonalDistance * store.data.move.compensation.skew.tanXZ);
+const orthogonalDeviationZ = computed({
+	get() { return store.data.configTool.orthogonalDistance * store.data.move.compensation.skew.tanXZ; },
+	set(value: number) { store.data.move.compensation.skew.tanXZ = value / store.data.configTool.orthogonalDistance; }
+});
 const presetOrthogonalDeviationZ = computed(() => store.preset.configTool.orthogonalDistance * store.preset.move.compensation.skew.tanXZ);
 </script>

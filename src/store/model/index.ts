@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter } from "@duet3d/objectmodel";
+import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter, SBC, NetworkInterfaceType, MachineMode } from "@duet3d/objectmodel";
 
 import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigDriver } from "@/store/model/ConfigDriver";
@@ -134,12 +134,19 @@ export default class ConfigModel extends ObjectModel {
 		}
 
 		if (this.sbc === null) {
-			for (const networkInterfacePreset of boardDefinition.objectModelNetworkInterfaces) {
+			// Update existing network interface types
+			for (let i = 0; i < Math.min(this.network.interfaces.length, boardDefinition.objectModelNetworkInterfaces.length); i++) {
+				this.network.interfaces[i].type = boardDefinition.objectModelNetworkInterfaces[i].type;
+			}
+
+			// Add missing and remove unsupported interfaces
+			for (let i = this.network.interfaces.length; i < boardDefinition.objectModelNetworkInterfaces.length; i++) {
 				const newNetworkInterface = new NetworkInterface();
-				newNetworkInterface.update(networkInterfacePreset);
-				preconfigureNetworkInterface(networkInterfacePreset);
+				newNetworkInterface.update(boardDefinition.objectModelNetworkInterfaces[i]);
+				preconfigureNetworkInterface(newNetworkInterface);
 				this.network.interfaces.push(newNetworkInterface);
 			}
+			this.network.interfaces.splice(boardDefinition.objectModelNetworkInterfaces.length);
 		}
 
 		this.validate();
@@ -211,6 +218,61 @@ export default class ConfigModel extends ObjectModel {
 
 		this.refreshDrivers();
 		this.refreshPorts();
+	}
+
+	/**
+	 * Check if the board is running in SBC mode
+	 */
+	get sbcMode() {
+		return this.sbc !== null;
+	}
+
+	/**
+	 * Set whether the board is operating in SBC mode or not
+	 */
+	set sbcMode(value: boolean) {
+		this.sbc = value ? new SBC() : null;
+		if (value) {
+			// Assume a standard Raspberry Pi with LAN and WiFi is the SBC to use
+			if (this.network.interfaces.length === 0 || this.network.interfaces[0].type !== NetworkInterfaceType.lan) {
+				const lanInterface = new NetworkInterface();
+				lanInterface.type = NetworkInterfaceType.lan;
+				preconfigureNetworkInterface(lanInterface);
+				if (this.network.interfaces.length === 0) {
+					this.network.interfaces.push(lanInterface);
+				} else {
+					this.network.interfaces[0].update(lanInterface);
+				}
+			}
+
+			if (this.network.interfaces.length === 1 || this.network.interfaces[1].type !== NetworkInterfaceType.wifi) {
+				const wifiInterface = new NetworkInterface();
+				wifiInterface.type = NetworkInterfaceType.wifi;
+				preconfigureNetworkInterface(wifiInterface);
+				if (this.network.interfaces.length === 1) {
+					this.network.interfaces.push(wifiInterface);
+				} else {
+					this.network.interfaces[1].update(wifiInterface);
+				}
+			}
+
+			// Remove other network interfaces (if any)
+			this.network.interfaces.splice(2);
+		} else if (this.boardDefinition) {
+			// Update existing network interface types
+			for (let i = 0; i < Math.min(this.network.interfaces.length, this.boardDefinition.objectModelNetworkInterfaces.length); i++) {
+				this.network.interfaces[i].type = this.boardDefinition.objectModelNetworkInterfaces[i].type;
+			}
+
+			// Add missing and remove unsupported interfaces
+			for (let i = this.network.interfaces.length; i < this.boardDefinition.objectModelNetworkInterfaces.length; i++) {
+				const newNetworkInterface = new NetworkInterface();
+				newNetworkInterface.update(this.boardDefinition.objectModelNetworkInterfaces[i]);
+				preconfigureNetworkInterface(newNetworkInterface);
+				this.network.interfaces.push(newNetworkInterface);
+			}
+			this.network.interfaces.splice(this.boardDefinition.objectModelNetworkInterfaces.length);
+		}
 	}
 
 	/**
@@ -531,6 +593,10 @@ export default class ConfigModel extends ObjectModel {
 		if (!value) {
 			this.move.extruders.splice(0);
 			this.sensors.filamentMonitors.splice(0);
+
+			if (this.state.machineMode === MachineMode.fff) {
+				this.state.machineMode = this.configTool.capabilities.cnc ? MachineMode.cnc : MachineMode.laser;
+			}
 		}
 	}
 
@@ -542,6 +608,10 @@ export default class ConfigModel extends ObjectModel {
 		this.configTool.capabilities.cnc = value;
 		if (!value) {
 			this.spindles.splice(0);
+
+			if (this.state.machineMode === MachineMode.cnc) {
+				this.state.machineMode = this.configTool.capabilities.fff ? MachineMode.fff : MachineMode.laser;
+			}
 		}
 	}
 
@@ -557,6 +627,10 @@ export default class ConfigModel extends ObjectModel {
 				if (port.function === ConfigPortFunction.laser) {
 					port.function = null;
 				}
+			}
+
+			if (this.state.machineMode === MachineMode.laser) {
+				this.state.machineMode = this.configTool.capabilities.cnc ? MachineMode.cnc : MachineMode.laser;
 			}
 		}
 	}

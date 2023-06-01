@@ -47,6 +47,4 @@ M92 E<%- model.move.extruders.map(extruder => extruder.stepsPerMm).join(':') %> 
 M566 E<%- model.move.extruders.map(extruder => extruder.jerk * 60).join(':') %> ; set maximum instantaneous speed changes (mm/min)
 M203 E<%- model.move.extruders.map(extruder => extruder.speed * 60).join(':') %> ; set maximum speeds (mm/min)
 M201 E<%- model.move.extruders.map(extruder => extruder.acceleration).join(':') %> ; set accelerations (mm/s^2)
-<%  } else { -%>
-; no extruders configured
 <%  }  -%>

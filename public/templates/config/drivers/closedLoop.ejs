@@ -27,6 +27,7 @@ M569.1 <%- params({
     C: (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic) ? driver.closedLoop.countsPerFullStep : undefined
 }) %> ; driver <%- driver.id %> has a <%- type %> encoder<%- (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic) ? ` with ${driver.closedLoop.countsPerFullStep} CPS` : "" %>
 <%  }
+
     if (preview && closedLoopDrivers.length === 0) { -%>
 ; no drivers with encoders configured
 <%  } -%>

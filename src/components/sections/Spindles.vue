@@ -106,7 +106,7 @@
 
 			<div v-else class="alert alert-info mb-0">
 				<i class="bi-info-circle"></i>
-				No Spindles defined
+				No Spindles
 			</div>
 		</template>
 	</config-section>

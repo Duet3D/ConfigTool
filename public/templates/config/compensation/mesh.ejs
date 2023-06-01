@@ -1,1 +1,18 @@
-; mesh compensation goes here
+<%  let meshEnabled = false;
+    if (model.isDelta) {
+        if (model.move.compensation.probeGrid.radius > 0 && model.move.compensation.probeGrid.spacings[0] > 0) { -%>
+M557 <%- params({
+    R: model.move.compensation.probeGrid.radius,
+    S: model.move.compensation.probeGrid.spacings[0]
+}) %> ; define grid for mesh bed compensation
+<%      }
+    } else if (model.move.compensation.probeGrid.maxs[0] > model.move.compensation.probeGrid.mins[0] &&
+               model.move.compensation.probeGrid.maxs[1] > model.move.compensation.probeGrid.mins[1] &&
+               model.move.compensation.probeGrid.spacings[0] > 0 &&
+               model.move.compensation.probeGrid.spacings[1] > 0) { -%>
+M557 <%- params({
+    [model.move.compensation.probeGrid.axes[0]]: [model.move.compensation.probeGrid.mins[0], model.move.compensation.probeGrid.maxs[0]],
+    [model.move.compensation.probeGrid.axes[1]]: [model.move.compensation.probeGrid.mins[1], model.move.compensation.probeGrid.maxs[1]],
+    S: model.move.compensation.probeGrid.spacings
+}) %> ; define grid for mesh bed compensation
+<%  } -%>

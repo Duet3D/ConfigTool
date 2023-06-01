@@ -108,7 +108,7 @@
 
 			<div v-if="store.data.move.extruders.length === 0" class="alert alert-info mb-0">
 				<i class="bi-info-circle"></i>
-				No Extruders defined
+				No Extruders
 			</div>
 		</template>
 	</config-section>

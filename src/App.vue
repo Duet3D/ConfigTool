@@ -114,14 +114,14 @@ function updateTheme() {
 }
 
 watch(() => theme.value, () => {
-	updateTheme();
+	//updateTheme();
 });
 
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-	updateTheme();
+	//updateTheme();
 });
 
-updateTheme();
+//updateTheme();
 
 // Theme dropdown
 const themeDropdownElement = ref<Element | null>(null), themeDropdown = ref<Dropdown | null>(null);
