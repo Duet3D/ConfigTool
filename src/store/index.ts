@@ -25,14 +25,12 @@ import {
 	Microstepping,
 	ModelSet,
 	Move,
-	MoveCompensation,
 	Network,
 	NetworkInterface,
 	NetworkInterfaceState,
 	NetworkInterfaceType,
 	NetworkProtocol,
 	Probe,
-	ProbeGrid,
 	ProbeType,
 	Sensors,
 	Tool
@@ -239,13 +237,41 @@ export const useStore = defineStore({
 		return {
 			data: initObject(ConfigModel, defaultTemplate),
 			dataModified: false,
-			preset: initObject(ConfigModel, defaultTemplate)
+			preset: initObject(ConfigModel, defaultTemplate),
+
+			darkTheme: (localStorage.getItem("theme") === "auto") ? window.matchMedia("(prefers-color-scheme: dark)").matches : (localStorage.getItem("theme") === "dark"),
+			theme: "auto" as "dark" | "light" | "auto"
 		};
     },
     actions: {
 		setModel(newModel: ConfigModel) {
 			this.data = newModel;
 			this.dataModified = false;
+		},
+		setTheme(theme: "dark" | "light" | "auto") {
+			// Apply new theme value
+			switch (theme) {
+				case "dark":
+					this.darkTheme = true;
+					break;
+				case "light":
+					this.darkTheme = false;
+					break;
+				case "auto":
+					this.darkTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+					break;
+				default:
+					const _exhaustiveCheck: never = theme;
+					break;
+			}
+
+			// Try to save it
+			this.theme = theme;
+			try {
+				localStorage.setItem("theme", theme);
+			} catch (e) {
+				console.warn("localStorage not supported", e);
+			}
 		}
 	}
 });

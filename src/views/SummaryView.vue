@@ -5,20 +5,21 @@
 </style>
 
 <template>
-	<main class="container form-floating mt-3 w-100">
-		<textarea class="form-control textarea" id="json-data" v-model="jsonData"></textarea>
-		<label for="jsonData">Final object model / JSON data</label>
+	<main class="container mt-4">
+		<div class="text-center mb-4">
+			<h2 class="mb-4">
+				Configuration ready
+			</h2>
+			<h4 class="mb-3">
+				The config tool can now generate the following files:
+			</h4>
+
+		</div>
 	</main>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-
 import { useStore } from "@/store";
 
 const store = useStore();
-
-const jsonData = ref("");
-
-onMounted(() => jsonData.value = JSON.stringify(store.data, null, 2));
 </script>

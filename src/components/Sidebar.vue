@@ -26,37 +26,22 @@ aside {
 	align-items: center;
 	padding: .25rem .5rem;
 	font-weight: 600;
-	color: rgba(0, 0, 0, .65);
+	color: var(--bs-body-color);
 	background-color: transparent;
 	border: 0;
 }
 
 .btn-toggle:hover {
-	color: rgba(0, 0, 0, .85);
-	background-color: #dae1f5;
+	color:  var(--bs-body-color);
+	background-color: var(--bs-primary-bg-subtle);
 }
 
 .btn-toggle:focus {
 	box-shadow: none;
 }
 
-.btn-toggle::before {
-	width: 1.25em;
-	line-height: 0;
-	content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
-	transition: transform .35s ease;
-	transform-origin: .5em 50%;
-}
-
-.btn-toggle[aria-expanded="true"] {
-	color: rgba(0, 0, 0, .85);
-}
-
-.btn-toggle[aria-expanded="true"]::before {
-	transform: rotate(90deg);
-}
-
 .btn-toggle-nav a {
+	color:  var(--bs-body-color);
 	display: inline-flex;
 	padding: .1875rem .5rem;
 	margin-top: .125rem;
@@ -65,7 +50,7 @@ aside {
 }
 
 .btn-toggle-nav a:hover {
-	background-color: #dae1f5;
+	background-color: var(--bs-primary-bg-subtle);
 }
 
 .btn-no-toggle {
@@ -79,7 +64,7 @@ aside {
 </style>
 
 <template>
-	<aside class="bg-white">
+	<aside>
 		<ul class="list-unstyled ps-0">
 			<li class="mb-1">
 				<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse"
@@ -89,7 +74,7 @@ aside {
 				<div class="collapse show" id="start-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li>
-							<RouterLink to="/" active-class="active" class="link-dark rounded">Introduction</RouterLink>
+							<RouterLink to="/" active-class="active" class="rounded">Introduction</RouterLink>
 						</li>
 						<!--<li><RouterLink to="/Presets" active-class="active" class="link-dark rounded">Presets</RouterLink></li>-->
 					</ul>
@@ -104,7 +89,7 @@ aside {
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li v-for="section in sections">
 							<RouterLink :to="{ name: 'configuration', hash: (section !== ConfigSectionType.General) ? '#' + section : undefined }"
-										class="link-dark rounded">
+										class="rounded">
 								{{ getSectionTitle(section) }}
 							</RouterLink>
 						</li>
@@ -119,7 +104,7 @@ aside {
 				<div class="collapse show" id="finish-collapse">
 					<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 						<li>
-							<RouterLink to="/Summary" class="link-dark rounded" active-class="active">Summary</RouterLink>
+							<RouterLink to="/Summary" class="rounded" active-class="active">Summary</RouterLink>
 						</li>
 					</ul>
 				</div>

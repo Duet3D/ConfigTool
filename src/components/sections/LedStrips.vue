@@ -30,7 +30,7 @@
 							Type
 						</th>
 						<th>
-							Port
+							Control Port
 						</th>
 						<th>
 							<!-- Delete button -->

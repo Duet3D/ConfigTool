@@ -6,7 +6,7 @@ section {
 
 <template>
 	<!-- Navbar -->
-	<header class="navbar navbar-light bg-light sticky-top">
+	<header class="navbar navbar-light bg-body-tertiary sticky-top">
 		<!-- for sm and down -->
 		<div class="d-md-none container-fluid flex-nowrap">
 			<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
@@ -35,7 +35,6 @@ section {
 				RepRapFirmware Configuration Tool
 			</a>
 
-			<!-- TODO enable after upgrade to Bootstrap 5.3
 			<div class="dropdown">
 				<a ref="themeDropdownElement" class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
 				   @click.prevent="themeDropdown?.toggle()">
@@ -43,20 +42,25 @@ section {
 				</a>
 				<ul class="dropdown-menu">
 					<li>
-						<a class="dropdown-item" :class="actualTheme === 'light' ? 'active' : ''" href="#"
-						   @click="setTheme('light')">
-							Light Theme
+						<a class="dropdown-item" :class="store.theme === 'auto' ? 'active' : ''" href="#"
+						   @click="store.setTheme('auto')">
+							Automatic
 						</a>
 					</li>
 					<li>
-						<a class="dropdown-item" :class="actualTheme === 'dark' ? 'active' : ''" href="#"
-						   @click="setTheme('dark')">
-							Dark Theme
+						<a class="dropdown-item" :class="store.theme === 'light' ? 'active' : ''" href="#"
+						   @click="store.setTheme('light')">
+							Light
+						</a>
+					</li>
+					<li>
+						<a class="dropdown-item" :class="store.theme === 'dark' ? 'active' : ''" href="#"
+						   @click="store.setTheme('dark')">
+							Dark
 						</a>
 					</li>
 				</ul>
 			</div>
-			-->
 		</div>
 	</header>
 
@@ -69,7 +73,7 @@ section {
 
 <script setup lang="ts">
 import { Dropdown } from "bootstrap";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterView } from "vue-router";
 
 import Sidebar from "./components/Sidebar.vue";
@@ -77,63 +81,56 @@ import Sidebar from "./components/Sidebar.vue";
 import { useStore } from "./store";
 import { MutationType } from "pinia";
 
-// Store observer
 const store = useStore();
-store.$subscribe((mutation) => {
-	if (mutation.type === MutationType.direct) {
-		// When the state is reset, the mutation type is different
-		store.dataModified = true;
-	}
-})
 
 // Theme
-const theme = ref(localStorage.getItem("theme") || "auto");
-const actualTheme = computed(() => {
-	if (theme.value === "auto") {
-		return (window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
-	}
-	return theme.value;
-});
-
-function setTheme(value: string) {
-	theme.value = value;
-	localStorage.setItem("theme", value);
-}
-
 function updateTheme() {
-	if (theme.value === "auto") {
-		if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-			document.documentElement.setAttribute("data-bs-theme", "dark");
-		} else {
-			document.documentElement.setAttribute("data-bs-theme", "light");
-		}
+	if (store.darkTheme) {
+		document.documentElement.setAttribute("data-bs-theme", "dark");
 	} else {
-		document.documentElement.setAttribute("data-bs-theme", theme.value);
-		localStorage.setItem("theme", theme.value);;
+		document.documentElement.setAttribute("data-bs-theme", "light");
 	}
 }
-
-watch(() => theme.value, () => {
-	//updateTheme();
-});
 
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-	//updateTheme();
+	if (store.theme === "auto") {
+		store.darkTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+	}
+	updateTheme();
 });
 
-//updateTheme();
+watch(() => store.darkTheme, () => {
+	updateTheme();
+});
+
+updateTheme();
 
 // Theme dropdown
 const themeDropdownElement = ref<Element | null>(null), themeDropdown = ref<Dropdown | null>(null);
+
 onMounted(() => {
 	if (themeDropdownElement.value) {
 		themeDropdown.value = new Dropdown(themeDropdownElement.value);
 	}
 });
+
 onBeforeUnmount(() => {
 	if (themeDropdown.value) {
 		themeDropdown.value.dispose();
 		themeDropdown.value = null;
+	}
+});
+
+// Store observer
+store.$subscribe((mutation) => {
+	if (mutation.type === MutationType.direct) {
+		if (mutation.events.key === "darkTheme") {
+			// Update theme
+			updateTheme();
+		} else {
+			// When the state is reset, the mutation type is different
+			store.dataModified = true;
+		}
 	}
 });
 </script>

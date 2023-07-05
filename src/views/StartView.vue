@@ -24,11 +24,11 @@
 		</div>
 
 		<div class="d-flex justify-content-center">
-			<button type="button" class="btn btn-lg btn-primary me-3" @click.prevent="startFromScratch">
+			<button type="button" class="btn btn-lg me-3" :class="store.dataModified ? 'btn-secondary' : 'btn-primary'" @click.prevent="startFromScratch">
 				<i class="bi bi-plus-square"></i>
 				Start new Configuration from Scratch
 			</button>
-			<button v-if="store.dataModified" type="button" class="btn btn-lg btn-secondary"
+			<button v-if="store.dataModified" type="button" class="btn btn-lg btn-primary"
 					@click.prevent="router.push('/Configuration')">
 				<i class="bi bi-arrow-right-circle"></i>
 				Continue Configuration

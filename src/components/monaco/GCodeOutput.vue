@@ -6,8 +6,12 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 
+import { useStore } from "@/store";
+
 import "./monaco-gcode";
 import "./monaco-worker";
+
+const store = useStore();
 
 // Properties
 const props = defineProps<{
@@ -32,6 +36,7 @@ onMounted(() => {
         renderLineHighlight: "none",
         rulers: [255],
         scrollBeyondLastLine: false,
+        theme: store.darkTheme ? "vs-dark" : "vs",
         value: props.value
     });
 
@@ -48,7 +53,11 @@ onMounted(() => {
         }
         editorRef.value.style.height = `${height}px`;
         editor.layout();
-    })
+    });
+});
+
+watch(() => store.darkTheme, () => {
+    monaco.editor.setTheme(store.darkTheme ? "vs-dark" : "vs");
 });
 
 onBeforeUnmount(() => {
