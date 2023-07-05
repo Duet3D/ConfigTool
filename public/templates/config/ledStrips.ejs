@@ -1,0 +1,21 @@
+<%  for (let i = 0; i < model.ledStrips.length; i++) {
+        const strip = model.ledStrips[i];
+        let type = undefined;
+        switch (strip.type) {
+            case LedStripType.DotStar:
+                type = 0;
+                break;
+            case LedStripType.NeoPixel_RGB:
+                type = 1;
+                break;
+            case LedStripType.NeoPixel_RGBW:
+                type = 2;
+                break;
+        }
+        -%>
+M950 <%- params({
+    E: i,
+    C: getPortString(ConfigPortFunction.ledStrip, i),
+    T: type
+}) %> ; configure LED strip #<%- i %>
+<%  } -%>

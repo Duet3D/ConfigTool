@@ -8,8 +8,10 @@ import { useStore } from ".";
 export enum ConfigSectionType {
     General = "general",
     Accessories = "accessories",
+    LedStrips = "ledStrips",
     Network = "network",
     Expansion = "expansion",
+    Accelerometers = "accelerometers",
     Drivers = "drivers",
     Kinematics = "kinematics",
     Axes = "axes",
@@ -36,8 +38,10 @@ export function getSections() {
     return [
         ConfigSectionType.General,
         ConfigSectionType.Accessories,
+        (store.data.limits.ledStrips ?? 0 > 0) ? ConfigSectionType.LedStrips : null,
         (store.data.network.interfaces.length > 0) ? ConfigSectionType.Network : null,
         ConfigSectionType.Expansion,
+        ConfigSectionType.Accelerometers,
         ConfigSectionType.Drivers,
         ConfigSectionType.Kinematics,
         ConfigSectionType.Axes,
@@ -122,6 +126,11 @@ export function getSectionTemplates(section?: ConfigSectionType) {
                 result.push({ template: "config/accessories", data: null });
             }
             break;
+        case ConfigSectionType.LedStrips:
+            if (store.data.ledStrips.length > 0) {
+                result.push({ template: "config/ledStrips", data: null });
+            }
+            break;
         case ConfigSectionType.Network:
             if (store.data.configTool.password !== "" || (store.data.sbc === null && store.data.network.interfaces.some(iface => iface.state !== NetworkInterfaceState.disabled))) {
                 // Configure machine password (if set) and in standalone mode network adapters via config.g
@@ -137,6 +146,9 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             break;
         case ConfigSectionType.Expansion:
             // no templates
+            break;
+        case ConfigSectionType.Accelerometers:
+            result.push({ template: "config/accelerometers", data: null });
             break;
         case ConfigSectionType.Drivers:
             // defined using sub-sections

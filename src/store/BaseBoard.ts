@@ -17,6 +17,7 @@ export interface BaseBoardDescriptor {
 	microstepInterpolations: Array<number>;     // TODO add this to object model -> boards
 	objectModelBoard: Board;
 	ports: Record<PortType, Array<string>>;
+	supportsAccelerometer: boolean;
 }
 
 /**
@@ -27,6 +28,7 @@ export enum PortType {
 	fan = "fan",
 	fanTacho = "fanTacho",
 	gpIn = "gpIn",
+	gpInInterrupt = "gpInInterrupt",
 	gpOut = "gpOut",
 	heater = "heater",
 	pwm = "pwm",

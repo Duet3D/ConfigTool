@@ -4,6 +4,7 @@ import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
 
 import type ConfigModel from "@/store/model";
+import type { StoreState } from "pinia";
 
 /**
  * Boards supported by the config tool
@@ -35,11 +36,10 @@ export enum UnsupportedBoardType {
  * Descriptor interface for supported main boards
  */
 export interface BoardDescriptor extends BaseBoardDescriptor {
+	displayDotstarPort: string | null;
+	expansionBoards: Set<ExpansionBoardType>;
 	objectModelLimits: Limits;
 	objectModelNetworkInterfaces: Array<NetworkInterface>;
-
-	expansionBoards: Set<ExpansionBoardType>;
-
 	supportsBME280: boolean;
 }
 
@@ -59,7 +59,24 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		maxVoltage: 25,
 		numDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		ports: {
+			[PortType.analogIn]: ["io2.in"],
+			[PortType.fan]: ["out2", "out3", "out4", "out5", "out6+laser+vfd"],
+			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
+			[PortType.gpInInterrupt]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
+			[PortType.heater]: ["out0", "out1", "out2"],
+			[PortType.pwm]: ["io0.out", "io2.out", "io3.out"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
+			[PortType.uart]: ["usb", "io1.in+io1.out"]
+		},
 
+		displayDotstarPort: "io3.out",
+		expansionBoards: new Set([
+			ExpansionBoardType.Duet3Mini2Plus
+		]),
 		objectModelBoard: initObject(Board, {
 			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_Mini5plus.uf2",
@@ -106,23 +123,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 				type: NetworkInterfaceType.lan
 			})
 		],
-
-		ports: {
-			[PortType.analogIn]: ["io2.in"],
-			[PortType.fan]: ["out2", "out3", "out4", "out5", "out6+laser+vfd"],
-			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
-			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
-			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
-			[PortType.heater]: ["out0", "out1", "out2"],
-			[PortType.pwm]: ["io0.out", "io2.out", "io3.out"],
-			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
-			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
-			[PortType.uart]: ["usb", "io1.in+io1.out"]
-		},
-
-		expansionBoards: new Set([
-			ExpansionBoardType.Duet3Mini2Plus
-		]),
+		supportsAccelerometer: true,
 		supportsBME280: true
 	},
 	[BoardType.Duet3Mini5PlusWiFi]: {
@@ -137,7 +138,24 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		maxVoltage: 25,
 		numDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		ports: {
+			[PortType.analogIn]: ["io2.in"],
+			[PortType.fan]: ["out2", "out3", "out4", "out5", "out6+laser+vfd"],
+			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
+			[PortType.gpInInterrupt]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.gpOut]: ["io0.in", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
+			[PortType.heater]: ["out0", "out1", "out2"],
+			[PortType.pwm]: ["io0.out", "io2.out", "io3.out"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
+			[PortType.uart]: ["usb", "io1.in+io1.out"]
+		},
 
+		displayDotstarPort: "io3.out",
+		expansionBoards: new Set([
+			ExpansionBoardType.Duet3Mini2Plus
+		]),
 		objectModelBoard: initObject(Board, {
 			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_Mini5plus.uf2",
@@ -184,23 +202,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 				type: NetworkInterfaceType.wifi
 			})
 		],
-
-		ports: {
-			[PortType.analogIn]: ["io2.in"],
-			[PortType.fan]: ["out2", "out3", "out4", "out5", "out6+laser+vfd"],
-			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
-			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
-			[PortType.gpOut]: ["io0.in", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
-			[PortType.heater]: ["out0", "out1", "out2"],
-			[PortType.pwm]: ["io0.out", "io2.out", "io3.out"],
-			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
-			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
-			[PortType.uart]: ["usb", "io1.in+io1.out"]
-		},
-
-		expansionBoards: new Set([
-			ExpansionBoardType.Duet3Mini2Plus
-		]),
+		supportsAccelerometer: true,
 		supportsBME280: true
 	},
 	[BoardType.Duet3MB6HC]: {
@@ -215,7 +217,22 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		maxVoltage: 32,
 		numDrivers: 6,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		ports: {
+			[PortType.analogIn]: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
+			[PortType.fan]: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
+			[PortType.fanTacho]: ["out4.tach", "out5.tach", "out6.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
+			[PortType.gpInInterrupt]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in", "spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
+			[PortType.heater]: ["out0", "out1", "out2", "out3"],
+			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
+			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
+			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
+		},
 
+		displayDotstarPort: null,
+		expansionBoards: new Set(),
 		objectModelBoard: initObject(Board, {
 			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_MB6HC.bin",
@@ -260,21 +277,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 				type: NetworkInterfaceType.lan
 			})
 		],
-
-		ports: {
-			[PortType.analogIn]: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
-			[PortType.fan]: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
-			[PortType.fanTacho]: ["out4.tach", "out5.tach", "out6.tach"],
-			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
-			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
-			[PortType.heater]: ["out0", "out1", "out2", "out3"],
-			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
-			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
-			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
-			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
-		},
-
-		expansionBoards: new Set(),
+		supportsAccelerometer: true,
 		supportsBME280: true
 	},
 	[BoardType.Duet3MB6XD]: {
@@ -289,7 +292,22 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		maxVoltage: 30,
 		numDrivers: 6,
 		microstepInterpolations: [],
+		ports: {
+			[PortType.analogIn]: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
+			[PortType.fan]: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
+			[PortType.fanTacho]: ["out4.tach", "out5.tach", "out6.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
+			[PortType.gpInInterrupt]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in", "spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
+			[PortType.heater]: ["out0", "out1", "out2", "out3"],
+			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
+			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
+			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
+		},
 
+		displayDotstarPort: null,
+		expansionBoards: new Set(),
 		objectModelBoard: initObject(Board, {
 			canAddress: 0,
 			firmwareFileName: "Duet3Firmware_MB6XD.bin",
@@ -335,21 +353,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 				type: NetworkInterfaceType.lan
 			})
 		],
-
-		ports: {
-			[PortType.analogIn]: ["io3.in", "io4.in", "io5.in", "io6.in", "io7.in"],
-			[PortType.fan]: ["out4", "out5", "out6", "out7", "out8", "out9+laser+vfd", "out10+servo"],
-			[PortType.fanTacho]: ["out4.tach", "out5.tach", "out6.tach"],
-			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "io7.in", "io8.in"],
-			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
-			[PortType.heater]: ["out0", "out1", "out2", "out3"],
-			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
-			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
-			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
-			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
-		},
-
-		expansionBoards: new Set(),
+		supportsAccelerometer: true,
 		supportsBME280: true
 	},
 	[BoardType.Duet2Ethernet]: {
@@ -364,7 +368,26 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		maxVoltage: 25,
 		numDrivers: 5,
 		microstepInterpolations: [16],
+		ports: {
+			[PortType.analogIn]: ["zprobe.in", "exp.thermistor3+exp.35", "exp.thermistor4+exp.36", "exp.thermistor5+exp.37", "exp.thermistor6+exp.38", "exp.thermistor7+exp.39"],
+			[PortType.fan]: ["fan0", "fan1", "fan2"],
+			[PortType.fanTacho]: ["exp.pb6"],
+			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.e2stop+exp.4", "exp.e3stop+exp.9", "exp.e4stop+exp.14", "exp.e5stop+exp.19", "exp.e6stop+exp.24"],
+			[PortType.gpInInterrupt]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
+			[PortType.gpOut]: ["zprobe.mod", "pson"],
+			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
+			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
+			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp"],
+			[PortType.uart]: ["usb", "urxd0+utxd0"]
+		},
 
+		displayDotstarPort: null,
+		expansionBoards: new Set([
+			ExpansionBoardType.DueX5,
+			ExpansionBoardType.Duet2ExpansionBreakout,
+			ExpansionBoardType.DueX2
+		]),
 		objectModelBoard: initObject(Board, {
 			firmwareFileName: "Duet2CombinedFirmware.bin",
 			iapFileNameSD: "Duet2_SDiap32_WiFiEth.bin",
@@ -408,25 +431,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 				type: NetworkInterfaceType.lan
 			})
 		],
-
-		ports: {
-			[PortType.analogIn]: ["zprobe.in", "exp.thermistor3+exp.35", "exp.thermistor4+exp.36", "exp.thermistor5+exp.37", "exp.thermistor6+exp.38", "exp.thermistor7+exp.39"],
-			[PortType.fan]: ["fan0", "fan1", "fan2"],
-			[PortType.fanTacho]: ["exp.pb6"],
-			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.e2stop+exp.4", "exp.e3stop+exp.9", "exp.e4stop+exp.14", "exp.e5stop+exp.19", "exp.e6stop+exp.24"],
-			[PortType.gpOut]: ["zprobe.mod", "pson"],
-			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
-			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
-			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
-			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp"],
-			[PortType.uart]: ["usb", "urxd0+utxd0"]
-		},
-
-		expansionBoards: new Set([
-			ExpansionBoardType.DueX5,
-			ExpansionBoardType.Duet2ExpansionBreakout,
-			ExpansionBoardType.DueX2
-		]),
+		supportsAccelerometer: true,
 		supportsBME280: false
 	},
 	[BoardType.Duet2WiFi]: {
@@ -441,7 +446,26 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		maxVoltage: 25,
 		numDrivers: 5,
 		microstepInterpolations: [16],
+		ports: {
+			[PortType.analogIn]: ["zprobe.in", "exp.thermistor3+exp.35", "exp.thermistor4+exp.36", "exp.thermistor5+exp.37", "exp.thermistor6+exp.38", "exp.thermistor7+exp.39"],
+			[PortType.fan]: ["fan0", "fan1", "fan2"],
+			[PortType.fanTacho]: ["exp.pb6"],
+			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.e2stop+exp.4", "exp.e3stop+exp.9", "exp.e4stop+exp.14", "exp.e5stop+exp.19", "exp.e6stop+exp.24"],
+			[PortType.gpInInterrupt]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
+			[PortType.gpOut]: ["pson"],
+			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
+			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
+			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp"],
+			[PortType.uart]: ["usb", "urxd0+utxd0"]
+		},
 
+		displayDotstarPort: null,
+		expansionBoards: new Set([
+			ExpansionBoardType.DueX5,
+			ExpansionBoardType.Duet2ExpansionBreakout,
+			ExpansionBoardType.DueX2
+		]),
 		objectModelBoard: initObject(Board, {
 			firmwareFileName: "Duet2CombinedFirmware.bin",
 			iapFileNameSD: "Duet2_SDiap32_WiFiEth.bin",
@@ -485,12 +509,28 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 				type: NetworkInterfaceType.wifi
 			})
 		],
-
+		supportsAccelerometer: true,
+		supportsBME280: false
+	},
+	[BoardType.Duet2SBC]: {
+		displayDotstarPort: null,
+		hasADCAutoCalibration: false,
+		hasClosedLoopDrivers: false,
+		hasInputPullUps: false,
+		hasSmartDrivers: true,
+		hasVrefMonitor: true,
+		motorWarnCurrent: 2000,
+		motorMaxCurrent: 2400,
+		minVoltage: 11,
+		maxVoltage: 25,
+		numDrivers: 5,
+		microstepInterpolations: [16],
 		ports: {
 			[PortType.analogIn]: ["zprobe.in", "exp.thermistor3+exp.35", "exp.thermistor4+exp.36", "exp.thermistor5+exp.37", "exp.thermistor6+exp.38", "exp.thermistor7+exp.39"],
 			[PortType.fan]: ["fan0", "fan1", "fan2"],
 			[PortType.fanTacho]: ["exp.pb6"],
 			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.e2stop+exp.4", "exp.e3stop+exp.9", "exp.e4stop+exp.14", "exp.e5stop+exp.19", "exp.e6stop+exp.24"],
+			[PortType.gpInInterrupt]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
 			[PortType.gpOut]: ["pson"],
 			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
 			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
@@ -504,21 +544,6 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			ExpansionBoardType.Duet2ExpansionBreakout,
 			ExpansionBoardType.DueX2
 		]),
-		supportsBME280: false
-	},
-	[BoardType.Duet2SBC]: {
-		hasADCAutoCalibration: false,
-		hasClosedLoopDrivers: false,
-		hasInputPullUps: false,
-		hasSmartDrivers: true,
-		hasVrefMonitor: true,
-		motorWarnCurrent: 2000,
-		motorMaxCurrent: 2400,
-		minVoltage: 11,
-		maxVoltage: 25,
-		numDrivers: 5,
-		microstepInterpolations: [16],
-
 		objectModelBoard: initObject(Board, {
 			firmwareFileName: "Duet2Firmware_SBC.bin",
 			iapFileNameSBC: "Duet2_SBCiap32_SBC.bin",
@@ -558,28 +583,11 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			zProbes: 4
 		}),
 		objectModelNetworkInterfaces: [],
-
-		ports: {
-			[PortType.analogIn]: ["zprobe.in", "exp.thermistor3+exp.35", "exp.thermistor4+exp.36", "exp.thermistor5+exp.37", "exp.thermistor6+exp.38", "exp.thermistor7+exp.39"],
-			[PortType.fan]: ["fan0", "fan1", "fan2"],
-			[PortType.fanTacho]: ["exp.pb6"],
-			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.e2stop+exp.4", "exp.e3stop+exp.9", "exp.e4stop+exp.14", "exp.e5stop+exp.19", "exp.e6stop+exp.24"],
-			[PortType.gpOut]: ["pson"],
-			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
-			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
-			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
-			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp"],
-			[PortType.uart]: ["usb", "urxd0+utxd0"]
-		},
-
-		expansionBoards: new Set([
-			ExpansionBoardType.DueX5,
-			ExpansionBoardType.Duet2ExpansionBreakout,
-			ExpansionBoardType.DueX2
-		]),
+		supportsAccelerometer: true,
 		supportsBME280: false
 	},
 	[BoardType.Duet2Maestro]: {
+		displayDotstarPort: null,
 		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: false,
@@ -591,7 +599,23 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		maxVoltage: 25,
 		numDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		ports: {
+			[PortType.analogIn]: ["zprobe.in"],
+			[PortType.fan]: ["fan0", "fan1", "fan2"],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.pa21", "exp.pa22", "exp.pa3+twd0", "exp.pa4+twck0"],
+			[PortType.gpInInterrupt]: ["spi.cs1", "spi.cs2"],
+			[PortType.gpOut]: ["pson", "exp.pa21", "exp.pa22", "exp.pa3", "exp.pa4"],
+			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
+			[PortType.pwm]: ["zprobe.mod+servo"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2"],
+			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "ctemp"],
+			[PortType.uart]: ["usb", "urxd+utxd"]
+		},
 
+		expansionBoards: new Set([
+			ExpansionBoardType.Duet2Maestro2Plus
+		]),
 		objectModelBoard: initObject(Board, {
 			firmwareFileName: "DuetMaestroFirmware.bin",
 			iapFileNameSD: "Duet2_SDiap32_Maestro.bin",
@@ -635,23 +659,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 				type: NetworkInterfaceType.lan
 			})
 		],
-
-		ports: {
-			[PortType.analogIn]: ["zprobe.in"],
-			[PortType.fan]: ["fan0", "fan1", "fan2"],
-			[PortType.fanTacho]: [],
-			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.pa21", "exp.pa22", "exp.pa3+twd0", "exp.pa4+twck0"],
-			[PortType.gpOut]: ["pson", "exp.pa21", "exp.pa22", "exp.pa3", "exp.pa4"],
-			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
-			[PortType.pwm]: ["zprobe.mod+servo"],
-			[PortType.spiCs]: ["spi.cs1", "spi.cs2"],
-			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "ctemp"],
-			[PortType.uart]: ["usb", "urxd+utxd"]
-		},
-
-		expansionBoards: new Set([
-			ExpansionBoardType.Duet2Maestro2Plus
-		]),
+		supportsAccelerometer: true,
 		supportsBME280: false
 	}
 }
@@ -661,7 +669,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
  * @param model Config model object
  * @returns Board type or null if not found
  */
-export function getBoardDefinition(model: ConfigModel): BoardDescriptor | null {
+export function getBoardDefinition(model: StoreState<ConfigModel>): BoardDescriptor | null {
 	if (model.boards.length > 0) {
 		const shortName = model.boards[0].shortName;
 		for (let boardType of Object.values(BoardType)) {
@@ -679,7 +687,7 @@ export function getBoardDefinition(model: ConfigModel): BoardDescriptor | null {
  * @param model Config model object
  * @returns Board type or null if not found
  */
-export function getBoardType(model: ConfigModel): BoardType | null {
+export function getBoardType(model: StoreState<ConfigModel>): BoardType | null {
 	if (model.boards.length > 0) {
 		// Get boards that match the short name
 		const matches = [];

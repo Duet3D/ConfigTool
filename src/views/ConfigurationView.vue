@@ -28,15 +28,16 @@
 import { onBeforeUnmount, onMounted, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import Accessories from "@/components/sections/Accessories.vue";
+import { ConfigSectionType, getSections } from "@/store/sections";
 import General from "@/components/sections/General.vue";
+import Accessories from "@/components/sections/Accessories.vue";
 import Network from "@/components/sections/Network.vue";
+import LedStrips from "@/components/sections/LedStrips.vue";
 import Expansion from "@/components/sections/Expansion.vue";
+import Accelerometers from "@/components/sections/Accelerometers.vue";
+import Kinematics from "@/components/sections/Kinematics.vue";
 import Drivers from "@/components/sections/Drivers.vue";
 import Axes from "@/components/sections/Axes.vue";
-
-import { useStore } from "@/store";
-import { ConfigSectionType, getSections } from "@/store/sections";
 import Extruders from "@/components/sections/Extruders.vue";
 import Probes from "@/components/sections/Probes.vue";
 import Endstops from "@/components/sections/Endstops.vue";
@@ -48,10 +49,8 @@ import Lasers from "@/components/sections/Lasers.vue";
 import Fans from "@/components/sections/Fans.vue";
 import Tools from "@/components/sections/Tools.vue";
 import Miscellaneous from "@/components/sections/Miscellaneous.vue";
-import Kinematics from "@/components/sections/Kinematics.vue";
 
 const router = useRouter();
-const store = useStore();
 
 // Sections
 const sectionComponents = computed(() => {
@@ -64,11 +63,17 @@ const sectionComponents = computed(() => {
 			case ConfigSectionType.Accessories:
 				components.push(Accessories);
 				break;
+			case ConfigSectionType.LedStrips:
+				components.push(LedStrips);
+				break;
 			case ConfigSectionType.Network:
 				components.push(Network);
 				break;
 			case ConfigSectionType.Expansion:
 				components.push(Expansion);
+				break;
+			case ConfigSectionType.Accelerometers:
+				components.push(Accelerometers);
 				break;
 			case ConfigSectionType.Kinematics:
 				components.push(Kinematics);

@@ -82,6 +82,9 @@
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
 import { ConfigSectionType } from "@/store/sections";
+import { BoardType, getBoardType } from "@/store/Boards";
+import { getBoardDefinition } from "@/store/Boards";
+import { ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const DirectDisplayTypes: Array<SelectOption> = [
 	{
@@ -151,7 +154,7 @@ const BaudRates: Array<SelectOption> = [
 </script>
 					 
 <script setup lang="ts">
-import { DirectDisplay, DirectDisplayController, DirectDisplayScreenST7567 } from "@duet3d/objectmodel";
+import { Board, DirectDisplay, DirectDisplayController, DirectDisplayScreenST7567, LedStrip, LedStripType, initObject } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
@@ -171,7 +174,33 @@ const configureDirectDisplay = computed({
 
 const directDisplayController = computed({
 	get() { return (store.data.boards.length > 0) && store.data.boards[0].directDisplay!.screen.controller; },
-	set(value) { store.data.boards[0].directDisplay!.update({ screen: { controller: value } }); }
+	set(value) {
+		store.data.boards[0].directDisplay!.update({ screen: { controller: value } });
+
+		// ST7567 displays require a Dotstar LED strip
+		if (value === DirectDisplayController.ST7567) {
+			const boardDefinition = getBoardDefinition(store.data);
+			if (boardDefinition !== null && boardDefinition.displayDotstarPort !== null &&
+				!store.data.configTool.ports.some(item => item.equals(boardDefinition.displayDotstarPort!) && item.function === ConfigPortFunction.ledStrip) &&
+				(store.data.limits.ledStrips ?? 0) > 0)
+			{
+				const portInstance = store.data.configTool.assignPort(boardDefinition.displayDotstarPort, ConfigPortFunction.ledStrip, 0);
+				if (store.data.ledStrips.length === 0) {
+					store.data.ledStrips.push(initObject(LedStrip, {
+						board: portInstance.canBoard ?? 0,
+						pin: portInstance.rawPorts[0],
+						type: LedStripType.DotStar
+					}));
+				} else {
+					store.data.ledStrips[0].update({
+						board: portInstance.canBoard ?? 0,
+						pin: portInstance.rawPorts[0],
+						type: LedStripType.DotStar
+					});
+				}
+			}
+		}
+	}
 });
 
 // PanelDue

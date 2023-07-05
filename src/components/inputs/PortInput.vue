@@ -101,7 +101,7 @@ const emit = defineEmits<{
 const store = useStore();
 
 // Invert button
-const allowInversion = computed(() => !disabled.value && (props.function !== ConfigPortFunction.thermistor));
+const allowInversion = computed(() => !disabled.value && (![ConfigPortFunction.accelerometerInt, ConfigPortFunction.accelerometerSpiCs, ConfigPortFunction.ledStrip, ConfigPortFunction.thermistor, ConfigPortFunction.sensorSpiCs].includes(props.function)));
 const isInverted = computed(() => realPort.value?.inverted ?? false);
 function getInversionTitle() {
 	return `Change pin signal to ${isInverted.value ? "active high" : "active low"}.` + "<br><br>" + `The current setting is ${isInverted.value ? "active low" : "active high"}`;
@@ -121,14 +121,17 @@ const allowPullUp = computed(() => {
 	}
 
 	switch (props.function) {
+		case ConfigPortFunction.accelerometerInt:
+		case ConfigPortFunction.accelerometerSpiCs:
 		case ConfigPortFunction.fan:
 		case ConfigPortFunction.gpOut:
 		case ConfigPortFunction.heater:
 		case ConfigPortFunction.laser:
+		case ConfigPortFunction.ledStrip:
 		case ConfigPortFunction.probeMod:
 		case ConfigPortFunction.probeServo:
+		case ConfigPortFunction.sensorSpiCs:
 		case ConfigPortFunction.servo:
-		case ConfigPortFunction.spiCs:
 		case ConfigPortFunction.spindleBackwards:
 		case ConfigPortFunction.spindleForwards:
 		case ConfigPortFunction.spindlePwm:
@@ -246,6 +249,13 @@ const ports = computed(() => {
 	// Define what capabilities the ports to show must have
 	const requiredCapabilities = new Set<PortType>();
 	switch (props.function) {
+		case ConfigPortFunction.accelerometerInt:
+			requiredCapabilities.add(PortType.gpInInterrupt);
+			break;
+		case ConfigPortFunction.accelerometerSpiCs:
+		case ConfigPortFunction.sensorSpiCs:
+			requiredCapabilities.add(PortType.spiCs);
+			break;
 		case ConfigPortFunction.endstop:
 			requiredCapabilities.add(PortType.gpIn);
 			break;
@@ -267,6 +277,9 @@ const ports = computed(() => {
 		case ConfigPortFunction.laser:
 			requiredCapabilities.add(PortType.pwm);
 			break;
+		case ConfigPortFunction.ledStrip:
+			requiredCapabilities.add(PortType.gpOut);
+			break;
 		case ConfigPortFunction.probeIn:
 			requiredCapabilities.add(PortType.analogIn);
 			if (props.index < store.data.sensors.probes.length) {
@@ -284,9 +297,6 @@ const ports = computed(() => {
 			break;
 		case ConfigPortFunction.servo:
 			requiredCapabilities.add(PortType.pwm);
-			break;
-		case ConfigPortFunction.spiCs:
-			requiredCapabilities.add(PortType.spiCs);
 			break;
 		case ConfigPortFunction.spindlePwm:
 			requiredCapabilities.add(PortType.pwm);

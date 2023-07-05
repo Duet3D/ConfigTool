@@ -47,7 +47,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 import { useStore } from "@/store";
 import { BoardType } from "@/store/Boards";
-import { ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const props = withDefaults(defineProps<{
 	/**
@@ -116,7 +116,7 @@ const availableSensors = computed(() => {
 	for (let i = 0; i < Math.min(store.data.sensors.analog.length, numObservableSensors.value); i++) {
 		if (store.data.sensors.analog[i] !== null && !props.sensors.includes(i)) {
 			if (props.board !== undefined) {
-				const port = store.data.configTool.ports.find(port => [ConfigPortFunction.spiCs, ConfigPortFunction.thermistor].includes(port.function!) && port.index === i);
+				const port = store.data.configTool.ports.find(port => [ConfigPortFunction.sensorSpiCs, ConfigPortFunction.thermistor].includes(port.function!) && port.index === i);
 				if (!port || !port.equalsBoard(props.board)) {
 					continue;
 				}

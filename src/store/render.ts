@@ -1,4 +1,4 @@
-import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, LedStripType, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
 import ejs from "ejs";
 import type { StoreState } from "pinia";
 
@@ -203,6 +203,7 @@ const renderOptions = {
     DirectDisplayController,
     EndstopType,
     HeaterMonitorCondition,
+    LedStripType,
     MachineMode,
     NetworkInterfaceState,
     NetworkInterfaceType,

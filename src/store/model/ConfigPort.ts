@@ -5,6 +5,8 @@ import { PortType } from "../BaseBoard";
  * Enumeration of possible configurations for individual ports
  */
 export enum ConfigPortFunction {
+	accelerometerInt = "accelerometerInt",
+	accelerometerSpiCs = "accelerometerSpiCs",
 	endstop = "endstop",
 	fan = "fan",
 	fanTacho = "fanTacho",
@@ -12,11 +14,12 @@ export enum ConfigPortFunction {
 	gpOut = "gpOut",
 	heater = "heater",
 	laser = "laser",
+	ledStrip = "ledStrip",
 	probeIn = "probeIn",
 	probeMod = "probeMod",
 	probeServo = "probeServo",
+	sensorSpiCs = "sensorSpiCs",
 	servo = "servo",
-	spiCs = "spiCs",
 	spindlePwm = "spindlePwm",
 	spindleForwards = "spindleForwards",
 	spindleBackwards = "spindleBackwards",

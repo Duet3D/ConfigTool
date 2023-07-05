@@ -107,6 +107,7 @@ export class ConfigWiFi extends ModelObject {
 export class ConfigToolModel extends ModelObject {
 	version: number = 1;
 
+	accelerometerOrientation: number = 20;
 	readonly autoSave: ConfigAutoSaveModel = new ConfigAutoSaveModel();
 	autoSelectFirstTool: boolean = false;
 	readonly capabilities: ConfigCapabilities = new ConfigCapabilities();

@@ -105,7 +105,7 @@ aside {
 						<li v-for="section in sections">
 							<RouterLink :to="{ name: 'configuration', hash: (section !== ConfigSectionType.General) ? '#' + section : undefined }"
 										class="link-dark rounded">
-								{{ section[0].toUpperCase() + section.substring(1) }}
+								{{ getSectionTitle(section) }}
 							</RouterLink>
 						</li>
 					</ul>
@@ -132,10 +132,14 @@ aside {
 import { computed } from "vue";
 import { RouterLink } from "vue-router"
 
-import { useStore } from "@/store";
 import { ConfigSectionType, getSections } from "@/store/sections";
 
-const store = useStore();
-
 const sections = computed(() => getSections());
+
+function getSectionTitle(section: ConfigSectionType) {
+	if (section === ConfigSectionType.LedStrips) {
+		return "LED Strips";
+	}
+	return section[0].toUpperCase() + section.substring(1);
+}
 </script>

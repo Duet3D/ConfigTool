@@ -43,7 +43,7 @@
 											  :preset="getPresetConfigSensorValue(index, 'baseSensor')"
 											  :options="getBaseSensorOptions(sensor.type, index)" />
 								<port-input v-else-if="![AnalogSensorType.drivers, AnalogSensorType.driversDuex].includes(sensor.type)" label="Input Port" title="Input port for this sensor"
-											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.spiCs" :index="index" />
+											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.sensorSpiCs" :index="index" />
 							</div>
 							<!-- Thermistor and PT1000 Options-->
 							<template v-if="sensor.type === AnalogSensorType.thermistor || sensor.type === AnalogSensorType.pt1000">
@@ -260,7 +260,7 @@ function getSensorNumbers(index: number) {
 
 function setSensorNumber(index: number, newIndex: number) {
 	for (const port of store.data.configTool.ports) {
-		if ([ConfigPortFunction.spiCs, ConfigPortFunction.thermistor].includes(port.function!) && port.index === index) {
+		if ([ConfigPortFunction.sensorSpiCs, ConfigPortFunction.thermistor].includes(port.function!) && port.index === index) {
 			// Move associated ports to the new index
 			port.index = newIndex;
 		}
@@ -396,7 +396,7 @@ function getSensorPortFunctions(sensorType: AnalogSensorType) {
 		case AnalogSensorType.max31855:
 		case AnalogSensorType.max31856:
 		case AnalogSensorType.max31865:
-			result.add(ConfigPortFunction.spiCs);
+			result.add(ConfigPortFunction.sensorSpiCs);
 			break;
 
 		case AnalogSensorType.drivers:
@@ -423,7 +423,7 @@ function setSensorType(sensor: AnalogSensor, index: number, type: AnalogSensorTy
 	// Clear ports that are no longer used
 	const newPortFunctions = getSensorPortFunctions(type);
 	for (const port of store.data.configTool.ports) {
-		if ([ConfigPortFunction.spiCs, ConfigPortFunction.thermistor].includes(port.function!) && !newPortFunctions.has(port.function!) && port.index === index) {
+		if ([ConfigPortFunction.sensorSpiCs, ConfigPortFunction.thermistor].includes(port.function!) && !newPortFunctions.has(port.function!) && port.index === index) {
 			port.function = null;
 		}
 	}

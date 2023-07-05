@@ -1,0 +1,10 @@
+<%  for (const board of model.boards) {
+        if (board.accelerometer !== null) {
+            const spiCsPort = getPort(ConfigPortFunction.accelerometerSpiCs, board.canAddress), intPort = getPort(ConfigPortFunction.accelerometerInt, board.canAddress); -%>
+M955 <%- params({
+    P: [board.canAddress ? `${board.canAddress}.0` : 0],
+    C: (spiCsPort && intPort) ? `${spiCsPort.toString()}+${intPort.toString()}` : undefined,
+    I: model.configTool.accelerometerOrientation
+}) %> ; configure accelerometer on board #<%- board.canAddress ?? 0 %>
+<%      }
+    } %>

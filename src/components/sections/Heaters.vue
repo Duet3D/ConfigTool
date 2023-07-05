@@ -434,7 +434,7 @@ function getPresetHeaterPid(index: number) {
 
 function getSensorBoard(sensor: number) {
 	for (const port of store.data.configTool.ports) {
-		if ((port.function === ConfigPortFunction.thermistor || port.function === ConfigPortFunction.spiCs) && port.index === sensor) {
+		if ([ConfigPortFunction.sensorSpiCs, ConfigPortFunction.thermistor].includes(port.function!) && port.index === sensor) {
 			return port.canBoard;
 		}
 	}

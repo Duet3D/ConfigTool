@@ -1,5 +1,5 @@
 <style scoped>
-.table-can-boards tr>td {
+.table-can-boards tr > td {
 	vertical-align: middle;
 }
 </style>

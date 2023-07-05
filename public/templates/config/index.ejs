@@ -15,6 +15,8 @@ G4 S2
 <%  } -%>
 
 <%- sections({
+    "LED Strips": await render("config/ledStrips"),
+    "Accelerometers": await render("config/accelerometers"),
     "!Drivers": await render("config/drivers/index"),
     "Kinematics": await render("config/kinematics"),
     "Axes": await render("config/axes"),
