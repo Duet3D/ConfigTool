@@ -40,7 +40,7 @@
 				<tbody>
 					<tr v-for="(strip, index) in store.data.ledStrips">
 						<td class="text-center">
-							#{{ index }}
+							{{ index }}
 						</td>
 						<td>
 							<select-input title="Type of this LED strip" v-model="strip.type"

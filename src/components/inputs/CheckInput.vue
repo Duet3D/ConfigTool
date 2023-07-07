@@ -4,6 +4,7 @@
 		       :checked="props.modelValue" @input="onInput">
 		<label :for="id" class="form-check-label">
 			{{ label }}
+			<slot name="append"></slot>
 		</label>
 	</div>
 </template>
@@ -14,7 +15,6 @@ let numInstances = 0;
 </script>
 
 <script setup lang="ts">
-// External interface
 interface CheckInputProps {
 	/**
 	 * Optional label next to the control
@@ -34,7 +34,7 @@ interface CheckInputProps {
 const props = defineProps<CheckInputProps>();
 
 const emit = defineEmits<{
-	(e: 'update:modelValue', value: boolean): void
+	(e: "update:modelValue", value: boolean): void
 }>();
 
 // Display converters

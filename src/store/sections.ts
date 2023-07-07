@@ -1,4 +1,4 @@
-import { MachineMode, NetworkInterfaceState, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
+import { Axis, AxisLetter, CoreKinematics, KinematicsName, MachineMode, NetworkInterfaceState, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
 
 import { useStore } from ".";
 
@@ -86,20 +86,24 @@ export function getSectionTemplates(section?: ConfigSectionType) {
         }
     }
     function addHomingTemplates() {
-        for (let i = 0; i < store.data.sensors.probes.length; i++) {
-            const probe = store.data.sensors.probes[i];
-            if ((probe !== null) && (store.data.configTool.deployRetractProbes.has(i) || probe.type === ProbeType.blTouch)) {
-                const data = {
-                    probe,
-                    probeIndex: store.data.sensors.probes.findIndex(item => item !== null)
-                };
+        let axesToSkip = new Set<AxisLetter>();
+        if (store.data.isDelta || (store.data.move.kinematics instanceof CoreKinematics && store.data.move.kinematics.name !== KinematicsName.cartesian)) {
+            axesToSkip = new Set<AxisLetter>([AxisLetter.X, AxisLetter.Y, AxisLetter.Z]);
+            if ([KinematicsName.coreXYU, KinematicsName.coreXYUV].includes(store.data.move.kinematics.name)) {
+                axesToSkip.add(AxisLetter.U);
+            }
+            if (store.data.move.kinematics.name === KinematicsName.coreXYUV) {
+                axesToSkip.add(AxisLetter.V);
+            }
+        }
 
-                if (store.data.sensors.probes.length === 1) {
-                    result.push({ template: "deployprobe", data });
-                    result.push({ template: "retractprobe", data });
+        for (let i = 0; i < store.data.move.axes.length; i++) {
+            const axis = store.data.move.axes[i];
+            if (!axesToSkip.has(axis.letter)) {
+                if (/[A-Z]/.test(axis.letter)) {
+                    result.push({ template: `home${axis.letter.toLowerCase()}`, data: { axis, axisLetter: axis.letter, axisIndex: i } });
                 } else {
-                    result.push({ template: `deployprobe${i}`, data });
-                    result.push({ template: `retractprobe${i}`, data });
+                    result.push({ template: `home'${axis.letter}`, data: { axis, axisLetter: axis.letter, axisIndex: i } });
                 }
             }
         }

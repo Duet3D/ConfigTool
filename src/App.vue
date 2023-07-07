@@ -127,10 +127,17 @@ store.$subscribe((mutation) => {
 		if (mutation.events.key === "darkTheme") {
 			// Update theme
 			updateTheme();
-		} else {
-			// When the state is reset, the mutation type is different
-			store.dataModified = true;
+		} else if (mutation.events.key !== "showSavePrompt") {
+			// Keep track of model changes
+			store.dataModified = store.showSavePrompt = true;
 		}
+	}
+});
+
+window.addEventListener("beforeunload", (e) => {
+	if (store.showSavePrompt) {
+		e.preventDefault();
+		return true;
 	}
 });
 </script>

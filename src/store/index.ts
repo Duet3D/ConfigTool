@@ -238,15 +238,16 @@ export const useStore = defineStore({
 			data: initObject(ConfigModel, defaultTemplate),
 			dataModified: false,
 			preset: initObject(ConfigModel, defaultTemplate),
+			showSavePrompt: false,
 
-			darkTheme: (localStorage.getItem("theme") === "auto") ? window.matchMedia("(prefers-color-scheme: dark)").matches : (localStorage.getItem("theme") === "dark"),
+			darkTheme: (localStorage.getItem("theme") ?? "auto" === "auto") ? window.matchMedia("(prefers-color-scheme: dark)").matches : (localStorage.getItem("theme") === "dark"),
 			theme: "auto" as "dark" | "light" | "auto"
 		};
     },
     actions: {
 		setModel(newModel: ConfigModel) {
-			this.data = newModel;
-			this.dataModified = false;
+			this.data.update(newModel);
+			this.dataModified = this.showSavePrompt = false;
 		},
 		setTheme(theme: "dark" | "light" | "auto") {
 			// Apply new theme value

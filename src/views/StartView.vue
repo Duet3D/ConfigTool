@@ -6,25 +6,40 @@
 
 <template>
 	<main class="container mt-4">
-		<div class="text-center mb-4">
+		<div class="text-center mb-5">
 			<h2 class="mb-4">
-				Welcome to the RepRapFirmware Config Tool!
+				Welcome to the new RepRapFirmware Config Tool
 			</h2>
-			<h4 class="mb-3">
-				Please follow this wizard to obtain an individual configuration bundle for your printer.
-				<br><br>
-				To continue, choose your firmware version:
+			<h4>
+				Follow this wizard to obtain an individual configuration bundle for your machine.
 			</h4>
-
-			<input type="radio" class="btn-check" name="firmwareVersion" id="v34" value="v34" autocomplete="off" v-model="firmwareVersion">
-			<label class="btn btn-outline-secondary btn-lg me-1" for="v34">Version 3.4 or older</label>
-
-			<input type="radio" class="btn-check" name="firmwareVersion" id="v35" value="v35" autocomplete="off" v-model="firmwareVersion">
-			<label class="btn btn-outline-success btn-lg ms-1" for="v35">Version 3.5</label>
 		</div>
 
-		<div class="d-flex justify-content-center">
-			<button type="button" class="btn btn-lg me-3" :class="store.dataModified ? 'btn-secondary' : 'btn-primary'" @click.prevent="startFromScratch">
+		<div class="row mb-5">
+			<div class="col-3"></div>
+			<div class="col-6 text-center">
+				<h4 class="mb-3">
+					Please choose your firmware version to continue:
+				</h4>
+
+				<div class="card">
+					<div class="card-body py-4">
+						<input type="radio" class="btn-check" name="firmwareVersion" id="v34" value="v34" autocomplete="off"
+							   v-model="firmwareVersion">
+						<label class="btn btn-outline-secondary btn-lg me-1" for="v34">Version 3.4 or older</label>
+
+						<input type="radio" class="btn-check" name="firmwareVersion" id="v35" value="v35" autocomplete="off"
+							   v-model="firmwareVersion">
+						<label class="btn btn-outline-success btn-lg ms-1" for="v35">Version 3.5</label>
+					</div>
+				</div>
+			</div>
+			<div class="col-3"></div>
+		</div>
+
+		<div class="d-flex justify-content-center mb-3">
+			<button type="button" class="btn btn-lg me-3" :class="store.dataModified ? 'btn-secondary' : 'btn-primary'"
+					@click.prevent="startFromScratch">
 				<i class="bi bi-plus-square"></i>
 				Start new Configuration from Scratch
 			</button>
@@ -39,10 +54,21 @@
 			</button>-->
 		</div>
 
-		<div class="alert alert-warning my-4">
+		<div class="text-center mb-5">
+			<a href="javascript:void(0)" class="mx-auto" @click="loadTemplate">
+				<i class="bi bi-database-fill-up"></i>
+				Load Config Template
+			</a>
+		</div>
+
+		<div class="alert alert-warning mb-4">
 			<i class="bi bi-exclamation-triangle"></i>
 			This version of the Config Tool is still under development. If you encounter problems, please consider using the
 			previous <a href="https://configtool.reprapfirmware.org" target="_blank">Config Tool</a> instead.
+		</div>
+
+		<div class="text-center">
+			Version {{ packageInfo.version }}
 		</div>
 
 		<base-dialog title="Unsupported Firmware" v-model="oldFirmwareDialogShown">
@@ -57,6 +83,8 @@
 				</button>
 			</template>
 		</base-dialog>
+
+		<input ref="inputJsonFile" type="file" accept="application/json" hidden @change="fileSelected">
 	</main>
 </template>
 
@@ -64,9 +92,12 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { useStore } from "@/store";
-
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
+
+import { useStore } from "@/store";
+import { convertLegacyPreset } from "@/store/compatibility";
+
+import packageInfo from "../../package.json";
 
 const store = useStore();
 const router = useRouter();
@@ -74,7 +105,7 @@ const router = useRouter();
 const firmwareVersion = ref<"v34" | "v35">("v35");
 const oldFirmwareDialogShown = ref(false);
 
-const startFromScratch = () => {
+function startFromScratch() {
 	if (store.dataModified) {
 		if (!confirm("It looks like you already started configuring. By clicking OK, you will reset the data to factory defaults. Are you sure you want to continue?")) {
 			return;
@@ -88,4 +119,55 @@ const startFromScratch = () => {
 		router.push("/Configuration");
 	}
 };
+
+
+// Load existing config
+const inputJsonFile = ref<HTMLInputElement | null>(null);
+
+function loadTemplate() {
+	inputJsonFile.value?.click();
+}
+
+function fileSelected() {
+	if (inputJsonFile.value !== null && inputJsonFile.value.files !== null) {
+		const file = inputJsonFile.value.files[0];
+		try {
+			if (file.name.toLowerCase() === "config.json") {
+				// Old configtool preset
+				const fileReader = new FileReader();
+				fileReader.onload = (e) => {
+					try {
+						const jsonData = JSON.parse(e.target?.result as string);
+						const convertedModel = convertLegacyPreset(jsonData);
+						store.setModel(convertedModel);
+						router.push("/Configuration");
+					} catch (e) {
+						console.error("Failed to load legacy preset", e);
+						alert(`Failed to load legacy preset: ${e}`);
+					}
+				};
+				fileReader.readAsText(file);
+			} else if (file.name.toLowerCase() === "configtool.json") {
+				// New configtool data
+				const fileReader = new FileReader();
+				fileReader.onload = (e) => {
+					try {
+						const jsonData = JSON.parse(e.target?.result as string);
+						store.setModel(jsonData);
+						router.push("/Configuration");
+					} catch (e) {
+						console.error("Failed to load legacy preset", e);
+						alert(`Failed to load legacy preset: ${e}`);
+					}
+				};
+				fileReader.readAsText(file);
+			} else {
+				alert("Unsupported filename");
+			}
+		} catch (e) {
+			console.error("Failed to load configuration file", file, e);
+			alert(`Failed to load configuration file: ${e}`);
+		}
+	}
+}
 </script>

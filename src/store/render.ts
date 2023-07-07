@@ -237,7 +237,7 @@ export async function render(template: string, args: Record<string, any> = {}): 
     // Retrieve template
     const fullFilename = getRenderFilename(template), response = await fetch(fullFilename);
     if (!response.ok) {
-        throw new Error(`Failed to get ${fullFilename}: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to download ${fullFilename}: ${response.status} ${response.statusText}`);
     }
     const responseText = await response.text();
 

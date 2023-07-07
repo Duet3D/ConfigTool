@@ -2,9 +2,11 @@
 aside {
 	position: -webkit-sticky;
 	position: sticky;
-	top: 5rem;
+	top: 4.5rem;
 	display: block !important;
 	height: calc(100vh - 6rem);
+	min-width: 10rem;
+	margin-top: 1rem;
 	padding-left: .25rem;
 	padding-right: 1rem;
 	margin-left: -.25rem;
@@ -25,7 +27,7 @@ aside {
 	display: inline-flex;
 	align-items: center;
 	padding: .25rem .5rem;
-	font-weight: 600;
+	font-weight: 700;
 	color: var(--bs-body-color);
 	background-color: transparent;
 	border: 0;
@@ -59,7 +61,7 @@ aside {
 
 .active,
 .fw-semibold {
-	font-weight: 600;
+	font-weight: 700;
 }
 </style>
 
