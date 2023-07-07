@@ -21,7 +21,10 @@ export enum BoardType {
 
 	// Unofficially supported or discontinued boards
 	Duet2SBC = "Duet 2 SBC (unofficial mod)",
-	Duet2Maestro = "Duet 2 Maestro (discontinued)"
+	Duet2Maestro = "Duet 2 Maestro (discontinued)",
+
+	// STM32F4
+	FlyCDYv2 = "Fly-CDYv2"
 }
 
 /**
@@ -661,6 +664,83 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		],
 		supportsAccelerometer: true,
 		supportsBME280: false
+	},
+	[BoardType.FlyCDYv2]: {
+		hasADCAutoCalibration: true,
+		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
+		hasSmartDrivers: true,
+		hasVrefMonitor: true,
+		motorWarnCurrent: 1500,
+		motorMaxCurrent: 2000,
+		minVoltage: 11,
+		maxVoltage: 25,
+		numDrivers: 5,
+		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		ports: {
+			[PortType.analogIn]: ["io2.in"],
+			[PortType.fan]: ["out2", "out3", "out4", "out5", "out6+laser+vfd"],
+			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
+			[PortType.gpInInterrupt]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
+			[PortType.heater]: ["out0", "out1", "out2"],
+			[PortType.pwm]: ["io0.out", "io2.out", "io3.out"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
+			[PortType.uart]: ["usb", "io1.in+io1.out"]
+		},
+
+		displayDotstarPort: "io3.out",
+		expansionBoards: new Set(),
+		objectModelBoard: initObject(Board, {
+			canAddress: 0,
+			firmwareFileName: "Duet3Firmware_Mini5plus.uf2",
+			iapFileNameSBC: "Duet3_SBCiap32_Mini5plus.bin",
+			iapFileNameSD: "Duet3_SDiap32_Mini5plus.bin",
+			maxHeaters: 32,
+			maxMotors: 7,
+			name: "Duet 3 Mini 5+",
+			shortName: "Mini5plus",
+			supportsDirectDisplay: true,
+			vIn: new MinMaxCurrent()
+		}),
+		objectModelLimits: initObject(Limits, {
+			axes: 10,
+			axesPlusExtruders: 12,
+			bedHeaters: 4,
+			boards: 5,
+			chamberHeaters: 4,
+			drivers: 14,
+			driversPerAxis: 4,
+			extruders: 8,
+			extrudersPerTool: 8,
+			fans: 20,
+			gpInPorts: 32,
+			gpOutPorts: 32,
+			heaters: 32,
+			heatersPerTool: 2,
+			ledStrips: 5,
+			monitorsPerHeater: 3,
+			portsPerHeater: 2,
+			restorePoints: 6,
+			sensors: 56,
+			spindles: 4,
+			tools: 50,
+			trackedObjects: 40,
+			triggers: 16,
+			volumes: 2,
+			workplaces: 9,
+			zProbeProgramBytes: 8,
+			zProbes: 4
+		}),
+		objectModelNetworkInterfaces: [
+			initObject(NetworkInterface, {
+				type: NetworkInterfaceType.lan
+			})
+		],
+		supportsAccelerometer: true,
+		supportsBME280: true
 	}
 }
 

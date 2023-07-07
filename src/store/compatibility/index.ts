@@ -77,6 +77,9 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 		case LegacyBoardType.Duet3Mini5PlusEthernet:
 			model.boardType = BoardType.Duet3Mini5PlusEthernet;
 			break;
+		case LegacyBoardType.FlyCDYv2:
+			model.boardType = BoardType.FlyCDYv2;
+			break;
 		default:
 			const _exhaustiveCheck: never = boardType;
 			throw new Error(`Unsupported board "${boardType}`);

@@ -526,7 +526,7 @@ export default class ConfigModel extends ObjectModel {
 				// These boards do not support any direct-connect expansion boards
 				this.configTool.expansionBoard = null;
 				break;
-
+			case BoardType.FlyCDYv2:
 			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
 			case BoardType.Duet2SBC:
