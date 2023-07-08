@@ -666,6 +666,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		supportsBME280: false
 	},
 	[BoardType.FlyCDYv2]: {
+		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
 		hasInputPullUps: true,
