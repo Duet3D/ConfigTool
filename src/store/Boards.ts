@@ -783,8 +783,8 @@ export const Boards: Record<BoardType, BoardDescriptor | STMBoardDescriptor> = {
 				TMC5160: true,
 				TMC5160SPI: '2',
 				TMC5160Pins: null,
-        		TMC5160CS: null,
-        		diag: ['C.7', 'C.6', 'D.11', 'D.10', 'B.10', 'B.11'],
+				TMC5160CS: null,
+				diag: ['C.7', 'C.6', 'D.11', 'D.10', 'B.10', 'B.11'],
 			},
 			screen: {
 				auxRX: 'A.10',
