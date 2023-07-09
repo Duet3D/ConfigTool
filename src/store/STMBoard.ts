@@ -37,17 +37,17 @@ export interface STMBoard {
         requiresRXTX: boolean | null;
     },
     sbc: {
-        support: boolean;
+        support: boolean | null;
         onboard: boolean | null;
         firmware: string | null;
     }
     firmwareStandaloneFile: string;
     stepper:{
-        Driver: string;
-        Smart: boolean;
-        TMC5160: boolean;
-        TMC5160SPI: string;
-        TMC5160Pins: string;
+        Driver: string| null;
+        Smart: boolean| null;
+        TMC5160: boolean| null;
+        TMC5160SPI: string| null;
+        TMC5160Pins: string| null;
         TMC5160CS: Array<string> | null;
         diag: Array<string> | null;
     },
