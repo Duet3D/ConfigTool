@@ -772,7 +772,7 @@ export const Boards: Record<BoardType, BoardDescriptor | STMBoardDescriptor> = {
 				requiresRXTX: null,
 			},
 			sbc: {
-				support: null,
+				support: false,
 				onboard: false,
 				firmware: null,
 			},
