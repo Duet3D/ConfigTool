@@ -199,7 +199,12 @@ async function generateBundle() {
 			item.state = ProgressState.busy;
 			try {
 				const content = await render(item.name, item.data ?? undefined);
-				zip.file(`sys/${item.name}.g`, content);
+				if (item.name == "boardtxt") {
+					zip.file(`sys/board.txt`, content);
+				} else {
+					zip.file(`sys/${item.name}.g`, content);
+				}
+				
 				item.state = ProgressState.ready;
 			} catch (e) {
 				item.state = ProgressState.error;

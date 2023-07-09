@@ -243,7 +243,12 @@ export async function render(template: string, args: Record<string, any> = {}): 
 
     // Prepare args
     const renderArgs: Record<string, any> = { ...renderOptions, ...args };
-    renderArgs.filename = template.split('/')[0] + ".g";
+
+    if (template == "boardtxt") {
+        renderArgs.filename = "board.txt";
+    } else {
+        renderArgs.filename = template.split('/')[0] + ".g";
+    }
     renderArgs.model = useStore().data;
     renderArgs.preview ??= true;
     renderArgs.render = (file: string, subArgs: Record<string, any> = {}) => render(file, { ...renderArgs, ...subArgs });
