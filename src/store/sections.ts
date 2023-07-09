@@ -1,5 +1,6 @@
 import { Axis, AxisLetter, CoreKinematics, KinematicsName, MachineMode, NetworkInterfaceState, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
-
+import { type BaseBoardDescriptor } from "@/store/BaseBoard";
+import { type STMBoardDescriptor } from "@/store/STMBoard";
 import { useStore } from ".";
 
 /**
@@ -222,6 +223,14 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             break;
         
         case undefined:
+            const boardDefinition = store.data.getBoardDefinition()
+            // We cannot use the instanceOf keyword on an interface so we create a type guard to check the type of boardDefinition
+            const isSTMBoard = (descriptor: BaseBoardDescriptor | null): descriptor is STMBoardDescriptor => {
+                return (descriptor === null) ? false : 'stm' in descriptor;
+            }
+            if (isSTMBoard(boardDefinition)) {  // Add board.txt only for STM boards
+                result.push({ template: "boardtxt", data: boardDefinition });
+            }
             result.push({ template: "config", data: null });
             if (store.data.sbc !== null) {
                 result.push({ template: "runonce", data: null });

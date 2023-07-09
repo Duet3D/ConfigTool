@@ -2,6 +2,7 @@ import { Board, initObject, Limits, MinMaxCurrent, Network, NetworkInterface, Ne
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
+import type { STMBoard, STMBoardDescriptor } from "@/store/STMBoard";
 
 import type ConfigModel from "@/store/model";
 import type { StoreState } from "pinia";
@@ -49,7 +50,7 @@ export interface BoardDescriptor extends BaseBoardDescriptor {
 /**
  * Descriptors for supported main boards
  */
-export const Boards: Record<BoardType, BoardDescriptor> = {
+export const Boards: Record<BoardType, BoardDescriptor | STMBoardDescriptor> = {
 	[BoardType.Duet3Mini5PlusEthernet]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -740,7 +741,90 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: true
+		supportsBME280: true,
+		stm: <STMBoard> {
+			board: 'fly_cdyv2',
+			type: 'STM32F4',
+			blPorts: ['servo0'],
+			hasESP: true,
+			hasESPUpdate: true,
+			hasESPOnboard: true,
+			hasSBC: false,
+			hasSBCOnboard: false,
+			firmwareStandaloneFile: 'firmware-stm32f4-wifi',
+			firmwareSBCFile: 'firmware-stm32f4-sbc',
+			firmwareWifiFile: 'DuetWiFiServer-esp8266-stm32',
+			firmwareWifi32File: 'N/A',
+			requiresBeta: false,
+			stepperDriver: "",
+			stepperDriverTimings: "",
+			stepperDriverSmart: true,
+			stepperDriver5160: true,
+			stepperDriver5160SPI: '2',
+			stepperDriver5160Pins: 'N/A',
+			stepperDriver5160CS: new Set(),
+			serialRxPin: 'D.9',
+			serialTxPin: 'D.8',
+			espDataReadyPin: 'E.10',
+			lpcTfrReadyPin: 'E.12',
+			espResetPin: 'E.11',
+			lpc: {
+				externalSDCard:{
+					csPin: "NoPin",
+					cardDetectPin: "NoPin",
+					spiFrequencyHz: 4000000,
+					spiChannel: 0,
+				},
+				internalSDCardSPIFrequencyHz: 25000000,
+				softwareSPI:{
+					pins: ["NoPin", "NoPin", "NoPin"],
+				},
+				lcd:{
+					lcdCSPin: "NoPin",
+					lcdBeepPin: "NoPin",
+					encoderPinA: "NoPin",
+					encoderPinB: "NoPin",
+					encoderPinSw: "NoPin",
+					lcdDCPin: "NoPin",
+					panelButtonPin: "NoPin",
+					spiChannel: 2, //Software SPI
+				},
+				diagnosticPin: "NoPin",
+			},/*
+			drives: [
+				{
+					diag: "C.7",
+				},
+				{
+					diag: "C.6",
+				},
+				{
+					diag: "D.11",
+				},
+				{
+					diag: "D.10",
+				},
+				{
+					diag: "B.10",
+				},
+				{
+					diag: "B.11",
+				}
+			],*/
+			auxRX: 'A.10',
+			auxTX: 'A.9',
+			serialAmount: '2',
+			wifi8266CSPin: 'NoPin',
+			esp32: {
+				esp32Supported: false,
+				espDataReadyPin:' N/A',
+				lpcTfrReadyPin: 'N/A',
+				espResetPin: 'N/A',
+				wifi8266CSPin: 'N/A'
+			},
+			neopixel: 'D.15',
+			requiresRXTX: true
+		}
 	}
 }
 
@@ -749,7 +833,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
  * @param model Config model object
  * @returns Board type or null if not found
  */
-export function getBoardDefinition(model: StoreState<ConfigModel>): BoardDescriptor | null {
+export function getBoardDefinition(model: StoreState<ConfigModel>): STMBoardDescriptor | BoardDescriptor | null {
 	if (model.boards.length > 0) {
 		const shortName = model.boards[0].shortName;
 		for (let boardType of Object.values(BoardType)) {
