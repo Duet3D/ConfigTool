@@ -528,6 +528,8 @@ export default class ConfigModel extends ObjectModel {
 				this.configTool.expansionBoard = null;
 				break;
 			case STM32F4BoardType.FlyCDYv2:
+			case STM32F4BoardType.FlyCDYv3:
+			case STM32F4BoardType.FlyE3:
 			case STM32H7BoardType.Super8Pro:
 			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
