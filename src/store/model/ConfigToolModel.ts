@@ -117,6 +117,7 @@ export class ConfigToolModel extends ModelObject {
 	deployRetractProbes: Set<number> = new Set();
 	readonly displayFiles: ConfigDisplayFiles = new ConfigDisplayFiles();
 	readonly drivers: ModelCollection<ConfigDriver> = new ModelCollection(ConfigDriver);
+	enableSTMBoards: boolean = false;
 	expansionBoard: ExpansionBoardType | null = null;
 	homeBeforeAutoCalibration: boolean = false;
 	homingSpeedFast: number = 30;

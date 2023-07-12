@@ -1,5 +1,15 @@
 import type { BoardDescriptor } from "@/store/Boards";
 
+export enum STM32F4BoardType {
+	// STM32F4
+	FlyCDYv2 = "Fly-CDYv2"
+}
+
+export enum STM32H7BoardType {
+	// STM32H7
+	Super8Pro = "Fly-Super8Pro"
+}
+
 /**
  * Descriptor interface for STM boards
  */

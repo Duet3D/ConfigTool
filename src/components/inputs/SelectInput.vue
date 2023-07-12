@@ -8,7 +8,7 @@
 				v-preset="(props.preset !== undefined) ? JSON.stringify(props.preset) : undefined"
 				:value="JSON.stringify(props.modelValue)" @input="onInput" :required="props.required">
 			<template v-if="isGrouped">
-				<optgroup v-for="(group, groupTitle) in groups" :disabled="isGroupDisabled(group)" :label="groupTitle">
+				<optgroup v-for="(group, groupTitle) in groups" :disabled="isGroupDisabled(group)" :label="groupTitle" :id="getGroupId(groupTitle)">
 					<option v-for="groupItem in group" :disabled="getItemDisabled(groupItem)"
 							:value="getItemValue(groupItem)">
 						{{ getItemText(groupItem) }}
@@ -108,6 +108,7 @@ const isGroupDisabled = (group: Array<string | SelectOption>) => group.every(ite
 function getItemDisabled(item: string | SelectOption) { return (typeof item !== "string") && !!item.disabled; }
 function getItemText(item: string | SelectOption) { return (typeof item === "string") ? item : item.text; }
 function getItemValue(item: string | SelectOption) { return JSON.stringify((typeof item === "string") ? item : item.value); }
+function getGroupId(item: string) { return new String().concat("optgroup-", item.replace(/\W+/g, "").toLowerCase()); }
 
 // Validation
 const validationClass = computed<string | null>(() => {

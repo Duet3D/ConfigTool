@@ -2,7 +2,7 @@ import { Board, initObject, Limits, MinMaxCurrent, Network, NetworkInterface, Ne
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
-import type { STMBoard, STMBoardDescriptor } from "@/store/STMBoard";
+import { type STMBoard, type STMBoardDescriptor, STM32F4BoardType, STM32H7BoardType } from "@/store/STMBoard";
 
 import type ConfigModel from "@/store/model";
 import type { StoreState } from "pinia";
@@ -22,10 +22,7 @@ export enum BoardType {
 
 	// Unofficially supported or discontinued boards
 	Duet2SBC = "Duet 2 SBC (unofficial mod)",
-	Duet2Maestro = "Duet 2 Maestro (discontinued)",
-
-	// STM32F4
-	FlyCDYv2 = "Fly-CDYv2"
+	Duet2Maestro = "Duet 2 Maestro (discontinued)"
 }
 
 /**
@@ -47,10 +44,14 @@ export interface BoardDescriptor extends BaseBoardDescriptor {
 	supportsBME280: boolean;
 }
 
+export type BoardTypes = BoardType | STM32F4BoardType | STM32H7BoardType
+export const BoardTypes = {...BoardType, ...STM32F4BoardType, ...STM32H7BoardType};
+export type BoardDescriptors = BoardDescriptor | STMBoardDescriptor
+
 /**
  * Descriptors for supported main boards
  */
-export const Boards: Record<BoardType, BoardDescriptor | STMBoardDescriptor> = {
+export const Boards: Record<BoardTypes, BoardDescriptors> = {
 	[BoardType.Duet3Mini5PlusEthernet]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -666,7 +667,135 @@ export const Boards: Record<BoardType, BoardDescriptor | STMBoardDescriptor> = {
 		supportsAccelerometer: true,
 		supportsBME280: false
 	},
-	[BoardType.FlyCDYv2]: {
+	[STM32F4BoardType.FlyCDYv2]: {
+		displayDotstarPort: null,
+		hasADCAutoCalibration: true,
+		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
+		hasSmartDrivers: true,
+		hasVrefMonitor: true,
+		motorWarnCurrent: 1500,
+		motorMaxCurrent: 2000,
+		minVoltage: 11,
+		maxVoltage: 25,
+		numDrivers: 6,
+		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		ports: {
+			[PortType.analogIn]: ["probe"],
+			[PortType.fan]: ["fan0", "fan1", "fan2", "laser"],
+			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
+			[PortType.gpIn]: ["xmin", "xmax", "ymin", "ymax", "zmin", "zmax"],
+			[PortType.gpInInterrupt]: ["xmin", "xmax", "ymin", "ymax", "zmin", "zmax", "probe"],
+			[PortType.gpOut]: [],
+			[PortType.heater]: ["bed", "e0heat", "e1heat", "e2heat"],
+			[PortType.pwm]: ["servo", "laser"],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "e2temp"],
+			[PortType.uart]: []
+		},
+
+		expansionBoards: new Set(),
+		objectModelBoard: initObject(Board, {
+			canAddress: 0,
+			firmwareFileName: "firmware-stm32f4-wifi",
+			iapFileNameSBC: "firmware-stm32f4-sbc",
+			iapFileNameSD: "",
+			maxHeaters: 32,
+			maxMotors: 7,
+			name: "Fly-CDYv2",
+			shortName: "STM32F4",
+			supportsDirectDisplay: true,
+			vIn: new MinMaxCurrent()
+		}),
+		objectModelLimits: initObject(Limits, {
+			axes: 15,
+			axesPlusExtruders: 15,
+			bedHeaters: 4,
+			boards: 21,
+			chamberHeaters: 4,
+			drivers: 34,
+			driversPerAxis: 4,
+			extruders: 14,
+			extrudersPerTool: 8,
+			fans: 32,
+			gpInPorts: 56,
+			gpOutPorts: 62,
+			heaters: 32,
+			heatersPerTool: 4,
+			ledStrips: 5,
+			monitorsPerHeater: 3,
+			portsPerHeater: 2,
+			restorePoints: 6,
+			sensors: 56,
+			spindles: 4,
+			tools: 50,
+			trackedObjects: 40,
+			triggers: 16,
+			volumes: 2,
+			workplaces: 9,
+			zProbeProgramBytes: 8,
+			zProbes: 4
+		}),
+		objectModelNetworkInterfaces: [
+			initObject(NetworkInterface, {
+				type: NetworkInterfaceType.lan
+			})
+		],
+		supportsAccelerometer: true,
+		supportsBME280: true,
+		stm: <STMBoard> {
+			board: 'fly_cdyv2',
+			statusPin: "NoPin",
+			type: 'STM32F4',
+			blPorts: ['servo0'],
+			esp8266: {
+				onboard: true,
+				module: false,
+				espDataReadyPin: 'E.10',
+				TfrReadyPin: 'E.12',
+				espResetPin: 'E.11',
+				CSPin: 'NoPin',
+				serialRxPin: 'D.9',
+				serialTxPin: 'D.8',
+				firmware: 'DuetWiFiServer-esp8266-stm32',
+				requiresRXTX: true,
+			},
+			esp32: {
+				onboard: false,
+				module: false,
+				espDataReadyPin: null,
+				TfrReadyPin: null,
+				espResetPin: null,
+				CSPin: null,
+				serialRxPin: null,
+				serialTxPin: null,
+				firmware: null,
+				requiresRXTX: false,
+			},
+			sbc: {
+				support: false,
+				onboard: false,
+				firmware: null,
+			},
+			firmwareStandaloneFile: 'firmware-stm32f4-wifi',
+			stepper: {
+				driver: null,
+				smart: true,
+				TMC5160: true,
+				TMC5160SPI: '2',
+				TMC5160Pins: null,
+				TMC5160CS: null,
+				diag: ['C.7', 'C.6', 'D.11', 'D.10', 'B.10', 'B.11'],
+			},
+			screen: {
+				auxRX: 'A.10',
+				auxTX: 'A.9',
+			},
+			serialAmount: '2',
+			neopixel: 'D.15',
+		}
+	},
+	[STM32H7BoardType.Super8Pro]: {
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -801,10 +930,10 @@ export const Boards: Record<BoardType, BoardDescriptor | STMBoardDescriptor> = {
  * @param model Config model object
  * @returns Board type or null if not found
  */
-export function getBoardDefinition(model: StoreState<ConfigModel>): STMBoardDescriptor | BoardDescriptor | null {
+export function getBoardDefinition(model: StoreState<ConfigModel>): BoardDescriptors | null {
 	if (model.boards.length > 0) {
 		const shortName = model.boards[0].shortName;
-		for (let boardType of Object.values(BoardType)) {
+		for (let boardType of Object.values(BoardTypes)) {
 			const board = Boards[boardType];
 			if (shortName === board.objectModelBoard.shortName) {
 				return board;
@@ -819,7 +948,7 @@ export function getBoardDefinition(model: StoreState<ConfigModel>): STMBoardDesc
  * @param model Config model object
  * @returns Board type or null if not found
  */
-export function getBoardType(model: StoreState<ConfigModel>): BoardType | null {
+export function getBoardType(model: StoreState<ConfigModel>): BoardTypes | null {
 	if (model.boards.length > 0) {
 		// Get boards that match the short name
 		const matches = [];
@@ -832,7 +961,7 @@ export function getBoardType(model: StoreState<ConfigModel>): BoardType | null {
 
 		// It is obvious which board it is in case there is only one match
 		if (matches.length === 1) {
-			return matches[0].key as BoardType;
+			return matches[0].key as BoardTypes;
 		}
 
 		// If we have more than one match, check the SBC and network connectivity as well
@@ -841,7 +970,7 @@ export function getBoardType(model: StoreState<ConfigModel>): BoardType | null {
 			if (model.sbc !== null) {
 				const sbcMatch = matches.find(({ value }) => value.objectModelBoard.shortName.includes("SBC"));
 				if (sbcMatch) {
-					return sbcMatch.key as BoardType;
+					return sbcMatch.key as BoardTypes;
 				}
 
 				// WiFi boards expose the WiFi firmware filename even in SBC mode.
@@ -849,19 +978,19 @@ export function getBoardType(model: StoreState<ConfigModel>): BoardType | null {
 				const netType = (model.boards.find(board => !!board.canAddress)?.wifiFirmwareFileName !== null) ? NetworkInterfaceType.wifi : NetworkInterfaceType.lan;
 				const netMatch = matches.find(({ value }) => value.objectModelNetworkInterfaces.length > 0 && value.objectModelNetworkInterfaces[0].type === netType);
 				if (netMatch) {
-					return netMatch.key as BoardType;
+					return netMatch.key as BoardTypes;
 				}
 			} else if (model.network.interfaces.length > 0) {
 				// If there is at least one active network interface, check which candidate matches it
 				const netType = model.network.interfaces[0].type;
 				const netMatch = matches.find(({ value }) => value.objectModelNetworkInterfaces.length > 0 && value.objectModelNetworkInterfaces[0].type === netType);
 				if (netMatch) {
-					return netMatch.key as BoardType;
+					return netMatch.key as BoardTypes;
 				}
 			}
 
 			// Default to the first item if no definite match could be found
-			return matches[0].key as BoardType;
+			return matches[0].key as BoardTypes;
 		}
 	}
 	return null;
