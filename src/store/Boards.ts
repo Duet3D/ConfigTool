@@ -2,7 +2,7 @@ import { Board, initObject, Limits, MinMaxCurrent, Network, NetworkInterface, Ne
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
-import { type STMBoard, type STMBoardDescriptor, STM32F4BoardType, STM32H7BoardType } from "@/store/STMBoard";
+import { type STMBoard, type STMBoardDescriptor, STMBoardTypes, STM32F4BoardType, STM32H723BoardType, STM32H743BoardType } from "@/store/STMBoard";
 
 import type ConfigModel from "@/store/model";
 import type { StoreState } from "pinia";
@@ -44,8 +44,8 @@ export interface BoardDescriptor extends BaseBoardDescriptor {
 	supportsBME280: boolean;
 }
 
-export type BoardTypes = BoardType | STM32F4BoardType | STM32H7BoardType
-export const BoardTypes = {...BoardType, ...STM32F4BoardType, ...STM32H7BoardType};
+export type BoardTypes = BoardType | STMBoardTypes
+export const BoardTypes = {...BoardType, ...STMBoardTypes};
 export type BoardDescriptors = BoardDescriptor | STMBoardDescriptor
 
 /**
@@ -1051,7 +1051,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: '',
 		}
 	},
-	[STM32H7BoardType.Super8Pro]: {
+	[STM32H723BoardType.Super8Pro]: {  // FIXME: Set the correct definition values
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -1062,7 +1062,135 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 		motorMaxCurrent: 2000,
 		minVoltage: 11,
 		maxVoltage: 25,
-		numDrivers: 6,
+		numDrivers: 8,
+		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		ports: {
+			[PortType.analogIn]: ["probe"],
+			[PortType.fan]: ["fan0", "fan1", "fan2", "fan3", "fan4", "fan5", "fan6", "fan7", "fan8", "fan9"],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: ["io0", "io1", "io2", "io3", "io4", "io5", "io6", "in7", "probe"],
+			[PortType.gpInInterrupt]: ["xmin", "xmax", "ymin", "ymax", "zmin", "zmax", "probe"],
+			[PortType.gpOut]: ["out0", "out1", "out2", "out3", "out4"],
+			[PortType.heater]: ["bed", "heat0", "heat1", "heat2", "heat3", "heat4"],
+			[PortType.pwm]: ["servo", "pwm1", "pwm2"],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: ["ADC0", "ADC1", "ADC2", "ADC3", "ADC4", "ADC5"],
+			[PortType.uart]: []
+		},
+
+		expansionBoards: new Set(),
+		objectModelBoard: initObject(Board, {
+			canAddress: 0,
+			firmwareFileName: "firmware-stm32h7-wifi",
+			iapFileNameSBC: "",
+			iapFileNameSD: "",
+			maxHeaters: 32,
+			maxMotors: 7,
+			name: "fly_super8h7",
+			shortName: "STM32H7",
+			supportsDirectDisplay: true,
+			vIn: new MinMaxCurrent()
+		}),
+		objectModelLimits: initObject(Limits, {
+			axes: 15,
+			axesPlusExtruders: 15,
+			bedHeaters: 4,
+			boards: 21,
+			chamberHeaters: 4,
+			drivers: 34,
+			driversPerAxis: 4,
+			extruders: 14,
+			extrudersPerTool: 8,
+			fans: 32,
+			gpInPorts: 56,
+			gpOutPorts: 62,
+			heaters: 32,
+			heatersPerTool: 4,
+			ledStrips: 5,
+			monitorsPerHeater: 3,
+			portsPerHeater: 2,
+			restorePoints: 6,
+			sensors: 56,
+			spindles: 4,
+			tools: 50,
+			trackedObjects: 40,
+			triggers: 16,
+			volumes: 2,
+			workplaces: 9,
+			zProbeProgramBytes: 8,
+			zProbes: 4
+		}),
+		objectModelNetworkInterfaces: [
+			initObject(NetworkInterface, {
+				type: NetworkInterfaceType.wifi
+			})
+		],
+		supportsAccelerometer: true,
+		supportsBME280: true,
+		stm: <STMBoard> {
+			board: 'fly_super8h7',
+			statusPin: "NoPin",
+			type: 'STM32H7',
+			blPorts: ['servo0'],
+			esp8266: {
+				onboard: false,
+				module: false,
+				espDataReadyPin: null,
+				TfrReadyPin: null,
+				espResetPin: null,
+				CSPin: null,
+				serialRxPin: null,
+				serialTxPin: null,
+				firmware: null,
+				requiresRXTX: false,
+			},
+			esp32: {
+				onboard: true,
+				module: false,
+				espDataReadyPin: 'PD_13',
+				TfrReadyPin: 'PD_11',
+				espResetPin: 'PD_10',
+				CSPin: 'NoPin',
+				serialRxPin: 'PD_9',
+				serialTxPin: 'PD_8',
+				firmware: 'DuetWiFiServer-esp32-stm32',
+				requiresRXTX: true,
+			},
+			sbc: {
+				support: false,
+				onboard: false,
+				firmware: null,
+			},
+			firmwareStandaloneFile: 'firmware-stm32h7-wifi',
+			stepper: {
+				driver: null,
+				smart: true,
+				TMC5160: true,
+				TMC5160SPI: '2',
+				TMC5160Pins: null,
+				TMC5160CS: null,
+				diag: [`PG_12`, `PG_11`, `PG_10`, `PG_9`, `PD_7`, `PD_6`, `PA_8`, `PF_3`],
+			},
+			screen: {
+				auxRX: 'PA_10',
+				auxTX: 'PA_9',
+			},
+			serialAmount: '2',
+			neopixel: 'PF_8',
+		}
+	},
+	[STM32H743BoardType.Super8Pro]: {  // FIXME: Set the correct definition values
+		displayDotstarPort: null,
+		hasADCAutoCalibration: true,
+		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
+		hasSmartDrivers: true,
+		hasVrefMonitor: true,
+		motorWarnCurrent: 1500,
+		motorMaxCurrent: 2000,
+		minVoltage: 11,
+		maxVoltage: 25,
+		numDrivers: 8,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 		ports: {
 			[PortType.analogIn]: ["probe"],

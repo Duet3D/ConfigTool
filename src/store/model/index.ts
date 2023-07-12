@@ -5,7 +5,7 @@ import { ConfigDriver } from "@/store/model/ConfigDriver";
 import { ConfigToolModel } from "@/store/model/ConfigToolModel";
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptors, Boards, BoardType, type BoardTypes, getBoardDefinition, getBoardType } from "@/store/Boards";
-import { STM32F4BoardType, STM32H7BoardType } from "@/store/STMBoard";
+import { STM32F4BoardType, STM32H723BoardType, STM32H743BoardType } from "@/store/STMBoard";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 
 import { preconfigureNetworkInterface } from "../defaults";
@@ -530,7 +530,8 @@ export default class ConfigModel extends ObjectModel {
 			case STM32F4BoardType.FlyCDYv2:
 			case STM32F4BoardType.FlyCDYv3:
 			case STM32F4BoardType.FlyE3:
-			case STM32H7BoardType.Super8Pro:
+			case STM32H723BoardType.Super8Pro:
+			case STM32H743BoardType.Super8Pro:
 			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
 			case BoardType.Duet2SBC:

@@ -7,10 +7,18 @@ export enum STM32F4BoardType {
     FlyE3 = "Fly-E3"
 }
 
-export enum STM32H7BoardType {
+export enum STM32H723BoardType {
 	// STM32H7
-	Super8Pro = "Fly-Super8Pro"
+	Super8Pro = "Fly-Super8Pro H723"
 }
+
+export enum STM32H743BoardType {
+	// STM32H7
+	Super8Pro = "Fly-Super8Pro H743"
+}
+
+export type STMBoardTypes = STM32F4BoardType | STM32H723BoardType | STM32H743BoardType
+export const STMBoardTypes = {...STM32F4BoardType, ...STM32H723BoardType, ...STM32H743BoardType};
 
 /**
  * Descriptor interface for STM boards
