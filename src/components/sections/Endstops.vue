@@ -169,15 +169,15 @@ function getEndstopTypeOptions(axis: StoreState<Axis>): Array<SelectOption> {
 		}
 	];
 
-	// Probes on remote boards can be selected only if all the drivers are on the same board
+	// Probes on remote boards can be selected only if all the drivers are on the same board or if all the drivers are on the mainboard
 	for (let i = 0; i < store.data.sensors.probes.length; i++) {
 		const probe = store.data.sensors.probes[i];
 		if (probe !== null) {
 			let canSelectProbe = true;
-			if (probe.type !== ProbeType.none && !axis.drivers.some(axisDriver => axisDriver.board)) {
+			if (probe.type !== ProbeType.none) {
 				canSelectProbe = false;
 				for (const port of store.data.configTool.ports) {
-					if (port.function === ConfigPortFunction.probeIn && !axis.drivers.some(axisDriver => !port.equalsBoard(axisDriver.board))) {
+					if (port.function === ConfigPortFunction.probeIn && axis.drivers.every(axisDriver => !axisDriver.board || port.equalsBoard(axisDriver.board))) {
 						canSelectProbe = true;
 						break;
 					}

@@ -12,7 +12,7 @@ export enum ExpansionBoardType {
 	EXP1XD = "Duet 3 Expansion Board 1XD",
 	EXP1HCL = "Duet 3 Expansion Board 1HCL",
 	M23CL = "Duet 3 Motor 23CL",
-	TOOL1LC = "Duet 3 Tool Board",
+	TOOL1LC = "Duet 3 Tool Board 1LC",
 
 	Mini5plus = "Duet 3 Mini 5+",
 	MB6HC = "Duet 3 Main Board 6HC",
@@ -137,7 +137,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: [],
 			[PortType.pwm]: ["io0.out"],
 			[PortType.spiCs]: [],
-			[PortType.thermistor]: ["temp0"],
+			[PortType.thermistor]: ["temp0", "temp1"],
 			[PortType.uart]: []
 		},
 		supportsAccelerometer: false,
@@ -367,7 +367,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}),
 		ports: {
 			[PortType.analogIn]: [],
-			[PortType.fan]: [],
+			[PortType.fan]: ["duex.fan3", "duex.fan4", "duex.fan5", "duex.fan6", "duex.fan7", "duex.fan8"],
 			[PortType.fanTacho]: ["duex.pb6"],
 			[PortType.gpIn]: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
 			[PortType.gpInInterrupt]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
@@ -431,7 +431,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		}),
 		ports: {
 			[PortType.analogIn]: [],
-			[PortType.fan]: [],
+			[PortType.fan]: ["duex.fan3", "duex.fan4", "duex.fan5", "duex.fan6", "duex.fan7", "duex.fan8"],
 			[PortType.fanTacho]: ["duex.pb6"],
 			[PortType.gpIn]: ["duex.e2stop", "duex.e3stop", "duex.e4stop", "duex.e5stop", "duex.e6stop", "duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
 			[PortType.gpInInterrupt]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
