@@ -20,7 +20,7 @@
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
-				<check-input label="Enable third-party STM boards maintained by TeamGloomy" id="input-stm-boards-enable" @update:model-value="toggleSTMBoards"
+				<check-input label="Enable third-party STM boards maintained by TeamGloomy" @update:model-value="toggleSTMBoards"
 							 title="Enable third-party STM boards maintained by TeamGloomy" v-model="store.data.configTool.enableSTMBoards"
 							 :preset="store.preset.configTool.enableSTMBoards" />
 				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)"
@@ -254,9 +254,6 @@ function toggleSTMBoards(checked: boolean) {
 }
 
 onMounted(() => {
-	// Filter out the STM boards options
-	// FIXME: The id given to a "check-input" component is not unique as it is set on the input but also on the parent div
-	let element = document.getElementById("input-stm-boards-enable");
-	toggleSTMBoards(element !== null && (element as HTMLInputElement).checked);
+	toggleSTMBoards(store.data.configTool.enableSTMBoards);
 });
 </script>
