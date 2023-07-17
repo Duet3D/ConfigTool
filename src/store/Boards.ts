@@ -703,7 +703,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			maxHeaters: 32,
 			maxMotors: 7,
 			name: "Fly-CDYv2",
-			shortName: "STM32F4",
+			shortName: "stm32f4-fly-cdyv2",
 			supportsDirectDisplay: true,
 			vIn: new MinMaxCurrent()
 		}),
@@ -831,7 +831,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			maxHeaters: 32,
 			maxMotors: 7,
 			name: "Fly-CDYv3",
-			shortName: "STM32F4",
+			shortName: "stm32f4-fly-cdyv3",
 			supportsDirectDisplay: true,
 			vIn: new MinMaxCurrent()
 		}),
@@ -959,7 +959,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			maxHeaters: 32,
 			maxMotors: 7,
 			name: "Fly-E3",
-			shortName: "STM32F4",
+			shortName: "stm32f4-fly-e3",
 			supportsDirectDisplay: true,
 			vIn: new MinMaxCurrent()
 		}),
@@ -1087,7 +1087,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			maxHeaters: 32,
 			maxMotors: 7,
 			name: "fly_super8h7",
-			shortName: "STM32H7",
+			shortName: "stm32h723-fly-super8pro",
 			supportsDirectDisplay: true,
 			vIn: new MinMaxCurrent()
 		}),
@@ -1215,7 +1215,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			maxHeaters: 32,
 			maxMotors: 7,
 			name: "fly_super8h7",
-			shortName: "STM32H7",
+			shortName: "stm32h743-fly-super8pro",
 			supportsDirectDisplay: true,
 			vIn: new MinMaxCurrent()
 		}),

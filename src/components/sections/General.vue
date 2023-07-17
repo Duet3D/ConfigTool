@@ -20,8 +20,8 @@
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
-				<check-input label="Enable STM boards" id="input-stm-boards-enable" @update:model-value="toggleSTMBoards"
-							 title="Enable STM boards" v-model="store.data.configTool.enableSTMBoards"
+				<check-input label="Enable third-party STM boards maintained by TeamGloomy" id="input-stm-boards-enable" @update:model-value="toggleSTMBoards"
+							 title="Enable third-party STM boards maintained by TeamGloomy" v-model="store.data.configTool.enableSTMBoards"
 							 :preset="store.preset.configTool.enableSTMBoards" />
 				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)"
 							 title="Enable auto-save facility" v-model="store.data.configTool.configOverride"
@@ -164,28 +164,6 @@ if (Object.keys(boardOptions).length !== 0) {
 	boardOptions["Other boards"] = otherBoards;
 }
 
-if (Object.keys(UnsupportedBoardType).length !== 0) {
-	if (boardOptions instanceof Array) {
-		for (let unsupportedBoard of Object.values(UnsupportedBoardType)) {
-			boardOptions.push({
-				disabled: true,
-				text: unsupportedBoard,
-				value: unsupportedBoard
-			});
-		}
-	} else {
-		const unsupportedBoardGroup = [];
-		for (let unsupportedBoard of Object.values(UnsupportedBoardType)) {
-			unsupportedBoardGroup.push({
-				disabled: true,
-				text: unsupportedBoard,
-				value: unsupportedBoard
-			});
-		}
-		boardOptions["Unsupported boards"] = unsupportedBoardGroup;
-	}
-}
-
 for (let board of Object.values(STM32F4BoardType)) {
 	const groupTitle = "STM32F4";
 	if (!boardOptions[groupTitle]) {
@@ -211,6 +189,28 @@ for (let board of Object.values(STM32H743BoardType)) {
 	}
 	boardOptions[groupTitle].push(board);
 	STMH743Boards.push(board);
+}
+
+if (Object.keys(UnsupportedBoardType).length !== 0) {
+	if (boardOptions instanceof Array) {
+		for (let unsupportedBoard of Object.values(UnsupportedBoardType)) {
+			boardOptions.push({
+				disabled: true,
+				text: unsupportedBoard,
+				value: unsupportedBoard
+			});
+		}
+	} else {
+		const unsupportedBoardGroup = [];
+		for (let unsupportedBoard of Object.values(UnsupportedBoardType)) {
+			unsupportedBoardGroup.push({
+				disabled: true,
+				text: unsupportedBoard,
+				value: unsupportedBoard
+			});
+		}
+		boardOptions["Unsupported boards"] = unsupportedBoardGroup;
+	}
 }
 
 // Board selection
