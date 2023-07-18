@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "3.5.0-beta.2",
+  "version": "3.5.0-beta.3",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
