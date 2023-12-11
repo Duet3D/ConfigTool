@@ -30,7 +30,7 @@ onMounted(() => {
         minimap: {
             enabled: false
         },
-        occurrencesHighlight: false,
+        occurrencesHighlight: "off",
         overviewRulerLanes: 0,
         readOnly: true,
         renderLineHighlight: "none",

@@ -32,6 +32,7 @@ export enum PortType {
 	gpOut = "gpOut",
 	heater = "heater",
 	pwm = "pwm",
+	scanning = "scanning",
 	spiCs = "spiCs",
 	thermistor = "thermistor",
 	uart = "uart"

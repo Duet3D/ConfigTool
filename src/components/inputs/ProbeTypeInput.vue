@@ -41,7 +41,7 @@ const store = useStore();
 const probePreset = ref<ProbePresetType | null>(null);
 
 const probeOptions = computed(() => {
-	const result: Record<string, Array<SelectOption>> = {
+    const result: Record<string, Array<SelectOption>> = {
 		"Presets": [
 			{
 				text: "Switch",
@@ -84,7 +84,12 @@ const probeOptions = computed(() => {
 			{
 				text: "BLTouch",
 				value: ProbeType.blTouch
-			}
+            },
+            // TODO StallGuard
+            {
+                text: "Scanning probe",
+                value: ProbeType.scanningAnalog
+            }
 		]
 	}
 	if (props.index < store.data.sensors.probes.length - 1 || store.data.sensors.probes[props.index] === null) {
@@ -141,16 +146,28 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
             if (probe === null) {
                 store.data.sensors.probes[props.index] = initObject(Probe, { type: value });
             } else {
-                if ((![ProbeType.analog, ProbeType.dumbModulated, ProbeType.alternateAnalog].includes(probe.type) &&
-                    [ProbeType.analog, ProbeType.dumbModulated, ProbeType.alternateAnalog].includes(value)) || (value === ProbeType.none)) {
+                if ((
+                        ![ProbeType.analog, ProbeType.dumbModulated, ProbeType.alternateAnalog].includes(probe.type) &&
+                         [ProbeType.analog, ProbeType.dumbModulated, ProbeType.alternateAnalog].includes(value)
+                    ) || [ProbeType.none, ProbeType.scanningAnalog].includes(value)) {
                     for (const port of store.data.configTool.ports) {
                         if (port.function === ConfigPortFunction.probeIn && port.index === props.index) {
-                            // Reset input port for manual config and when switching from digital to analog probes
+                            // Reset input port for manual/scanning config and when switching from digital to analog probes
                             port.function = null;
                         }
                     }
                 }
-                if (![ProbeType.dumbModulated, ProbeType.digital, ProbeType.unfilteredDigital].includes(value)) {
+                if ( [ProbeType.unfilteredDigital, ProbeType.blTouch].includes(probe.type) &&
+                    ![ProbeType.unfilteredDigital, ProbeType.blTouch].includes(value)) {
+                    for (const port of store.data.configTool.ports) {
+                        if (port.function === ConfigPortFunction.probeIn && port.index === props.index && !port.equalsBoard(0)) {
+                            // Reset remote input port unless the new selection includes types 8 and 9
+                            port.function = null;
+                        }
+                    }
+                }
+                if ( [ProbeType.dumbModulated, ProbeType.digital, ProbeType.unfilteredDigital].includes(probe.type) &&
+                    ![ProbeType.dumbModulated, ProbeType.digital, ProbeType.unfilteredDigital].includes(value)) {
                     for (const port of store.data.configTool.ports) {
                         if (port.function === ConfigPortFunction.probeMod && port.index === props.index) {
                             // Reset modulation port for unmodulated probes
@@ -158,7 +175,7 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
                         }
                     }
                 }
-                if (value !== ProbeType.blTouch) {
+                if (probe.type === ProbeType.blTouch && value !== ProbeType.blTouch) {
                     for (const port of store.data.configTool.ports) {
                         if (port.function === ConfigPortFunction.probeServo && port.index === props.index) {
                             // Reset servo pin for BLTouch

@@ -7,9 +7,9 @@
 					<col style="width: auto;">
 					<col style="width: auto;">
 					<col style="width: 22%;">
-					<col style="width: 23%;">
-					<col style="width: 20%;">
-					<col style="width: 35%;">
+					<col style="width: 25%;">
+					<col style="width: 17%;">
+					<col style="width: 36%;">
 				</colgroup>
 				<thead>
 					<tr>

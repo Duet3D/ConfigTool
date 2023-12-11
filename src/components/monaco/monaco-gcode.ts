@@ -3,7 +3,7 @@ import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 monaco.languages.register({ id: "gcode" });
 monaco.languages.setMonarchTokensProvider("gcode", {
 	consts: ["true", "false", "iterations", "line", "null", "pi", "result", "input"],
-	functions: ["abs", "acos", "asin", "atan", "atan2", "cos", "degrees", "exists", "fileexists", "floor", "isnan", "max",
+	functions: ["abs", "acos", "asin", "atan", "atan2", "cos", "degrees", "exists", "fileexists", "fileread", "floor", "isnan", "max",
 				"min", "mod", "radians", "random", "sin", "sqrt", "tan", "vector"],
 	keywords: ["abort", "echo", "if", "elif", "while", "set"],
 	noArgKeywords: ["else", "break", "continue"],
@@ -25,7 +25,7 @@ monaco.languages.setMonarchTokensProvider("gcode", {
 			// G/M/T-codes
 			[/G[01](?=\D)/, "keyword", "moveGcode"],
 			[/(G|M)\d+(\.\d+)?/, "keyword", "normalGcode"],
-			[/T\d+/, "keyword", "normalGcodeWithT"],
+			[/T[-]?\d+/, "keyword", "normalGcodeWithT"],
 
 			// numbers
 			[/\d*\.\d+([eE][\-+]?\d+)?/, "number.float"],
@@ -107,8 +107,9 @@ monaco.languages.setMonarchTokensProvider("gcode", {
 			[/0[xX][0-9a-fA-F]+/, "number.hex"],
 			[/\d+/, "number"],
 
-			// strings
+			// strings and chars
 			[/"(.|\"\")*?"/, "string"],
+			[/'.'/, "string"],
 
 			// operators
 			[/@symbols/, {
@@ -147,7 +148,7 @@ monaco.languages.setMonarchTokensProvider("gcode", {
 		],
 		varName: [
 			// variable name
-			[/[a-z_$][\w$]*/, "variable.name", "@expression" ],
+			[/[a-zA-Z_$][\w$]*/, "variable.name", "@expression" ],
 
 			// EOL
 			[/\n/, "", "@popall"]

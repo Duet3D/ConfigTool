@@ -11,8 +11,12 @@ export enum ExpansionBoardType {
 	EXP3HC = "Duet 3 Expansion Board 3HC",
 	EXP1XD = "Duet 3 Expansion Board 1XD",
 	EXP1HCL = "Duet 3 Expansion Board 1HCL",
+
 	M23CL = "Duet 3 Motor 23CL",
+
 	TOOL1LC = "Duet 3 Tool Board 1LC",
+	TOOL1RR = "Duet 3 Roto Tool Board",
+	SZP = "Duet 3 Scanning Z-Probe Board",
 
 	Mini5plus = "Duet 3 Mini 5+",
 	MB6HC = "Duet 3 Main Board 6HC",
@@ -66,6 +70,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["io1.out", "io2.out", "io3.out", "io4.out", "io5.out"],
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io0.out", "io4.out"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: []
@@ -101,12 +106,49 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["io0.out", "io2.out"],
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io0.out", "io2.out"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["temp0"],
 			[PortType.uart]: []
 		},
 		supportsAccelerometer: false,
 		hasBuiltInAccelerometer: false
+	},
+	[ExpansionBoardType.SZP]: {
+		hasADCAutoCalibration: false,
+		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
+		hasSmartDrivers: false,
+		hasVrefMonitor: false,
+		motorWarnCurrent: -1,
+		motorMaxCurrent: -1,
+		minVoltage: 12,
+		maxVoltage: 48,
+		numDrivers: 1,
+		microstepInterpolations: [],
+		objectModelBoard: initObject(Board, {
+			canAddress: 120,
+			firmwareFileName: "Duet3Firmware_SZP.bin",
+			maxHeaters: 0,
+			maxMotors: 0,
+			shortName: "SZP"
+		}),
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: [],
+			[PortType.gpInInterrupt]: [],
+			[PortType.gpOut]: [],
+			[PortType.heater]: [],
+			[PortType.pwm]: [],
+			[PortType.scanning]: ["i2c.ldc1612"],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: [],
+			[PortType.uart]: []
+		},
+		supportsAccelerometer: false,
+		hasBuiltInAccelerometer: true
 	},
 	[ExpansionBoardType.EXP1HCL]: {
 		hasADCAutoCalibration: true,
@@ -136,6 +178,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["io0.out", "io2.out"],
 			[PortType.heater]: [],
 			[PortType.pwm]: ["io0.out"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["temp0", "temp1"],
 			[PortType.uart]: []
@@ -171,6 +214,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: [],
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
@@ -206,6 +250,43 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["io0.out", "io1.out"],
 			[PortType.heater]: ["out0"],
 			[PortType.pwm]: ["io0.out"],
+			[PortType.scanning]: [],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: ["temp0"],
+			[PortType.uart]: []
+		},
+		supportsAccelerometer: true,
+		hasBuiltInAccelerometer: true
+	},
+	[ExpansionBoardType.TOOL1RR]: {
+		hasADCAutoCalibration: true,
+		hasClosedLoopDrivers: false,
+		hasInputPullUps: true,
+		hasSmartDrivers: true,
+		hasVrefMonitor: true,
+		motorWarnCurrent: 1200,
+		motorMaxCurrent: 1600,
+		minVoltage: 12,
+		maxVoltage: 32,
+		numDrivers: 1,
+		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		objectModelBoard: initObject(Board, {
+			canAddress: 121,
+			firmwareFileName: "Duet3Firmware_TOOL1RR.bin",
+			maxHeaters: 0,
+			maxMotors: 1,
+			shortName: "TOOL1RR"
+		}),
+		ports: {
+			[PortType.analogIn]: ["io0.in"],
+			[PortType.fan]: ["out1", "out2"],
+			[PortType.fanTacho]: ["out1.tach", "out2.tach"],
+			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in"],
+			[PortType.gpInInterrupt]: [],
+			[PortType.gpOut]: ["io0.out", "io1.out"],
+			[PortType.heater]: ["out0"],
+			[PortType.pwm]: ["io0.out"],
+			[PortType.scanning]: ["i2c.ldc1612"],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["temp0"],
 			[PortType.uart]: []
@@ -241,6 +322,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["io1.out", "io2.out", "io3.out", "io4.out+pson"],
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io0.out", "io2.out", "io3.out"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: ["usb", "io1.in+io1.out"]
@@ -276,6 +358,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
@@ -311,6 +394,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out", "io5.out", "io6.out", "io7.out", "io8.out", "pson"],
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
@@ -342,6 +426,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: [],
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
@@ -374,6 +459,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
 			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
 			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 			[PortType.uart]: []
@@ -406,6 +492,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
 			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
 			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 			[PortType.uart]: []
@@ -438,6 +525,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: ["duex.gp1", "duex.gp2", "duex.gp3", "duex.gp4"],
 			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
 			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 			[PortType.uart]: []
@@ -469,6 +557,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.gpOut]: [],
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []

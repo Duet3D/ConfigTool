@@ -6,16 +6,16 @@
 				<select-input label="Board" title="Mainboard of your setup" v-model="board" :options="boardOptions"
 							  :preset="boardPreset" />
 			</div>
-			<div class="col">
-				<text-input label="Printer Name"
-							title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local"
-							:max-length="50" v-model="store.data.network.name" :preset="store.preset.network.name" />
-			</div>
 			<div v-if="supportsSbcMode" class="col">
 				<select-input label="Operation Mode"
 							  title="Operation mode of your printer. Newer boards allow networking and plugin functionality to be handled by an extra SBC"
 							  :options="SbcModeOptions" v-model="store.data.sbcMode" :preset="store.preset.sbcMode"
 							  :required="false" />
+			</div>
+			<div class="col">
+				<text-input label="Printer Name"
+							title="Name of your printer (M550). If you use mDNS, you can access your printer via Myprinter.local"
+							:max-length="50" v-model="store.data.network.name" :preset="store.preset.network.name" />
 			</div>
 		</div>
 		<div class="row">
