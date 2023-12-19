@@ -1,5 +1,5 @@
 module.exports = {
-	//baseUrl: process.env.NODE_ENV === 'production' ? '/configtool/' : '/',
+	publicPath: process.env.NODE_ENV === 'production' ? '/legacy/' : '/',
 	chainWebpack: config => {
 		config
 			.plugin('copy')

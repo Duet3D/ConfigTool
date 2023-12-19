@@ -212,7 +212,7 @@ export default {
 						if (!item.draft && !item.prerelease && (!latestRelease || item.created_at > latestRelease.created_at)) {
 							if ((firmware < 2 && item.name.indexOf('1.') !== -1) ||
 								(firmware >= 2 && firmware < 3 && item.name.indexOf('2.') !== -1) ||
-								(firmware >= 3 && item.name.indexOf('3.') !== -1)) {
+								(firmware >= 3 && item.name.indexOf('3.4.') !== -1)) {
 								latestRelease = item;
 							}
 						}
@@ -247,12 +247,12 @@ export default {
 								if (this.rrfFile === null && item.name === this.board.firmwareFile) {
 									rrfLink = item.browser_download_url;
 									this.rrfVersion = latestRelease.tag_name;
-									this.rrfFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
+									this.rrfFile = await Compiler.downloadFile(`/assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
 									this.rrfFile.name = item.name;
 								}
 								else if (this.iapFile === null && item.name === iapFile) {
 									iapLink = item.browser_download_url;
-									this.iapFile = await Compiler.downloadFile(`assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
+									this.iapFile = await Compiler.downloadFile(`/assets/RepRapFirmware-${latestRelease.tag_name}/${item.name}`, 'blob', 'application/octet-stream');
 									this.iapFile.name = item.name;
 								}
 							} catch (e) {
@@ -279,7 +279,7 @@ export default {
 					const releaseInfo = await Compiler.downloadFile('https://api.github.com/repos/chrishamm/DuetWebControl/releases', 'json');
 					let latestRelease = null;
 					releaseInfo.forEach(function(item) {
-						if (!item.draft && !item.prerelease && (!latestRelease || item.created_at > latestRelease.created_at)) {
+						if (!item.draft && !item.prerelease && (!latestRelease || item.created_at > latestRelease.created_at) && item.tag_name.includes('3.4.')) {
 							latestRelease = item;
 						}
 					});
@@ -294,7 +294,7 @@ export default {
 								if (item.name.indexOf('SD') !== -1) {
 									dwcLink = item.browser_download_url;
 									this.dwcVersion = latestRelease.tag_name;
-									this.dwcFile = await Compiler.downloadFile(`assets/DuetWebControl-${latestRelease.tag_name}.zip`, 'blob', 'application/octet-stream');
+									this.dwcFile = await Compiler.downloadFile(`/assets/DuetWebControl-${latestRelease.tag_name}.zip`, 'blob', 'application/octet-stream');
 									break;
 								}
 							} catch (e) {
