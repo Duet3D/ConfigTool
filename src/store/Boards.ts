@@ -697,6 +697,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.gpOut]: [],
 			[PortType.heater]: ["bed", "e0heat", "e1heat", "e2heat"],
 			[PortType.pwm]: ["servo", "laser"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "e2temp"],
 			[PortType.uart]: []
@@ -825,6 +826,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.gpOut]: [],
 			[PortType.heater]: ["bed", "e0heat", "e1heat", "e2heat"],
 			[PortType.pwm]: ["servo", "laser"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "e2temp"],
 			[PortType.uart]: []
@@ -953,6 +955,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.gpOut]: [],
 			[PortType.heater]: ["bed", "e0heat"],
 			[PortType.pwm]: ["servo"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["bedtemp", "e0temp"],
 			[PortType.uart]: []
@@ -1081,6 +1084,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.gpOut]: ["out0", "out1", "out2", "out3", "out4"],
 			[PortType.heater]: ["bed", "heat0", "heat1", "heat2", "heat3", "heat4"],
 			[PortType.pwm]: ["servo", "pwm1", "pwm2"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["ADC0", "ADC1", "ADC2", "ADC3", "ADC4", "ADC5"],
 			[PortType.uart]: []
@@ -1209,6 +1213,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.gpOut]: ["out0", "out1", "out2", "out3", "out4"],
 			[PortType.heater]: ["bed", "heat0", "heat1", "heat2", "heat3", "heat4"],
 			[PortType.pwm]: ["servo", "pwm1", "pwm2"],
+			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["ADC0", "ADC1", "ADC2", "ADC3", "ADC4", "ADC5"],
 			[PortType.uart]: []
