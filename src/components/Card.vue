@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { Comment, computed, defineAsyncComponent, ref, watch, type Slot, type VNode } from "vue";
 
-import { indent, render, renderFull } from "@/store/render";
+import { indent, render, renderToNewTab } from "@/store/render";
 
 const GCodeOutput = defineAsyncComponent(() => import("./monaco/GCodeOutput.vue"));
 
@@ -147,7 +147,7 @@ async function showFile() {
 	fileRendering.value = true;
 
 	try {
-		await renderFull(selectedTemplate.value, renderArgs.value);
+		await renderToNewTab(selectedTemplate.value, renderArgs.value);
 	} catch (e) {
 		alert(`Failed to generate file:\n\n${e}`);
 	}

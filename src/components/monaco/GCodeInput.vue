@@ -43,7 +43,7 @@ onMounted(() => {
         scrollBeyondLastLine: false,
         theme: store.darkTheme ? "vs-dark" : "vs",
         value: props.modelValue,
-        wordBasedSuggestions: false
+        wordBasedSuggestions: "off"
     });
     editor.onDidBlurEditorText(() => emit("update:modelValue", editor!.getValue()));
 });

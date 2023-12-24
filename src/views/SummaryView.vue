@@ -66,7 +66,7 @@ import { onMounted, ref } from "vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 
 import { useStore } from "@/store";
-import { render, renderFull } from "@/store/render";
+import { render, renderToNewTab } from "@/store/render";
 import { getSectionTemplates } from "@/store/sections";
 import ProgressIcon, { ProgressState } from "@/components/ProgressIcon.vue";
 
@@ -100,7 +100,7 @@ async function showFile(item: TemplateItem) {
 	}
 
 	try {
-		await renderFull(item.name, item.data ?? undefined);
+		await renderToNewTab(item.name, item.data ?? undefined);
 	} catch (e) {
 		console.error("Failed to generate template", item.name, item.data, e);
 		alert(`Failed to generate template ${item.displayName}: ${e}`);
@@ -198,7 +198,7 @@ async function generateBundle() {
 		for (const item of templates.value) {
 			item.state = ProgressState.busy;
 			try {
-				const content = await render(item.name, item.data ?? undefined);
+				const content = await render(item.name, { ...(item.data ?? {}), preview: false });
 				if (item.name == "boardtxt") {
 					zip.file(`sys/board.txt`, content);
 				} else {

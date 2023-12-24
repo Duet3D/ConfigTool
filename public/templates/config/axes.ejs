@@ -1,12 +1,11 @@
-<%  const mapping = {}, mins = {}, maxs = {};
+<%  const mapping = {}, minsMaxs = {};
     const microstepping = {}, microsteppingInterpolated = {}, currents = {}, stepsPerMm = {};
     const jerk = {}, maxSpeed = {}, acceleration = {};
     for (const axis of model.move.axes) {
         mapping[axis.letter] = axis.drivers;
         if (!model.isDelta || !['X', 'Y', 'Z'].includes(axis.letter)) {
             // Don't set XYZ min/max in Delta configs
-            mins[axis.letter] = axis.min;
-            maxs[axis.letter] = axis.max;
+            minsMaxs[axis.letter] = [axis.min, axis.max];
         }
         if (axis.microstepping.interpolated) {
             microsteppingInterpolated[axis.letter] = axis.microstepping.value;
@@ -43,9 +42,8 @@ M906 <%- params(currents) %> ; set axis driver currents
 <%      }
     } -%>
 M92 <%- params(stepsPerMm) %> ; configure steps per mm
-<%  if (Object.keys(mins).length > 0) { -%>
-M208 <%- params({ S: 1, ...mins }) %> ; set axis minima
-M208 <%- params({ S: 0, ...maxs }) %> ; set axis maxima
+<%  if (Object.keys(minsMaxs).length > 0) { -%>
+M208 <%- params(minsMaxs) %> ; set minimum and maximum axis limits
 <%  } -%>
 M566 <%- params(jerk) %> ; set maximum instantaneous speed changes (mm/min)
 M203 <%- params(maxSpeed) %> ; set maximum speeds (mm/min)

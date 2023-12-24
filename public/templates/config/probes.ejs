@@ -2,6 +2,7 @@
         const probe = model.sensors.probes[probeIndex];
         if (probe !== null) {
             const probeConfig = {
+                K: probeIndex,
                 P: probe.type,
                 C: getCombinedPortString([ConfigPortFunction.probeIn, ConfigPortFunction.probeMod], probeIndex),
                 H: probe.diveHeight,

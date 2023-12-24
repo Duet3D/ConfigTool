@@ -5,7 +5,7 @@ aside {
 	top: 4.5rem;
 	display: block !important;
 	height: calc(100vh - 6rem);
-	min-width: 10rem;
+	min-width: 12rem;
 	margin-top: 1rem;
 	padding-left: .25rem;
 	padding-right: 1rem;

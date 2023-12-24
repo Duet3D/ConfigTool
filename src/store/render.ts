@@ -268,7 +268,7 @@ export async function render(template: string, args: Record<string, any> = {}): 
  * @param template Name of the template to render
  * @param args Custom arguments to pass in the EJS context
  */
-export async function renderFull(template: string, args: Record<string, any> = {}) {
+export async function renderToNewTab(template: string, args: Record<string, any> = {}) {
     const baseTemplate = template.split('/')[0];
     let output = await render(baseTemplate, { ...args, preview: false });
     output = indent(output).replace(/\n/g, "<br>").replace(/ /g, "&nbsp;");

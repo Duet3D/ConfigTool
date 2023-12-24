@@ -64,7 +64,7 @@
 		<div class="alert alert-warning mb-4">
 			<i class="bi bi-exclamation-triangle"></i>
 			This version of the Config Tool is still under development. If you encounter problems, please consider using the
-			previous <a href="https://configtool.reprapfirmware.org" target="_blank">Config Tool</a> instead.
+			previous <a href="https://configtool.reprapfirmware.org/legacy" target="_blank">Config Tool</a> instead.
 		</div>
 
 		<div class="text-center">
@@ -75,7 +75,7 @@
 			The selected firmware version is not compatible with this version of the Config Tool.
 			For this reason, you will be forwarded to the previous version of the Config Tool as soon as you click OK.
 			<template #buttons>
-				<a href="https://configtool.reprapfirmware.org/General" class="btn btn-primary">
+				<a href="https://configtool.reprapfirmware.org/legacy" class="btn btn-primary">
 					OK
 				</a>
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

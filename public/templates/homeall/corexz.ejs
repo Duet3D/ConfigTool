@@ -1,1 +1,209 @@
-; TODO like CoreXY but home XZ instead of XY first
+<%  // Get Z-probe values
+    const zProbe = model.sensors.probes.find(probe => probe !== null), zProbeIndex = model.sensors.probes.indexOf(zProbe);
+    const diveHeight = zProbe ? zProbe.diveHeight : 5;
+    const travelSpeed = zProbe ? zProbe.travelSpeed : 6000;
+
+    // Get XYZ(UV) homing properties
+    let xEndstop = false, xHighEnd = false, xFastHomingSpeed = 600, xSlowHomingSpeed = 300;
+    let yEndstop = false, yHighEnd = false, yFastHomingSpeed = 600, ySlowHomingSpeed = 300;
+    let zEndstop = false, zHighEnd = false, zFastHomingSpeed = 600, zSlowHomingSpeed = 300;
+    let uValid = false, uEndstop = false, uHighEnd = false, uFastHomingSpeed = 600, uSlowHomingSpeed = 300;
+    let vValid = false, vEndstop = false, vHighEnd = false, vFastHomingSpeed = 600, vSlowHomingSpeed = 300;
+    for (let i = 0; i < model.move.axes.length; i++) {
+        const axis = model.move.axes[i];
+        if (model.sensors.endstops.length > i && model.sensors.endstops[i] !== null) {
+            let homingSpeeds = [10, 5];
+            if (axis.drivers.length > 0) {
+                const firstDriver = model.configTool.drivers.find(driver => driver.id.equals(axis.drivers[0]));
+                if (firstDriver) {
+                    homingSpeeds = firstDriver.homingSpeeds;
+                }
+            }
+
+            const endstop = model.sensors.endstops[i];
+            if (axis.letter === 'X') {
+                xEndstop = true;
+                xHighEnd = endstop.highEnd;
+                xFastHomingSpeed = homingSpeeds[0] * 60;
+                xSlowHomingSpeed = homingSpeeds[1] * 60;
+            } else if (axis.letter === 'Y') {
+                yEndstop = true;
+                yHighEnd = endstop.highEnd;
+                yFastHomingSpeed = homingSpeeds[0] * 60;
+                ySlowHomingSpeed = homingSpeeds[1] * 60;
+            } else if (axis.letter === 'Z' && endstop.type !== EndstopType.ZProbeAsEndstop) {
+                zEndstop = true;
+                zHighEnd = endstop.highEnd;
+                zFastHomingSpeed = homingSpeeds[0] * 60;
+                zSlowHomingSpeed = homingSpeeds[1] * 60;
+            } else if (axis.letter === 'U') {
+                uEndstop = true;
+                uHighEnd = endstop.highEnd;
+                uFastHomingSpeed = homingSpeeds[0] * 60;
+                uSlowHomingSpeed = homingSpeeds[1] * 60;
+            } else if (axis.letter === 'V') {
+                vEndstop = true;
+                vHighEnd = endstop.highEnd;
+                vFastHomingSpeed = homingSpeeds[0] * 60;
+                vSlowHomingSpeed = homingSpeeds[1] * 60;
+            }
+        }
+    }
+
+    let fastHomingSpeed = Math.min(xFastHomingSpeed, yFastHomingSpeed), slowHomingSpeed = Math.min(xSlowHomingSpeed, ySlowHomingSpeed);
+    if (model.move.kinematics.name === KinematicsName.coreXYU) {
+        uValid = true;
+        fastHomingSpeed = Math.min(fastHomingSpeed, uFastHomingSpeed);
+        slowHomingSpeed = Math.min(slowHomingSpeed, uSlowHomingSpeed);
+    } else if (model.move.kinematics.name === KinematicsName.coreXYUV) {
+        uValid = vValid = true;
+        fastHomingSpeed = Math.min(fastHomingSpeed, uFastHomingSpeed, vFastHomingSpeed);
+        slowHomingSpeed = Math.min(slowHomingSpeed, uSlowHomingSpeed, vSlowHomingSpeed);
+    }
+-%>
+; lift Z
+G91 ; relative positioning
+G1 H<%- zEndstop && zHighEnd ? 1 : 2 %> Z<%- diveHeight %> F<%- travelSpeed %> ; move Z relative to current position to avoid dragging nozzle over the bed
+G90 ; absolute positioning
+
+; home <%- vValid ? "XZUV" : (uValid ? "XZU" : "XZ") %>
+<%  if (!xEndstop || !yEndstop) {
+        // manual XZ homing. CoreXZ requires endstops for both X and Z
+-%>
+G92 X0 Z0 ; set X=0 and Z=0
+M118 L1 P0 S"Warning: X and Z are NOT homed but their positions have been set to 0."
+G91 ; relative positioning
+<%  } else {
+        // normal XY homing
+-%>
+var xTravel = move.axes[0].max - move.axes[0].min + 5 ; calculate how far X can travel plus 5mm
+var zTravel = move.axes[2].max - move.axes[2].min + 5 ; calculate how far Z can travel plus 5mm
+<%      if (uValid) { -%>
+var uTravel = move.axes[3].max - move.axes[3].min + 5 ; calculate how far U can travel plus 5mm
+<%          if (vValid) { -%>
+var vTravel = move.axes[4].max - move.axes[4].min + 5 ; calculate how far V can travel plus 5mm
+<%          }
+        } -%>
+G91 ; relative positioning
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
+    Z: zHighEnd ? "{var.zTravel}" : "{-var.zTravel}",
+    U: uValid ? (uHighEnd ? "{var.uTravel}" : "{-var.uTravel}") : undefined,
+    V: vValid ? (vHighEnd ? "{var.vTravel}" : "{-var.vTravel}") : undefined,
+    F: fastHomingSpeed
+}) %> ; <%- (xFastHomingSpeed !== xSlowHomingSpeed || yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %>
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
+    F: xFastHomingSpeed
+}) %> ; <%- (xFastHomingSpeed !== xSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
+G1 <%- params({
+    H: 1,
+    Y: zHighEnd ? "{var.zTravel}" : "{-var.zTravel}",
+    F: zFastHomingSpeed
+}) %> ; <%- (yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
+<%      if (uValid) { -%>
+G1 <%- params({
+    H: 1,
+    U: uHighEnd ? "{var.uTravel}" : "{-var.uTravel}",
+    F: uFastHomingSpeed
+}) %> ; <%- (uFastHomingSpeed !== uSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- uHighEnd ? "+" : "-" %>U direction
+<%          if (vValid) { -%>
+G1 <%- params({
+    H: 1,
+    V: vHighEnd ? "{var.vTravel}" : "{-var.vTravel}",
+    F: vFastHomingSpeed
+}) %> ; <%- (vFastHomingSpeed !== vSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- vHighEnd ? "+" : "-" %>V direction
+<%          }
+        }
+
+        if (fastHomingSpeed !== slowHomingSpeed) {
+            // second pass
+-%>
+G1 <%- params({
+    H: 2,
+    X: (xFastHomingSpeed !== xSlowHomingSpeed) ? (xHighEnd ? -5 : 5) : undefined,
+    Z: (zFastHomingSpeed !== zSlowHomingSpeed) ? (zHighEnd ? -5 : 5) : undefined,
+    U: uValid ? (uHighEnd ? -5 : 5) : undefined,
+    V: vValid ? (vHighEnd ? -5 : 5) : undefined,
+    F: travelSpeed
+}) %> ; move back 5mm
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
+    Z: zHighEnd ? "{var.zTravel}" : "{-var.zTravel}",
+    U: uValid ? (uHighEnd ? "{var.uTravel}" : "{-var.uTravel}") : undefined,
+    V: vValid ? (vHighEnd ? "{var.vTravel}" : "{-var.vTravel}") : undefined,
+    F: slowHomingSpeed
+}) %> ; fine home
+G1 <%- params({
+    H: 1,
+    X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
+    F: xSlowHomingSpeed
+}) %> ; fine home in the <%- xHighEnd ? "+" : "-" %>X direction
+G1 <%- params({
+    H: 1,
+    Z: zHighEnd ? "{var.zTravel}" : "{-var.zTravel}",
+    F: zSlowHomingSpeed
+}) %> ; fine home in the <%- yHighEnd ? "+" : "-" %>Y direction
+<%          if (uValid) { -%>
+G1 <%- params({
+    H: 1,
+    U: uHighEnd ? "{var.uTravel}" : "{-var.uTravel}",
+    F: uSlowHomingSpeed
+}) %> ; fine home in the <%- uHighEnd ? "+" : "-" %>U direction
+<%              if (vValid) { -%>
+    G1 <%- params({
+    H: 1,
+    V: vHighEnd ? "{var.vTravel}" : "{-var.vTravel}",
+    F: vSlowHomingSpeed
+}) %> ; fine home in the <%- vHighEnd ? "+" : "-" %>V direction
+<%              }
+            }
+        }
+    } -%>
+G90 ; absolute positioning
+
+; home Y
+<%  if (yEndstop) {
+        // use Y endstop for homing
+-%>
+var yTravel = move.axes[1].max - move.axes[1].min + 5 ; calculate how far Y can travel plus 5mm
+G91 ; relative positioning
+G1 <%- params({
+    H: 1,
+    Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
+    F: yFastHomingSpeed
+}) -%> ; <%- (yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
+<%      if (yFastHomingSpeed !== ySlowHomingSpeed) {
+            // second pass
+-%>
+G1 <%- params({
+    H: 2,
+    Y: yHighEnd ? -5 : 5,
+    F: travelSpeed
+}) %> ; move back <%- diveHeight %>mm
+G1 <%- params({
+    H: 1,
+    Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
+    F: zSlowHomingSpeed
+}) %> ; fine home in the <%- yHighEnd ? "+" : "-" %>Y direction
+G90 ; absolute positioning
+<%      }
+G30 ; probe the bed
+<%  } else { -%>
+G92 Y0 ; set Y=0
+M118 L1 P0 S"Warning: Y is NOT homed but its position has been set to 0."
+<%  }
+
+    if (model.move.axes.some(axis => ['X', 'Y', 'Z'].includes(axis.letter))) { -%>
+
+; home other axes
+<%      for (const axis of model.move.axes) { -%>
+            if (!['X', 'Y', 'Z'].includes(axis.letter)) {
+                const homingFile = /[A-Z]/.test(axis.letter) ? `home${axis.letter.toLowerCase()}.g` : `home'${axis.letter}.g`; -%>
+M98 P"<%- homingFile %>" ; home <%- axis.letter %> axis
+<%          }
+        }
+    } -%>

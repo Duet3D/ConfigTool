@@ -261,6 +261,7 @@ const ports = computed(() => {
 			break;
 		case ConfigPortFunction.fan:
 			requiredCapabilities.add(PortType.fan);
+			requiredCapabilities.add(PortType.heater);
 			break;
 		case ConfigPortFunction.fanTacho:
 			requiredCapabilities.add(PortType.fanTacho);
@@ -273,6 +274,7 @@ const ports = computed(() => {
 			break;
 		case ConfigPortFunction.heater:
 			requiredCapabilities.add(PortType.heater);
+			requiredCapabilities.add(PortType.fan);
 			break;
 		case ConfigPortFunction.laser:
 			requiredCapabilities.add(PortType.pwm);
@@ -281,13 +283,20 @@ const ports = computed(() => {
 			requiredCapabilities.add(PortType.gpOut);
 			break;
 		case ConfigPortFunction.probeIn:
-			requiredCapabilities.add(PortType.analogIn);
 			if (props.index < store.data.sensors.probes.length) {
 				const probe = store.data.sensors.probes[props.index];
-				if (probe !== null && (probe.type === ProbeType.digital || probe.type === ProbeType.unfilteredDigital || probe.type === ProbeType.blTouch)) {
-					requiredCapabilities.add(PortType.gpIn);
+				if (probe !== null) {
+					if ([ProbeType.digital, ProbeType.unfilteredDigital, ProbeType.blTouch].includes(probe.type)) {
+						// Digital probes can have general-purpose inputs
+						requiredCapabilities.add(PortType.gpIn);
+					} else if (probe.type === ProbeType.scanningAnalog) {
+						// Scanning probes have their own dedicate port type
+						requiredCapabilities.add(PortType.scanning);
+						break;
+					}
 				}
 			}
+			requiredCapabilities.add(PortType.analogIn);
 			break;
 		case ConfigPortFunction.probeMod:
 			requiredCapabilities.add(PortType.gpOut);
@@ -316,9 +325,21 @@ const ports = computed(() => {
 			break;
 	}
 
+	// Probe input ports have limits depending on their type
+	let mustBeOnMainboard = false;
+	if (props.function === ConfigPortFunction.probeIn) {
+		if (props.index < store.data.sensors.probes.length) {
+			const probe = store.data.sensors.probes[props.index];
+			if (probe !== null) {
+				mustBeOnMainboard = ![ProbeType.unfilteredDigital, ProbeType.blTouch, ProbeType.scanningAnalog].includes(probe.type);
+			}
+		}
+	}
+
 	// Filter ports according to their capabilities
 	for (const port of store.data.configTool.ports) {
-		if (props.board !== undefined && !port.equalsBoard(props.board)) {
+		if ((props.board !== undefined && props.function !== ConfigPortFunction.endstop && !port.equalsBoard(props.board)) ||
+			(mustBeOnMainboard && !port.equalsBoard(0))) {
 			continue;
 		}
 
@@ -394,7 +415,7 @@ const port = computed<string | null>({
 	get() {
 		let secondaryIndex = 0;
 		for (const port of store.data.configTool.ports) {
-			if (port.function === props.function && (props.board === undefined || port.equalsBoard(props.board)) && port.index === props.index) {
+			if (port.function === props.function && (props.board === undefined || props.function === ConfigPortFunction.endstop || port.equalsBoard(props.board)) && port.index === props.index) {
 				if (props.secondaryIndex !== null) {
 					if (props.secondaryIndex !== secondaryIndex) {
 						secondaryIndex++;
@@ -410,7 +431,7 @@ const port = computed<string | null>({
 		// Free previous selection
 		let secondaryIndex = 0;
 		for (const port of store.data.configTool.ports) {
-			if (port.function === props.function && (props.board === undefined || port.equalsBoard(props.board)) && port.index === props.index) {
+			if (port.function === props.function && (props.board === undefined || props.function === ConfigPortFunction.endstop || port.equalsBoard(props.board)) && port.index === props.index) {
 				if (props.secondaryIndex !== null) {
 					if (props.secondaryIndex !== secondaryIndex) {
 						secondaryIndex++;
@@ -443,7 +464,7 @@ const port = computed<string | null>({
 const presetPort = computed<string | null>(() => {
 	let secondaryIndex = 0;
 	for (const port of store.preset.configTool.ports) {
-		if (port.function === props.function && (props.board === undefined || port.equalsBoard(props.board)) && port.index === props.index) {
+		if (port.function === props.function && (props.board === undefined || props.function === ConfigPortFunction.endstop || port.equalsBoard(props.board)) && port.index === props.index) {
 			if (props.secondaryIndex !== null) {
 				if (props.secondaryIndex !== secondaryIndex) {
 					secondaryIndex++;
