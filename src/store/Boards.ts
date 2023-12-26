@@ -1012,7 +1012,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 		supportsBME280: true,
 		stm: <STMBoard> {
 			board: 'fly_e3',
-			statusPin: "NoPin",
+			statusPin: null,
 			type: 'STM32F4',
 			blPorts: ['servo0'],
 			esp8266: {

@@ -32,7 +32,7 @@ export interface STMBoardDescriptor extends BoardDescriptor {
 
 export interface STMBoard {
     board: string;
-    statusPin: string;
+    statusPin: string | null;
     type: string;
     blPorts: Array<string> | null;
     esp8266: STM_ESP_config;
