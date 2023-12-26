@@ -1062,7 +1062,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: '',
 		}
 	},
-	[STM32H723BoardType.Super8Pro]: {  // FIXME: Set the correct definition values
+	[STM32H723BoardType.Super8Pro_H723]: {  // FIXME: Set the correct definition values
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -1191,7 +1191,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: 'PF_8',
 		}
 	},
-	[STM32H743BoardType.Super8Pro]: {  // FIXME: Set the correct definition values
+	[STM32H743BoardType.Super8Pro_H743]: {  // FIXME: Set the correct definition values
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,

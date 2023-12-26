@@ -1,20 +1,23 @@
 import type { BoardDescriptor } from "@/store/Boards";
 
 export enum STM32F4BoardType {
-	// STM32F4
+	// Boards using a STM32F4 MCU
+    // NB: Make sure the member names are unique over all boards types
 	FlyCDYv2 = "Fly-CDYv2",
     FlyCDYv3 = "Fly-CDYv3",
     FlyE3 = "Fly-E3"
 }
 
 export enum STM32H723BoardType {
-	// STM32H7
-	Super8Pro = "Fly-Super8Pro H723"
+	// Boards using a STM32H723 MCU
+    // NB: Make sure the member names are unique over all boards types
+	Super8Pro_H723 = "Fly-Super8Pro H723"
 }
 
 export enum STM32H743BoardType {
-	// STM32H7
-	Super8Pro = "Fly-Super8Pro H743"
+	// Boards using a STM32H723 MCU
+    // NB: Make sure the member names are unique over all boards types
+	Super8Pro_H743 = "Fly-Super8Pro H743"
 }
 
 export type STMBoardTypes = STM32F4BoardType | STM32H723BoardType | STM32H743BoardType

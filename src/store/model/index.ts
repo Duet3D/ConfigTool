@@ -530,8 +530,8 @@ export default class ConfigModel extends ObjectModel {
 			case STM32F4BoardType.FlyCDYv2:
 			case STM32F4BoardType.FlyCDYv3:
 			case STM32F4BoardType.FlyE3:
-			case STM32H723BoardType.Super8Pro:
-			case STM32H743BoardType.Super8Pro:
+			case STM32H723BoardType.Super8Pro_H723:
+			case STM32H743BoardType.Super8Pro_H743:
 			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
 			case BoardType.Duet2SBC:
