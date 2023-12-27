@@ -79,7 +79,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 			model.boardType = BoardType.Duet3Mini5PlusEthernet;
 			break;
 		case LegacyBoardType.FlyCDYv2:
-			model.boardType = STM32F4BoardType.FlyCDYv2;
+			model.boardType = STM32F4BoardType.Fly_CDYv2;
 			break;
 		default:
 			const _exhaustiveCheck: never = boardType;

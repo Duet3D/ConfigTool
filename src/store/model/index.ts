@@ -527,12 +527,12 @@ export default class ConfigModel extends ObjectModel {
 				// These boards do not support any direct-connect expansion boards
 				this.configTool.expansionBoard = null;
 				break;
-			case STM32F4BoardType.FlyCDYv2:
-			case STM32F4BoardType.FlyCDYv3:
-			case STM32F4BoardType.FlyE3:
+			case STM32F4BoardType.Fly_CDYv2:
+			case STM32F4BoardType.Fly_CDYv3:
+			case STM32F4BoardType.Fly_E3:
 			case STM32F4BoardType.BTT_GTR_V1:
-			case STM32H723BoardType.Super8Pro_H723:
-			case STM32H743BoardType.Super8Pro_H743:
+			case STM32H723BoardType.Fly_Super8Pro_H723:
+			case STM32H743BoardType.Fly_Super8Pro_H743:
 			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
 			case BoardType.Duet2SBC:

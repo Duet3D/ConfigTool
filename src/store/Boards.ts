@@ -802,7 +802,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: 'PD_15',
 		}
 	},
-	[STM32F4BoardType.FlyCDYv2]: {
+	[STM32F4BoardType.Fly_CDYv2]: {
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -929,7 +929,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: 'PD_15',
 		}
 	},
-	[STM32F4BoardType.FlyCDYv3]: {
+	[STM32F4BoardType.Fly_CDYv3]: {
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -1056,7 +1056,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: 'PD_15',
 		}
 	},
-	[STM32F4BoardType.FlyE3]: {
+	[STM32F4BoardType.Fly_E3]: {
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -1183,7 +1183,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: '',
 		}
 	},
-	[STM32H723BoardType.Super8Pro_H723]: {  // FIXME: Set the correct definition values
+	[STM32H723BoardType.Fly_Super8Pro_H723]: {  // FIXME: Set the correct definition values
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
@@ -1310,7 +1310,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			neopixel: 'PF_8',
 		}
 	},
-	[STM32H743BoardType.Super8Pro_H743]: {  // FIXME: Set the correct definition values
+	[STM32H743BoardType.Fly_Super8Pro_H743]: {  // FIXME: Set the correct definition values
 		displayDotstarPort: null,
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
