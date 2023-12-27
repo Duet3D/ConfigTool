@@ -54,7 +54,54 @@
 				<check-input label="Configure WiFi" title="Check this option to configure a WiFi connection"
 							 v-model="configureWifi"
 							 :preset="presetWifiInterface?.state !== NetworkInterfaceState.disabled" />
-
+				<!-- ESP module -->
+				<template v-if="configureWifi && boardHasOnBoardEspSupport()">
+				<div class="row ms-3 mt-2">An ESP module is present on-board and will be used. No further pins configuration is needed.</div>
+				</template>
+				<template v-else-if="configureWifi">
+					<div v-if="boardHasEsp32Support()" class="row ms-3 mt-2">
+						<check-input label="Enable Network via ESP32" title="Check this to enable network via ESP32 module"
+									 :disabled="isESP8266"
+									 v-model="isESP32"
+									 :preset="store.preset.configTool.networkEspType === ConfigNetworkEspType.esp32" />
+					</div>
+					<div v-if="boardHasEsp8266Support()" class="row ms-3 mt-2">
+						<check-input label="Enable Network via ESP8266" title="Check this to enable network via ESP8266 module"
+									 :disabled="isESP32"
+									 v-model="isESP8266"
+									 :preset="store.preset.configTool.networkEspType === ConfigNetworkEspType.esp8266" />
+					</div>
+					<!-- ESP module pins settings-->
+					<div v-if="isESP32 || isESP8266" class="row ms-5 mt-2">
+						<div class="row">
+							<div class="col-2">
+								<text-input label="espDataReadyPin" title="This is the pin to be used in board.txt for 8266wifi.espDataReadyPin" :max-length="8"
+											v-model="espDataReadyPin" :required="false" />
+							</div>
+							<div class="col-2">
+								<text-input label="TfrReadyPin" title="This is the pin to be used in board.txt for 8266wifi.TfrReadyPin" :max-length="8"
+											v-model="espTfrReadyPin" :required="false" />
+							</div>
+							<div class="col-2">
+								<text-input label="espResetPin" title="This is the pin to be used in board.txt for 8266wifi.espResetPin" :max-length="8"
+											v-model="espResetPin" :required="false" />
+							</div>
+							<div class="col-2">
+								<text-input label="csPin" title="This is the pin to be used in board.txt for 8266wifi.csPin" :max-length="8"
+											v-model="espCsPin" :required="false" />
+							</div>
+							<div class="col-2">
+								<text-input label="serialRxPin" title="This is the pin to be used in board.txt for 8266wifi.serialRxPin and is used to update the ESP from DWC" :max-length="8"
+											v-model="espRxPin" :required="false" />
+							</div>
+							<div class="col-2">
+								<text-input label="serialTxPin" title="This is the pin to be used in board.txt for 8266wifi.serialTxPin and is used to update the ESP from DWC" :max-length="8"
+											v-model="espTxPin" :required="false" />
+							</div>
+						</div>
+					</div>
+				</template>
+				<!-- Wifi settings-->
 				<div v-if="configureWifi" class="row ms-3 mt-2">
 					<div class="col-12 mb-3">
 						<div class="row">
@@ -158,6 +205,7 @@ import IpInput from "@/components/inputs/IpInput.vue";
 
 import { useStore } from "@/store";
 import { ConfigSectionType } from "@/store/sections";
+import { ConfigNetworkEspType } from "@/store/model/ConfigToolModel";
 
 const store = useStore();
 
@@ -205,6 +253,152 @@ const dhcpWifi = computed({
 	}
 });
 
+const isESP32 = computed<boolean>({
+	get() { 
+		return store.data.configTool.networkEspType === ConfigNetworkEspType.esp32
+	},
+	set(value) {
+		if(value) {
+			store.data.configTool.networkEspType = ConfigNetworkEspType.esp32;
+		} else {
+			store.data.configTool.networkEspType = ConfigNetworkEspType.none;
+		}
+	}
+});
+
+const isESP8266 = computed<boolean>({
+	get() {
+		return store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266
+	},
+	set(value) {
+		if(value) {
+			store.data.configTool.networkEspType = ConfigNetworkEspType.esp8266;
+		} else {
+			store.data.configTool.networkEspType = ConfigNetworkEspType.none;
+		}
+	}
+});
+
+const espDataReadyPin = computed({
+	get: () => {
+		if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+			return store.data.boardDefinition?.stm?.esp32.dataReadyPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp32.dataReadyPin;
+		} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+			return store.data.boardDefinition?.stm?.esp8266.dataReadyPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp8266.dataReadyPin;
+		}
+	},
+	set(value) {
+		if (store.data.boardDefinition !== null && store.data.boardDefinition.stm !== null){
+			const newValue = value.trim() === "" ? 'NoPin' : value.trim();
+			if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+				store.data.boardDefinition.stm.esp32.dataReadyPin = newValue;
+			} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+				store.data.boardDefinition.stm.esp8266.dataReadyPin = newValue;
+			}
+		}
+	}
+});
+
+const espTfrReadyPin = computed({
+	get: () => {
+		if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+			return store.data.boardDefinition?.stm?.esp32.tfrReadyPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp32.tfrReadyPin;
+		} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+			return store.data.boardDefinition?.stm?.esp8266.tfrReadyPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp8266.tfrReadyPin;
+		}
+	},
+	set(value) {
+		if (store.data.boardDefinition !== null && store.data.boardDefinition.stm !== null){
+			const newValue = value.trim() === "" ? 'NoPin' : value.trim();
+			if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+				store.data.boardDefinition.stm.esp32.tfrReadyPin = newValue;
+			} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+				store.data.boardDefinition.stm.esp8266.tfrReadyPin = newValue;
+			}
+		}
+	}
+});
+
+const espResetPin = computed({
+	get: () => {
+		if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+			return store.data.boardDefinition?.stm?.esp32.resetPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp32.resetPin;
+		} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+			return store.data.boardDefinition?.stm?.esp8266.resetPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp8266.resetPin;
+		}
+	},
+	set(value) {
+		if (store.data.boardDefinition !== null && store.data.boardDefinition.stm !== null){
+			const newValue = value.trim() === "" ? 'NoPin' : value.trim();
+			if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+				store.data.boardDefinition.stm.esp32.resetPin = newValue;
+			} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+				store.data.boardDefinition.stm.esp8266.resetPin = newValue;
+			}
+		}
+	}
+});
+
+const espCsPin = computed({
+	get: () => {
+		if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+			return store.data.boardDefinition?.stm?.esp32.csPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp32.csPin;
+		} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+			return store.data.boardDefinition?.stm?.esp8266.csPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp8266.csPin;
+		}
+	},
+	set(value) {
+		if (store.data.boardDefinition !== null && store.data.boardDefinition.stm !== null){
+			const newValue = value.trim() === "" ? 'NoPin' : value.trim();
+			if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+				store.data.boardDefinition.stm.esp32.csPin = newValue;
+			} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+				store.data.boardDefinition.stm.esp8266.csPin = newValue;
+			}
+		}
+	}
+});
+
+const espRxPin = computed({
+	get: () => {
+		if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+			return store.data.boardDefinition?.stm?.esp32.rxPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp32.rxPin;
+		} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+			return store.data.boardDefinition?.stm?.esp8266.rxPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp8266.rxPin;
+		}
+	},
+	set(value) {
+		if (store.data.boardDefinition !== null && store.data.boardDefinition.stm !== null){
+			const newValue = value.trim() === "" ? 'NoPin' : value.trim();
+			if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+				store.data.boardDefinition.stm.esp32.rxPin = newValue;
+			} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+				store.data.boardDefinition.stm.esp8266.rxPin = newValue;
+			}
+		}
+	}
+});
+
+const espTxPin = computed({
+	get: () => {
+		if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+			return store.data.boardDefinition?.stm?.esp32.txPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp32.txPin;
+		} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+			return store.data.boardDefinition?.stm?.esp8266.txPin === null ? 'NoPin' : store.data.boardDefinition?.stm?.esp8266.txPin;
+		}
+	},
+	set(value) {
+		if (store.data.boardDefinition !== null && store.data.boardDefinition.stm !== null){
+			const newValue = value.trim() === "" ? 'NoPin' : value.trim();
+			if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp32) {
+				store.data.boardDefinition.stm.esp32.txPin = newValue;
+			} else if (store.data.configTool.networkEspType === ConfigNetworkEspType.esp8266) {
+				store.data.boardDefinition.stm.esp8266.txPin = newValue;
+			}
+		}
+	}
+});
+
 // Protocols
 function isProtocolEnabled(protocol: NetworkProtocol) {
 	for (const iface of store.data.network.interfaces) {
@@ -232,5 +426,24 @@ function setProtocolEnabled(protocol: NetworkProtocol, enabled: boolean) {
 			iface.activeProtocols.delete(protocol);
 		}
 	}
+}
+
+function boardHasEspSupport(){
+	return boardHasEsp32Support() || boardHasEsp8266Support();
+}
+
+function boardHasEsp32Support(){
+	return store.data.boardDefinition?.stm?.esp32.onboard || 
+		   store.data.boardDefinition?.stm?.esp32.module;
+}
+
+function boardHasEsp8266Support(){
+	return store.data.boardDefinition?.stm?.esp8266.onboard || 
+		   store.data.boardDefinition?.stm?.esp8266.module;
+}
+
+function boardHasOnBoardEspSupport(){
+	return store.data.boardDefinition?.stm?.esp32.onboard === true || 
+		   store.data.boardDefinition?.stm?.esp8266.onboard === true;
 }
 </script>

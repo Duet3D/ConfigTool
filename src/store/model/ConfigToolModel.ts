@@ -104,6 +104,12 @@ export class ConfigWiFi extends ModelObject {
 	psk: string = "";
 }
 
+export enum ConfigNetworkEspType {
+	none = "none",
+	esp32 = "esp32",
+	esp8266 = "esp8266"
+}
+
 export class ConfigToolModel extends ModelObject {
 	version: number = 1;
 
@@ -124,6 +130,7 @@ export class ConfigToolModel extends ModelObject {
 	homingSpeedSlow: number = 6;
 	readonly laser: ConfigLaserModel = new ConfigLaserModel();
 	name: string | null = null;
+	networkEspType: ConfigNetworkEspType = ConfigNetworkEspType.none;
 	orthogonalDistance: number = 85;
 	panelDueChecksum: boolean = false;
 	panelDueBaudRate: number = 57600;

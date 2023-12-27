@@ -3,6 +3,7 @@ import type { BoardDescriptor } from "@/store/Boards";
 export enum STM32F4BoardType {
 	// Boards using a STM32F4 MCU
     // NB: Make sure the member names are unique over all boards types
+    BTT_GTR_V1 = "BTT GTR V1.0",
 	FlyCDYv2 = "Fly-CDYv2",
     FlyCDYv3 = "Fly-CDYv3",
     FlyE3 = "Fly-E3"
@@ -48,14 +49,13 @@ export interface STMBoard {
 export interface STM_ESP_config {
     onboard: boolean;
     module: boolean;
-    espDataReadyPin: string | null;
-    TfrReadyPin: string | null;
-    espResetPin: string | null;
-    CSPin: string | null;
-    serialRxPin: string | null;
-    serialTxPin: string | null;
+    dataReadyPin: string | null;
+    tfrReadyPin: string | null;
+    resetPin: string | null;
+    csPin: string | null;
+    rxPin: string | null;
+    txPin: string | null;
     firmware: string | null;
-    requiresRXTX: boolean;
 }
 
 export interface STM_SBC_config {
