@@ -14,16 +14,20 @@
 				<table class="table table-striped table-smart-drivers mb-0">
 					<colgroup>
 						<col style="width: auto;">
+						<col style="width: 15%;">
+						<col style="width: 15%;">
 						<col style="width: 20%;">
-						<col style="width: 20%;">
-						<col style="width: 20%;">
-						<col style="width: 20%;">
+						<col style="width: 16%;">
+						<col style="width: 15%;">
 						<col style="width: 20%;">
 					</colgroup>
 					<thead>
 						<tr>
 							<th class="text-center">
 								Driver
+							</th>
+							<th>
+								Type
 							</th>
 							<th>
 								Direction
@@ -46,6 +50,11 @@
 						<tr v-for="driver in smartDrivers">
 							<td class="text-center align-middle">
 								{{ driver.id }}
+							</td>
+							<td>
+								<select-input title="Type of this driver. This is unapplicable for on-board drivers" :required="false"
+											  v-model="driver.type" :options="driverTypeOptions" :preset="ConfigDriverType.none"
+												:disabled="((typeof store.data.boardDefinition.stm === 'undefined') || (store.data.boardDefinition.stm.stepper.onBoard !== null))" />
 							</td>
 							<td>
 								<select-input title="Movement direction of this driver" :required="false"
@@ -221,7 +230,7 @@ import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 
 import { useStore } from "@/store";
-import { ConfigDriver, ConfigDriverClosedLoopEncoderType, ConfigDriverMode } from "@/store/model/ConfigDriver";
+import { ConfigDriver, ConfigDriverClosedLoopEncoderType, ConfigDriverMode, ConfigDriverType } from "@/store/model/ConfigDriver";
 import { ExpansionBoards, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 import { ConfigSectionType } from "@/store/sections";
 
@@ -236,6 +245,37 @@ const directionOptions: Array<SelectOption> = [
 	{
 		text: "Backwards",
 		value: false
+	}
+];
+
+const driverTypeOptions: Array<SelectOption> = [
+	{
+		text: "None",
+		value: ConfigDriverType.none
+	},
+	{
+		text: "StepDir",
+		value: ConfigDriverType.stepDir
+	},
+	{
+		text: "TMC2208",
+		value: ConfigDriverType.tmc2208
+	},
+	{
+		text: "TMC2209",
+		value: ConfigDriverType.tmc2209
+	},
+	{
+		text: "TMC2240",
+		value: ConfigDriverType.tmc2240
+	},
+	{
+		text: "TMC2660",
+		value: ConfigDriverType.tmc2660
+	},
+	{
+		text: "TMC5160",
+		value: ConfigDriverType.tmc5160
 	}
 ];
 

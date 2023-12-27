@@ -100,13 +100,29 @@ export interface STM_SBC_config {
 }
 
 export interface STM_driver_config {
-    driver: string | null;
-    smart: boolean;
-    TMC5160: boolean;
-    TMC5160SPI: string | null;
-    TMC5160Pins: string | null;
-    TMC5160CS: Array<string> | null;
-    diag: Array<string> | null;
+    /**
+     * onBoard: Define the on-board drivers. Set it to null if the board doesn't have any.
+     * This is used to set stepper.DriverType in board.txt
+     */
+    onBoard: string | null;
+
+    /**
+     * spiChannel: SPI channel used for communication between the MCU and the drivers.
+     * This is used to set stepper.spiChannel in board.txt
+     */
+    spiChannel: number | null;
+
+    /**
+     * spiPins: Definition of the pins used for SPI communication between the MCU and the drivers.
+     * Pins order should be ['SCK', 'MISO', 'MOSI']
+     * This is used to set SPIx.pins in board.txt
+     */
+    spiPins: Array<string> | null;
+
+    /**
+     * diagPins: 
+     */
+    diagPins: Array<string> | null;
 }
 
 export interface STM_screen_config {
