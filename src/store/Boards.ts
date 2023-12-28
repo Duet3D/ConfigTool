@@ -796,7 +796,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 				auxRX: 'PA_10',
 				auxTX: 'PA_9',
 			},
-			serialAmount: '2',
+			serialAmount: 2,
 			neopixel: 'PD_15',
 		}
 	},
@@ -881,7 +881,6 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			board: 'fly_cdyv2',
 			statusPin: null,
 			type: 'STM32F4',
-			blPorts: ['servo0'],
 			esp8266: {
 				onboard: true,
 				module: false,
@@ -920,7 +919,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 				auxRX: 'PA_10',
 				auxTX: 'PA_9',
 			},
-			serialAmount: '2',
+			serialAmount: 2,
 			neopixel: 'PD_15',
 		}
 	},
@@ -1005,7 +1004,6 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			board: 'fly_cdyv3',
 			statusPin: null,
 			type: 'STM32F4',
-			blPorts: ['servo0'],
 			esp8266: {
 				onboard: false,
 				module: false,
@@ -1044,7 +1042,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 				auxRX: 'PA_10',
 				auxTX: 'PA_9',
 			},
-			serialAmount: '2',
+			serialAmount: 2,
 			neopixel: 'PD_15',
 		}
 	},
@@ -1129,7 +1127,6 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			board: 'fly_e3',
 			statusPin: null,
 			type: 'STM32F4',
-			blPorts: ['servo0'],
 			esp8266: {
 				onboard: true,
 				module: false,
@@ -1168,8 +1165,8 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 				auxRX: 'PA_10',
 				auxTX: 'PA_9',
 			},
-			serialAmount: '2',
-			neopixel: '',
+			serialAmount: 2,
+			neopixel: null,
 		}
 	},
 	[STM32H723BoardType.Fly_Super8Pro_H723]: {  // FIXME: Set the correct definition values
@@ -1253,7 +1250,6 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			board: 'fly_super8h7',
 			statusPin: null,
 			type: 'STM32H7',
-			blPorts: ['servo0'],
 			esp8266: {
 				onboard: false,
 				module: false,
@@ -1292,7 +1288,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 				auxRX: 'PA_10',
 				auxTX: 'PA_9',
 			},
-			serialAmount: '2',
+			serialAmount: 2,
 			neopixel: 'PF_8',
 		}
 	},
@@ -1377,7 +1373,6 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			board: 'fly_super8h7',
 			statusPin: null,
 			type: 'STM32H7',
-			blPorts: ['servo0'],
 			esp8266: {
 				onboard: false,
 				module: false,
@@ -1416,7 +1411,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 				auxRX: 'PA_10',
 				auxTX: 'PA_9',
 			},
-			serialAmount: '2',
+			serialAmount: 2,
 			neopixel: 'PF_8',
 		}
 	}

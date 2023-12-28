@@ -32,18 +32,62 @@ export interface STMBoardDescriptor extends BoardDescriptor {
 }
 
 export interface STMBoard {
+    /**
+     * board: Board identifier.
+     * This is used to set 'board' in board.txt
+     */
     board: string;
+
+    /**
+     * statusPin: LED blinks to indicate Platform is spinning or other diagnostic
+     * This is used to set 'leds.diagnostic' in board.txt
+     */
     statusPin: string | null;
+
+    /**
+     * Type of MCU
+     */
     type: string;
-    blPorts: Array<string> | null;
+
+    /**
+     * esp8266: Settings for Wi-Fi using an ESP8266
+     */
     esp8266: STM_ESP_config;
+
+    /**
+     * esp32: Settings for Wi-Fi using an ESP32
+     */
     esp32: STM_ESP_config;
+
+    /**
+     * SBC mode settings
+     */
     sbc: STM_SBC_config;
+
+    /**
+     * firmwareStandaloneFile:
+     */
     firmwareStandaloneFile: string;
+
+    /**
+     * Stepper drivers settings
+     */
     stepper: STM_driver_config;
+
+    /**
+     * Screen settings
+     */
     screen: STM_screen_config;
-    serialAmount: string;
-    neopixel: string;
+
+    /**
+     * serialAmount:
+     */
+    serialAmount: number;
+
+    /**
+     * neopixel:
+     */
+    neopixel: string | null;
 }
 
 export interface STM_ESP_config {
