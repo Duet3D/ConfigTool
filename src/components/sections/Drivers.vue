@@ -54,7 +54,7 @@
 							<td>
 								<select-input title="Type of this driver. This is unapplicable for on-board drivers" :required="false"
 											  v-model="driver.type" :options="driverTypeOptions" :preset="ConfigDriverType.none"
-												:disabled="((typeof store.data.boardDefinition.stm === 'undefined') || (store.data.boardDefinition.stm.stepper.onBoard !== null))" />
+												:disabled="(!!store.data.boardDefinition?.stm?.stepper.driverType)" />
 							</td>
 							<td>
 								<select-input title="Movement direction of this driver" :required="false"
