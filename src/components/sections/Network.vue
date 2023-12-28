@@ -50,7 +50,7 @@
 			<div v-if="lanInterface && wifiInterface" class="mt-3"></div>
 
 			<!-- WiFi -->
-			<div v-if="wifiInterface" class="col-12">
+			<div v-if="wifiInterface && !sbcModeEnabled" class="col-12">
 				<check-input label="Configure WiFi" title="Check this option to configure a WiFi connection"
 							 v-model="configureWifi"
 							 :preset="presetWifiInterface?.state !== NetworkInterfaceState.disabled" />
@@ -427,6 +427,8 @@ function setProtocolEnabled(protocol: NetworkProtocol, enabled: boolean) {
 		}
 	}
 }
+
+const sbcModeEnabled = computed(() => !!store.data.sbc);
 
 function boardHasEspSupport(){
 	return boardHasEsp32Support() || boardHasEsp8266Support();

@@ -221,7 +221,7 @@ const board = computed({
 const boardPreset = computed(() => store.preset.boardType as string);
 
 // Misc
-const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC);
+const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC || !!store.data.boardDefinition?.stm?.sbc.support);
 const supportsAutoSave = computed(() => !!store.data.boardDefinition?.objectModelBoard.vIn);
 
 // Machine Mode

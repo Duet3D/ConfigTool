@@ -97,6 +97,8 @@ export interface STM_SBC_config {
     support: boolean;
     onboard: boolean;
     firmware: string | null;
+    tfrReadyPin: string | null;
+    csPin?: string | null;
 }
 
 export interface STM_driver_config {

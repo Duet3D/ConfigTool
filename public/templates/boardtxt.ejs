@@ -87,3 +87,11 @@ stepper.stepPins = {<%- model.boardDefinition.stm.stepper.stepPins.join() -%>}
 <% if (!!model.boardDefinition.stm.stepper.directionPins) { -%>
 stepper.directionPins = {<%- model.boardDefinition.stm.stepper.directionPins.join() -%>}
 <% } -%>
+
+<% if (!!model.sbc) { -%>
+// SBC
+sbc.TfrReadyPin = <%- model.boardDefinition.stm.sbc.tfrReadyPin -%>
+<% if (!!model.boardDefinition.stm.sbc.csPin) { -%>
+sbc.csPin = model.boardDefinition.stm.sbc.csPin
+<% } -%>
+<% } -%>

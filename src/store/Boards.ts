@@ -783,6 +783,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 				support: true,
 				onboard: false,
 				firmware: null,
+				tfrReadyPin: 'PB_10',
 			},
 			firmwareStandaloneFile: 'firmware-stm32f4-wifi',
 			stepper: {
