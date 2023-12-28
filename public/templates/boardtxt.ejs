@@ -21,6 +21,10 @@ board = <%- stm.board %>
 //Comment out or set to NoPin if not wanted.
 leds.diagnostic = <%- getPin(stm.statusPin) %>
 
+<% if (!!model.boardDefinition.ports.thermistor) { -%>
+heat.tempSensePins = {<%- model.boardDefinition.ports.thermistor.join() -%>}
+<% } -%>
+
 <%_ if (stm.esp32.onboard) { -%>
 // WiFi pins
 8266wifi.espDataReadyPin = <%- getPin(stm.esp32.dataReadyPin) %>
