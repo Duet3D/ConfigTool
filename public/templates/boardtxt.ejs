@@ -2,6 +2,10 @@
 getPin = function(value) {
     return (value === null || !value) ? "NoPin" : value
 }
+
+isSensorlessActiveForAxis = function(axisId) {
+    return (model.sensors.endstops[axisId]?.type === 'motorStallAny' || model.sensors.endstops[axisId]?.type === 'motorStallIndividual')
+}
 %>
 
 // Board Hardware configuration file for <%- objectModelBoard.name %>
@@ -94,8 +98,24 @@ stepper.directionPins = {<%- model.boardDefinition.stm.stepper.directionPins.joi
 
 <% if (!!model.sbc) { -%>
 // SBC
-sbc.TfrReadyPin = <%- model.boardDefinition.stm.sbc.tfrReadyPin -%>
+sbc.TfrReadyPin = <%- model.boardDefinition.stm.sbc.tfrReadyPin %>
 <% if (!!model.boardDefinition.stm.sbc.csPin) { -%>
-sbc.csPin = model.boardDefinition.stm.sbc.csPin
+sbc.csPin = <%- model.boardDefinition.stm.sbc.csPin %>
 <% } -%>
 <% } -%>
+
+// Sensorless settings
+<%
+let TmcDiagPins = Array(model.boardDefinition.numDrivers).fill('NoPin');
+for (var axisId=0; axisId < model.move.axes.length; axisId++) {
+    if (isSensorlessActiveForAxis(axisId)) {
+        model.move.axes[axisId].drivers.forEach(function (driver) {
+            if (driver.board == 0) {
+                // Only define the TmcDiagPins where sensorless homing is intended to be used
+                TmcDiagPins[driver.driver] = model.boardDefinition.stm.stepper.tmcDiagPins[driver.driver];
+            }
+        });
+    }
+}
+-%>
+stepper.TmcDiagPins = {<%- TmcDiagPins.join() -%>}
