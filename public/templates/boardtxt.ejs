@@ -86,6 +86,9 @@ SPI<%- model.boardDefinition.stm.stepper.spiChannel -%>.pins = {<%- model.boardD
 <% } -%>
 <% } -%>
 <% } -%>
+<% if (!!model.boardDefinition.stm.stepper.tmcUartPins) { -%>
+stepper.TmcUartPins = {<%- model.boardDefinition.stm.stepper.tmcUartPins.join() -%>}
+<% } -%>
 <% if (!!model.boardDefinition.stm.stepper.enablePins) { -%>
 stepper.enablePins = {<%- model.boardDefinition.stm.stepper.enablePins.join() -%>}
 <% } -%>
