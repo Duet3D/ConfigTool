@@ -786,10 +786,10 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			},
 			firmwareStandaloneFile: 'firmware-stm32f4-wifi',
 			stepper: {
-				onBoard: null,
+				driverType: null,
 				spiChannel: null,
 				spiPins: null,
-				diagPins: ['PC_7', 'PC_6', 'PD_11', 'PD_10', 'PB_10', 'PB_11'],
+				tmcDiagPins: ['PC_7', 'PC_6', 'PD_11', 'PD_10', 'PB_10', 'PB_11'],
 			},
 			screen: {
 				auxRX: 'PA_10',
@@ -910,10 +910,10 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			},
 			firmwareStandaloneFile: 'firmware-stm32f4-wifi',
 			stepper: {
-				onBoard: null,
+				driverType: null,
 				spiChannel: 2,
 				spiPins: null,
-				diagPins: ['PC_7', 'PC_6', 'PD_11', 'PD_10', 'PB_10', 'PB_11'],
+				tmcDiagPins: ['PC_7', 'PC_6', 'PD_11', 'PD_10', 'PB_10', 'PB_11'],
 			},
 			screen: {
 				auxRX: 'PA_10',
@@ -1034,10 +1034,10 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			},
 			firmwareStandaloneFile: 'firmware-stm32f4-wifi',
 			stepper: {
-				onBoard: null,
+				driverType: null,
 				spiChannel: 2,
 				spiPins: null,
-				diagPins: ['PC_7', 'PC_6', 'PD_11', 'PD_10', 'PB_10', 'PB_11'],
+				tmcDiagPins: ['PC_7', 'PC_6', 'PD_11', 'PD_10', 'PB_10', 'PB_11'],
 			},
 			screen: {
 				auxRX: 'PA_10',
@@ -1158,10 +1158,10 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			},
 			firmwareStandaloneFile: 'firmware-stm32f4-wifi',
 			stepper: {
-				onBoard: null,
+				driverType: null,
 				spiChannel: 2,
 				spiPins: null,
-				diagPins: ['PA_2', 'PA_1', 'PC_5'],
+				tmcDiagPins: ['PA_2', 'PA_1', 'PC_5'],
 			},
 			screen: {
 				auxRX: 'PA_10',
@@ -1282,10 +1282,10 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			},
 			firmwareStandaloneFile: 'firmware-stm32h7-wifi',
 			stepper: {
-				onBoard: null,
+				driverType: null,
 				spiChannel: 2,
 				spiPins: null,
-				diagPins: [`PG_12`, `PG_11`, `PG_10`, `PG_9`, `PD_7`, `PD_6`, `PA_8`, `PF_3`],
+				tmcDiagPins: [`PG_12`, `PG_11`, `PG_10`, `PG_9`, `PD_7`, `PD_6`, `PA_8`, `PF_3`],
 			},
 			screen: {
 				auxRX: 'PA_10',
@@ -1406,10 +1406,10 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			},
 			firmwareStandaloneFile: 'firmware-stm32h7-wifi',
 			stepper: {
-				onBoard: null,
+				driverType: null,
 				spiChannel: 2,
 				spiPins: null,
-				diagPins: [`PG_12`, `PG_11`, `PG_10`, `PG_9`, `PD_7`, `PD_6`, `PA_8`, `PF_3`],
+				tmcDiagPins: [`PG_12`, `PG_11`, `PG_10`, `PG_9`, `PD_7`, `PD_6`, `PA_8`, `PF_3`],
 			},
 			screen: {
 				auxRX: 'PA_10',

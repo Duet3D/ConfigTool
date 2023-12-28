@@ -101,10 +101,10 @@ export interface STM_SBC_config {
 
 export interface STM_driver_config {
     /**
-     * onBoard: Define the on-board drivers. Set it to null if the board doesn't have any.
+     * driverType: Define the on-board drivers. Set it to null if the board doesn't have any.
      * This is used to set stepper.DriverType in board.txt
      */
-    onBoard: string | null;
+    driverType : Array<string> | null;
 
     /**
      * spiChannel: SPI channel used for communication between the MCU and the drivers.
@@ -120,9 +120,35 @@ export interface STM_driver_config {
     spiPins: Array<string> | null;
 
     /**
-     * diagPins: 
+     * tmcDiagPins: Definition of the MCU pins connected to the diag pin of the TMC drivers
+     * and that can be used for sensorless homing/stall detection.
+     * This is used to set stepper.TmcDiagPins in board.txt
+     * The pins in stepper.TmcDiagPins should only be set where sensorless homing is intended to be used.
+     * "NoPin" should be used otherwise.
      */
-    diagPins: Array<string> | null;
+    tmcDiagPins: Array<string> | null;
+
+    /**
+     * tmcUartPins: Definition of the MCU pins connected to the CS/UART pin of the TMC drivers
+     * and used for communication in UART mode.
+     * This is used to set stepper.TmcUartPins in board.txt
+     */
+    tmcUartPins?: Array<string> | null;
+
+    /**
+     * enablePins:
+     */
+    enablePins?: Array<string> | null;
+
+    /**
+     * stepPins:
+     */
+    stepPins?: Array<string> | null;
+
+    /**
+     * directionPins:
+     */
+    directionPins?: Array<string> | null;
 }
 
 export interface STM_screen_config {

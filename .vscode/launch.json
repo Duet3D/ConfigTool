@@ -13,7 +13,7 @@
             // See https://stackoverflow.com/a/55505708
             // You must first quit all running instances of Chrome, 
             // because it's not possible to put a running Chrome user profile into debug mode
-            "userDataDir": false
+            //"userDataDir": false
         },
         {
             "name": "NPM dev",

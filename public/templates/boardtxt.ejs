@@ -28,7 +28,7 @@ leds.diagnostic = <%- getPin(stm.statusPin) %>
 8266wifi.espResetPin = <%- getPin(stm.esp32.resetPin) %>
 8266wifi.csPin = <%- getPin(stm.esp32.csPin) %>
 // ESP32 RX/TX Settings (used to update WiFi firmware)
-8266wifi.serialRxTxPins = { <%- getPin(stm.esp32.rxPin) -%>, <%- getPin(stm.esp32.txPin) -%> }
+8266wifi.serialRxTxPins = {<%- getPin(stm.esp32.rxPin) -%>,<%- getPin(stm.esp32.txPin) -%>}
 <%_ } else if (stm.esp8266.onboard) { -%>
 // WiFi pins
 8266wifi.espDataReadyPin = <%- getPin(stm.esp8266.dataReadyPin) %>
@@ -36,7 +36,7 @@ leds.diagnostic = <%- getPin(stm.statusPin) %>
 8266wifi.espResetPin = <%- getPin(stm.esp8266.resetPin) %>
 8266wifi.csPin = <%- getPin(stm.esp8266.csPin) %>
 // ESP32 RX/TX Settings (used to update WiFi firmware)
-8266wifi.serialRxTxPins = { <%- getPin(stm.esp8266.rxPin) -%>, <%- getPin(stm.esp8266.txPin) -%> }
+8266wifi.serialRxTxPins = {<%- getPin(stm.esp8266.rxPin) -%>,<%- getPin(stm.esp8266.txPin) -%>}
 <% } else if (stm.esp32.module && model.configTool.networkEspType === "esp32") { -%>
 // WiFi pins
 8266wifi.espDataReadyPin = <%- getPin(stm.esp32.dataReadyPin) %>
@@ -44,7 +44,7 @@ leds.diagnostic = <%- getPin(stm.statusPin) %>
 8266wifi.espResetPin = <%- getPin(stm.esp32.resetPin) %>
 8266wifi.csPin = <%- getPin(stm.esp32.csPin) %>
 // ESP32 RX/TX Settings (used to update WiFi firmware)
-8266wifi.serialRxTxPins = { <%- getPin(stm.esp32.rxPin) -%>, <%- getPin(stm.esp32.txPin) -%> }
+8266wifi.serialRxTxPins = {<%- getPin(stm.esp32.rxPin) -%>,<%- getPin(stm.esp32.txPin) -%>}
 <%_ } else if (stm.esp8266.module && model.configTool.networkEspType === "esp8266") { -%>
 // WiFi pins
 8266wifi.espDataReadyPin = <%- getPin(stm.esp8266.dataReadyPin) %>
@@ -52,14 +52,14 @@ leds.diagnostic = <%- getPin(stm.statusPin) %>
 8266wifi.espResetPin = <%- getPin(stm.esp8266.resetPin) %>
 8266wifi.csPin = <%- getPin(stm.esp8266.csPin) %>
 // ESP32 RX/TX Settings (used to update WiFi firmware)
-8266wifi.serialRxTxPins = { <%- getPin(stm.esp8266.rxPin) -%>, <%- getPin(stm.esp8266.txPin) -%> }
+8266wifi.serialRxTxPins = {<%- getPin(stm.esp8266.rxPin) -%>,<%- getPin(stm.esp8266.txPin) -%>}
 <% } -%>
 
-<% if (model.boardDefinition.hasSmartDrivers === true) { -%>
 // Drivers
+<% if (model.boardDefinition.hasSmartDrivers === true) { -%>
 stepper.numSmartDrivers = <%- model.boardDefinition.numDrivers %>
 <%
-if (model.boardDefinition.stm.stepper.onBoard === null) {
+if (model.boardDefinition.stm.stepper.driverType === null) {
 var driverTypes = "{" 
 for (var i=0; i < model.boardDefinition.numDrivers;  i++) {
     if(i > 0 ) { driverTypes += ","; }
@@ -69,7 +69,7 @@ driverTypes += "}";
 -%>
 stepper.DriverType = <%- driverTypes %>
 <% } else { -%>
-stepper.DriverType = <%- model.boardDefinition.stm.stepper.onBoard %>
+stepper.DriverType = {<%- model.boardDefinition.stm.stepper.driverType.join() -%>}
 <% } -%>
 <% if (model.boardDefinition.stm.stepper.spiChannel !== null) { -%>
 stepper.spiChannel = <%- model.boardDefinition.stm.stepper.spiChannel %>
@@ -77,4 +77,13 @@ stepper.spiChannel = <%- model.boardDefinition.stm.stepper.spiChannel %>
 SPI<%- model.boardDefinition.stm.stepper.spiChannel -%>.pins = {<%- model.boardDefinition.stm.stepper.spiPins.join() -%>}
 <% } -%>
 <% } -%>
+<% } -%>
+<% if (!!model.boardDefinition.stm.stepper.enablePins) { -%>
+stepper.enablePins = {<%- model.boardDefinition.stm.stepper.enablePins.join() -%>}
+<% } -%>
+<% if (!!model.boardDefinition.stm.stepper.stepPins) { -%>
+stepper.stepPins = {<%- model.boardDefinition.stm.stepper.stepPins.join() -%>}
+<% } -%>
+<% if (!!model.boardDefinition.stm.stepper.directionPins) { -%>
+stepper.directionPins = {<%- model.boardDefinition.stm.stepper.directionPins.join() -%>}
 <% } -%>
