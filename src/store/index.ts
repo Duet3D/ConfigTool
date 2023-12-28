@@ -230,6 +230,7 @@ defaultTemplate.configTool.assignPort("out0", ConfigPortFunction.heater, 0);		//
 defaultTemplate.configTool.assignPort("out1", ConfigPortFunction.heater, 1);		// Nozzle heater
 defaultTemplate.configTool.assignPort("out3", ConfigPortFunction.fan, 0);			// Nozzle fan
 defaultTemplate.configTool.assignPort("out4", ConfigPortFunction.fan, 1);			// Nozzle thermostatic fan
+defaultTemplate.configTool.enableSTMBoards = true;
 
 export const useStore = defineStore({
     id: "model",
