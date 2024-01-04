@@ -196,11 +196,11 @@ function getEndstopTypeOptions(axis: StoreState<Axis>): Array<SelectOption> {
 	// SG support depends on the corresponding expansion/main board
 	if (!store.data.boards.some(board => !store.data.getBoardDefinition(board.canAddress)?.hasSmartDrivers)) {
 		options.push({
-			text: "Singe Motor Load Detection",
+			text: "Single Motor Load Detection",
 			value: EndstopType.motorStallAny
 		});
 		options.push({
-			text: "Multple Motor Load Detection",
+			text: "Multiple Motor Load Detection",
 			value: EndstopType.motorStallIndividual
 		});
 	}

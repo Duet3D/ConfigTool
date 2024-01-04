@@ -7,7 +7,7 @@
 		<input type="number" :id="id" class="form-control" :class="validationClass" v-bind="$attrs" :min="props.min"
 			   :max="props.max" :step="props.step" :disabled="props.disabled" :required="props.required"
 			   :data-unit="unit" v-preset="(props.preset != null) ? props.preset * props.factor : null"
-			   :value="props.modelValue * props.factor" @change="onChange" @input="onInput">
+			   :value="(props.modelValue != null) ? props.modelValue * props.factor : null" @change="onChange" @input="onInput">
 		<span v-if="!!props.unit && !props.hideUnit" class="input-group-text">
 			<slot name="unit">
 				{{ props.unit }}
@@ -59,7 +59,7 @@ export interface NumberInputProps {
 	/**
 	 * Current value
 	 */
-	modelValue: number,
+	modelValue: number | null,
 
 	/**
 	 * Preset value (if applicable)
@@ -115,7 +115,7 @@ const id = `number-${++numInstances}`;
 // Validation
 const validationClass = computed<string | null>(() => {
 	if (!props.disabled && props.required) {
-		return (props.valid &&
+		return (props.valid && (props.modelValue != null) &&
 				!isNaN(props.modelValue) && isFinite(props.modelValue) &&
 				(props.min === undefined || props.modelValue * props.factor >= props.min) &&
 				(props.max === undefined || props.modelValue * props.factor <= props.max)) ? "is-valid" : "is-invalid";

@@ -10,7 +10,7 @@
 		<input :id="id" class="form-control" :class="props.disabled ? '' : (isFinite(props.firstValue!) ? 'is-valid' : 'is-invalid')"
 			   type="number" :disabled="disabled" required :min="props.min"
 			   :max="(!props.disabled && props.isRange && setTwoNumbers) ? props.secondValue! : props.max" :step="props.step"
-			   :value="props.firstValue ?? NaN" v-preset="firstPreset" :data-unit="props.unit" :title="props.firstTitle"
+			   :value="props.firstValue ?? null" v-preset="firstPreset" :data-unit="props.unit" :title="props.firstTitle"
 			   @input="onFirstInput">
 		<template v-if="setTwoNumbers">
 			<span class="input-group-text">
@@ -18,7 +18,7 @@
 			</span>
 			<input class="form-control" :class="props.disabled ? '' : (isFinite(props.secondValue!) ? 'is-valid' : 'is-invalid')" type="number"
 				   required :disabled="disabled" :min="(!props.disabled && props.isRange) ? props.firstValue! : props.min" :max="props.max"
-				   :step="props.step" :value="props.secondValue ?? NaN" v-preset="secondPreset" :data-unit="props.unit"
+				   :step="props.step" :value="props.secondValue ?? null" v-preset="secondPreset" :data-unit="props.unit"
 				   :title="props.secondTitle" @input="onSecondInput">
 		</template>
 		<span v-if="props.unit" class="input-group-text">
