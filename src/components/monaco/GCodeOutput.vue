@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import * as monaco from "monaco-editor";
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 
 import { useStore } from "@/store";

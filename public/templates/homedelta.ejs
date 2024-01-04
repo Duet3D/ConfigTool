@@ -22,7 +22,7 @@ var homedHeight = <%- model.move.kinematics.homedHeight + 5 %> ; set homed heigh
         }
         
         if (canHome) {
-            const highEndstops = model.sensors[0].highEnd;
+            const highEndstops = model.sensors.endstops[0].highEnd;
             let homingSpeeds = [10, 5];
             if (model.move.axes[0].drivers.length > 0) {
                 const firstDriver = model.configTool.drivers.find(driver => driver.id.equals(model.move.axes[0].drivers[0]));
@@ -32,7 +32,7 @@ var homedHeight = <%- model.move.kinematics.homedHeight + 5 %> ; set homed heigh
             }
             const fastHomingSpeed = model.configTool.delta.slowHoming ? homingSpeeds[0] * 0.1 : homingSpeeds[0];
             const slowHomingSpeed = model.configTool.delta.slowHoming ? Math.min(fastHomingSpeed, homingSpeeds[1]) : homingSpeeds[1];
-            const zProbe = model.configTool.sensors.probes.find(probe => probe !== null), travelSpeed = zProbe ? zProbe.travelSpeed : 6000;
+            const zProbe = model.sensors.probes.find(probe => probe !== null), travelSpeed = zProbe ? zProbe.travelSpeed : 6000;
 
             if (model.configTool.delta.slowHoming) { -%>
 ;*** Slow homing has been configured. Change F<%- fastHomingSpeed * 60 %> to F<%- homingSpeeds[0] * 60 %> below when your configuration is working

@@ -62,7 +62,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		ports: {
 			[PortType.analogIn]: ["io2.in"],
 			[PortType.fan]: ["out2", "out3", "out4", "out5", "out6+laser+vfd"],
-			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
+			[PortType.fanTacho]: ["out2.tach", "out3.tach", "out4.tach"],
 			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
 			[PortType.gpInInterrupt]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.gpOut]: ["io0.out", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
@@ -142,7 +142,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		ports: {
 			[PortType.analogIn]: ["io2.in"],
 			[PortType.fan]: ["out2", "out3", "out4", "out5", "out6+laser+vfd"],
-			[PortType.fanTacho]: ["out2.tach", "out4.tach"],
+			[PortType.fanTacho]: ["out2.tach", "out3.tach", "out4.tach"],
 			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
 			[PortType.gpInInterrupt]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.gpOut]: ["io0.in", "io1.out", "io2.out", "io3.out", "io4.out+pson"],
