@@ -71,7 +71,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
-			[PortType.uart]: ["usb", "io1.in+io1.out"]
+			[PortType.uart]: ["usb", "io0.in+io0.out"]
 		},
 
 		displayDotstarPort: "io3.out",
@@ -151,7 +151,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
-			[PortType.uart]: ["usb", "io1.in+io1.out"]
+			[PortType.uart]: ["usb", "io0.in+io0.out"]
 		},
 
 		displayDotstarPort: "io3.out",
