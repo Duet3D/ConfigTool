@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { AnalogSensorType, DriverId, EndstopType, initObject, ProbeType } from "@duet3d/objectmodel";
+import { AnalogSensorType, EndstopType, ProbeType } from "@duet3d/objectmodel";
 import { computed, ref, watch } from "vue";
 
 import NumberInput from "@/components/inputs/NumberInput.vue";
@@ -338,7 +338,7 @@ const ports = computed(() => {
 
 	// Filter ports according to their capabilities
 	for (const port of store.data.configTool.ports) {
-		if ((props.board !== undefined && props.function !== ConfigPortFunction.endstop && !port.equalsBoard(props.board)) ||
+		if ((props.board !== undefined && !port.equalsBoard(props.board)) ||
 			(mustBeOnMainboard && !port.equalsBoard(0))) {
 			continue;
 		}
@@ -415,7 +415,7 @@ const port = computed<string | null>({
 	get() {
 		let secondaryIndex = 0;
 		for (const port of store.data.configTool.ports) {
-			if (port.function === props.function && (props.board === undefined || props.function === ConfigPortFunction.endstop || port.equalsBoard(props.board)) && port.index === props.index) {
+			if (port.function === props.function && (props.board === undefined || port.equalsBoard(props.board)) && port.index === props.index) {
 				if (props.secondaryIndex !== null) {
 					if (props.secondaryIndex !== secondaryIndex) {
 						secondaryIndex++;
@@ -431,7 +431,7 @@ const port = computed<string | null>({
 		// Free previous selection
 		let secondaryIndex = 0;
 		for (const port of store.data.configTool.ports) {
-			if (port.function === props.function && (props.board === undefined || props.function === ConfigPortFunction.endstop || port.equalsBoard(props.board)) && port.index === props.index) {
+			if (port.function === props.function && (props.board === undefined || port.equalsBoard(props.board)) && port.index === props.index) {
 				if (props.secondaryIndex !== null) {
 					if (props.secondaryIndex !== secondaryIndex) {
 						secondaryIndex++;
@@ -464,7 +464,7 @@ const port = computed<string | null>({
 const presetPort = computed<string | null>(() => {
 	let secondaryIndex = 0;
 	for (const port of store.preset.configTool.ports) {
-		if (port.function === props.function && (props.board === undefined || props.function === ConfigPortFunction.endstop || port.equalsBoard(props.board)) && port.index === props.index) {
+		if (port.function === props.function && (props.board === undefined || port.equalsBoard(props.board)) && port.index === props.index) {
 			if (props.secondaryIndex !== null) {
 				if (props.secondaryIndex !== secondaryIndex) {
 					secondaryIndex++;
@@ -485,13 +485,9 @@ const disabled = computed(() => {
 
 	switch (props.function) {
 		case ConfigPortFunction.endstop:
-			// Endstop selection is only possible if the corresponding driver is set to EndstopType.InputPin
-			if (props.board !== undefined) {
-				const expectedDriver = initObject(DriverId, { board: props.board, driver: props.index });
-				const axisIndex = store.data.move.axes.findIndex(axis => axis.drivers.some(axisDriver => axisDriver.equals(expectedDriver)));
-				if (axisIndex >= 0 && axisIndex < store.data.sensors.endstops.length && store.data.sensors.endstops[axisIndex] !== null) {
-					return store.data.sensors.endstops[axisIndex]!.type !== EndstopType.InputPin;
-				}
+			// Endstop selection is only possible if the corresponding endstop type is set to EndstopType.InputPin
+			if (props.index >= 0 && props.index < store.data.sensors.endstops.length && store.data.sensors.endstops[props.index] !== null) {
+				return store.data.sensors.endstops[props.index]!.type !== EndstopType.InputPin;
 			}
 			return true;
 		case ConfigPortFunction.probeIn:
