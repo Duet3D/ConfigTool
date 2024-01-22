@@ -19,7 +19,7 @@
         for (const driver of axis.drivers) {
             const board = model.boards.find(board => board.canAddress === driver.board);
             if (board) {
-                const boardDefinition = getExpansionBoardDefinition(board);
+                const boardDefinition = (board.canAddress > 0) ? getExpansionBoardDefinition(board) : getBoardDefinition(model);
                 if (boardDefinition?.hasSmartDrivers) {
                     currents[axis.letter] = axis.current;
                     break;
