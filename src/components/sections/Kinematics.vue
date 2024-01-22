@@ -409,7 +409,7 @@ function setKinematics(value: KinematicsName) {
 		for (const extruder of store.data.move.extruders) {
 			if (extruder.stepsPerMm === 420) { extruder.stepsPerMm = 663; }
 			if (extruder.jerk === 2) { extruder.jerk = 20; }
-			if (extruder.acceleration == 250) { extruder.jerk = 1000; }
+			if (extruder.acceleration == 250) { extruder.acceleration = 1000; }
 		}
 		if (store.preset.configTool.name !== null) {
 			for (const presetExtruder of store.preset.move.extruders) {

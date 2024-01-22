@@ -3,7 +3,7 @@
         if (model.move.compensation.probeGrid.radius > 0 && model.move.compensation.probeGrid.spacings[0] > 0) { -%>
 M557 <%- params({
     R: model.move.compensation.probeGrid.radius,
-    S: model.move.compensation.probeGrid.spacings[0]
+    S: model.move.compensation.probeGrid.spacings
 }) %> ; define grid for mesh bed compensation
 <%      }
     } else if (model.move.compensation.probeGrid.maxs[0] > model.move.compensation.probeGrid.mins[0] &&
