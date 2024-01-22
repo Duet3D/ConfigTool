@@ -50,8 +50,8 @@
 											  :preset="getPresetEndstopType(axisIndex)" />
 							</td>
 							<td>
-								<port-input :function="ConfigPortFunction.endstop" :board="configDriver.id.board"
-											:index="configDriver.id.driver"
+								<port-input :function="ConfigPortFunction.endstop"
+											:index="axisIndex" :secondary-index="configDriverIndex"
 											:disabled="getEndstopType(axisIndex) !== EndstopType.InputPin"
 											title="Input port for this endstop" />
 							</td>
@@ -135,12 +135,10 @@ function getEndstopType(index: number): EndstopType | null {
 function setEndstopType(index: number, type: EndstopType | null): void {
 	if (index < store.data.sensors.endstops.length) {
 		if (store.data.sensors.endstops[index]?.type === EndstopType.InputPin) {
-			for (const driver of store.data.move.axes[index].drivers) {
-				for (const port of store.data.configTool.ports) {
-					if (port.function === ConfigPortFunction.endstop && port.equalsBoard(driver.board) && port.index === driver.driver) {
-						// Reset mapped endstop ports
-						port.function = null;
-					}
+			for (const port of store.data.configTool.ports) {
+				if (port.function === ConfigPortFunction.endstop && port.index === index) {
+					// Reset mapped endstop ports
+					port.function = null;
 				}
 			}
 		}

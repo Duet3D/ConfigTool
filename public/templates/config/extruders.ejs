@@ -11,7 +11,7 @@
 
         const board = model.boards.find(board => board.canAddress === extruder.driver.board);
         if (board) {
-            const boardDefinition = getExpansionBoardDefinition(board);
+            const boardDefinition = (board.canAddress > 0) ? getExpansionBoardDefinition(board) : getBoardDefinition(model);
             if (boardDefinition?.hasSmartDrivers) {
                 currents.push(extruder.current);
             } else {

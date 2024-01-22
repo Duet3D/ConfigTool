@@ -43,10 +43,11 @@
                 case ProbeType.unfilteredDigital:
                     type = "unfiltered digital";
                     break;
-                case ProbeType.blTouch:                     // BLTouch requires a pull-up resistor
+                case ProbeType.blTouch:
                     type = "BLTouch";
+                    // BLTouch requires a pull-up resistor, which may not be a permanent one on certain boards
                     const inputPort = getPort(ConfigPortFunction.probeIn, probeIndex);
-                    probeConfig.C = escape((inputPort.pullUp || model.getBoardDefinition(inputPort.canBoard)?.hasInputPullUps) ? inputPort.toString() : `^${inputPort.toString()}`);
+                    probeConfig.C = (inputPort.pullUp || model.getBoardDefinition(inputPort.canBoard)?.hasInputPullUps) ? inputPort.toString() : `^${inputPort.toString()}`;
                     break;
                 case zMotorStall:
                     type = "Z motor stall";
@@ -65,6 +66,9 @@ G31 <%- params({
 <%      }
         if (probe.type === ProbeType.blTouch) {
             const servoIndex = getProbeServoIndex(probeIndex); -%>
-M950 S<%- servoIndex %> C<%- getPortString(ConfigPortFunction.probeServo, probeIndex) %> ; create servo #<%- servoIndex %> for BLtouch
+M950 <%- params({
+    S: servoIndex,
+    C: getPortString(ConfigPortFunction.probeServo, probeIndex)
+}) -%> ; create servo #<%- servoIndex %> for BLtouch
 <%      }
     } -%>

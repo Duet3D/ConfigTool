@@ -12,6 +12,7 @@ import type ConfigModel from "./model";
 import { isDefaultCoreKinematics } from "./defaults";
 import { ExpansionBoards, getExpansionBoardDefinition } from "./ExpansionBoards";
 import { useStore } from ".";
+import { getBoardDefinition } from "./Boards";
 
 /**
  * Indent comments in a G-code file
@@ -184,6 +185,7 @@ const renderOptions = {
 
     // Boards
     ExpansionBoards,
+    getBoardDefinition,
     getExpansionBoardDefinition,
 
     // Config

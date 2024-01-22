@@ -356,7 +356,7 @@ function getCurrent(driver: ConfigDriver) {
 		}
 	}
 
-	return NaN;
+	return null;
 }
 
 function setCurrent(driver: ConfigDriver, value: number) {

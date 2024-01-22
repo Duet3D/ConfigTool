@@ -72,9 +72,6 @@ import ProgressIcon, { ProgressState } from "@/components/ProgressIcon.vue";
 
 const store = useStore();
 
-// FIXME This needs to be updated in the future
-const latestFirmwareVersion = "3.5.0-beta.4";
-
 // Template list
 interface TemplateItem {
 	name: string;
@@ -122,8 +119,7 @@ async function downloadRRF(): Promise<Array<File>> {
 		for (const board of store.data.boards) {
 			// Download firmware file
 			if (board.firmwareFileName !== null) {
-				// TODO add dynamic firmware version support
-				const response = await fetch(`/assets/RepRapFirmware-${latestFirmwareVersion}/${board.firmwareFileName}`);
+				const response = await fetch(`/assets/RepRapFirmware/${board.firmwareFileName}`);
 				if (!response.ok) {
 					throw new Error(`Failed to download ${board.firmwareFileName}: ${response.status} ${response.statusText}`);
 				}
@@ -134,9 +130,7 @@ async function downloadRRF(): Promise<Array<File>> {
 
 			// Download IAP file only for the mainboard
 			if (!board.canAddress && board.iapFileNameSD !== null) {
-				// Download SD IAP file
-				// TODO add dynamic firmware version support
-				const response = await fetch(`/assets/RepRapFirmware-${latestFirmwareVersion}/${board.iapFileNameSD}`);
+				const response = await fetch(`/assets/RepRapFirmware/${board.iapFileNameSD}`);
 				if (!response.ok) {
 					throw new Error(`Failed to download ${board.iapFileNameSD}: ${response.status} ${response.statusText}`);
 				}
@@ -159,8 +153,7 @@ async function downloadDWC(): Promise<Array<File>> {
 	dwcState.value = ProgressState.busy;
 	try {
 		// Download DWC bundle
-		// TODO add dynamic DWC version support
-		const response = await fetch(`/assets/DuetWebControl-v${latestFirmwareVersion}.zip`);
+		const response = await fetch(`/assets/DuetWebControl.zip`);
 		const content = await response.blob();
 
 		// Unpack it

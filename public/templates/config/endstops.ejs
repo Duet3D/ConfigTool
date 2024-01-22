@@ -9,7 +9,7 @@
 
             switch (endstop.type) {
                 case EndstopType.InputPin:
-                    endstopConfig.P = axis.drivers.map(axisDriver => getPortString(ConfigPortFunction.endstop, axisDriver.driver, undefined, axisDriver.board)).join('+');
+                    endstopConfig.P = getCombinedPortString(ConfigPortFunction.endstop, i);
                     endstopConfig.S = 1;
                     break;
                 case EndstopType.ZProbeAsEndstop:

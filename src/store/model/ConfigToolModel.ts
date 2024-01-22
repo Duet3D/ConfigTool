@@ -31,7 +31,7 @@ export class ConfigDeltaProperties extends ModelObject {
 	factors: number = 6;
 	slowHoming: boolean = false;
 	lowDiveHeight: boolean = true;
-	probeRadius: number = 85;
+	probeRadius: number = 85;			// This is just for calibration and independent from move.compensation.probeGrid.radius
 	readonly probePoints: ModelCollection<ConfigDeltaProbePoint> = new ModelCollection(ConfigDeltaProbePoint);
 	homeFirst: boolean = true;
 

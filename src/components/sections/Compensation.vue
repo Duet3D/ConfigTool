@@ -22,7 +22,8 @@
 								  :preset="store.preset.configTool.delta.factors" />
 				</div>
 				<div class="col-3">
-					<number-input label="Probing Radius" title="Radius of the outer probe points" v-model="probeRadius"
+					<number-input label="Probing Radius" title="Radius of the outer probe points"
+								  v-model="probeRadius"
 								  :preset="store.preset.configTool.delta.probeRadius" unit="mm" />
 				</div>
 				<div class="col">
@@ -63,14 +64,12 @@
 							</td>
 							<td>
 								<number-input title="X coordinate of this probe point"
-											  :min="-store.data.configTool.delta.probeRadius"
-											  :max="store.data.configTool.delta.probeRadius" :step="0.01" lazy small
+											  :min="-probeRadius" :max="probeRadius" :step="0.01" lazy small
 											  v-model="point.x" unit="mm" />
 							</td>
 							<td>
 								<number-input title="Y coordinate of this probe point"
-											  :min="-store.data.configTool.delta.probeRadius"
-											  :max="store.data.configTool.delta.probeRadius" :step="0.01" lazy small
+											  :min="-probeRadius" :max="probeRadius" :step="0.01" lazy small
 											  v-model="point.y" unit="mm" />
 							</td>
 							<td>
@@ -98,8 +97,8 @@
 
 			<div v-if="meshBedCompensation" class="row ms-3 mt-2">
 				<!-- Delta Mesh Options-->
-				<div v-if="showDeltaOptions" class="row g-3">
-					<div class="col-auto">
+				<div v-if="showDeltaOptions" class="row">
+					<div class="col-auto mt-0">
 						<select-input label="First Axis" title="First axis to use for mesh grid compensation"
 									  v-model="store.data.move.compensation.probeGrid.axes[0]" :options="getAxisLetters(0)"
 									  :preset="store.preset.move.compensation.probeGrid.axes[0]" />
@@ -113,24 +112,24 @@
 					<div class="col">
 						<number-input label="Probe Radius"
 									  title="Probe radius of the mesh grid for automatic bed compensation"
-									  v-model="store.data.move.compensation.probeGrid.radius" :min="1"
-									  :max="store.data.move.compensation.probeGrid.maxs[0]" :step="0.1" unit="mm"
-									  :preset="store.preset.move.compensation.probeGrid.mins[0]" />
+									  v-model="store.data.move.compensation.probeGrid.radius"
+									  :min="1" :max="deltaRadius" :step="0.1" unit="mm"
+									  :preset="store.preset.move.compensation.probeGrid.radius" />
 					</div>
 
 					<div class="col">
 						<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[0]} Direction`"
 									  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[0]} axis between the probe points for automatic bed compensation`"
-									  v-model="store.data.move.compensation.probeGrid.spacings[0]" :min="1"
-									  :max="store.data.move.compensation.probeGrid.maxs[0] - store.data.move.compensation.probeGrid.mins[0]"
+									  v-model="store.data.move.compensation.probeGrid.spacings[0]"
+									  :min="1" :max="store.data.move.compensation.probeGrid.radius"
 									  :step="0.1" unit="mm"
 									  :preset="store.preset.move.compensation.probeGrid.spacings[0]" />
 					</div>
 					<div class="col">
 						<number-input :label="`Grid Spacing in ${store.data.move.compensation.probeGrid.axes[1]} Direction`"
 									  :title="`Spacing of the ${store.data.move.compensation.probeGrid.axes[1]} axis between the probe points for automatic bed compensation`"
-									  v-model="store.data.move.compensation.probeGrid.spacings[1]" :min="1"
-									  :max="store.data.move.compensation.probeGrid.maxs[1] - store.data.move.compensation.probeGrid.mins[1]"
+									  v-model="store.data.move.compensation.probeGrid.spacings[1]"
+									  :min="1" :max="store.data.move.compensation.probeGrid.radius"
 									  :step="0.1" unit="mm"
 									  :preset="store.preset.move.compensation.probeGrid.spacings[1]" />
 					</div>
@@ -262,6 +261,7 @@ import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.
 
 import { useStore } from "@/store";
 import { DeltaKinematics, ProbeGrid } from "@duet3d/objectmodel";
+import { precise } from "@/utils";
 
 const store = useStore();
 
@@ -356,6 +356,8 @@ const calibrationFactors = computed({
 	}
 });
 
+const deltaRadius = computed(() => (store.data.move.kinematics as DeltaKinematics).deltaRadius);
+
 const probeRadius = computed({
 	get: () => store.data.configTool.delta.probeRadius,
 	set(value) {
@@ -391,7 +393,7 @@ const meshBedCompensation = computed<boolean>({
 			store.data.move.compensation.probeGrid.axes[0] = 'X';
 			store.data.move.compensation.probeGrid.axes[1] = 'Y';
 			if (store.data.isDelta) {
-				store.data.move.compensation.probeGrid.radius = (store.data.move.kinematics as DeltaKinematics).deltaRadius * 0.9;
+				store.data.move.compensation.probeGrid.radius = precise(deltaRadius.value * 0.9, 2);
 			} else {
 				store.data.move.compensation.probeGrid.mins[0] = store.data.move.axes[0].min + 25;
 				store.data.move.compensation.probeGrid.mins[1] = store.data.move.axes[1].min + 25;
