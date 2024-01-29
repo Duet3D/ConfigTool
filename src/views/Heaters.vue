@@ -106,12 +106,12 @@ select {
 						</td>
 						<td class="limit">
 							<b-input-group append="C">
-								<b-form-input :value="heater.temp_limit" @input="updateHeater({ heater: index, tempLimit: parseFloat($event) })" v-preset="getPresetHeater(index).temp_limit" title="Maximum allowed temperature of this heater before a temperature fault is raised" min="-273" max="1999" type="number" step="any" required></b-form-input>
+								<b-form-input :value="heater.temp_limit" @input="updateHeater({ heater: index, tempLimit: parseFloat($event) })" v-preset="getPresetHeater(index) ? getPresetHeater(index).temp_limit : undefined" title="Maximum allowed temperature of this heater before a temperature fault is raised" min="-273" max="1999" type="number" step="any" required></b-form-input>
 							</b-input-group>
 						</td>
 						<td class="pwm">
 							<b-input-group append="%">
-								<b-form-input :value="heater.scale_factor" @input="updateHeater({ heater: index, pwmLimit: parseFloat($event) })" v-preset="getPresetHeater(index).scale_factor" title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters" :disabled="isPwmLimitDisabled(index)" min="0" max="100" type="number" step="any" required></b-form-input>
+								<b-form-input :value="heater.scale_factor" @input="updateHeater({ heater: index, pwmLimit: parseFloat($event) })" v-preset="getPresetHeater(index) ? getPresetHeater(index).scale_factor : undefined" title="Final PID heater scale factor. You can change this to compensate voltage and heater resistance parameters" :disabled="isPwmLimitDisabled(index)" min="0" max="100" type="number" step="any" required></b-form-input>
 							</b-input-group>
 						</td>
 						<td class="thermistor">
@@ -212,7 +212,8 @@ export default {
 			return (heater >= this.preset.heaters.length) ? this.preset.heaters.length - 1 : heater;
 		},
 		getPresetHeater(heater) {
-			return this.preset.heaters[this.getPresetHeaterIndex(heater)];
+			const presetHeaterIndex = this.getPresetHeaterIndex(heater);
+			return (presetHeaterIndex < this.preset.heaters.length) ? this.preset.heaters[presetHeaterIndex] : undefined;
 		},
 		isPwmLimitDisabled(heater) {
 			return ((this.template.bed.present && !this.template.bed.use_pid && this.template.bed.heater === heater) ||

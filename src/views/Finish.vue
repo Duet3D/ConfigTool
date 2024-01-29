@@ -9,7 +9,7 @@ textarea {
 
 <template>
 	<b-container>
-		<b-card v-show="standalone" header="Extra Files" class="mt-3">
+		<b-card v-show="standalone && firmware >= 2" header="Extra Files" class="mt-3">
 			<b-checkbox v-model="addDWC">Get the latest stable Duet Web Control version</b-checkbox>
 			<b-checkbox v-model="addRRF">Get the latest stable RepRapFirmware version</b-checkbox>
 		</b-card>
@@ -33,6 +33,7 @@ export default {
 	computed: mapFields({
 		addDWC: 'addDWC',
 		addRRF: 'addRRF',
+		firmware: 'template.firmware',
 		panelDue: 'template.panelDue',
 		customSettings: 'template.custom_settings',
 		standalone: 'template.standalone'

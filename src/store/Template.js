@@ -733,7 +733,7 @@ export default {
 					if (skipHeater) {
 						heater = null;
 					} else {
-						if (isSlowHeater) {
+						if (isSlowHeater && preset.heaters[0] !== null) {
 							heater = Object.assign({}, preset.heaters[0]);
 						} else {
 							const presetIndex = Math.min(preset.heaters.length - 1, 1);

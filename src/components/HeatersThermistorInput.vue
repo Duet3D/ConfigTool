@@ -7,9 +7,9 @@
 <template>
 	<div>
 		<b-input-group :append="unit" v-if="unit !== undefined">
-			<b-form-input ref="input" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
+			<b-form-input ref="input" v-model.number="value" v-preset="presetHeater ? presetHeater[parameter] : undefined" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 		</b-input-group>
-		<b-form-input v-else ref="input" v-model.number="value" v-preset="presetHeater[parameter]" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
+		<b-form-input v-else ref="input" v-model.number="value" v-preset="presetHeater ? presetHeater[parameter] : undefined" :title="title" :disabled="heater.channel >= 100" :min="min" :max="max" type="number" step="any" required></b-form-input>
 
 		<b-popover v-if="$refs.input" :target="$refs.input" :show.sync="popoverShown" placement="right" title="Calculate Heater Parameters" custom-class="min-popover-width" triggers="focus" @show="onShow">
 			<b-form-group label="Thermistor Preset:">
@@ -198,10 +198,7 @@ export default {
 			type: Number,
 			required: true
 		},
-		presetHeater: {
-			type: Object,
-			required: true
-		},
+		presetHeater: Object,
 		min: String,
 		max: String,
 		parameter: {

@@ -202,7 +202,7 @@ export default {
 			this.configLink = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.template));
 
 			// Load latest stable RRF version from GitHub
-			if (this.addRRF && this.template.standalone) {
+			if (this.addRRF && this.template.standalone && this.template.firmware >= 2) {
 				try {
 					// Get GitHub list of releases and assets. Do NOT get drafts and prereleases
 					const releaseInfo = await Compiler.downloadFile('https://api.github.com/repos/dc42/RepRapFirmware/releases', 'json');
@@ -273,7 +273,7 @@ export default {
 			}
 
 			// Load DWC from the server
-			if (this.addDWC && this.template.standalone) {
+			if (this.addDWC && this.template.standalone && this.template.firmware >= 2) {
 				try {
 					// Get GitHub list of releases and assets. Do NOT get drafts and prereleases
 					const releaseInfo = await Compiler.downloadFile('https://api.github.com/repos/chrishamm/DuetWebControl/releases', 'json');

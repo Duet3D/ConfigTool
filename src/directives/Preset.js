@@ -2,19 +2,13 @@ import { VBTooltip } from 'bootstrap-vue/src/directives/tooltip/tooltip.js'
 
 // Get description tooltip and default value
 function getTitle(preset, el, binding, vnode) {
-	// Get default preset if no explicit value is set
-	if (preset === undefined) {
-		if (vnode.data.model) {
-			let expression = vnode.data.model.expression.replace('template', 'preset');
-			if (expression.indexOf('preset') === -1) {
-				expression = 'preset.' + expression;
-			}
-			preset = eval('vnode.context.$store.state.' + expression);
-		} else {
-			console.warn('Failed to get preset, no model binding present');
-			console.warn(el);
-			return 'unknown';
+	// Try to get default preset if no explicit value is set
+	if (preset === undefined && vnode.data.model) {
+		let expression = vnode.data.model.expression.replace('template', 'preset');
+		if (expression.indexOf('preset') === -1) {
+			expression = 'preset.' + expression;
 		}
+		preset = eval('vnode.context.$store.state.' + expression);
 	}
 
 	let unit = '';
@@ -28,17 +22,19 @@ function getTitle(preset, el, binding, vnode) {
 		}
 	}
 
-	let defaultValue;
+	let defaultValue = preset;
 	if (el.tagName === 'SELECT') {
 		for(let i = 0; i < el.options.length; i++) {
 			const option = el.options[i];
 			const value = option.hasOwnProperty('_value') ? option._value : option.value;
 			if (value.constructor === Object) {
 				let equal = true;
-				for(let key in preset) {
-					if (preset[key] != value[key]) {
-						equal = false;
-						break;
+				if (preset) {
+					for (let key in preset) {
+						if (preset[key] != value[key]) {
+							equal = false;
+							break;
+						}
 					}
 				}
 				if (equal) {
@@ -50,7 +46,7 @@ function getTitle(preset, el, binding, vnode) {
 				break;
 			}
 		}
-	} else if (preset === '' && el.tagName === 'INPUT' && el.placeholder !== '') {
+	} else if (!preset && el.tagName === 'INPUT' && el.placeholder !== '') {
 		defaultValue = el.placeholder;
 	} else if (el.classList.contains('btn-group-toggle')) {
 		for(let i = 0; i < el.children.length; i++) {
@@ -58,7 +54,7 @@ function getTitle(preset, el, binding, vnode) {
 			if (child.children.length > 0) {
 				const subChild = child.children[0];
 				if (subChild.tagName === 'INPUT') {
-					if (preset.constructor === Array) {
+					if (preset instanceof Array) {
 						preset.forEach(function(element) {
 							if (element.toString() == subChild.value) {
 								if (defaultValue == undefined) {
@@ -78,9 +74,9 @@ function getTitle(preset, el, binding, vnode) {
 		if (defaultValue == undefined && preset.constructor === Array) {
 			defaultValue = 'None';
 		}
-	} else if (preset.constructor === Boolean) {
+	} else if (typeof preset === "boolean") {
 		defaultValue = preset ? 'Enabled' : 'Disabled';
-	} else {
+	} else if (preset !== undefined) {
 		defaultValue = preset + unit;
 	}
 
@@ -106,7 +102,8 @@ function getTitle(preset, el, binding, vnode) {
 			}
 		}
 	}
-	return title + range + '<br>Default Value: ' + defaultValue;
+
+	return (defaultValue !== undefined) ? title + range + '<br>Default Value: ' + defaultValue : title + range;
 }
 
 export default {
