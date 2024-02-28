@@ -80,7 +80,6 @@
 
 <script setup lang="ts">
 import type { HeaterModel, HeaterModelPID } from "@duet3d/objectmodel";
-import { computed } from "vue";
 
 import BaseDialog from "./BaseDialog.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";

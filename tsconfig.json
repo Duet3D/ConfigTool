@@ -1,20 +1,11 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
-  "compilerOptions": {
-	"baseUrl": ".",
-	"lib": [
-		"DOM",
-		"ES2020"
-	],
-	"paths": {
-	  "@/*": ["./src/*"]
-	},
-	"strict": true
-  },
-  "references": [
-	{
-	  "path": "./tsconfig.vite-config.json"
-	}
-  ]
-}
+	"files": [],
+	"references": [
+	  {
+		"path": "./tsconfig.node.json"
+	  },
+	  {
+		"path": "./tsconfig.app.json"
+	  }
+	]
+  }

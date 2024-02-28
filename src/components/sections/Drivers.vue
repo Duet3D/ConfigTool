@@ -59,7 +59,7 @@
 											  :preset="getPresetCurrent(driver)" />
 							</td>
 							<td>
-								<select-input title="Operation mode of this driver. Defaults to SpreadCycle, may be changed to StealthChop to reduce motor noise"
+								<select-input title="Operation mode of this driver. Defaults to SpreadCycle, depending on the board it may be changed to StealthChop to reduce motor noise"
 											  :required="false" v-model="driver.mode" :options="getDriverModes(driver)"
 											  :preset="ConfigDriverMode.spreadCycle" />
 							</td>
@@ -266,14 +266,17 @@ function getDriverModes(driver: ConfigDriver) {
 		{
 			text: "SpreadCycle",
 			value: ConfigDriverMode.spreadCycle
-		},
-		{
-			text: "StealthChop",
-			value: ConfigDriverMode.stealthChop
 		}
 	];
 
-	if (store.data.getBoardDefinition(driver.id.board)?.hasClosedLoopDrivers) {
+	const boardDefinition = store.data.getBoardDefinition(driver.id.board);
+	if (boardDefinition?.hasStealthChop) {
+		options.push({
+			text: "StealthChop",
+			value: ConfigDriverMode.stealthChop
+		});
+	}
+	if (boardDefinition?.hasClosedLoopDrivers) {
 		options.push({
 			text: "Closed Loop",
 			value: ConfigDriverMode.closedLoop
