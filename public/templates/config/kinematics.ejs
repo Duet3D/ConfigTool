@@ -54,7 +54,7 @@ M666 <%- params({
 }) %> ; endstop adjustments and XY tilt, can be determined using auto calibration as well
 <%  } else if (model.move.kinematics.name === KinematicsName.hangprinter) { -%>
 M669 <%- params({
-    K: 7,
+    K: 6,
     A: model.move.kinematics.anchors[0],
     B: model.move.kinematics.anchors[1],
     C: model.move.kinematics.anchors[2],
