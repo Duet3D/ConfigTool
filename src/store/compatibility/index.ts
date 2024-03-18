@@ -14,6 +14,7 @@ import {
     Heater,
     initObject,
     KinematicsName,
+    ModelSet,
     MoveCompensationType,
     NetworkInterfaceState,
     NetworkProtocol,
@@ -272,7 +273,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 	if (input.probe.pwm_pin !== null) {
 		model.configTool.assignPort(input.probe.pwm_pin, ConfigPortFunction.probeServo, 0);
 	}
-	model.configTool.deployRetractProbes = new Set(input.probe.deploy ? [0] : []);
+	model.configTool.deployRetractProbes = new ModelSet(input.probe.deploy ? [0] : []);
 
 	// General Heater Settings
 	for (let i = 0; i < input.heaters.length; i++) {
