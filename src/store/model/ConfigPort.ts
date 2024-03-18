@@ -1,4 +1,4 @@
-import { ModelObject } from "@duet3d/objectmodel";
+import { ModelObject, ModelSet } from "@duet3d/objectmodel";
 import { PortType } from "../BaseBoard";
 
 /**
@@ -55,7 +55,7 @@ export class ConfigPort extends ModelObject {
 	/**
 	 * Capabilities of this port
 	 */
-	capabilities: Set<PortType> = new Set<PortType>();
+	capabilities: ModelSet<PortType> = new ModelSet<PortType>();
 
 	/**
 	 * CAN address of this port

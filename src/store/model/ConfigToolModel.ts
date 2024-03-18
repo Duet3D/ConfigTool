@@ -1,4 +1,4 @@
-import { initObject, ModelCollection, ModelDictionary, ModelObject } from "@duet3d/objectmodel";
+import { initObject, ModelCollection, ModelDictionary, ModelObject, ModelSet } from "@duet3d/objectmodel";
 
 import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
@@ -114,7 +114,7 @@ export class ConfigToolModel extends ModelObject {
 	configOverride: boolean = false;
 	customSettings: string = "";
 	readonly delta: ConfigDeltaProperties = new ConfigDeltaProperties();
-	deployRetractProbes: Set<number> = new Set();
+	deployRetractProbes: ModelSet<number> = new ModelSet();
 	readonly displayFiles: ConfigDisplayFiles = new ConfigDisplayFiles();
 	readonly drivers: ModelCollection<ConfigDriver> = new ModelCollection(ConfigDriver);
 	expansionBoard: ExpansionBoardType | null = null;
