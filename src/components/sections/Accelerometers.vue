@@ -47,8 +47,8 @@
                         </td>
                         <td>
                             <select-input title="Orientation of the accelerometer board, see docs for further info (I parameter)"
-                                          :options="OrientationOptions"
-                                          v-model="store.data.configTool.accelerometerOrientation" />
+                                          :options="OrientationOptions" :model-value="getAccelerometerOrientation(board)"
+                                          @update:model-value="setAccelerometerOrientation(board, $event)" />
                         </td>
                         <td>
                             <port-input :board="board.canAddress" :function="ConfigPortFunction.accelerometerSpiCs"
@@ -240,6 +240,16 @@ function setAccelerometerModel(board: StoreState<Board>, value: string | null) {
                 port.function = null;
             }
         }
+    }
+}
+
+function getAccelerometerOrientation(board: StoreState<Board>) {
+    return (board.accelerometer !== null) ? board.accelerometer.orientation : 20;
+}
+
+function setAccelerometerOrientation(board: StoreState<Board>, value: number) {
+    if (board.accelerometer !== null) {
+        board.accelerometer.orientation = value;
     }
 }
 </script>
