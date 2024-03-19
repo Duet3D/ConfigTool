@@ -150,7 +150,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
 		},
-		supportsAccelerometer: false,
+		supportsAccelerometer: true,
 		hasBuiltInAccelerometer: true
 	},
 	[ExpansionBoardType.EXP1HCL]: {
