@@ -7,6 +7,7 @@ export enum LegacyBoardType {
 	Duet3MB6HC = "duet3",
 	Duet3Mini5PlusEthernet = "duet3_mini5plus_ethernet",
 	Duet3Mini5PlusWiFi = "duet3_mini5plus_wifi",
+	FlyCDYv2 = "fly_cdyv2"
 }
 
 export const LegacyBoards = [
@@ -217,5 +218,31 @@ export const LegacyBoards = [
 		iapFile: "Duet3_SDiap_Mini5plus.bin",
 		expansionBoards: ["EXP3HC", "TOOL1LC", "EXP1XD", "EXP1HCL"],
 		maxExpansionBoards: 4
+	},
+	{
+		name: LegacyBoardType.FlyCDYv2,
+		caption: "Fly-CDYv2",
+		motorWarningCurrent: 1500,
+		motorLimitCurrent: 2000,
+		seriesResistor: 2200,
+		microstepping: true,
+		microsteppingInterpolation: true,
+		numDrives: 6,
+		heaterPorts: ["bed", "e0heat", "e1heat", "e2heat"],
+		fanPorts: ["fan0","fan1","fan2","laser"],
+		pwmPorts: ["bed", "e0heat", "e1heat", "e2heat","fan0","fan1","fan2","laser","serv0"],
+		gpioPorts: ["xstop","xstopmax","ystop","ystopmax","zstop","zstopmax", "probe"],
+		analogPorts: ["bedtemp", "e0temp", "e1temp", "e2temp"],
+		spiCsPorts: [],
+		hasEthernet: false,
+		hasWiFi: true,
+		hasPowerFailureDetection: true,
+		hasMotorLoadDetection: true,
+		supportsDisplay: true,
+		supports12864: true,
+		firmwareFile: "firmware-stm32f4-wifi",
+		iapFile: "",
+		expansionBoards: [],
+		maxExpansionBoards: 0
 	}
 ]

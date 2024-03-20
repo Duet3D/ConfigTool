@@ -27,6 +27,7 @@ import ConfigModel from "@/store/model";
 
 import { BoardType } from "@/store/Boards";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
+import { STM32F4BoardType } from "@/store/STMBoard";
 
 import type { LegacyPreset } from "@/store/compatibility/LegacyPreset";
 import {
@@ -77,6 +78,9 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 			break;
 		case LegacyBoardType.Duet3Mini5PlusEthernet:
 			model.boardType = BoardType.Duet3Mini5PlusEthernet;
+			break;
+		case LegacyBoardType.FlyCDYv2:
+			model.boardType = STM32F4BoardType.Fly_CDYv2;
 			break;
 		default:
 			const _exhaustiveCheck: never = boardType;

@@ -20,6 +20,9 @@
 		</div>
 		<div class="row">
 			<div class="col-auto mt-3">
+				<check-input label="Enable third-party STM boards maintained by TeamGloomy" @update:model-value="toggleSTMBoards"
+							 title="Enable third-party STM boards maintained by TeamGloomy" v-model="store.data.configTool.enableSTMBoards"
+							 :preset="store.preset.configTool.enableSTMBoards" />
 				<check-input label="Read config-override.g file at end of startup process (provides similar functionality to the EEPROM option in Marlin)"
 							 title="Enable auto-save facility" v-model="store.data.configTool.configOverride"
 							 :preset="store.preset.configTool.configOverride" />
@@ -118,7 +121,7 @@ const SbcModeOptions: Array<SelectOption> = [
 </script>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
@@ -126,7 +129,8 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
 
-import { BoardType, UnsupportedBoardType } from "@/store/Boards";
+import { type BoardTypes, BoardType, UnsupportedBoardType } from "@/store/Boards";
+import { STM32F4BoardType, STM32H723BoardType, STM32H743BoardType } from "@/store/STMBoard";
 import { ConfigSectionType } from "@/store/sections";
 import { useStore } from "@/store";
 
@@ -135,6 +139,9 @@ const store = useStore();
 // Board options
 let boardOptions: Record<string, Array<string | SelectOption>> | Array<string | SelectOption> = {};
 const otherBoards: Array<BoardType | UnsupportedBoardType> = [];
+const STMF4Boards: Array<STM32F4BoardType> = [];
+const STMH723Boards: Array<STM32H723BoardType> = [];
+const STMH743Boards: Array<STM32H743BoardType> = [];
 
 for (let board of Object.values(BoardType)) {
 	const match = /^(Duet \d+)/.exec(board);
@@ -154,7 +161,34 @@ if (Object.keys(boardOptions).length !== 0) {
 		boardOptions["Other boards"] = otherBoards;
 	}
 } else {
-	boardOptions = otherBoards;
+	boardOptions["Other boards"] = otherBoards;
+}
+
+for (let board of Object.values(STM32F4BoardType)) {
+	const groupTitle = "STM32F4";
+	if (!boardOptions[groupTitle]) {
+		boardOptions[groupTitle] = [];
+	}
+	boardOptions[groupTitle].push(board);
+	STMF4Boards.push(board);
+}
+
+for (let board of Object.values(STM32H723BoardType)) {
+	const groupTitle = "STM32H723";
+	if (!boardOptions[groupTitle]) {
+		boardOptions[groupTitle] = [];
+	}
+	boardOptions[groupTitle].push(board);
+	STMH723Boards.push(board);
+}
+
+for (let board of Object.values(STM32H743BoardType)) {
+	const groupTitle = "STM32H743";
+	if (!boardOptions[groupTitle]) {
+		boardOptions[groupTitle] = [];
+	}
+	boardOptions[groupTitle].push(board);
+	STMH743Boards.push(board);
 }
 
 if (Object.keys(UnsupportedBoardType).length !== 0) {
@@ -182,12 +216,12 @@ if (Object.keys(UnsupportedBoardType).length !== 0) {
 // Board selection
 const board = computed({
 	get() { return store.data.boardType as string; },
-	set(value: string) { store.data.boardType = value as BoardType; }
+	set(value: string) { store.data.boardType = value as BoardTypes; }
 });
 const boardPreset = computed(() => store.preset.boardType as string);
 
 // Misc
-const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC);
+const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC || !!store.data.boardDefinition?.stm?.sbc.support);
 const supportsAutoSave = computed(() => !!store.data.boardDefinition?.objectModelBoard.vIn);
 
 // Machine Mode
@@ -208,4 +242,18 @@ const machineModeOptions = computed(() => [
 		value: MachineMode.laser
 	}
 ] as Array<SelectOption>);
+
+// Display STM boards options
+function toggleSTMBoards(checked: boolean) {
+	let stm_groups = ["optgroup-stm32f4", "optgroup-stm32h723", "optgroup-stm32h743"]
+	for (let key in stm_groups) {
+		let element = document.getElementById(stm_groups[key]);
+		if (element === null) { continue };
+		checked ? element.removeAttribute("hidden") : element.setAttribute("hidden", "hidden");
+	}
+}
+
+onMounted(() => {
+	toggleSTMBoards(store.data.configTool.enableSTMBoards);
+});
 </script>
