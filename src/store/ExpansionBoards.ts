@@ -125,9 +125,9 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		hasVrefMonitor: false,
 		motorWarnCurrent: -1,
 		motorMaxCurrent: -1,
-		minVoltage: 12,
-		maxVoltage: 48,
-		numDrivers: 1,
+		minVoltage: 5,
+		maxVoltage: 5,
+		numDrivers: 0,
 		microstepInterpolations: [],
 		objectModelBoard: initObject(Board, {
 			canAddress: 120,

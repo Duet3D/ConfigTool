@@ -49,7 +49,7 @@
                     const inputPort = getPort(ConfigPortFunction.probeIn, probeIndex);
                     probeConfig.C = (inputPort.pullUp || model.getBoardDefinition(inputPort.canBoard)?.hasInputPullUps) ? inputPort.toString() : `^${inputPort.toString()}`;
                     break;
-                case zMotorStall:
+                case ProbeType.motorStall:
                     type = "Z motor stall";
                     break;
             } -%>
