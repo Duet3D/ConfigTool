@@ -1,6 +1,7 @@
 import { Board, initObject } from "@duet3d/objectmodel";
 
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
+import { ConfigDriverClosedLoop, ConfigDriverClosedLoopEncoderType } from "./model/ConfigDriver";
 
 /**
  * Expansion boards supported by the config tool.
@@ -35,6 +36,7 @@ export enum ExpansionBoardType {
  * Descriptor interface for supported expansion boards
  */
 export interface ExpansionBoardDescriptor extends BaseBoardDescriptor {
+	closedLoopConfig: ConfigDriverClosedLoop | null;
 	hasBuiltInAccelerometer: boolean;
 }
 
@@ -45,6 +47,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.EXP3HC]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -82,6 +85,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.EXP1XD]: {
 		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: false,
 		hasStealthChop: false,
@@ -119,6 +123,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.SZP]: {
 		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: false,
 		hasStealthChop: true,
@@ -156,6 +161,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.EXP1HCL]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: true,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -193,6 +199,10 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.M23CL]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: true,
+		closedLoopConfig: initObject(ConfigDriverClosedLoop, {
+			countsPerFullStep: null,
+			encoderType: ConfigDriverClosedLoopEncoderType.magnetic
+		}),
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -230,6 +240,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.TOOL1LC]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -267,6 +278,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.TOOL1RR]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -304,6 +316,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.Mini5plus]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -341,6 +354,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.MB6HC]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -378,6 +392,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.MB6XD]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: false,
 		hasStealthChop: true,
@@ -415,6 +430,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.Duet3Mini2Plus]: {
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: true,
 		hasSmartDrivers: true,
 		hasStealthChop: true,
@@ -448,6 +464,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.DueX5]: {
 		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
 		hasStealthChop: false,
@@ -482,6 +499,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.Duet2ExpansionBreakout]: {
 		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: false,
 		hasSmartDrivers: false,
 		hasStealthChop: false,
@@ -516,6 +534,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.DueX2]: {
 		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
 		hasStealthChop: false,
@@ -550,6 +569,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 	[ExpansionBoardType.Duet2Maestro2Plus]: {
 		hasADCAutoCalibration: false,
 		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
 		hasInputPullUps: false,
 		hasSmartDrivers: true,
 		hasStealthChop: true,

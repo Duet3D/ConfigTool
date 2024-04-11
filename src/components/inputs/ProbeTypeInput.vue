@@ -92,11 +92,11 @@ const probeOptions = computed(() => {
             }
 		]
 	}
-	if (props.index < store.data.sensors.probes.length - 1 || store.data.sensors.probes[props.index] === null) {
-		result["Generic"].push({
+    if (props.index < store.data.sensors.probes.length - 1 || store.data.sensors.probes[props.index] === null) {
+        result["Generic"] = [{
 			text: "Not Present",
 			value: null
-		});
+		}];
 	}
 	return result;
 });
@@ -109,21 +109,22 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
         return (props.probe !== null) ? props.probe.type : null;
     },
     set(value) {
-        // Apply preset if applicable
+        // Apply preset if applicable. Duet 2 needs probe type digital, Duet 3 + expansion only supports unfilteredDigital
         if (typeof value === "string") {
             probePreset.value = value as ProbePresetType;
             switch (probePreset.value) {
                 case ProbePresetType.Switch:
-                    value = ProbeType.digital;
+                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
                     break;
                 case ProbePresetType.SmartProbe:
                     value = ProbeType.analog;
                     break;
                 case ProbePresetType.SmartEffector:
-                    value = ProbeType.digital;
+                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
                     break;
                 default:
                     const _exhaustiveCheck: never = probePreset.value;
+                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
                     value = ProbeType.digital;
                     break;
             }
@@ -144,7 +145,10 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
         } else {
             const probe = store.data.sensors.probes[props.index];
             if (probe === null) {
-                store.data.sensors.probes[props.index] = initObject(Probe, { type: value });
+                store.data.sensors.probes[props.index] = initObject(Probe, {
+                    type: value,
+                    speeds: (value === ProbeType.scanningAnalog) ? [0, 0, 0] : [0, 0]
+                });
             } else {
                 if ((
                         ![ProbeType.analog, ProbeType.dumbModulated, ProbeType.alternateAnalog].includes(probe.type) &&
@@ -182,6 +186,16 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
                             port.function = null;
                         }
                     }
+                }
+
+                if (value === ProbeType.scanningAnalog) {
+                    if (probe.speeds.length === 2) {
+                        // Add a speed value first
+                        probe.speeds.push(2);
+                    }
+                } else if (probe.type === ProbeType.scanningAnalog && probe.speeds.length === 3) {
+                    // Remove last speed value
+                    probe.speeds.splice(2, 1);
                 }
                 probe.type = value;
             }

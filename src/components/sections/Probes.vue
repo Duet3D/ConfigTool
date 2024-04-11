@@ -22,7 +22,8 @@
 				<div class="card-body">
 					<div class="row g-3">
 						<div class="col-3">
-							<probe-type-input :probe="probe" :index="index" :preset="getPresetProbeValue(index, 'type')" />
+							<probe-type-input :probe="probe" :index="index"
+											  :preset="getPresetProbeValue(index, 'type')" />
 						</div>
 						<template v-if="probe !== null">
 							<div class="col-3">
@@ -38,8 +39,8 @@
 											:function="ConfigPortFunction.probeServo" :index="index" />
 							</div>
 							<div class="col-2">
-								<number-input label="Dive Height" title="Dive height of the probe" unit="mm" :min="-10000"
-											  :max="10000" :step="0.01" v-model="probe.diveHeight"
+								<number-input label="Dive Height" title="Dive height of the probe" unit="mm"
+											  :min="-10000" :max="10000" :step="0.01" v-model="probe.diveHeight"
 											  :preset="getPresetProbeValue(index, 'diveHeight')" />
 							</div>
 							<div class="col-2">
@@ -48,13 +49,21 @@
 											  :preset="getPresetProbeValue(index, 'triggerHeight')" />
 							</div>
 							<div class="col-2">
-								<number-input label="Travel Speed" title="Defines how quickly to move between probe points"
-											  unit="mm/s" :min="0.1" :step="1" :factor="1 / 60" v-model="probe.travelSpeed"
+								<number-input label="Travel Speed"
+											  title="Defines how quickly to move between probe points" unit="mm/s"
+											  :min="0.1" :step="1" :factor="1 / 60" v-model="probe.travelSpeed"
 											  :preset="getPresetProbeValue(index, 'travelSpeed')" />
 							</div>
 							<div class="col-4">
 								<homing-speeds-input :probe-speeds="true" :speeds="probe.speeds"
 													 :preset="getPresetProbeValue(index, 'speeds')" />
+							</div>
+							<div v-if="probe.type === ProbeType.scanningAnalog" class="col-2">
+								<number-input label="Mesh Probe Speed"
+											  title="Defines how quickly to move between probe points while probing a mesh"
+											  unit="mm/s" :min="0.1" :step="1" :model-value="probe.speeds[2]"
+											  @update:model-value="probe.speeds[2] = $event"
+											  :preset="getPresetProbeValue(index, 'speeds', 2)" />
 							</div>
 							<div class="col-2">
 								<number-input label="Recovery Time"
@@ -79,7 +88,8 @@
 											  :min="1" :step="1" v-model="probe.maxProbeCount" />
 							</div>
 							<div class="col-2">
-								<number-input label="Tap Tolerance" title="Maximum allowed tolerance between probe attempts"
+								<number-input label="Tap Tolerance"
+											  title="Maximum allowed tolerance between probe attempts"
 											  :disabled="probe.maxProbeCount <= 1" unit="mm" :min="0" :step="0.001"
 											  v-model="probe.tolerance" />
 							</div>
@@ -95,6 +105,10 @@
 							</div>
 						</template>
 					</div>
+				</div>
+				<div v-if="probe?.type === ProbeType.scanningAnalog" class="alert alert-info">
+					<i class="bi-info"></i>
+					ConfigTool only sets up basic parameters for SZPs. Read the <a href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_3_family/Duet_3_Scanning_Z_Probe#connecting-peripherals" target="_blank">docs</a> for further information.
 				</div>
 			</div>
 

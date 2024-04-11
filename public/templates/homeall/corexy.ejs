@@ -4,8 +4,8 @@
     const travelSpeed = zProbe ? zProbe.travelSpeed : 6000;
 
     // Get XYZ(UV) homing properties
-    let xEndstop = false, xHighEnd = false, xFastHomingSpeed = 600, xSlowHomingSpeed = 300;
-    let yEndstop = false, yHighEnd = false, yFastHomingSpeed = 600, ySlowHomingSpeed = 300;
+    let xEndstop = false, xHighEnd = false, yEndstop = false, yHighEnd = false;
+    let xyFastHomingSpeed = 600, xySlowHomingSpeed = 300;
     let zEndstop = false, zHighEnd = false, zFastHomingSpeed = 600, zSlowHomingSpeed = 300;
     let uValid = false, uEndstop = false, uHighEnd = false, uFastHomingSpeed = 600, uSlowHomingSpeed = 300;
     let vValid = false, vEndstop = false, vHighEnd = false, vFastHomingSpeed = 600, vSlowHomingSpeed = 300;
@@ -24,13 +24,11 @@
             if (axis.letter === 'X') {
                 xEndstop = true;
                 xHighEnd = endstop.highEnd;
-                xFastHomingSpeed = homingSpeeds[0] * 60;
-                xSlowHomingSpeed = homingSpeeds[1] * 60;
+                xyFastHomingSpeed = homingSpeeds[0] * 60;
+                xySlowHomingSpeed = homingSpeeds[1] * 60;
             } else if (axis.letter === 'Y') {
                 yEndstop = true;
                 yHighEnd = endstop.highEnd;
-                yFastHomingSpeed = homingSpeeds[0] * 60;
-                ySlowHomingSpeed = homingSpeeds[1] * 60;
             } else if (axis.letter === 'Z' && endstop.type !== EndstopType.ZProbeAsEndstop) {
                 zEndstop = true;
                 zHighEnd = endstop.highEnd;
@@ -50,7 +48,7 @@
         }
     }
 
-    let fastHomingSpeed = Math.min(xFastHomingSpeed, yFastHomingSpeed), slowHomingSpeed = Math.min(xSlowHomingSpeed, ySlowHomingSpeed);
+    let fastHomingSpeed = xyFastHomingSpeed, slowHomingSpeed = xySlowHomingSpeed;
     if (model.move.kinematics.name === KinematicsName.coreXYU) {
         uValid = true;
         fastHomingSpeed = Math.min(fastHomingSpeed, uFastHomingSpeed);
@@ -92,17 +90,17 @@ G1 <%- params({
     U: uValid ? (uHighEnd ? "{var.uTravel}" : "{-var.uTravel}") : undefined,
     V: vValid ? (vHighEnd ? "{var.vTravel}" : "{-var.vTravel}") : undefined,
     F: fastHomingSpeed
-}) %> ; <%- (xFastHomingSpeed !== xSlowHomingSpeed || yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %>
+}) %> ; <%- (xyFastHomingSpeed !== xySlowHomingSpeed) ? "coarse home" : "home" %>
 G1 <%- params({
     H: 1,
     X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
-    F: xFastHomingSpeed
-}) %> ; <%- (xFastHomingSpeed !== xSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
+    F: xyFastHomingSpeed
+}) %> ; <%- (xyFastHomingSpeed !== xySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
 G1 <%- params({
     H: 1,
     Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
-    F: yFastHomingSpeed
-}) %> ; <%- (yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
+    F: xyFastHomingSpeed
+}) %> ; <%- (xyFastHomingSpeed !== xySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
 <%      if (uValid) { -%>
 G1 <%- params({
     H: 1,
@@ -123,8 +121,8 @@ G1 <%- params({
 -%>
 G1 <%- params({
     H: 2,
-    X: (xFastHomingSpeed !== xSlowHomingSpeed) ? (xHighEnd ? -5 : 5) : undefined,
-    Y: (yFastHomingSpeed !== ySlowHomingSpeed) ? (yHighEnd ? -5 : 5) : undefined,
+    X: (xyFastHomingSpeed !== xySlowHomingSpeed) ? (xHighEnd ? -5 : 5) : undefined,
+    Y: (xyFastHomingSpeed !== xySlowHomingSpeed) ? (yHighEnd ? -5 : 5) : undefined,
     U: uValid ? (uHighEnd ? -5 : 5) : undefined,
     V: vValid ? (vHighEnd ? -5 : 5) : undefined,
     F: travelSpeed
@@ -140,12 +138,12 @@ G1 <%- params({
 G1 <%- params({
     H: 1,
     X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
-    F: xSlowHomingSpeed
+    F: xySlowHomingSpeed
 }) %> ; fine home in the <%- xHighEnd ? "+" : "-" %>X direction
 G1 <%- params({
     H: 1,
     Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
-    F: ySlowHomingSpeed
+    F: xySlowHomingSpeed
 }) %> ; fine home in the <%- yHighEnd ? "+" : "-" %>Y direction
 <%          if (uValid) { -%>
 G1 <%- params({

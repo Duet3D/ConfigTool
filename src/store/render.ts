@@ -148,7 +148,6 @@ const renderOptions = {
                         ports.push(stripBoard(port.toString()));
                     }
                     portFound = true;
-                    break;
                 }
             }
             if (!portFound) {

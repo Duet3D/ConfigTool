@@ -9,7 +9,7 @@ export enum ConfigDriverClosedLoopEncoderType {
 
 export class ConfigDriverClosedLoop extends ModelObject {
 	encoderType: ConfigDriverClosedLoopEncoderType = ConfigDriverClosedLoopEncoderType.none;
-	countsPerFullStep: number = 5;
+	countsPerFullStep: number | null = 5;
 }
 
 export class ConfigDriverExternal extends ModelObject {

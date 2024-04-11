@@ -73,6 +73,11 @@
 						</tr>
 					</tbody>
 				</table>
+
+				<div v-if="smartDrivers.some(driver => !hasMotorsMapped(driver))" class="alert alert-info mb-0">
+					<i class="bi-info"></i>
+					If you cannot set up required drivers, map them to axes or extruders first.
+				</div>
 			</template>
 		</card>
 
@@ -195,11 +200,13 @@
 							</td>
 							<td>
 								<select-input title="Encoder type used for closed-loop operation" :required="false"
+											  :disabled="hasBoardFixedClosedLoopSettings(driver.id.board) "
 											  v-model="driver.closedLoop.encoderType" :options="encoderTypeOptions"
 											  :preset="ConfigDriverClosedLoopEncoderType.none" />
 							</td>
 							<td>
-								<number-input title="Encoder counts per full step" :min="1" :step="1"
+								<number-input v-if="driver.closedLoop.countsPerFullStep !== null"
+											  title="Encoder counts per full step" :min="1" :step="1"
 											  :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
 											  v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
 							</td>
@@ -222,8 +229,7 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 
 import { useStore } from "@/store";
 import { ConfigDriver, ConfigDriverClosedLoopEncoderType, ConfigDriverMode } from "@/store/model/ConfigDriver";
-import { ExpansionBoards, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
-import { ConfigSectionType } from "@/store/sections";
+import { ExpansionBoards, getExpansionBoardDefinition, type ExpansionBoardDescriptor } from "@/store/ExpansionBoards";
 
 const store = useStore();
 
@@ -417,4 +423,13 @@ const encoderTypeOptions: Array<SelectOption> = [
 		value: ConfigDriverClosedLoopEncoderType.magnetic
 	}
 ];
+
+function hasBoardFixedClosedLoopSettings(board: number | null) {
+	if (!board) {
+		return false;
+	}
+
+	const boardDefinition = store.data.getBoardDefinition(board) as ExpansionBoardDescriptor | null;
+	return boardDefinition?.closedLoopConfig !== null;
+}
 </script>

@@ -39,7 +39,7 @@
 M669 K<%- kParam %><%- moveCoefficients %> ; configure <%- kinematicsName %> kinematics
 <%  } else if (model.isDelta) { -%>
 M665 <%- params({
-    L: reduce(model.move.kinematics.towers.map(tower => tower.diagnonal)),
+    L: reduce(model.move.kinematics.towers.map(tower => tower.diagonal)),
     R: model.move.kinematics.deltaRadius,
     B: model.move.kinematics.printRadius,
     H: model.move.kinematics.homedHeight

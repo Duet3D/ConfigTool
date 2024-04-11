@@ -223,7 +223,9 @@ export function getSectionTemplates(section?: ConfigSectionType) {
         
         case undefined:
             result.push({ template: "config", data: null });
-            if (store.data.sbc !== null) {
+            if ((store.data.sbc === null && store.data.configTool.wifi.ssid.trim() !== "" && store.data.network.interfaces.some(iface => iface.state !== NetworkInterfaceState.disabled && iface.type === NetworkInterfaceType.wifi)) ||
+                (store.data.sbc !== null))
+            {
                 result.push({ template: "runonce", data: null });
             }
             addDeployRetractProbeTemplates();

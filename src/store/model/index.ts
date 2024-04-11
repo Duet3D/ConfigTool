@@ -162,15 +162,16 @@ export default class ConfigModel extends ObjectModel {
 		}
 
 		const expansionBoardDefinition = ExpansionBoards[boardType];
+		let newExpansionBoard: Board | null = null;
 		if (expansionBoardDefinition.objectModelBoard.canAddress !== null) {
 			const mainBoard = this.boards[0];
 			if (mainBoard.canAddress === null) {
 				throw new Error("Cannot add CAN expansion board to mainboard which does not support CAN");
 			}
 
-			const newExpansionBoard = new Board();
+			newExpansionBoard = new Board();
 			newExpansionBoard.update(expansionBoardDefinition.objectModelBoard);
-			while (this.boards.some(board => board.canAddress === newExpansionBoard.canAddress)) {
+			while (this.boards.some(board => board.canAddress === newExpansionBoard!.canAddress)) {
 				newExpansionBoard.canAddress!++;
 			}
 			this.boards.push(newExpansionBoard);
@@ -179,6 +180,15 @@ export default class ConfigModel extends ObjectModel {
 		this.refreshDrivers();
 		this.refreshPorts();
 		this.refreshSensors();
+
+		if (newExpansionBoard !== null && expansionBoardDefinition.closedLoopConfig !== null) {
+			for (const driver of this.configTool.drivers) {
+				if (driver.id.board === newExpansionBoard.canAddress) {
+					driver.closedLoop.countsPerFullStep = expansionBoardDefinition.closedLoopConfig.countsPerFullStep;
+					driver.closedLoop.encoderType = expansionBoardDefinition.closedLoopConfig.encoderType;
+				}
+			}
+		}
 	}
 
 	/**
