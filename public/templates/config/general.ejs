@@ -1,3 +1,4 @@
+M83 ; set relative extruder positioning
 M550 P<%- escape(model.network.name) -%> ; set hostname
 <%  if (model.configTool.autoSave.enabled) { -%>
 M911 <%- params({
