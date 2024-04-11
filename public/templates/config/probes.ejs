@@ -49,8 +49,11 @@
                     const inputPort = getPort(ConfigPortFunction.probeIn, probeIndex);
                     probeConfig.C = (inputPort.pullUp || model.getBoardDefinition(inputPort.canBoard)?.hasInputPullUps) ? inputPort.toString() : `^${inputPort.toString()}`;
                     break;
-                case ProbeType.motorStall:
+                case ProbeType.zMotorStall:
                     type = "Z motor stall";
+                    break;
+                case ProbeType.scanningAnalog:
+                    type = "scanning";
                     break;
             } -%>
 M558 <%- params(probeConfig) %> ; configure <%- type %> probe via slot #<%- probeIndex %>
