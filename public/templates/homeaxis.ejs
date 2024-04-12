@@ -20,11 +20,14 @@
 
     // Check how the axis is supposed to be homed
     if (endstop) {
-        // Lift Z if not homing Z or if homing using a probe
+        // Increase Z if not homing Z or if homing using a probe
         if (axisLetter !== 'Z' || endstop.type === EndstopType.ZProbeAsEndstop) { -%>
-; lift Z
+; increase Z
 G91 ; relative positioning
-G1 H<%- zLiftCanHitEndstop ? 1 : 2 %> Z<%- diveHeight %> ; move Z relative to current position to avoid dragging nozzle over the bed
+G1 <%- params({
+    H: zLiftCanHitEndstop ? 1 : 2,
+    Z: diveHeight
+}) %> ; move Z relative to current position to avoid dragging nozzle over the bed
 G90 ; absolute positioning
 
 <%      } -%>
@@ -71,9 +74,16 @@ G1 <%- params({
 }) %> ; fine home in the <%- (endstop.highEnd ? "+" : "-") + axisLetter %> direction
 <%          }
 
-            // Lower Z again only if Z isn't being homed
+            // Decrease Z again only if Z isn't being homed
             if (axisLetter !== 'Z') { -%>
-G1 H2 Z<%- -diveHeight %> F<%- travelSpeed %> ; lower Z again
+
+; decrease Z again
+G91 ; relative positioning
+G1 <%- params({
+    Z: -diveHeight,
+    F: travelSpeed
+}) %> ; move Z relative to current position
+G90 ; absolute positioning
 <%          }
         }
     } else {

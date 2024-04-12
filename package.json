@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "3.5.0-rc.4",
+  "version": "3.5.0-rc.4+1",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -38,7 +38,7 @@
     "monaco-editor": "^0.47.0",
     "npm-run-all2": "^6.1.2",
     "pinia": "^2.1.7",
-    "sass": "^1.74.1",
+    "sass": "^1.75.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.8",
     "vue-router": "^4.3.0",

@@ -59,7 +59,7 @@
         slowHomingSpeed = Math.min(slowHomingSpeed, uSlowHomingSpeed, vSlowHomingSpeed);
     }
 -%>
-; lift Z
+; increase Z
 G91 ; relative positioning
 G1 H<%- zEndstop && zHighEnd ? 1 : 2 %> Z<%- diveHeight %> F<%- travelSpeed %> ; move Z relative to current position to avoid dragging nozzle over the bed
 G90 ; absolute positioning
