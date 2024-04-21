@@ -68,7 +68,7 @@
 											  :preset="getPresetCurrent(driver)" />
 							</td>
 							<td>
-								<select-input title="Operation mode of this driver. Defaults to SpreadCycle, may be changed to StealthChop to reduce motor noise"
+								<select-input title="Operation mode of this driver. Defaults to SpreadCycle, depending on the board it may be changed to StealthChop to reduce motor noise"
 											  :required="false" v-model="driver.mode" :options="getDriverModes(driver)"
 											  :preset="ConfigDriverMode.spreadCycle" />
 							</td>
@@ -82,6 +82,11 @@
 						</tr>
 					</tbody>
 				</table>
+
+				<div v-if="smartDrivers.some(driver => !hasMotorsMapped(driver))" class="alert alert-info mb-0">
+					<i class="bi-info"></i>
+					If you cannot set up required drivers, map them to axes or extruders first.
+				</div>
 			</template>
 		</card>
 
@@ -204,11 +209,13 @@
 							</td>
 							<td>
 								<select-input title="Encoder type used for closed-loop operation" :required="false"
+											  :disabled="hasBoardFixedClosedLoopSettings(driver.id.board) "
 											  v-model="driver.closedLoop.encoderType" :options="encoderTypeOptions"
 											  :preset="ConfigDriverClosedLoopEncoderType.none" />
 							</td>
 							<td>
-								<number-input title="Encoder counts per full step" :min="1" :step="1"
+								<number-input v-if="driver.closedLoop.countsPerFullStep !== null"
+											  title="Encoder counts per full step" :min="1" :step="1"
 											  :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
 											  v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
 							</td>
@@ -231,7 +238,7 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 
 import { useStore } from "@/store";
 import { ConfigDriver, ConfigDriverClosedLoopEncoderType, ConfigDriverMode, ConfigDriverType } from "@/store/model/ConfigDriver";
-import { ExpansionBoards, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
+import { ExpansionBoards, getExpansionBoardDefinition, type ExpansionBoardDescriptor } from "@/store/ExpansionBoards";
 import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
@@ -306,14 +313,17 @@ function getDriverModes(driver: ConfigDriver) {
 		{
 			text: "SpreadCycle",
 			value: ConfigDriverMode.spreadCycle
-		},
-		{
-			text: "StealthChop",
-			value: ConfigDriverMode.stealthChop
 		}
 	];
 
-	if (store.data.getBoardDefinition(driver.id.board)?.hasClosedLoopDrivers) {
+	const boardDefinition = store.data.getBoardDefinition(driver.id.board);
+	if (boardDefinition?.hasStealthChop) {
+		options.push({
+			text: "StealthChop",
+			value: ConfigDriverMode.stealthChop
+		});
+	}
+	if (boardDefinition?.hasClosedLoopDrivers) {
 		options.push({
 			text: "Closed Loop",
 			value: ConfigDriverMode.closedLoop
@@ -454,4 +464,13 @@ const encoderTypeOptions: Array<SelectOption> = [
 		value: ConfigDriverClosedLoopEncoderType.magnetic
 	}
 ];
+
+function hasBoardFixedClosedLoopSettings(board: number | null) {
+	if (!board) {
+		return false;
+	}
+
+	const boardDefinition = store.data.getBoardDefinition(board) as ExpansionBoardDescriptor | null;
+	return boardDefinition?.closedLoopConfig !== null;
+}
 </script>

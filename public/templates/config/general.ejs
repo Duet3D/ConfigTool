@@ -1,3 +1,5 @@
+G90 ; absolute coordinates
+M83 ; relative extruder moves
 M550 P<%- escape(model.network.name) -%> ; set hostname
 <%  if (model.configTool.autoSave.enabled) { -%>
 M911 <%- params({

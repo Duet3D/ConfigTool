@@ -338,8 +338,7 @@ const ports = computed(() => {
 
 	// Filter ports according to their capabilities
 	for (const port of store.data.configTool.ports) {
-		if ((props.board !== undefined && !port.equalsBoard(props.board)) ||
-			(mustBeOnMainboard && !port.equalsBoard(0))) {
+		if ((props.board !== undefined && !port.equalsBoard(props.board)) || (mustBeOnMainboard && !port.equalsBoard(0))) {
 			continue;
 		}
 
@@ -527,7 +526,10 @@ const required = computed(() => {
 		return props.required;
 	}
 
-	if (props.function === ConfigPortFunction.probeMod) {
+	if (props.function === ConfigPortFunction.endstop && !props.disabled && props.secondaryIndex != null && props.secondaryIndex > 0) {
+		// An axis can be used with only a single endstop but if there is more than one assigned port, all ports are required. Yet allow it to be unmapped again
+		return (port.value === null) && (store.data.configTool.ports.filter(port => port.function === ConfigPortFunction.endstop && port.index === props.index).length > 1);
+	} else if (props.function === ConfigPortFunction.probeMod) {
 		return (props.index < store.data.sensors.analog.length) && ![ProbeType.digital, ProbeType.unfilteredDigital].includes(store.data.sensors.probes[props.index]!.type);
 	}
 	return ![ConfigPortFunction.fanTacho, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards].includes(props.function);

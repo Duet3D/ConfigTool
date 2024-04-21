@@ -4,7 +4,7 @@
 M955 <%- params({
     P: [board.canAddress ? `${board.canAddress}.0` : 0],
     C: (spiCsPort && intPort) ? `${spiCsPort.toString()}+${intPort.toString()}` : undefined,
-    I: model.configTool.accelerometerOrientation
+    I: board.accelerometer.orientation
 }) %> ; configure accelerometer on board #<%- board.canAddress ?? 0 %>
 <%      }
     } %>

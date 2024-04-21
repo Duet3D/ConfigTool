@@ -1,7 +1,7 @@
 import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter, SBC, NetworkInterfaceType, MachineMode } from "@duet3d/objectmodel";
 
 import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
-import { ConfigDriver } from "@/store/model/ConfigDriver";
+import { ConfigDriver, ConfigDriverMode } from "@/store/model/ConfigDriver";
 import { ConfigToolModel } from "@/store/model/ConfigToolModel";
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
 import { type BoardDescriptors, Boards, BoardType, type BoardTypes, getBoardDefinition, getBoardType } from "@/store/Boards";
@@ -128,6 +128,7 @@ export default class ConfigModel extends ObjectModel {
 				this.boards.splice(boardDefinition.objectModelLimits.boards);
 			}
 			this.boards[0].update(boardDefinition.objectModelBoard);
+			this.limits.update(boardDefinition.objectModelLimits);
 		} else {
 			const newBoard = new Board();
 			newBoard.update(boardDefinition.objectModelBoard);
@@ -163,15 +164,16 @@ export default class ConfigModel extends ObjectModel {
 		}
 
 		const expansionBoardDefinition = ExpansionBoards[boardType];
+		let newExpansionBoard: Board | null = null;
 		if (expansionBoardDefinition.objectModelBoard.canAddress !== null) {
 			const mainBoard = this.boards[0];
 			if (mainBoard.canAddress === null) {
 				throw new Error("Cannot add CAN expansion board to mainboard which does not support CAN");
 			}
 
-			const newExpansionBoard = new Board();
+			newExpansionBoard = new Board();
 			newExpansionBoard.update(expansionBoardDefinition.objectModelBoard);
-			while (this.boards.some(board => board.canAddress === newExpansionBoard.canAddress)) {
+			while (this.boards.some(board => board.canAddress === newExpansionBoard!.canAddress)) {
 				newExpansionBoard.canAddress!++;
 			}
 			this.boards.push(newExpansionBoard);
@@ -180,6 +182,15 @@ export default class ConfigModel extends ObjectModel {
 		this.refreshDrivers();
 		this.refreshPorts();
 		this.refreshSensors();
+
+		if (newExpansionBoard !== null && expansionBoardDefinition.closedLoopConfig !== null) {
+			for (const driver of this.configTool.drivers) {
+				if (driver.id.board === newExpansionBoard.canAddress) {
+					driver.closedLoop.countsPerFullStep = expansionBoardDefinition.closedLoopConfig.countsPerFullStep;
+					driver.closedLoop.encoderType = expansionBoardDefinition.closedLoopConfig.encoderType;
+				}
+			}
+		}
 	}
 
 	/**
@@ -353,8 +364,16 @@ export default class ConfigModel extends ObjectModel {
 		}
 
 		for (const driver of driverList) {
-			// Add missing drivers
-			if (!this.configTool.drivers.some(configDriver => configDriver.id.equals(driver))) {
+			const boardDefinition = this.getBoardDefinition(driver.board);
+			
+			// Update or add missing drivers
+			const existingDriver = this.configTool.drivers.find(configDriver => configDriver.id.equals(driver));
+			if (existingDriver) {
+				if (boardDefinition && (!boardDefinition.hasStealthChop && existingDriver.mode === ConfigDriverMode.stealthChop) || (!boardDefinition?.hasClosedLoopDrivers && existingDriver.mode === ConfigDriverMode.closedLoop)) {
+					// SpreadCycle is always supported
+					existingDriver.mode = ConfigDriverMode.spreadCycle;
+				}
+			} else {
 				const configDriver = new ConfigDriver();
 				configDriver.id = driver;
 				this.configTool.drivers.push(configDriver);
@@ -363,13 +382,11 @@ export default class ConfigModel extends ObjectModel {
 			// Update microstepping interpolations
             const axis = this.move.axes.find(axis => axis.drivers.some(axisDriver => axisDriver.equals(driver)));
             if (axis) {
-                const boardDefinition = this.getBoardDefinition(driver.board);
                 axis.microstepping.interpolated = !!boardDefinition && boardDefinition.microstepInterpolations.includes(axis.microstepping.value);
             }
 
             const extruder = this.move.extruders.find(extruder => extruder.driver?.equals(driver));
             if (extruder) {
-                const boardDefinition = this.getBoardDefinition(driver.board);
                 extruder.microstepping.interpolated = !!boardDefinition && boardDefinition.microstepInterpolations.includes(extruder.microstepping.value);
             }
 		}

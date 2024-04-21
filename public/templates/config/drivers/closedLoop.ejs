@@ -24,8 +24,8 @@
 M569.1 <%- params({
     P: driver.id,
     T: driver.closedLoop.encoderType,
-    C: (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic) ? driver.closedLoop.countsPerFullStep : undefined
-}) %> ; driver <%- driver.id %> has a <%- type %> encoder<%- (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic) ? ` with ${driver.closedLoop.countsPerFullStep} CPS` : "" %>
+    C: (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic && driver.closedLoop.countsPerFullStep !== null) ? driver.closedLoop.countsPerFullStep : undefined
+}) %> ; driver <%- driver.id %> has a <%- type %> encoder<%- (driver.closedLoop.mode !== ConfigDriverClosedLoopEncoderType.magnetic && driver.closedLoop.countsPerFullStep !== null) ? ` with ${driver.closedLoop.countsPerFullStep} CPS` : "" %>
 <%  }
 
     if (preview && closedLoopDrivers.length === 0) { -%>

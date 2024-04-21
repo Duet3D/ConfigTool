@@ -47,9 +47,9 @@ G1 <%- params({
 <%          if (fastHomingSpeed !== slowHomingSpeed) { -%>
 G1 <%- params({
     H: 2,
-    X: highEndstops ? "-10" : "10",
-    Y: highEndstops ? "-10" : "10",
-    Z: highEndstops ? "-10" : "10",
+    X: highEndstops ? -10 : 10,
+    Y: highEndstops ? -10 : 10,
+    Z: highEndstops ? -10 : 10,
     F: travelSpeed
 }) %> ; go <%- highEndstops ? "down" : "up" %> a few mm
 G1 <%- params({

@@ -39,7 +39,7 @@
 M669 K<%- kParam %><%- moveCoefficients %> ; configure <%- kinematicsName %> kinematics
 <%  } else if (model.isDelta) { -%>
 M665 <%- params({
-    L: reduce(model.move.kinematics.towers.map(tower => tower.diagnonal)),
+    L: reduce(model.move.kinematics.towers.map(tower => tower.diagonal)),
     R: model.move.kinematics.deltaRadius,
     B: model.move.kinematics.printRadius,
     H: model.move.kinematics.homedHeight
@@ -54,7 +54,7 @@ M666 <%- params({
 }) %> ; endstop adjustments and XY tilt, can be determined using auto calibration as well
 <%  } else if (model.move.kinematics.name === KinematicsName.hangprinter) { -%>
 M669 <%- params({
-    K: 7,
+    K: 6,
     A: model.move.kinematics.anchors[0],
     B: model.move.kinematics.anchors[1],
     C: model.move.kinematics.anchors[2],
