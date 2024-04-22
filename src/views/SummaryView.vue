@@ -18,7 +18,7 @@
 						<ul class="mb-0">
 							<li v-for="template in templates">
 								<a href="javascript:void(0)" @click="showFile(template)">
-									{{ template.name }}.g
+									{{ template.displayName }}
 								</a>
 								<progress-icon :model-value="template.state" />
 							</li>
@@ -75,6 +75,7 @@ const store = useStore();
 // Template list
 interface TemplateItem {
 	name: string;
+	displayName: string;
 	data: Record<string, any> | null;
 	state: ProgressState | null
 }
@@ -84,6 +85,7 @@ const templates = ref<Array<TemplateItem>>([]);
 onMounted(() => {
 	templates.value = getSectionTemplates().map(item => ({
 		name: item.template,
+		displayName: item.template == 'boardtxt' ? 'board.txt' : item.template + '.g',
 		data: item.data,
 		state: null
 	}));
@@ -98,7 +100,7 @@ async function showFile(item: TemplateItem) {
 		await renderToNewTab(item.name, item.data ?? undefined);
 	} catch (e) {
 		console.error("Failed to generate template", item.name, item.data, e);
-		alert(`Failed to generate template ${item.name}.g: ${e}`);
+		alert(`Failed to generate template ${item.displayName}: ${e}`);
 	}
 
 	if (!generating.value) {
@@ -190,7 +192,12 @@ async function generateBundle() {
 			item.state = ProgressState.busy;
 			try {
 				const content = await render(item.name, { ...(item.data ?? {}), preview: false });
-				zip.file(`sys/${item.name}.g`, content);
+				if (item.name == "boardtxt") {
+					zip.file(`sys/board.txt`, content);
+				} else {
+					zip.file(`sys/${item.name}.g`, content);
+				}
+				
 				item.state = ProgressState.ready;
 			} catch (e) {
 				item.state = ProgressState.error;

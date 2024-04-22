@@ -4,7 +4,8 @@ import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigDriver, ConfigDriverMode } from "@/store/model/ConfigDriver";
 import { ConfigToolModel } from "@/store/model/ConfigToolModel";
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
-import { type BoardDescriptor, Boards, BoardType, getBoardDefinition, getBoardType } from "@/store/Boards";
+import { type BoardDescriptors, Boards, BoardType, type BoardTypes, getBoardDefinition, getBoardType } from "@/store/Boards";
+import { STM32F4BoardType, STM32H723BoardType, STM32H743BoardType } from "@/store/STMBoard";
 import { ExpansionBoards, ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 
 import { preconfigureNetworkInterface } from "../defaults";
@@ -35,7 +36,7 @@ export default class ConfigModel extends ObjectModel {
 	/**
 	 * Get the board definition exclusively for the mainboard
 	 */
-	get boardDefinition(): BoardDescriptor | null {
+	get boardDefinition(): BoardDescriptors | null {
 		return getBoardDefinition(this);
 	}
 
@@ -100,7 +101,7 @@ export default class ConfigModel extends ObjectModel {
 	/**
 	 * Getter for the current main board type
 	 */
-	get boardType(): BoardType | null {
+	get boardType(): BoardTypes | null {
 		return getBoardType(this);
 	}
 
@@ -108,7 +109,7 @@ export default class ConfigModel extends ObjectModel {
 	 * Setter for the current main board type
 	 * @param value New board type
 	 */
-	set boardType(value: BoardType | null) {
+	set boardType(value: BoardTypes | null) {
 		if (value === null) {
 			throw new Error("Board type cannot be null");
 		}
@@ -543,7 +544,12 @@ export default class ConfigModel extends ObjectModel {
 				// These boards do not support any direct-connect expansion boards
 				this.configTool.expansionBoard = null;
 				break;
-
+			case STM32F4BoardType.Fly_CDYv2:
+			case STM32F4BoardType.Fly_CDYv3:
+			case STM32F4BoardType.Fly_E3:
+			case STM32F4BoardType.BTT_GTR_V1:
+			case STM32H723BoardType.Fly_Super8Pro_H723:
+			case STM32H743BoardType.Fly_Super8Pro_H743:
 			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
 			case BoardType.Duet2SBC:

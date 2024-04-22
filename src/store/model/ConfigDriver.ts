@@ -28,9 +28,20 @@ export enum ConfigDriverMode {
 	closedLoop = 4
 }
 
+export enum ConfigDriverType {
+	none = "none",
+	stepDir = "stepdir",
+	tmc2208 = "tmc2208",
+	tmc2209 = "tmc2209",
+	tmc2240 = "tmc2240",
+	tmc2660 = "tmc2660",
+	tmc5160 = "tmc5160"
+}
+
 export class ConfigDriver extends ModelObject {
 	readonly closedLoop: ConfigDriverClosedLoop = new ConfigDriverClosedLoop();
 	readonly external: ConfigDriverExternal = new ConfigDriverExternal();
+	type: ConfigDriverType = ConfigDriverType.none;
 	forwards: boolean = true;
     homingSpeeds: Array<number> = [10, 5];
 	id: DriverId = new DriverId();
