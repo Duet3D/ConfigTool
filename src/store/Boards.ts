@@ -708,7 +708,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "e2temp"],
-			[PortType.uart]: []
+			[PortType.uart]: ["usb", "urxd+utxd"]
 		},
 
 		expansionBoards: new Set(),
@@ -833,7 +833,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "e2temp"],
-			[PortType.uart]: []
+			[PortType.uart]: ["usb", "urxd+utxd"]
 		},
 
 		expansionBoards: new Set(),
@@ -956,7 +956,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "e2temp"],
-			[PortType.uart]: []
+			[PortType.uart]: ["usb", "urxd+utxd"]
 		},
 
 		expansionBoards: new Set(),
@@ -1079,7 +1079,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["bedtemp", "e0temp"],
-			[PortType.uart]: []
+			[PortType.uart]: ["usb", "urxd+utxd"]
 		},
 
 		expansionBoards: new Set(),
@@ -1202,7 +1202,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["ADC0", "ADC1", "ADC2", "ADC3", "ADC4", "ADC5"],
-			[PortType.uart]: []
+			[PortType.uart]: ["usb", "urxd+utxd"]
 		},
 
 		expansionBoards: new Set(),
@@ -1325,7 +1325,7 @@ export const Boards: Record<BoardTypes, BoardDescriptors> = {
 			[PortType.scanning]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["ADC0", "ADC1", "ADC2", "ADC3", "ADC4", "ADC5"],
-			[PortType.uart]: []
+			[PortType.uart]: ["usb", "urxd+utxd"]
 		},
 
 		expansionBoards: new Set(),
