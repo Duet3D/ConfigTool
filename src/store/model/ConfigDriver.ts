@@ -1,4 +1,4 @@
-import { AxisLetter, DriverId, EndstopType, ModelObject } from "@duet3d/objectmodel";
+import { DriverId, ModelObject } from "@duet3d/objectmodel";
 
 export enum ConfigDriverClosedLoopEncoderType {
 	none = 0,

@@ -125,7 +125,6 @@ const fileSelected = () => {
 						// New format
 						newModel = new ConfigModel();
 						newModel.update(jsonContent);
-						newModel.validate();
 					} else {
 						// Old format
 						newModel = convertLegacyPreset(jsonContent as LegacyPreset);

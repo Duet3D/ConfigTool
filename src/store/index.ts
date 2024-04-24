@@ -247,6 +247,7 @@ export const useStore = defineStore({
     actions: {
 		setModel(newModel: ConfigModel) {
 			this.data.update(newModel);
+			this.data.validate();
 			this.dataModified = this.showSavePrompt = false;
 		},
 		setTheme(theme: "dark" | "light" | "auto") {
