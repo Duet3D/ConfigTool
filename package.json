@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "3.5.0-rc.4+1",
+  "version": "3.5.0",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "@duet3d/objectmodel": "^3.5.0-rc.12",
-    "@popperjs/core": "^2.11.8",
     "@tsconfig/node20": "^20.1.4",
     "@types/bootstrap": "^5.2.10",
     "@types/ejs": "^3.1.5",

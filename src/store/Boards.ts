@@ -61,8 +61,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		numDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 		ports: {
-			// The firmware lists an ADC input for io6.in, but it's missing from the documentation?
-			[PortType.analogIn]: ["io3.in"],
+			[PortType.analogIn]: ["io3.in", "io6.in"],
 			[PortType.fan]: ["out3", "out4", "out5", "out6+laser+vfd"],
 			[PortType.fanTacho]: ["out3.tach", "out4.tach"],
 			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],
@@ -143,8 +142,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		numDrivers: 5,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
 		ports: {
-			// The firmware lists an ADC input for io6.in, but it's missing from the documentation?
-			[PortType.analogIn]: ["io3.in"],
+			[PortType.analogIn]: ["io3.in", "io6.in"],
 			[PortType.fan]: ["out3", "out4", "out5", "out6+laser+vfd"],
 			[PortType.fanTacho]: ["out3.tach", "out4.tach"],
 			[PortType.gpIn]: ["io0.in", "io1.in", "io2.in", "io3.in", "io4.in", "io5.in", "io6.in"],

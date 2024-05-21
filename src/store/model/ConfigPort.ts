@@ -96,9 +96,9 @@ export class ConfigPort extends ModelObject {
 	 */
 	assign(value: ConfigPort) {
 		this.canBoard = value.canBoard;
-		this.capabilities = value.capabilities;
-		this.ports = value.ports;
-		this.rawPorts = value.rawPorts;
+		this.capabilities = new ModelSet<PortType>(value.capabilities);
+		this.ports = value.ports.slice();
+		this.rawPorts = value.rawPorts.slice();
 
 		this.frequency = value.frequency;
 		this.inverted = value.inverted;

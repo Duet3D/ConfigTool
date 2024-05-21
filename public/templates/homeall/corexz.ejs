@@ -122,7 +122,6 @@ G1 <%- params({
             // second pass
 -%>
 G1 <%- params({
-    H: 2,
     X: (xFastHomingSpeed !== xSlowHomingSpeed) ? (xHighEnd ? -5 : 5) : undefined,
     Z: (zFastHomingSpeed !== zSlowHomingSpeed) ? (zHighEnd ? -5 : 5) : undefined,
     U: uValid ? (uHighEnd ? -5 : 5) : undefined,
@@ -180,7 +179,6 @@ G1 <%- params({
             // second pass
 -%>
 G1 <%- params({
-    H: 2,
     Y: yHighEnd ? -5 : 5,
     F: travelSpeed
 }) %> ; move back <%- diveHeight %>mm

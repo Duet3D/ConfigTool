@@ -54,17 +54,11 @@
 			</button>-->
 		</div>
 
-		<div class="text-center mb-5">
+		<div class="text-center mb-4">
 			<a href="javascript:void(0)" class="mx-auto" @click="loadTemplate">
 				<i class="bi bi-database-fill-up"></i>
 				Load Config Template
 			</a>
-		</div>
-
-		<div class="alert alert-warning mb-4">
-			<i class="bi bi-exclamation-triangle"></i>
-			This version of the Config Tool is still under development. If you encounter problems, please consider using the
-			previous <a href="https://configtool.reprapfirmware.org/legacy" target="_blank">Config Tool</a> instead.
 		</div>
 
 		<div class="text-center">
@@ -132,12 +126,21 @@ function fileSelected() {
 	if (inputJsonFile.value !== null && inputJsonFile.value.files !== null) {
 		const file = inputJsonFile.value.files[0];
 		try {
-			if (file.name.toLowerCase() === "config.json") {
-				// Old configtool preset
-				const fileReader = new FileReader();
-				fileReader.onload = (e) => {
+			const fileReader = new FileReader();
+			fileReader.onload = (e) => {
+				const jsonData = JSON.parse(e.target?.result as string);
+				if (jsonData.configTool !== undefined) {
+					// New configtool preset
 					try {
-						const jsonData = JSON.parse(e.target?.result as string);
+						store.setModel(jsonData);
+						router.push("/Configuration");
+					} catch (e) {
+						console.error("Failed to load preset", e);
+						alert(`Failed to load preset: ${e}`);
+					}
+				} else {
+					// Old configtool preset
+					try {
 						const convertedModel = convertLegacyPreset(jsonData);
 						store.setModel(convertedModel);
 						router.push("/Configuration");
@@ -146,24 +149,8 @@ function fileSelected() {
 						alert(`Failed to load legacy preset: ${e}`);
 					}
 				};
-				fileReader.readAsText(file);
-			} else if (file.name.toLowerCase() === "configtool.json") {
-				// New configtool data
-				const fileReader = new FileReader();
-				fileReader.onload = (e) => {
-					try {
-						const jsonData = JSON.parse(e.target?.result as string);
-						store.setModel(jsonData);
-						router.push("/Configuration");
-					} catch (e) {
-						console.error("Failed to load legacy preset", e);
-						alert(`Failed to load legacy preset: ${e}`);
-					}
-				};
-				fileReader.readAsText(file);
-			} else {
-				alert("Unsupported filename");
-			}
+			};
+			fileReader.readAsText(file);
 		} catch (e) {
 			console.error("Failed to load configuration file", file, e);
 			alert(`Failed to load configuration file: ${e}`);

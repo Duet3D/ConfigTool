@@ -75,20 +75,14 @@ export function getSectionTemplates(section?: ConfigSectionType) {
                     probeIndex: store.data.sensors.probes.findIndex(item => item !== null)
                 };
 
-                if (store.data.sensors.probes.length === 1) {
-                    result.push({ template: "deployprobe", data });
-                    result.push({ template: "retractprobe", data });
-                } else {
-                    result.push({ template: `deployprobe${i}`, data });
-                    result.push({ template: `retractprobe${i}`, data });
-                }
+                result.push({ template: `deployprobe${i}`, data });
+                result.push({ template: `retractprobe${i}`, data });
             }
         }
     }
     function addHomingTemplates() {
-        let axesToSkip = new Set<AxisLetter>();
-        if (store.data.isDelta || (store.data.move.kinematics instanceof CoreKinematics && store.data.move.kinematics.name !== KinematicsName.cartesian)) {
-            axesToSkip = new Set<AxisLetter>([AxisLetter.X, AxisLetter.Y, AxisLetter.Z]);
+        const axesToSkip = store.data.isDelta ? new Set<AxisLetter>([AxisLetter.X, AxisLetter.Y, AxisLetter.Z]) : new Set<AxisLetter>();
+        if (store.data.move.kinematics instanceof CoreKinematics && store.data.move.kinematics.name !== KinematicsName.cartesian) {
             if ([KinematicsName.coreXYU, KinematicsName.coreXYUV].includes(store.data.move.kinematics.name)) {
                 axesToSkip.add(AxisLetter.U);
             }
@@ -239,5 +233,5 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             const _exhaustiveCheck: never = section;
             break;
     }
-    return result;
+    return result.sort((a, b) => a.template.localeCompare(b.template));
 }
