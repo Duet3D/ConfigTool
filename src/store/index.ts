@@ -223,7 +223,7 @@ defaultTemplate.validate();
 defaultTemplate.configTool.delta.calculateProbePoints(0, 0);
 defaultTemplate.configTool.assignPort("io0.in", ConfigPortFunction.endstop, 0);		// X endstop
 defaultTemplate.configTool.assignPort("io1.in", ConfigPortFunction.endstop, 1);		// Y endstop
-defaultTemplate.configTool.assignPort("io2.in", ConfigPortFunction.probeIn, 0);		// Z probe in
+defaultTemplate.configTool.assignPort("io3.in", ConfigPortFunction.probeIn, 0);		// Z probe in
 defaultTemplate.configTool.assignPort("temp0", ConfigPortFunction.thermistor, 0);	// Bed temp
 defaultTemplate.configTool.assignPort("temp1", ConfigPortFunction.thermistor, 1);	// Nozzle temp
 defaultTemplate.configTool.assignPort("out0", ConfigPortFunction.heater, 0);		// Bed heater
