@@ -25,7 +25,7 @@
 ; increase Z
 G91 ; relative positioning
 G1 <%- params({
-    H: zLiftCanHitEndstop ? 1 : undefined,
+    H: zLiftCanHitEndstop ? 1 : 2,
     Z: diveHeight
 }) %> ; move Z relative to current position to avoid dragging nozzle over the bed
 G90 ; absolute positioning
