@@ -13,6 +13,7 @@ import { isDefaultCoreKinematics } from "./defaults";
 import { ExpansionBoards, getExpansionBoardDefinition } from "./ExpansionBoards";
 import { useStore } from ".";
 import { getBoardDefinition } from "./Boards";
+import { equal } from "assert";
 
 /**
  * Indent comments in a G-code file
@@ -132,21 +133,22 @@ const renderOptions = {
         const port = this.getPort(fn, index, secondaryIndex, board);
         return (port !== null) ? port.toString() : "nil";
     },
-    getCombinedPortString(fns: ConfigPortFunction | Array<ConfigPortFunction>, index?: number): string | undefined {
+    getCombinedPortString(fns: ConfigPortFunction | Array<ConfigPortFunction>, index?: number, stripBoards: boolean = true): string | undefined {
         if (!(fns instanceof Array)) {
             fns = [fns];
         }
 
         const ports: Array<string> = [];
         for (const fn of fns) {
-            let portFound = false;
+            let portFound = false, lastPort: ConfigPort | null = null;
             for (const port of this.model.configTool.ports) {
                 if (port.function === fn && (index === undefined || index === port.index)) {
-                    if (ports.length === 0) {
+                    if (ports.length === 0 || !stripBoards || (lastPort !== null && !port.equalsBoard(lastPort.canBoard))) {
                         ports.push(port.toString());
                     } else {
                         ports.push(stripBoard(port.toString()));
                     }
+                    lastPort = port;
                     portFound = true;
                 }
             }

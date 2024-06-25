@@ -9,7 +9,7 @@
 
             switch (endstop.type) {
                 case EndstopType.InputPin:
-                    endstopConfig.P = getCombinedPortString(ConfigPortFunction.endstop, i);
+                    endstopConfig.P = getCombinedPortString(ConfigPortFunction.endstop, i, false);
                     endstopConfig.S = 1;
                     break;
                 case EndstopType.ZProbeAsEndstop:

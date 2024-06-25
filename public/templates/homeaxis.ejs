@@ -53,6 +53,7 @@ G30 ; probe the bed
 <%      } else {
             // Home cartesian axis
 -%>
+G91 ; relative positioning
 var maxTravel = move.axes[<%- axisIndex %>].max - move.axes[<%- axisIndex %>].min + 5 ; calculate how far <%- axisLetter %> can travel plus 5mm
 G1 <%- params({
     H: 1,
@@ -71,6 +72,7 @@ G1 <%- params({
     [axisLetter]: endstop.highEnd ? "{var.maxTravel}" : "{-var.maxTravel}",
     F: slowHomingSpeed
 }) %> ; fine home in the <%- (endstop.highEnd ? "+" : "-") + axisLetter %> direction
+G90 ; absolute positioning
 <%          }
 
             // Decrease Z again only if Z isn't being homed
@@ -79,6 +81,7 @@ G1 <%- params({
 ; decrease Z again
 G91 ; relative positioning
 G1 <%- params({
+    H: 2,
     Z: -diveHeight,
     F: travelSpeed
 }) %> ; move Z relative to current position
