@@ -153,7 +153,7 @@ G1 <%- params({
     F: uSlowHomingSpeed
 }) %> ; fine home in the <%- uHighEnd ? "+" : "-" %>U direction
 <%              if (vValid) { -%>
-    G1 <%- params({
+G1 <%- params({
     H: 1,
     V: vHighEnd ? "{var.vTravel}" : "{-var.vTravel}",
     F: vSlowHomingSpeed
@@ -188,7 +188,7 @@ G1 <%- params({
     F: zSlowHomingSpeed
 }) %> ; fine home in the <%- yHighEnd ? "+" : "-" %>Y direction
 G90 ; absolute positioning
-<%      }
+<%      } -%>
 G30 ; probe the bed
 <%  } else { -%>
 G92 Y0 ; set Y=0
@@ -198,7 +198,7 @@ M118 L1 P0 S"Warning: Y is NOT homed but its position has been set to 0."
     if (model.move.axes.some(axis => ['X', 'Y', 'Z'].includes(axis.letter))) { -%>
 
 ; home other axes
-<%      for (const axis of model.move.axes) { -%>
+<%      for (const axis of model.move.axes) {
             if (!['X', 'Y', 'Z'].includes(axis.letter)) {
                 const homingFile = /[A-Z]/.test(axis.letter) ? `home${axis.letter.toLowerCase()}.g` : `home'${axis.letter}.g`; -%>
 M98 P"<%- homingFile %>" ; home <%- axis.letter %> axis
