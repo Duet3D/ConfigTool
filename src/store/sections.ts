@@ -65,7 +65,10 @@ export function getSections() {
  * @returns List of templates to generate
  */
 export function getSectionTemplates(section?: ConfigSectionType) {
-    const store = useStore(), result: Array<{ template: string, data: Record<string, any> | null }> = [];
+    const store = useStore(), result: Array<{ template: string, data: Record<string, any> | null }> = [
+        { template: "pause", data: null },
+        { template: "resume", data: null }
+    ];
     function addDeployRetractProbeTemplates() {
         for (let i = 0; i < store.data.sensors.probes.length; i++) {
             const probe = store.data.sensors.probes[i];

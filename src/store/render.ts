@@ -13,7 +13,6 @@ import { isDefaultCoreKinematics } from "./defaults";
 import { ExpansionBoards, getExpansionBoardDefinition } from "./ExpansionBoards";
 import { useStore } from ".";
 import { getBoardDefinition } from "./Boards";
-import { equal } from "assert";
 
 /**
  * Indent comments in a G-code file
