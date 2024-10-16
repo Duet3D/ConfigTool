@@ -444,7 +444,10 @@ export default class ConfigModel extends ObjectModel {
 			}
 		}
 		for (const portType in PortType) {
-			addPorts(boardDefinition.ports[portType as PortType], portType as PortType);
+			if (portType !== PortType.uart) {
+				// UART is special because it features two ports. Skip them
+				addPorts(boardDefinition.ports[portType as PortType], portType as PortType);
+			}
 		}
 	}
 
@@ -465,6 +468,8 @@ export default class ConfigModel extends ObjectModel {
 				this.addPortsFromBoard(expansionBoard, mainboardDefinition.objectModelBoard.canAddress, portList);
 			}
 		}
+
+		console.log(portList.filter(port => port.rawPorts.includes("io1.in")));
 
 		// Add ports from expansion boards
 		for (const board of this.boards) {

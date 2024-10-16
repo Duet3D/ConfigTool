@@ -190,15 +190,17 @@
 						<col style="width: auto;">
 					</colgroup>
 					<thead>
-						<th>
-							Number
-						</th>
-						<th>
-							Heater
-						</th>
-						<th>
-							<!-- Delete button -->
-						</th>
+						<tr>
+							<th>
+								Number
+							</th>
+							<th>
+								Heater
+							</th>
+							<th>
+								<!-- Delete button -->
+							</th>
+						</tr>
 					</thead>
 					<tbody>
 						<template v-for="(bedHeater, index) in store.data.heat.bedHeaters">
@@ -264,15 +266,17 @@
 						<col style="width: auto;">
 					</colgroup>
 					<thead>
-						<th>
-							Number
-						</th>
-						<th>
-							Heater
-						</th>
-						<th>
-							<!-- Delete button -->
-						</th>
+						<tr>
+							<th>
+								Number
+							</th>
+							<th>
+								Heater
+							</th>
+							<th>
+								<!-- Delete button -->
+							</th>
+						</tr>
 					</thead>
 					<tbody>
 						<template v-for="(chamberHeater, index) in store.data.heat.chamberHeaters">

@@ -344,19 +344,20 @@ const ports = computed(() => {
 
 		for (const requiredCapability of requiredCapabilities) {
 			if (port.capabilities.has(requiredCapability)) {
-				const groupLabel = !port.canBoard ? "Main Board" : `CAN Board ${port.canBoard}`, portLabel = stripPort(port.toString());
+				const groupLabel = !port.canBoard ? "Main Board" : `CAN Board ${port.canBoard}`, portName = stripPort(port.toString());
+				const portLabel = (port.function === null || (port.function === props.function && port.index === props.index)) ? portName : `${portName} (used by ${port.function})`;
 				if (!result[groupLabel]) {
 					result[groupLabel] = [
 						{
 							text: portLabel,
-							value: portLabel
+							value: portName
 						}
 					];
 				} else {
 					result[groupLabel].push(
 						{
 							text: portLabel,
-							value: portLabel
+							value: portName
 						}
 					);
 				}

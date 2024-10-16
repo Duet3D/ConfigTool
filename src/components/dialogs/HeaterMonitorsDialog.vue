@@ -11,20 +11,22 @@
 					<col style="width: auto;">
 				</colgroup>
 				<thead>
-					<th>
-						Condition
-					</th>
-					<th>
-						Action
-					</th>
-					<th>
-						Limit
-					</th>
-					<th>
-						Sensor
-					</th>
-					<th>
-					</th>
+					<tr>
+						<th>
+							Condition
+						</th>
+						<th>
+							Action
+						</th>
+						<th>
+							Limit
+						</th>
+						<th>
+							Sensor
+						</th>
+						<th>
+						</th>
+					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="(monitor, index) in props.monitors">
@@ -42,8 +44,8 @@
 						<td>
 							<number-input title="Limit of this heater monitor to set"
 										  :disabled="monitor.condition === HeaterMonitorCondition.disabled"
-										  v-model="monitor.limit as number" :preset="getPreset(index, 'limit')" unit="°C"
-										  :min="-273" :max="1999" :step="0.1" />
+										  v-model="monitor.limit as number" :preset="getPreset(index, 'limit')"
+										  unit="°C" :min="-273" :max="1999" :step="0.1" />
 						</td>
 						<td>
 							<select-input title="Sensor to monitor"
