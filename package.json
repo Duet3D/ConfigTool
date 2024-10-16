@@ -36,9 +36,9 @@
     "jszip": "^3.10.1",
     "monaco-editor": "^0.52.0",
     "npm-run-all2": "^6.1.2",
-    "pinia": "^2.1.7",
+    "pinia": "~2.1.7",
     "sass": "^1.77.6",
-    "typescript": "^5.4.5",
+    "typescript": "~5.5.3",
     "vite": "^5.2.8",
     "vue-router": "^4.3.0",
     "vue-tsc": "^2.0.12"

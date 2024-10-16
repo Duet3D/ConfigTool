@@ -343,7 +343,7 @@ const HeaterControlOptions: Array<SelectOption> = [
 </script>
 
 <script setup lang="ts">
-import { Heater, HeaterModel, HeaterMonitor, HeaterMonitorCondition, ModelObject } from "@duet3d/objectmodel";
+import { Heater, HeaterModel, HeaterMonitor, HeaterMonitorCondition } from "@duet3d/objectmodel";
 import type { StoreState } from "pinia";
 import { computed, ref } from "vue";
 

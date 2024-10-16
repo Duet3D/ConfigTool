@@ -16,7 +16,7 @@
 		</div>
 
 		<div class="d-flex justify-content-center mb-3">
-			<button type="button" class="btn btn-lg btn-primary ms-1" :disabled="firstErrorNode !== null" @click.prevent="$router.push('/Summary')">
+			<button type="button" class="btn btn-lg btn-primary ms-1" :disabled="firstErrorNode !== null" @click.prevent="router.push('/Summary')">
 				<i class="bi bi-arrow-right-circle"></i>
 				Finish Configuration
 			</button>
