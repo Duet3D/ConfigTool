@@ -127,12 +127,12 @@ export default class ConfigModel extends ObjectModel {
 				this.boards.splice(boardDefinition.objectModelLimits.boards);
 			}
 			this.boards[0].update(boardDefinition.objectModelBoard);
-			this.limits.update(boardDefinition.objectModelLimits);
 		} else {
 			const newBoard = new Board();
 			newBoard.update(boardDefinition.objectModelBoard);
 			this.boards.push(newBoard);
 		}
+		this.limits.update(boardDefinition.objectModelLimits);
 
 		if (this.sbc === null) {
 			// Update existing network interface types
@@ -468,8 +468,6 @@ export default class ConfigModel extends ObjectModel {
 				this.addPortsFromBoard(expansionBoard, mainboardDefinition.objectModelBoard.canAddress, portList);
 			}
 		}
-
-		console.log(portList.filter(port => port.rawPorts.includes("io1.in")));
 
 		// Add ports from expansion boards
 		for (const board of this.boards) {

@@ -171,7 +171,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 		const legacyDrive = input.drives[i], driverId = new DriverId();
 		driverId.update(legacyDrive.driver_v3);
 
-		const driver = model.configTool.drivers.find(driverItem => driverItem.id.board === driverId.board && driverItem.id.driver === driverId.driver);
+		const driver = model.configTool.drivers.find(driverItem => driverItem.id.equals(driverId));
 		if (driver === undefined) {
 			throw new Error(`Cannot find driver ${driverId.toString()}`);
 		}
@@ -180,6 +180,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 			const axis = model.move.axes[i];
 			axis.acceleration = legacyDrive.acceleration;
 			axis.current = legacyDrive.current;
+			axis.drivers.update([driverId]);
 
 			const endstop = new Endstop();
 			model.sensors.endstops.push(endstop);
@@ -217,6 +218,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 			const extruder = new Extruder();
 			extruder.acceleration = legacyDrive.acceleration;
 			extruder.current = legacyDrive.current;
+			extruder.driver = driverId;
 			driver.forwards = legacyDrive.direction;
 			extruder.jerk = legacyDrive.instant_dv;
 			extruder.microstepping.interpolated = legacyDrive.microstepping_interpolation;
@@ -302,6 +304,14 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 			tempSensor.beta = legacyHeater.beta;
 			tempSensor.shC = legacyHeater.c;
 			model.configTool.sensors.push(tempSensor);
+
+			if (legacyHeater.output_pin !== null) {
+				model.configTool.assignPort(legacyHeater.output_pin, ConfigPortFunction.heater, i);
+			}
+			if (legacyHeater.sensor_pin !== null) {
+				model.configTool.assignPort(legacyHeater.sensor_pin, ConfigPortFunction.thermistor, i);
+				heater.sensor = i;
+			}
 		}
 	}
 
@@ -317,7 +327,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 				fan.thermostatic.heaters = legacyFan.heaters;
 				fan.thermostatic.lowTemperature = legacyFan.trigger_temperature;
 			}
-			fan.max = legacyFan.value;
+			fan.max = legacyFan.value / 100;
 			model.fans.push(fan);
 			model.configTool.assignPort(legacyFan.output_pin, ConfigPortFunction.fan, i, legacyFan.frequency);
 		}
