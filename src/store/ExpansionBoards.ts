@@ -70,12 +70,12 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.fan]: ["out2", "out4", "out5", "out6", "out7", "out8"],
 			[PortType.fanTacho]: ["out2.tach", "out4.tach", "out5.tach"],
 			[PortType.gpIn]: ["io1.in", "io2.in", "io3.in", "io4.in", "io5.in"],
-			[PortType.gpInInterrupt]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.gpInInterrupt]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4"],
 			[PortType.gpOut]: ["io1.out", "io2.out", "io3.out", "io4.out", "io5.out"],
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io0.out", "io4.out"],
 			[PortType.scanning]: [],
-			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: []
 		},
@@ -382,7 +382,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
 			[PortType.scanning]: [],
-			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
 		},
@@ -420,7 +420,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
 			[PortType.scanning]: [],
-			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
+			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
 		},
