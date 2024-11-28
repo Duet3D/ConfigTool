@@ -42,7 +42,7 @@
                     F: configSensor.mainsFrequency
                 };
             } else if (sensor.type === AnalogSensorType.linearAnalog) {
-                port = getPortString(ConfigPortFunction.spiCs, i);
+                port = getPortString(ConfigPortFunction.thermistor, i);
                 sensorOptions = {
                     F: configSensor.filtered ? 1 : 0,
                     B: configSensor.minTemp,
