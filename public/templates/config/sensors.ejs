@@ -38,7 +38,7 @@
                 port = getPortString(ConfigPortFunction.spiCs, i);
                 sensorOptions = {
                     R: (configSensor.rref !== null) ? configSensor.rref : undefined,
-                    W: configSensor.thermocoupleType,
+                    W: configSensor.numWires,
                     F: configSensor.mainsFrequency
                 };
             } else if (sensor.type === AnalogSensorType.linearAnalog) {
