@@ -30,7 +30,7 @@
 
 						<input type="radio" class="btn-check" name="firmwareVersion" id="v35" value="v35" autocomplete="off"
 							   v-model="firmwareVersion">
-						<label class="btn btn-outline-success btn-lg ms-1" for="v35">Version 3.5</label>
+						<label class="btn btn-outline-success btn-lg ms-1" for="v35">Version 3.5 or 3.6</label>
 					</div>
 				</div>
 			</div>
