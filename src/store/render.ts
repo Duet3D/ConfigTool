@@ -1,6 +1,5 @@
 import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, LedStripType, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
 import ejs from "ejs";
-import type { StoreState } from "pinia";
 
 import { precise } from "@/utils";
 import packageInfo from "../../package.json";
