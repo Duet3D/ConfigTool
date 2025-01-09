@@ -38,7 +38,7 @@ let numInstances = 0;
 import { computed, ref } from "vue";
 
 // External interface
-interface TwoNumberInputProps {
+const props = withDefaults(defineProps<{
 	/**
 	 * First numeric value. May be set to null when disabled
 	 */
@@ -113,9 +113,7 @@ interface TwoNumberInputProps {
 	 * Unit of this input
 	 */
 	unit?: string;
-}
-
-const props = withDefaults(defineProps<TwoNumberInputProps>(), {
+}>(), {
 	disabled: false,
 	isRange: false
 });

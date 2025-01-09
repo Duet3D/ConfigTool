@@ -16,7 +16,7 @@ let numInstances = 0;
 import { computed } from "vue";
 
 // External interface
-interface TextInputProps {
+const props = withDefaults(defineProps<{
 	/**
 	 * Optional label next to the control
 	 */
@@ -56,8 +56,7 @@ interface TextInputProps {
 	 * Enable value checking (enabled by default)
 	 */
 	required?: boolean
-}
-const props = withDefaults(defineProps<TextInputProps>(), {
+}>(), {
 	lazy: false,
 	disabled: false,
 	required: true

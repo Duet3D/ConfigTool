@@ -82,7 +82,6 @@
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
 import { ConfigSectionType } from "@/store/sections";
-import { BoardType, getBoardType } from "@/store/Boards";
 import { getBoardDefinition } from "@/store/Boards";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
 

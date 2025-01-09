@@ -51,7 +51,7 @@ export interface SelectOption {
 import { computed } from "vue";
 
 // External interface
-interface SelectInputProps {
+const props = withDefaults(defineProps<{
 	/**
 	 * Optional label next to the control
 	 */
@@ -86,8 +86,7 @@ interface SelectInputProps {
 	 * Optional validity value (may be overridden if the value is invalid)
 	 */
 	valid?: boolean
-}
-const props = withDefaults(defineProps<SelectInputProps>(), {
+}>(), {
 	disabled: false,
 	required: true,
 	valid: true

@@ -15,7 +15,8 @@ let numInstances = 0;
 </script>
 
 <script setup lang="ts">
-interface CheckInputProps {
+// External interface
+const props = defineProps<{
 	/**
 	 * Optional label next to the control
 	 */
@@ -30,8 +31,7 @@ interface CheckInputProps {
 	 * Preset value (if applicable)
 	 */
 	preset?: boolean | null
-};
-const props = defineProps<CheckInputProps>();
+}>();
 
 const emit = defineEmits<{
 	(e: "update:modelValue", value: boolean): void

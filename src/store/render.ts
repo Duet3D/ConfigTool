@@ -54,7 +54,7 @@ export function indent(content: string): string {
 const renderOptions = {
     // Basics
     /* filename, */
-    model: null as any as StoreState<ConfigModel>,
+    model: null as any as ConfigModel,
     /* model, */
     /* render, */
     version: packageInfo.version,

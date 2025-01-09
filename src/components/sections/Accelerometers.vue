@@ -81,7 +81,6 @@
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
-import type { StoreState } from "pinia";
 
 const OrientationOptions: Array<SelectOption> = [
     {
@@ -211,7 +210,7 @@ import { ConfigPortFunction } from "@/store/model/ConfigPort";
 const store = useStore();
 
 const accelerometerBoards = computed(() => {
-    const result: Array<StoreState<Board>> = [];
+    const result: Array<Board> = [];
     if (getBoardDefinition(store.data)?.supportsAccelerometer) {
         result.push(store.data.boards[0]);
     }
@@ -223,15 +222,15 @@ const accelerometerBoards = computed(() => {
     return result;
 });
 
-function hasBuiltInAccelerometer(board: StoreState<Board>) {
+function hasBuiltInAccelerometer(board: Board) {
     return board.canAddress && (getExpansionBoardDefinition(board as Board)?.hasBuiltInAccelerometer ?? false);
 }
 
-function getAccelerometerModel(board: StoreState<Board>) {
+function getAccelerometerModel(board: Board) {
     return (board.accelerometer !== null) ? "LIS3DH" : null;
 }
 
-function setAccelerometerModel(board: StoreState<Board>, value: string | null) {
+function setAccelerometerModel(board: Board, value: string | null) {
     board.accelerometer = (value !== null) ? new Accelerometer() : null;
     if (value === null) {
         for (const port of store.data.configTool.ports) {
@@ -243,11 +242,11 @@ function setAccelerometerModel(board: StoreState<Board>, value: string | null) {
     }
 }
 
-function getAccelerometerOrientation(board: StoreState<Board>) {
+function getAccelerometerOrientation(board: Board) {
     return (board.accelerometer !== null) ? board.accelerometer.orientation : 20;
 }
 
-function setAccelerometerOrientation(board: StoreState<Board>, value: number) {
+function setAccelerometerOrientation(board: Board, value: number) {
     if (board.accelerometer !== null) {
         board.accelerometer.orientation = value;
     }

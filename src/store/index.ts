@@ -35,7 +35,7 @@ import {
 	Sensors,
 	Tool
 } from "@duet3d/objectmodel";
-import { defineStore, type StoreState } from "pinia";
+import { defineStore } from "pinia";
 
 import ConfigModel from "@/store/model";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";

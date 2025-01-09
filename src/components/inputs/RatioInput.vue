@@ -24,7 +24,7 @@ let numInstances = 0;
 import { computed } from "vue";
 
 // External interface
-interface RatioInputProps {
+const props = defineProps<{
 	/**
 	 * Label next to the control
 	 */
@@ -49,8 +49,7 @@ interface RatioInputProps {
 	 * Optional second preset value
 	 */
 	secondPreset?: number
-}
-const props = defineProps<RatioInputProps>();
+}>();
 
 const emit = defineEmits<{
 	(e: 'update:firstRatio', value: number): void

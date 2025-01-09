@@ -129,7 +129,6 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
-import type { StoreState } from "pinia";
 import { ConfigSectionType } from "@/store/sections";
 
 const store = useStore();
@@ -162,12 +161,12 @@ function addAxis() {
 }
 
 // Axis letter
-function isPersistentAxis(axis: StoreState<Axis>) {
+function isPersistentAxis(axis: Axis) {
 	return [AxisLetter.X, AxisLetter.Y, AxisLetter.Z].includes(axis.letter) ||
 		(axis.letter === AxisLetter.U && [KinematicsName.coreXYU, KinematicsName.coreXYUV].includes(store.data.move.kinematics.name)) ||
 		(axis.letter === AxisLetter.V && store.data.move.kinematics.name === KinematicsName.coreXYUV);
 }
-function getAxisLetterOptions(axis: StoreState<Axis>) {
+function getAxisLetterOptions(axis: Axis) {
 	const options: Array<SelectOption> = [];
 	for (const axisLetter of Object.values(AxisLetter)) {
 		if (axisLetter != AxisLetter.none && (axis.letter === axisLetter || !store.data.move.axes.some(axis => axis.letter === axisLetter))) {
@@ -179,7 +178,7 @@ function getAxisLetterOptions(axis: StoreState<Axis>) {
 	}
 	return options;
 }
-function isAxisUnique(axis: StoreState<Axis>) {
+function isAxisUnique(axis: Axis) {
 	let occurences = 0;
 	for (const item of store.data.move.axes) {
 		if (item.letter === axis.letter) {
@@ -190,11 +189,11 @@ function isAxisUnique(axis: StoreState<Axis>) {
 }
 
 // Microstepping
-function getMicrostepping(axis: StoreState<Axis>): string {
+function getMicrostepping(axis: Axis): string {
 	return `${axis.microstepping.value}${axis.microstepping.interpolated ? "i" : ""}`
 }
 
-function setMicrostepping(axis: StoreState<Axis>, value: string): void {
+function setMicrostepping(axis: Axis, value: string): void {
 	if (value.endsWith("i")) {
 		axis.microstepping.interpolated = true;
 		axis.microstepping.value = parseInt(value.substring(0, value.length - 1));
@@ -204,7 +203,7 @@ function setMicrostepping(axis: StoreState<Axis>, value: string): void {
 	}
 }
 
-function getMicrosteppingOptions(axis: StoreState<Axis>) {
+function getMicrosteppingOptions(axis: Axis) {
 	// Check which interpolations to x256 are supported
 	let supportedInterpolations: Array<number> = [];
 	for (let i = 1; i < 256; i *= 2) {
@@ -238,7 +237,7 @@ function getMicrosteppingOptions(axis: StoreState<Axis>) {
 	return options;
 }
 
-function getPresetAxisMicrostepping(axis: StoreState<Axis>): string {
+function getPresetAxisMicrostepping(axis: Axis): string {
 	const boardDefinition = store.data.getBoardDefinition((axis.drivers.length > 0) ? axis.drivers[0].board : null);
 	return (boardDefinition && boardDefinition.microstepInterpolations.includes(16)) ? "16i" : "16";
 }

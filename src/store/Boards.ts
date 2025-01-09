@@ -703,7 +703,7 @@ export function getBoardDefinition(model: StoreState<ConfigModel>): BoardDescrip
  * @param model Config model object
  * @returns Board type or null if not found
  */
-export function getBoardType(model: StoreState<ConfigModel>): BoardType | null {
+export function getBoardType(model: ConfigModel): BoardType | null {
 	if (model.boards.length > 0) {
 		// Get boards that match the short name
 		const matches = [];

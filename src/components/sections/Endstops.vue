@@ -102,7 +102,6 @@ const EndstopLocationOptions: Array<SelectOption> = [
 
 <script setup lang="ts">
 import { Axis, Endstop, EndstopType, KinematicsName, ProbeType } from "@duet3d/objectmodel";
-import type { StoreState } from "pinia";
 
 import ConfigSection from "@/components/ConfigSection.vue";
 import HomingSpeedsInput from "@/components/inputs/HomingSpeedsInput.vue";
@@ -117,7 +116,7 @@ import { ConfigSectionType } from "@/store/sections";
 const store = useStore();
 
 // Driver Enumeration
-function getConfigDrivers(axis: StoreState<Axis>) {
+function getConfigDrivers(axis: Axis) {
 	const result: Array<ConfigDriver> = [];
 	for (const driver of store.data.configTool.drivers) {
 		if (axis.drivers.some(axisDriver => axisDriver.equals(driver.id))) {
@@ -158,7 +157,7 @@ function getPresetEndstopType(index: number): EndstopType | null {
 	return (index < store.preset.sensors.endstops.length && store.preset.sensors.endstops[index] !== null) ? store.preset.sensors.endstops[index]!.type : null;
 }
 
-function getEndstopTypeOptions(axis: StoreState<Axis>): Array<SelectOption> {
+function getEndstopTypeOptions(axis: Axis): Array<SelectOption> {
 	// Switches are always supported
 	const options: Array<SelectOption> = [
 		{
@@ -230,7 +229,7 @@ function getPresetEndstopLocation(axisIndex: number): boolean {
 	return (axisIndex < store.preset.sensors.endstops.length && store.preset.sensors.endstops[axisIndex] !== null) ? store.preset.sensors.endstops[axisIndex]!.highEnd : false;
 }
 
-function getHomingSpeeds(axis: StoreState<Axis>, configDriver: StoreState<ConfigDriver>): Array<number> {
+function getHomingSpeeds(axis: Axis, configDriver: ConfigDriver): Array<number> {
 	function getAxisHomingSpeeds(axisLetter: string): Array<number> {
 		const axis = store.data.move.axes.find(item => item.letter === axisLetter);
 		if (axis && axis.drivers.length > 0) {

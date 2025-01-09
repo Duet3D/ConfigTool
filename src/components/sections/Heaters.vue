@@ -344,7 +344,6 @@ const HeaterControlOptions: Array<SelectOption> = [
 
 <script setup lang="ts">
 import { Heater, HeaterModel, HeaterMonitor, HeaterMonitorCondition } from "@duet3d/objectmodel";
-import type { StoreState } from "pinia";
 import { computed, ref } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
@@ -445,7 +444,7 @@ function getSensorBoard(sensor: number) {
 	return undefined;
 }
 
-function getHeaterMaxTemperature(heater: StoreState<Heater>) {
+function getHeaterMaxTemperature(heater: Heater) {
 	for (const monitor of heater.monitors) {
 		if (monitor.condition === HeaterMonitorCondition.tooHigh) {
 			return monitor.limit!;
@@ -454,7 +453,7 @@ function getHeaterMaxTemperature(heater: StoreState<Heater>) {
 	return NaN;
 }
 
-function setHeaterMaxTemperature(heater: StoreState<Heater>, temperature: number) {
+function setHeaterMaxTemperature(heater: Heater, temperature: number) {
 	heater.max = temperature;
 	for (const monitor of heater.monitors) {
 		if (monitor.condition === HeaterMonitorCondition.tooHigh) {

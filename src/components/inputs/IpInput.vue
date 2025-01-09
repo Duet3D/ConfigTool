@@ -16,7 +16,7 @@ let numInstances = 0;
 import { computed } from "vue";
 
 // External interface
-interface IpInputProps {
+const props = withDefaults(defineProps<{
 	/**
 	 * Optional label next to the control
 	 */
@@ -51,8 +51,7 @@ interface IpInputProps {
 	 * Enable value checking (enabled by default)
 	 */
 	required?: boolean
-}
-const props = withDefaults(defineProps<IpInputProps>(), {
+}>(), {
 	lazy: false,
 	netMask: false,
 	disabled: false,

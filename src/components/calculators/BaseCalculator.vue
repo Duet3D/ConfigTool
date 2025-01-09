@@ -28,7 +28,7 @@ import { computed, onBeforeUnmount, ref } from "vue";
 import { closeAllTooltips } from "@/directives/VPreset";
 
 // External interface
-interface BaseCalculatorProps {
+const props = withDefaults(defineProps<{
 	label?: string,
 	lazy?: boolean,
 	min?: number,
@@ -39,8 +39,7 @@ interface BaseCalculatorProps {
 	title?: string,
 	unit?: string,
 	valid?: boolean
-}
-const props = withDefaults(defineProps<BaseCalculatorProps>(), {
+}>(), {
 	lazy: true,
 	required: true,
 	valid: true
