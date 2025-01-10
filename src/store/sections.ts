@@ -65,7 +65,7 @@ export function getSections() {
  * @returns List of templates to generate
  */
 export function getSectionTemplates(section?: ConfigSectionType) {
-    const store = useStore(), result: Array<{ template: string, data: Record<string, any> | null }> = [
+    const store = useStore(), result: Array<{ template: string, data: Record<string, any> | null }> = section ? [] : [
         { template: "pause", data: null },
         { template: "resume", data: null }
     ];
