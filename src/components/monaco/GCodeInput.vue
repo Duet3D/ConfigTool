@@ -33,7 +33,7 @@ let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 onMounted(() => {
     editor = monaco.editor.create(editorRef.value!, {
-        language: "gcode",
+        language: "gcode-fdm",
         minimap: {
             enabled: false
         },

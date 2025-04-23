@@ -231,8 +231,7 @@ defaultTemplate.configTool.assignPort("out1", ConfigPortFunction.heater, 1);		//
 defaultTemplate.configTool.assignPort("out3", ConfigPortFunction.fan, 0);			// Nozzle fan
 defaultTemplate.configTool.assignPort("out4", ConfigPortFunction.fan, 1);			// Nozzle thermostatic fan
 
-export const useStore = defineStore({
-    id: "model",
+export const useStore = defineStore("model", {
     state: () => {
 		return {
 			data: initObject(ConfigModel, defaultTemplate),

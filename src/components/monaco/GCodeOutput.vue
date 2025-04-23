@@ -25,7 +25,7 @@ let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 onMounted(() => {
     editor = monaco.editor.create(editorRef.value!, {
         automaticLayout: true,
-        language: "gcode",
+        language: "gcode-fdm",
         matchBrackets: "never",
         minimap: {
             enabled: false
