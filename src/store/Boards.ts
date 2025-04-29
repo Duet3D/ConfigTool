@@ -463,7 +463,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.fanTacho]: ["exp.pb6"],
 			[PortType.gpIn]: ["xstop", "ystop", "zstop", "e0stop", "e1stop", "exp.e2stop+exp.4", "exp.e3stop+exp.9", "exp.e4stop+exp.14", "exp.e5stop+exp.19", "exp.e6stop+exp.24"],
 			[PortType.gpInInterrupt]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
-			[PortType.gpOut]: ["pson"],
+			[PortType.gpOut]: ["zprobe.mod", "pson"],
 			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
 			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
 			[PortType.scanning]: [],
