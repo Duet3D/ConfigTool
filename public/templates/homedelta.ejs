@@ -59,6 +59,9 @@ G1 <%- params({
     Z: highEndstops ? "{var.homedHeight}" : "{-var.homedHeight}",
     F: fastHomingSpeed * 60
 }) %> ; move all towers to the <%- highEndstops ? "high" : "low" %> end once more stopping at the endstops
+<%  if (highEndstops) { -%>
+G1 Z-5 F6000 ; go down a bit so we can move to the center (fixes "G1: target position not reachable from current position" issue)
+<%  } -%>
 G90 ; absolute positioning
 G1 X0 Y0 F<%- travelSpeed %> ; move X and Y to the centre
 

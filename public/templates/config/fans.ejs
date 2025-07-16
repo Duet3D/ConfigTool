@@ -11,7 +11,7 @@ M106 <%- params({
     C: fan.name ? fan.name : undefined,
     S: fan.requestedValue,
     L: fan.thermostatic.sensors.length ? undefined : fan.min,
-    X: fan.thermostatic.sensors.length ? undefined : fan.max,
+    X: (fan.thermostatic.sensors.length && fan.thermostatic.lowTemperature != fan.thermostatic.highTemperature) ? undefined : fan.max,
     B: fan.blip,
     H: fan.thermostatic.sensors.length ? fan.thermostatic.sensors : undefined,
     T: fan.thermostatic.sensors.length ? reduce([fan.thermostatic.lowTemperature, fan.thermostatic.highTemperature]) : undefined
