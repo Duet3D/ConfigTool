@@ -93,16 +93,19 @@ export class ConfigPort extends ModelObject {
 	/**
 	 * Assign the ports from the given value
 	 * @param value Port to assign from
+	 * @param updateProperties Whether to update the properties of this port
 	 */
-	assign(value: ConfigPort) {
+	assign(value: ConfigPort, updateProperties: boolean ) {
 		this.canBoard = value.canBoard;
 		this.capabilities = new ModelSet<PortType>(value.capabilities);
 		this.ports = value.ports.slice();
 		this.rawPorts = value.rawPorts.slice();
 
-		this.frequency = value.frequency;
-		this.inverted = value.inverted;
-		this.pullUp = value.pullUp;
+		if (updateProperties) {
+			this.frequency = value.frequency;
+			this.inverted = value.inverted;
+			this.pullUp = value.pullUp;
+		}
 	}
 
 	/**

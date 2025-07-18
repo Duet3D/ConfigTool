@@ -487,7 +487,7 @@ export default class ConfigModel extends ObjectModel {
 			if (!updatedPort) {
 				this.configTool.ports.splice(i, 1);
 			} else {
-				existingPort.assign(updatedPort);
+				existingPort.assign(updatedPort, false);
 			}
 		}
 
