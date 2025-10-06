@@ -10,7 +10,7 @@
     for (let i = 0; i < model.sensors.analog.length; i++) {
         const sensor = model.sensors.analog[i], configSensor = model.configTool.sensors[i];
         if (sensor !== null) {
-            let port = undefined, sensorOptions = {};
+            let port = undefined, type = sensor.type, sensorOptions = {};
             if (sensor.type === AnalogSensorType.thermistor) {
                 port = getPortString(ConfigPortFunction.thermistor, i);
                 sensorOptions = {
@@ -29,13 +29,13 @@
                     H: (!sensorSupportsADCAutoCalibration(i) && configSensor.adcHighOffset !== null) ? configSensor.adcHighOffset : undefined
                 };
             } else if (sensor.type === AnalogSensorType.max31856) {
-                port = getPortString(ConfigPortFunction.spiCs, i);
+                port = getPortString(ConfigPortFunction.sensorSpiCs, i);
                 sensorOptions = {
                     K: configSensor.thermocoupleType,
                     F: configSensor.mainsFrequency
                 };
             } else if (sensor.type === AnalogSensorType.max31865) {
-                port = getPortString(ConfigPortFunction.spiCs, i);
+                port = getPortString(ConfigPortFunction.sensorSpiCs, i);
                 sensorOptions = {
                     R: (configSensor.rref !== null) ? configSensor.rref : undefined,
                     W: configSensor.numWires,
@@ -49,16 +49,23 @@
                     C: configSensor.maxTemp
                 };
             } else if ([AnalogSensorType.dht21, AnalogSensorType.dht22, AnalogSensorType.bme280].includes(sensor.type)) {
-                port = getPortString(ConfigPortFunction.spiCs, i);
+                port = getPortString(ConfigPortFunction.sensorSpiCs, i);
             } else if ([AnalogSensorType.dhtHumidity, AnalogSensorType.bme280pressure].includes(sensor.type)) {
                 port = `${configSensor.baseSensor}.1`;
             } else if (sensor.type === AnalogSensorType.bme280humidity) {
                 port = `${configSensor.baseSensor}.2`;
+            } else if (sensor.type === AnalogSensorType.ads131chan0 || sensor.type === AnalogSensorType.ads131chan1) {
+                port = getPortString(ConfigPortFunction.sensorSpiCs, i);
+                type = `${sensor.type}.${(configSensor.bipolar ? 'b' : 'u')}`;
+                sensorOptions = {
+                    B: configSensor.minTemp,
+                    C: configSensor.maxTemp
+                };
             } -%>
 M308 <%- params({
     S: i,
     P: port,
-    Y: sensor.type,
+    Y: type,
     A: (sensor.name.trim() !== "") ? sensor.name : undefined,
     ...sensorOptions
 }) %> ; configure sensor #<%- i %>

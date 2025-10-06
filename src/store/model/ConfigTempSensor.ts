@@ -9,6 +9,7 @@ export class ConfigTempSensor extends ModelObject {                     // TODO 
 	seriesR: number | null = null;
 
 	filtered: boolean = true;											// only used by LinearAnalog
+	bipolar: boolean = false;											// only used by ADS131
 	minTemp: number = 0;												// temp at ADC == min
 	maxTemp: number = 200;												// temp at ADC == max
 

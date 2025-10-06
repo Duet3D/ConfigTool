@@ -36,14 +36,17 @@
 											  :preset="getPresetSensorValue(index, 'type')" />
 							</div>
 							<div class="col-3">
-								<select-input v-if="requiresBaseSensor(sensor.type)" :label="(sensor.type === AnalogSensorType.dhtHumidity) ? 'DHT Sensor' : 'BME280 Sensor'"
+								<select-input v-if="requiresBaseSensor(sensor.type)"
+											  :label="(sensor.type === AnalogSensorType.dhtHumidity) ? 'DHT Sensor' : 'BME280 Sensor'"
 											  title="Existing sensor channel number used for this extra sensor. The corresponding sensor must come before this one"
 											  :model-value="getConfigSensorValue(index, 'baseSensor')"
 											  @update:model-value="setConfigSensorValue(index, 'baseSensor', $event)"
 											  :preset="getPresetConfigSensorValue(index, 'baseSensor')"
 											  :options="getBaseSensorOptions(sensor.type, index)" />
-								<port-input v-else-if="![AnalogSensorType.mcuTemp, AnalogSensorType.drivers, AnalogSensorType.driversDuex].includes(sensor.type)" label="Input Port" title="Input port for this sensor"
-											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.sensorSpiCs" :index="index" />
+								<port-input v-else-if="![AnalogSensorType.mcuTemp, AnalogSensorType.drivers, AnalogSensorType.driversDuex].includes(sensor.type)"
+											label="Input Port" title="Input port for this sensor"
+											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.sensorSpiCs"
+											:index="index" />
 							</div>
 							<!-- Thermistor and PT1000 Options-->
 							<template v-if="sensor.type === AnalogSensorType.thermistor || sensor.type === AnalogSensorType.pt1000">
@@ -71,19 +74,19 @@
 								<template v-if="!sensorSupportsADCAutoCalibration(index)">
 									<div class="col-6">
 										<optional-number-input label="ADC Low Offset"
-															title="ADC low offset correction. This is automatically calibrated on most boards, so this option is usually not required"
-															:model-value="getConfigSensorValue(index, 'adcLowOffset')"
-															@update:model-value="setConfigSensorValue(index, 'adcLowOffset', $event)"
-															:preset="getPresetConfigSensorValue(index, 'adcLowOffset')"
-															:min="-128" :max="127" :step="1" />
+															   title="ADC low offset correction. This is automatically calibrated on most boards, so this option is usually not required"
+															   :model-value="getConfigSensorValue(index, 'adcLowOffset')"
+															   @update:model-value="setConfigSensorValue(index, 'adcLowOffset', $event)"
+															   :preset="getPresetConfigSensorValue(index, 'adcLowOffset')"
+															   :min="-128" :max="127" :step="1" />
 									</div>
 									<div class="col-6">
 										<optional-number-input label="ADC High Offset"
-															title="ADC high offset correction. This is automatically calibrated on most boards, so this option is usually not required"
-															:model-value="getConfigSensorValue(index, 'adcHighOffset')"
-															@update:model-value="setConfigSensorValue(index, 'adcHighOffset', $event)"
-															:preset="getPresetConfigSensorValue(index, 'adcHighOffset')"
-															:min="-128" :max="127" :step="1" />
+															   title="ADC high offset correction. This is automatically calibrated on most boards, so this option is usually not required"
+															   :model-value="getConfigSensorValue(index, 'adcHighOffset')"
+															   @update:model-value="setConfigSensorValue(index, 'adcHighOffset', $event)"
+															   :preset="getPresetConfigSensorValue(index, 'adcHighOffset')"
+															   :min="-128" :max="127" :step="1" />
 									</div>
 								</template>
 							</template>
@@ -103,7 +106,7 @@
 												  :model-value="getConfigSensorValue(index, 'maxTemp')"
 												  @update:model-value="setConfigSensorValue(index, 'maxTemp', $event)"
 												  :preset="getPresetConfigSensorValue(index, 'maxTemp')"
-												  :min="getConfigSensorValue(index, 'minTemp')"	:max="1999" step="any"
+												  :min="getConfigSensorValue(index, 'minTemp')" :max="1999" step="any"
 												  unit="°C" />
 								</div>
 								<div class="col-4 d-flex align-items-end">
@@ -152,6 +155,33 @@
 												  @update:model-value="setConfigSensorValue(index, 'mainsFrequency', $event)"
 												  :preset="getPresetConfigSensorValue(index, 'mainsFrequency')"
 												  :options="MainsFrequencies" />
+								</div>
+							</template>
+							<!-- ADS131 -->
+							<template v-else-if="sensor.type === AnalogSensorType.ads131chan0 || sensor.type === AnalogSensorType.ads131chan1">
+								<div class="col-4">
+									<number-input label="Zero Reading"
+												  title="Reading required when the ADC reading is at minimum (typically with 0V output from the sensor)"
+												  :model-value="getConfigSensorValue(index, 'minTemp')"
+												  @update:model-value="setConfigSensorValue(index, 'minTemp', $event)"
+												  :preset="getPresetConfigSensorValue(index, 'minTemp')" :min="-273"
+												  :max="getConfigSensorValue(index, 'maxTemp')" step="any" unit="°C" />
+								</div>
+								<div class="col-4">
+									<number-input label="Full Scale Reading"
+												  title="Reading required when the ADC reading is at maximum (typically with 10V output from the sensor)"
+												  :model-value="getConfigSensorValue(index, 'maxTemp')"
+												  @update:model-value="setConfigSensorValue(index, 'maxTemp', $event)"
+												  :preset="getPresetConfigSensorValue(index, 'maxTemp')"
+												  :min="getConfigSensorValue(index, 'minTemp')" :max="1999" step="any"
+												  unit="°C" />
+								</div>
+								<div class="col-4 d-flex align-items-end">
+									<check-input class="mb-1" label="Bipolar Operation"
+												 title="Enable this to measure negative voltages. Note that this reduces the maximum measurable positive voltage"
+												 :model-value="getConfigSensorValue(index, 'bipolar')"
+												 @update:model-value="setConfigSensorValue(index, 'bipolar', $event)"
+												 :preset="getPresetConfigSensorValue(index, 'bipolar')" />
 								</div>
 							</template>
 						</div>
@@ -370,7 +400,7 @@ function getSensorTypes(index: number) {
 			];
 		}
 
-		result["SPI Daughter Boards"] = [
+		const spiBoards: Array<SelectOption> = [
 			{
 				text: "K-Type Thermocouple (MAX31855)",
 				value: AnalogSensorType.max31855
@@ -384,6 +414,17 @@ function getSensorTypes(index: number) {
 				value: AnalogSensorType.max31865
 			}
 		];
+		if (store.data.boardDefinition?.supportsADS131) {
+			spiBoards.push({
+				text: "ADS131 (Channel 0)",
+				value: AnalogSensorType.ads131chan0
+			});
+			spiBoards.push({
+				text: "ADS131 (Channel 1)",
+				value: AnalogSensorType.ads131chan1
+			});
+		}
+		result["SPI Daughter Boards"] = spiBoards;
 	}
 
 	return result;
@@ -402,6 +443,8 @@ function getSensorPortFunctions(sensorType: AnalogSensorType) {
 		case AnalogSensorType.max31855:
 		case AnalogSensorType.max31856:
 		case AnalogSensorType.max31865:
+		case AnalogSensorType.ads131chan0:
+		case AnalogSensorType.ads131chan1:
 			result.add(ConfigPortFunction.sensorSpiCs);
 			break;
 

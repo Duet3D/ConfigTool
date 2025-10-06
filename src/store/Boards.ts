@@ -41,6 +41,7 @@ export interface BoardDescriptor extends BaseBoardDescriptor {
 	objectModelLimits: Limits;
 	objectModelNetworkInterfaces: Array<NetworkInterface>;
 	supportsBME280: boolean;
+	supportsADS131: boolean;
 }
 
 /**
@@ -127,7 +128,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: true
+		supportsBME280: true,
+		supportsADS131: true
 	},
 	[BoardType.Duet3Mini5PlusWiFi]: {
 		hasADCAutoCalibration: true,
@@ -209,7 +211,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: true
+		supportsBME280: true,
+		supportsADS131: true
 	},
 	[BoardType.Duet3MB6HC]: {
 		hasADCAutoCalibration: true,
@@ -287,7 +290,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: true
+		supportsBME280: true,
+		supportsADS131: true
 	},
 	[BoardType.Duet3MB6XD]: {
 		hasADCAutoCalibration: true,
@@ -366,7 +370,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: true
+		supportsBME280: true,
+		supportsADS131: true
 	},
 	[BoardType.Duet2Ethernet]: {
 		hasADCAutoCalibration: false,
@@ -447,7 +452,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: false
+		supportsBME280: false,
+		supportsADS131: false
 	},
 	[BoardType.Duet2WiFi]: {
 		hasADCAutoCalibration: false,
@@ -528,7 +534,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: false
+		supportsBME280: false,
+		supportsADS131: false
 	},
 	[BoardType.Duet2SBC]: {
 		displayDotstarPort: null,
@@ -605,7 +612,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		}),
 		objectModelNetworkInterfaces: [],
 		supportsAccelerometer: true,
-		supportsBME280: false
+		supportsBME280: false,
+		supportsADS131: false
 	},
 	[BoardType.Duet2Maestro]: {
 		displayDotstarPort: null,
@@ -684,7 +692,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			})
 		],
 		supportsAccelerometer: true,
-		supportsBME280: false
+		supportsBME280: false,
+		supportsADS131: false
 	}
 }
 
