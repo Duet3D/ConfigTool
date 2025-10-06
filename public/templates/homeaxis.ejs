@@ -16,6 +16,7 @@
     const firstDriver = (axis.drivers.length > 0) ? model.configTool.drivers.find(driver => driver.id.equals(axis.drivers[0])) : null;
     const fastHomingSpeed = (firstDriver && firstDriver.homingSpeeds.length > 0) ? firstDriver.homingSpeeds[0] * 60 : 600;
     const slowHomingSpeed = (firstDriver && firstDriver.homingSpeeds.length > 1) ? firstDriver.homingSpeeds[1] * 60 : 300;
+    const homeTwice = firstDriver && firstDriver.homingSpeeds.length > 1;
     const zLiftCanHitEndstop = model.sensors.endstops.some(endstop => (endstop !== null) && (endstop.letter === 'Z') && endstop.highEnd);
 
     // Check how the axis is supposed to be homed
@@ -34,7 +35,7 @@ G90 ; absolute positioning
 ; home <%- axisLetter %>
 <%      if (axisLetter === 'Z' && endstop.type === EndstopType.ZProbeAsEndstop) {
             // Home Z using Z-probe
-            if (model.move.compensation.probeGrid !== null && model.move.compensation.probeGrid.axes[0] === 'X' && model.move.compensation.probeGrid.axes[1] === 'Y') {
+            if (usingMeshCompensation() && model.move.compensation.probeGrid.axes[0] === 'X' && model.move.compensation.probeGrid.axes[1] === 'Y') {
                 if (preview) { -%>
 ; NOTE: The following XY position is determined from the probe grid defined in the next section
 <%              } -%>
@@ -59,8 +60,8 @@ G1 <%- params({
     H: 1,
     [axisLetter]: endstop.highEnd ? "{var.maxTravel}" : "{-var.maxTravel}",
     F: fastHomingSpeed
-}) %> ; <%- (fastHomingSpeed !== slowHomingSpeed) ? "coarse home" : "home" %> in the <%- (endstop.highEnd ? "+" : "-") + axisLetter %> direction
-<%          if (fastHomingSpeed !== slowHomingSpeed) {
+}) %> ; <%- homeTwice ? "coarse home" : "home" %> in the <%- (endstop.highEnd ? "+" : "-") + axisLetter %> direction
+<%          if (homeTwice) {
                 // second pass
 -%>
 G1 <%- params({

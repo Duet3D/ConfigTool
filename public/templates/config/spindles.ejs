@@ -1,8 +1,10 @@
 <%  for (let i = 0; i < model.spindles.length; i++) {
         const spindle = model.spindles[i], spindlePwmPort = getPort(ConfigPortFunction.spindlePwm, i);
-        if (spindle !== null && spindlePwmPort !== null) { -%>
+        if (spindle !== null && spindlePwmPort !== null) {
+            const type = (spindle.type === SpindleType.fwdRev) ? 1 : 0; -%>
 M950 <%- params({
-    C: getCombinedPortString([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards], i),
+    T: type,
+    C: getCombinedPortString([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleFirstPort, ConfigPortFunction.spindleSecondPort], i),
     Q: spindlePwmPort.frequency,
     L: [spindle.min, spindle.max]
 }) %> ; configure spindle #<%- i %>

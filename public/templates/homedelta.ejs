@@ -44,7 +44,7 @@ G1 <%- params({
     Z: highEndstops ? "{var.homedHeight}" : "{-var.homedHeight}",
     F: fastHomingSpeed * 60
 }) %> ; move all towers to the <%- highEndstops ? "high" : "low" %> end stopping at the endstops
-<%          if (fastHomingSpeed !== slowHomingSpeed) { -%>
+<%          if (homingSpeeds.length > 1) { -%>
 G1 <%- params({
     H: 2,
     X: highEndstops ? -10 : 10,

@@ -58,14 +58,18 @@ const props = withDefaults(defineProps<{
 const id = `homing-speeds-${++numInstances}`;
 
 // x2 functionality
-let homeTwiceValue = ref(props.speeds.length > 1 && props.speeds[0] !== props.speeds[1]);
 const homeTwice = computed<boolean>({
-	get: () => homeTwiceValue.value,
+	get: () => props.speeds.length > 1,
 	set(value) {
-		if (!value && props.speeds.length > 1) {
-			props.speeds[1] = props.speeds[0];
+		if (value) {
+			if (props.speeds.length === 1) {
+				props.speeds.push(props.speeds[0]);
+			}
+		} else {
+			if (props.speeds.length > 1) {
+				props.speeds.splice(1, props.speeds.length - 1);
+			}
 		}
-		homeTwiceValue.value = value;
 	}
 });
 

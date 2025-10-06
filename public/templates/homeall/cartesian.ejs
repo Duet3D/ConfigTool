@@ -23,17 +23,17 @@
                 xEndstop = true;
                 xHighEnd = endstop.highEnd;
                 xFastHomingSpeed = homingSpeeds[0] * 60;
-                xSlowHomingSpeed = homingSpeeds[1] * 60;
+                xSlowHomingSpeed = (homingSpeeds.length > 1) ? homingSpeeds[1] * 60 : null;
             } else if (axis.letter === 'Y') {
                 yEndstop = true;
                 yHighEnd = endstop.highEnd;
                 yFastHomingSpeed = homingSpeeds[0] * 60;
-                ySlowHomingSpeed = homingSpeeds[1] * 60;
+                ySlowHomingSpeed = (homingSpeeds.length > 1) ? homingSpeeds[1] * 60 : null;
             } else if (axis.letter === 'Z' && endstop.type !== EndstopType.ZProbeAsEndstop) {
                 zEndstop = true;
                 zHighEnd = endstop.highEnd;
                 zFastHomingSpeed = homingSpeeds[0] * 60;
-                zSlowHomingSpeed = homingSpeeds[1] * 60;
+                zSlowHomingSpeed = (homingSpeeds.length > 1) ? homingSpeeds[1] * 60 : null;
             }
         }
     } -%>
@@ -59,8 +59,8 @@ G1 <%- params({
     H: 1,
     X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
     F: xFastHomingSpeed
-}) %> ; <%- (xFastHomingSpeed !== xSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
-<%      if (xFastHomingSpeed !== xSlowHomingSpeed) {
+}) %> ; <%- (xSlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
+<%      if (xSlowHomingSpeed !== null) {
             // second pass
 -%>
 G1 <%- params({
@@ -93,8 +93,8 @@ G1 <%- params({
     H: 1,
     Y: yHighEnd ? "{var.yTavel}" : "{-var.yTravel}",
     F: yFastHomingSpeed
-}) %> ; <%- (yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
-<%      if (yFastHomingSpeed !== ySlowHomingSpeed) {
+}) %> ; <%- (ySlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
+<%      if (ySlowHomingSpeed !== null) {
             // second pass
 -%>
 G1 <%- params({
@@ -122,7 +122,7 @@ G1 <%- params({
     X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
     Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
     F: xFastHomingSpeed
-}) %> ; <%- (xFastHomingSpeed !== xSlowHomingSpeed || yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X and <%- yHighEnd ? "+" : "-" %>Y directions
+}) %> ; <%- (xSlowHomingSpeed !== null || ySlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X and <%- yHighEnd ? "+" : "-" %>Y directions
 <%      } else {
             // different fast XY homing speeds
 -%>
@@ -130,20 +130,20 @@ G1 <%- params({
     H: 1,
     X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
     F: xFastHomingSpeed
-}) %> ; <%- (xFastHomingSpeed !== xSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
+}) %> ; <%- (xSlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
 G1 <%- params({
     H: 1,
     Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
     F: yFastHomingSpeed
-}) %> ; <%- (yFastHomingSpeed !== ySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
+}) %> ; <%- (ySlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
 <%  }
-        if (xFastHomingSpeed !== xSlowHomingSpeed || yFastHomingSpeed !== ySlowHomingSpeed) {
+        if (xSlowHomingSpeed !== null || ySlowHomingSpeed !== null) {
             // second pass
 -%>
 G1 <%- params({
     H: 2,
-    X: (xFastHomingSpeed !== xSlowHomingSpeed) ? (xHighEnd ? -5 : 5) : undefined,
-    Y: (yFastHomingSpeed !== ySlowHomingSpeed) ? (yHighEnd ? -5 : 5) : undefined,
+    X: (xSlowHomingSpeed !== null) ? (xHighEnd ? -5 : 5) : undefined,
+    Y: (ySlowHomingSpeed !== null) ? (yHighEnd ? -5 : 5) : undefined,
     F: travelSpeed
 }) %> ; move back 5mm
 <%          if (xSlowHomingSpeed === ySlowHomingSpeed) {
@@ -183,8 +183,8 @@ G1 <%- params({
     H: 1,
     Z: zHighEnd ? "{var.zTravel}" : "{-var.zTravel}",
     F: zFastHomingSpeed
-}) -%> ; <%- (zFastHomingSpeed !== zSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- zHighEnd ? "+" : "-" %>Z direction
-<%      if (zFastHomingSpeed !== zSlowHomingSpeed) {
+}) -%> ; <%- (zSlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- zHighEnd ? "+" : "-" %>Z direction
+<%      if (zSlowHomingSpeed !== null) {
             // second pass
 -%>
 G1 <%- params({
@@ -201,7 +201,7 @@ G90 ; absolute positioning
 <%      }
     } else if (zProbe) {
         // use Z probe
-        if (model.move.compensation.probeGrid !== null && model.move.compensation.probeGrid.axes[0] === 'X' && model.move.compensation.probeGrid.axes[1] === 'Y') {
+        if (usingMeshCompensation() && model.move.compensation.probeGrid.axes[0] === 'X' && model.move.compensation.probeGrid.axes[1] === 'Y') {
             if (preview) { -%>
 ; NOTE: The following XY coordinates use values from the probe grid defined in the next section
 <%          } -%>

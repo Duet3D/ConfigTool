@@ -245,6 +245,16 @@ export const useStore = defineStore("model", {
     },
     actions: {
 		setModel(newModel: ConfigModel) {
+			// Update deprecated port functions
+			for (const port of newModel.configTool.ports) {
+				if (port.function === ConfigPortFunction.spindleForwards_deprecated) {
+					port.function = ConfigPortFunction.spindleFirstPort;
+				} else if (port.function === ConfigPortFunction.spindleBackwards_deprecated) {
+					port.function = ConfigPortFunction.spindleSecondPort;
+				}
+			}
+
+			// Load model
 			this.data.update(newModel);
 			this.data.validate();
 			this.dataModified = this.showSavePrompt = false;

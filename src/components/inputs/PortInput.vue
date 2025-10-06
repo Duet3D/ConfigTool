@@ -132,8 +132,8 @@ const allowPullUp = computed(() => {
 		case ConfigPortFunction.probeServo:
 		case ConfigPortFunction.sensorSpiCs:
 		case ConfigPortFunction.servo:
-		case ConfigPortFunction.spindleBackwards:
-		case ConfigPortFunction.spindleForwards:
+		case ConfigPortFunction.spindleFirstPort:
+		case ConfigPortFunction.spindleSecondPort:
 		case ConfigPortFunction.spindlePwm:
 		case ConfigPortFunction.thermistor:
 		case ConfigPortFunction.uart:
@@ -310,8 +310,10 @@ const ports = computed(() => {
 		case ConfigPortFunction.spindlePwm:
 			requiredCapabilities.add(PortType.pwm);
 			break;
-		case ConfigPortFunction.spindleForwards:
-		case ConfigPortFunction.spindleBackwards:
+		case ConfigPortFunction.spindleFirstPort:
+		case ConfigPortFunction.spindleSecondPort:
+		case ConfigPortFunction.spindleForwards_deprecated:
+		case ConfigPortFunction.spindleBackwards_deprecated:
 			requiredCapabilities.add(PortType.gpOut);
 			break;
 		case ConfigPortFunction.thermistor:
@@ -345,7 +347,7 @@ const ports = computed(() => {
 		for (const requiredCapability of requiredCapabilities) {
 			if (port.capabilities.has(requiredCapability)) {
 				const groupLabel = !port.canBoard ? "Main Board" : `CAN Board ${port.canBoard}`, portName = stripPort(port.toString());
-				const portLabel = (port.function === null || (port.function === props.function && port.index === props.index)) ? portName : `${portName} (used by ${port.function})`;
+				const portLabel = (port.function === null || (port.function === props.function && port.index === props.index)) ? port.getLabel(props.function) : `${port.getLabel(props.function)} (used by ${port.function})`;
 				if (!result[groupLabel]) {
 					result[groupLabel] = [
 						{
@@ -533,6 +535,6 @@ const required = computed(() => {
 	} else if (props.function === ConfigPortFunction.probeMod) {
 		return (props.index < store.data.sensors.analog.length) && ![ProbeType.digital, ProbeType.unfilteredDigital].includes(store.data.sensors.probes[props.index]!.type);
 	}
-	return ![ConfigPortFunction.fanTacho, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards].includes(props.function);
+	return ![ConfigPortFunction.fanTacho, ConfigPortFunction.spindleFirstPort, ConfigPortFunction.spindleSecondPort].includes(props.function);
 });
 </script>

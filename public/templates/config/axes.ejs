@@ -12,16 +12,19 @@
         } else {
             microstepping[axis.letter] = axis.microstepping.value;
         }
+        currents[axis.letter] = axis.current;
         stepsPerMm[axis.letter] = axis.stepsPerMm;
         jerk[axis.letter] = axis.jerk * 60;
         maxSpeed[axis.letter] = axis.speed * 60;
         acceleration[axis.letter] = axis.acceleration;
+
         for (const driver of axis.drivers) {
-            const board = model.boards.find(board => board.canAddress === driver.board);
+            const board = model.boards.find(board => (board.canAddress ?? 0) === (driver.board ?? 0));
             if (board) {
                 const boardDefinition = (board.canAddress > 0) ? getExpansionBoardDefinition(board) : getBoardDefinition(model);
-                if (boardDefinition?.hasSmartDrivers) {
-                    currents[axis.letter] = axis.current;
+                if (!boardDefinition?.hasSmartDrivers) {
+                    delete currents[axis.letter];
+                    delete microstepping[axis.letter];
                     break;
                 }
             }

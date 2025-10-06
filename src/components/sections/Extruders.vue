@@ -67,6 +67,7 @@
 							<select-input title="Microstepping for the mapped driver"
 										  :model-value="getMicrostepping(extruder)"
 										  @update:model-value="setMicrostepping(extruder, $event)"
+										  :disabled="getMicrosteppingOptions(extruder).length === 1"
 										  :options="getMicrosteppingOptions(extruder)"
 										  :preset="getPresetExtruderMicrostepping(extruder)" />
 							<span v-show="getMicrostepping(extruder).endsWith('i')" class="small-text">
@@ -160,12 +161,13 @@ function setMicrostepping(extruder: Extruder, value: string): void {
 
 function getMicrosteppingOptions(extruder: Extruder) {
 	// Check which interpolations to x256 are supported
-	let supportedInterpolations: Array<number> = [];
+	let hasSmartDrivers = true, supportedInterpolations: Array<number> = [];
 	for (let i = 1; i < 256; i *= 2) {
 		let isSupported: boolean;
 		if (extruder.driver !== null) {
 			const boardDefinition = store.data.getBoardDefinition(extruder.driver.board);
 			isSupported = !!boardDefinition && boardDefinition.microstepInterpolations.includes(i);
+			hasSmartDrivers = hasSmartDrivers && !!boardDefinition && boardDefinition.hasSmartDrivers;
 		} else {
 			isSupported = true;				// supported by default
 		}
@@ -173,6 +175,14 @@ function getMicrosteppingOptions(extruder: Extruder) {
 		if (isSupported) {
 			supportedInterpolations.push(i);
 		}
+	}
+
+	// Dumb drivers may be set only to x16
+	if (!hasSmartDrivers) {
+		return [{
+			text: "x16",
+			value: "16"
+		}];
 	}
 
 	// Make select options

@@ -21,10 +21,13 @@ export enum ConfigPortFunction {
 	sensorSpiCs = "sensorSpiCs",
 	servo = "servo",
 	spindlePwm = "spindlePwm",
-	spindleForwards = "spindleForwards",
-	spindleBackwards = "spindleBackwards",
+	spindleFirstPort = "spindleFirstPort",
+	spindleSecondPort = "spindleSecondPort",
 	thermistor = "thermistor",
-	uart = "uart"
+	uart = "uart",
+
+	spindleForwards_deprecated = "spindleForwards",
+	spindleBackwards_deprecated = "spindleBackwards"
 }
 
 /**
@@ -189,31 +192,70 @@ export class ConfigPort extends ModelObject {
 	pullUp: boolean = false;
 
 	/**
+	 * Get a user-friendly label for the port based on its function
+	 * @param fn Function to get the label for
+	 * @returns User-friendly label (or first port if no special label is available)
+	 */
+	getLabel(fn: ConfigPortFunction): string {
+		switch (fn) {
+			case ConfigPortFunction.spindlePwm:
+			case ConfigPortFunction.spindleFirstPort:
+			case ConfigPortFunction.spindleSecondPort:
+				if (this.ports.includes("vfd")) {
+					return "vfd";
+				}
+				break;
+			case ConfigPortFunction.laser:
+				if (this.ports.includes("laser")) {
+					return "laser";
+				}
+				break;
+		}
+		return this.ports[0];
+	}
+
+	/**
 	 * Convert this instance to a usable port string
 	 */
 	override toString() {
-		// TODO Prefer certain ports (e.g. duex > exp)
 		if (this.ports.length > 0) {
-			let firstPort = this.ports[0];
+			// Use primary port designator where applicable
+			let primaryPort = this.ports[0];
+			switch (this.function) {
+				case ConfigPortFunction.spindlePwm:
+				case ConfigPortFunction.spindleFirstPort:
+				case ConfigPortFunction.spindleSecondPort:
+					if (this.ports.includes("vfd")) {
+						primaryPort = "vfd";
+					}
+					break;
+				case ConfigPortFunction.laser:
+					if (this.ports.includes("laser")) {
+						primaryPort = "laser";
+					}
+					break;
+			}
+
+			// Add modifiers
 			if (this.pullUp) {
-				if (firstPort.includes("^")) {
+				if (primaryPort.includes("^")) {
 					// If the port already has a pull-up enabled, just strip the pull-up
-					firstPort = firstPort.replace("^", "");
+					primaryPort = primaryPort.replace("^", "");
 				} else {
 					// Enable pull-up resistor
-					firstPort = "^" + firstPort;
+					primaryPort = "^" + primaryPort;
 				}
 			}
 			if (this.inverted) {
-				if (firstPort.includes("!")) {
+				if (primaryPort.includes("!")) {
 					// If the port is already inverted, just strip the inversion again
-					firstPort = firstPort.replace("!", "");
+					primaryPort = primaryPort.replace("!", "");
 				} else {
 					// Invert the port
-					firstPort = "!" + firstPort;
+					primaryPort = "!" + primaryPort;
 				}
 			}
-			return firstPort;
+			return primaryPort;
 		}
 		return "";
 	}

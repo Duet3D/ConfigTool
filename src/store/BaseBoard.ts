@@ -7,6 +7,7 @@ export interface BaseBoardDescriptor {
 	hasADCAutoCalibration: boolean;
 	hasClosedLoopDrivers: boolean;              // TODO add this to object model -> boards
 	hasInputPullUps: boolean;
+	hasMcuTempSensor: boolean;                  // TODO add this to object model -> boards
 	hasSmartDrivers: boolean;                   // TODO add this to object model -> boards
 	hasStealthChop: boolean;
 	hasVrefMonitor: boolean;

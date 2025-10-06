@@ -134,6 +134,24 @@ export default class ConfigModel extends ObjectModel {
 		}
 		this.limits.update(boardDefinition.objectModelLimits);
 
+		if (!boardDefinition.hasSmartDrivers) {
+			for (const axis of this.move.axes) {
+				for (const driver of axis.drivers) {
+					if (!driver.board) {
+						axis.microstepping.value = 16;
+						axis.microstepping.interpolated = false;
+					}
+				}
+			}
+
+			for (const extruder of this.move.extruders) {
+				if (extruder.driver && !extruder.driver.board) {
+					extruder.microstepping.value = 16;
+					extruder.microstepping.interpolated = false;
+				}
+			}
+		}
+
 		if (this.sbc === null) {
 			// Update existing network interface types
 			for (let i = 0; i < Math.min(this.network.interfaces.length, boardDefinition.objectModelNetworkInterfaces.length); i++) {

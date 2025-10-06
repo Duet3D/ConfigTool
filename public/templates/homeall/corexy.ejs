@@ -25,7 +25,7 @@
                 xEndstop = true;
                 xHighEnd = endstop.highEnd;
                 xyFastHomingSpeed = homingSpeeds[0] * 60;
-                xySlowHomingSpeed = homingSpeeds[1] * 60;
+                xySlowHomingSpeed = (homingSpeeds.length > 1) ? homingSpeeds[1] * 60 : null;
             } else if (axis.letter === 'Y') {
                 yEndstop = true;
                 yHighEnd = endstop.highEnd;
@@ -33,17 +33,17 @@
                 zEndstop = true;
                 zHighEnd = endstop.highEnd;
                 zFastHomingSpeed = homingSpeeds[0] * 60;
-                zSlowHomingSpeed = homingSpeeds[1] * 60;
+                zSlowHomingSpeed = (homingSpeeds.length > 1) ? homingSpeeds[1] * 60 : null;
             } else if (axis.letter === 'U') {
                 uEndstop = true;
                 uHighEnd = endstop.highEnd;
                 uFastHomingSpeed = homingSpeeds[0] * 60;
-                uSlowHomingSpeed = homingSpeeds[1] * 60;
+                uSlowHomingSpeed = (homingSpeeds.length > 1) ? homingSpeeds[1] * 60 : null;
             } else if (axis.letter === 'V') {
                 vEndstop = true;
                 vHighEnd = endstop.highEnd;
                 vFastHomingSpeed = homingSpeeds[0] * 60;
-                vSlowHomingSpeed = homingSpeeds[1] * 60;
+                vSlowHomingSpeed = (homingSpeeds.length > 1) ? homingSpeeds[1] * 60 : null;
             }
         }
     }
@@ -52,11 +52,27 @@
     if (model.move.kinematics.name === KinematicsName.coreXYU) {
         uValid = true;
         fastHomingSpeed = Math.min(fastHomingSpeed, uFastHomingSpeed);
-        slowHomingSpeed = Math.min(slowHomingSpeed, uSlowHomingSpeed);
+        if (uSlowHomingSpeed !== null) {
+            if (slowHomingSpeed === null) {
+                slowHomingSpeed = uSlowHomingSpeed;
+            } else {
+                slowHomingSpeed = Math.min(slowHomingSpeed, uSlowHomingSpeed);
+            }
+        }
     } else if (model.move.kinematics.name === KinematicsName.coreXYUV) {
         uValid = vValid = true;
         fastHomingSpeed = Math.min(fastHomingSpeed, uFastHomingSpeed, vFastHomingSpeed);
-        slowHomingSpeed = Math.min(slowHomingSpeed, uSlowHomingSpeed, vSlowHomingSpeed);
+        if (slowHomingSpeed === null) {
+            if (uSlowHomingSpeed === null) {
+                slowHomingSpeed = vSlowHomingSpeed;
+            } else if (vSlowHomingSpeed !== null) {
+                slowHomingSpeed = Math.min(uSlowHomingSpeed, vSlowHomingSpeed);
+            }
+        } else if (uSlowHomingSpeed === null) {
+            slowHomingSpeed = Math.min(slowHomingSpeed, vSlowHomingSpeed);
+        } else if (vSlowHomingSpeed !== null) {
+            slowHomingSpeed = Math.min(slowHomingSpeed, uSlowHomingSpeed, vSlowHomingSpeed);
+        }
     }
 -%>
 ; increase Z
@@ -90,38 +106,38 @@ G1 <%- params({
     U: uValid ? (uHighEnd ? "{var.uTravel}" : "{-var.uTravel}") : undefined,
     V: vValid ? (vHighEnd ? "{var.vTravel}" : "{-var.vTravel}") : undefined,
     F: fastHomingSpeed
-}) %> ; <%- (xyFastHomingSpeed !== xySlowHomingSpeed) ? "coarse home" : "home" %>
+}) %> ; <%- (xySlowHomingSpeed !== null) ? "coarse home" : "home" %>
 G1 <%- params({
     H: 1,
     X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
     F: xyFastHomingSpeed
-}) %> ; <%- (xyFastHomingSpeed !== xySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
+}) %> ; <%- (xySlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- xHighEnd ? "+" : "-" %>X direction
 G1 <%- params({
     H: 1,
     Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
     F: xyFastHomingSpeed
-}) %> ; <%- (xyFastHomingSpeed !== xySlowHomingSpeed) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
+}) %> ; <%- (xySlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- yHighEnd ? "+" : "-" %>Y direction
 <%      if (uValid) { -%>
 G1 <%- params({
     H: 1,
     U: uHighEnd ? "{var.uTravel}" : "{-var.uTravel}",
     F: uFastHomingSpeed
-}) %> ; <%- (uFastHomingSpeed !== uSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- uHighEnd ? "+" : "-" %>U direction
+}) %> ; <%- (uSlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- uHighEnd ? "+" : "-" %>U direction
 <%          if (vValid) { -%>
 G1 <%- params({
     H: 1,
     V: vHighEnd ? "{var.vTravel}" : "{-var.vTravel}",
     F: vFastHomingSpeed
-}) %> ; <%- (vFastHomingSpeed !== vSlowHomingSpeed) ? "coarse home" : "home" %> in the <%- vHighEnd ? "+" : "-" %>V direction
+}) %> ; <%- (vSlowHomingSpeed !== null) ? "coarse home" : "home" %> in the <%- vHighEnd ? "+" : "-" %>V direction
 <%          }
         }
 
-        if (fastHomingSpeed !== slowHomingSpeed) {
+        if (slowHomingSpeed !== null) {
             // second pass
 -%>
 G1 <%- params({
-    X: (xyFastHomingSpeed !== xySlowHomingSpeed) ? (xHighEnd ? -5 : 5) : undefined,
-    Y: (xyFastHomingSpeed !== xySlowHomingSpeed) ? (yHighEnd ? -5 : 5) : undefined,
+    X: (xySlowHomingSpeed !== null) ? (xHighEnd ? -5 : 5) : undefined,
+    Y: (xySlowHomingSpeed !== null) ? (yHighEnd ? -5 : 5) : undefined,
     U: uValid ? (uHighEnd ? -5 : 5) : undefined,
     V: vValid ? (vHighEnd ? -5 : 5) : undefined,
     F: travelSpeed
@@ -137,24 +153,24 @@ G1 <%- params({
 G1 <%- params({
     H: 1,
     X: xHighEnd ? "{var.xTravel}" : "{-var.xTravel}",
-    F: xySlowHomingSpeed
+    F: xySlowHomingSpeed ?? slowHomingSpeed
 }) %> ; fine home in the <%- xHighEnd ? "+" : "-" %>X direction
 G1 <%- params({
     H: 1,
     Y: yHighEnd ? "{var.yTravel}" : "{-var.yTravel}",
-    F: xySlowHomingSpeed
+    F: xySlowHomingSpeed ?? slowHomingSpeed
 }) %> ; fine home in the <%- yHighEnd ? "+" : "-" %>Y direction
 <%          if (uValid) { -%>
 G1 <%- params({
     H: 1,
     U: uHighEnd ? "{var.uTravel}" : "{-var.uTravel}",
-    F: uSlowHomingSpeed
+    F: uSlowHomingSpeed ?? slowHomingSpeed
 }) %> ; fine home in the <%- uHighEnd ? "+" : "-" %>U direction
 <%              if (vValid) { -%>
     G1 <%- params({
     H: 1,
     V: vHighEnd ? "{var.vTravel}" : "{-var.vTravel}",
-    F: vSlowHomingSpeed
+    F: vSlowHomingSpeed ?? slowHomingSpeed
 }) %> ; fine home in the <%- vHighEnd ? "+" : "-" %>V direction
 <%              }
             }
@@ -189,7 +205,7 @@ G90 ; absolute positioning
 <%      }
     } else if (zProbe) {
         // use Z probe
-        if (model.move.compensation.probeGrid !== null && model.move.compensation.probeGrid.axes[0] === 'X' && model.move.compensation.probeGrid.axes[1] === 'Y') {
+        if (usingMeshCompensation() && model.move.compensation.probeGrid.axes[0] === 'X' && model.move.compensation.probeGrid.axes[1] === 'Y') {
             if (preview) { -%>
 ; NOTE: The following XY coordinates use values from the probe grid defined in the next section
 <%          } -%>

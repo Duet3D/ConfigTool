@@ -42,7 +42,7 @@
 											  @update:model-value="setConfigSensorValue(index, 'baseSensor', $event)"
 											  :preset="getPresetConfigSensorValue(index, 'baseSensor')"
 											  :options="getBaseSensorOptions(sensor.type, index)" />
-								<port-input v-else-if="![AnalogSensorType.drivers, AnalogSensorType.driversDuex].includes(sensor.type)" label="Input Port" title="Input port for this sensor"
+								<port-input v-else-if="![AnalogSensorType.mcuTemp, AnalogSensorType.drivers, AnalogSensorType.driversDuex].includes(sensor.type)" label="Input Port" title="Input port for this sensor"
 											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.sensorSpiCs" :index="index" />
 							</div>
 							<!-- Thermistor and PT1000 Options-->
@@ -302,6 +302,12 @@ function getSensorTypes(index: number) {
 
 	// Built-In
 	const builtInTypes: Array<SelectOption> = [];
+	if (store.data.boardDefinition?.hasMcuTempSensor) {
+		builtInTypes.push({
+			text: "MCU",
+			value: AnalogSensorType.mcuTemp
+		});
+	}
 	if (store.data.boardDefinition?.hasSmartDrivers) {
 		builtInTypes.push({
 			text: "Smart Drivers",

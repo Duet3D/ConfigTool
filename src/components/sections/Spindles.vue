@@ -11,11 +11,12 @@
 			<table v-if="store.data.spindles.length > 0" class="table table-striped mb-0">
 				<colgroup>
 					<col style="width: 10%;">
-					<col style="width: 25%;">
-					<col style="width: 20%;">
-					<col style="width: 20%;">
+					<col style="width: 17.5%;">
 					<col style="width: 12.5%;">
-					<col style="width: 12.5%;">
+					<col style="width: 15%;">
+					<col style="width: 15%;">
+					<col style="width: 14%;">
+					<col style="width: 15%;">
 					<col style="width: auto;">
 				</colgroup>
 				<thead>
@@ -27,10 +28,27 @@
 							PWM Port
 						</th>
 						<th>
-							Forwards Port
+							Type
 						</th>
 						<th>
-							Reverse Port
+							<template v-if="firstPortLabel === null">
+								First Port
+								<i class="bi-info-circle ms-1"
+								   v-title="'This port is used for Enable/Forward control depending on the spindle type'"></i>
+							</template>
+							<template v-else>
+								{{ firstPortLabel }}
+							</template>
+						</th>
+						<th>
+							<template v-if="secondPortLabel === null">
+								Second Port
+								<i class="bi-info-circle ms-1"
+								   v-title="'This port is used for Direction/Reverse control depending on the spindle type'"></i>
+							</template>
+							<template v-else>
+								{{ secondPortLabel }}
+							</template>
 						</th>
 						<th>
 							Minimum RPM
@@ -66,10 +84,15 @@
 								<port-input :function="ConfigPortFunction.spindlePwm" :index="index" />
 							</td>
 							<td>
-								<port-input :function="ConfigPortFunction.spindleForwards" :index="index" />
+								<select-input title="Type of spindle" v-model="spindle.type" :options="[
+												{ text: 'Ena/Dir (Enable/Direction)', value: SpindleType.enaDir },
+												{ text: 'Fwd/Rev (Forward/Reverse)', value: SpindleType.fwdRev }]" :required="false" />
 							</td>
 							<td>
-								<port-input :function="ConfigPortFunction.spindleBackwards" :index="index" />
+								<port-input :function="ConfigPortFunction.spindleFirstPort" :index="index" />
+							</td>
+							<td>
+								<port-input :function="ConfigPortFunction.spindleSecondPort" :index="index" />
 							</td>
 							<td>
 								<number-input title="Minimum rotations per minute when turned on" v-model="spindle.min"
@@ -113,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { Spindle } from "@duet3d/objectmodel";
+import { initObject, Spindle, SpindleType } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
@@ -130,7 +153,12 @@ const store = useStore();
 // Spindle management
 const canAddSpindle = computed(() => store.data.spindles.length < store.data.limits.spindles!);
 function addSpindle() {
-	const spindle = new Spindle();
+	const spindle = initObject(Spindle, {
+		type: SpindleType.enaDir,
+		min: 0,
+		max: 24000
+	});
+
 	if (store.preset.spindles.length > store.data.spindles.length) {
 		spindle.update(store.preset.spindles[store.data.spindles.length])
 	} else if (store.preset.spindles.length > 0) {
@@ -154,7 +182,7 @@ function getSpindleNumbers(index: number) {
 
 function setSpindleNumber(index: number, newIndex: number) {
 	for (const port of store.data.configTool.ports) {
-		if ([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleForwards, ConfigPortFunction.spindleBackwards].includes(port.function!) && port.index === index) {
+		if ([ConfigPortFunction.spindlePwm, ConfigPortFunction.spindleFirstPort, ConfigPortFunction.spindleSecondPort].includes(port.function!) && port.index === index) {
 			// Move associated ports to the new index
 			port.index = newIndex;
 		}
@@ -184,4 +212,47 @@ function getPresetSpindleValue<K extends keyof Spindle>(index: number, key: K) {
 	}
 	return null;
 }
+
+// Labels
+const firstPortLabel = computed(() => {
+	let enaDirSpindles = 0, fwdRevSpindles = 0;
+	for (const spindle of store.data.spindles) {
+		if (spindle !== null) {
+			if (spindle.type === SpindleType.enaDir) {
+				enaDirSpindles++;
+			} else if (spindle.type === SpindleType.fwdRev) {
+				fwdRevSpindles++;
+			}
+		}
+	}
+
+	if (enaDirSpindles > 0 && fwdRevSpindles === 0) {
+		return "Enable Port";
+	} else if (fwdRevSpindles > 0 && enaDirSpindles === 0) {
+		return "Forward Port";
+	} else {
+		return null;
+	}
+});
+
+const secondPortLabel = computed(() => {
+	let enaDirSpindles = 0, fwdRevSpindles = 0;
+	for (const spindle of store.data.spindles) {
+		if (spindle !== null) {
+			if (spindle.type === SpindleType.enaDir) {
+				enaDirSpindles++;
+			} else if (spindle.type === SpindleType.fwdRev) {
+				fwdRevSpindles++;
+			}
+		}
+	}
+
+	if (enaDirSpindles > 0 && fwdRevSpindles === 0) {
+		return "Direction Port";
+	} else if (fwdRevSpindles > 0 && enaDirSpindles === 0) {
+		return "Reverse Port";
+	} else {
+		return null;
+	}
+});
 </script>

@@ -1,4 +1,4 @@
-import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, LedStripType, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, HeaterMonitorCondition, KinematicsName, LedStripType, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics, SpindleType } from "@duet3d/objectmodel";
 import ejs from "ejs";
 
 import { precise } from "@/utils";
@@ -182,6 +182,18 @@ const renderOptions = {
         return servoIndex;
     },
 
+    // Mesh Compensation
+    usingMeshCompensation(): boolean {
+        if (this.model.isDelta) {
+            return (this.model.move.compensation.probeGrid.radius > 0 &&
+                    this.model.move.compensation.probeGrid.spacings[0] > 0);
+        }
+        return (this.model.move.compensation.probeGrid.maxs[0] > this.model.move.compensation.probeGrid.mins[0] &&
+            this.model.move.compensation.probeGrid.maxs[1] > this.model.move.compensation.probeGrid.mins[1] &&
+            this.model.move.compensation.probeGrid.spacings[0] > 0 &&
+            this.model.move.compensation.probeGrid.spacings[1] > 0);
+    },
+
     // Boards
     ExpansionBoards,
     getBoardDefinition,
@@ -209,7 +221,8 @@ const renderOptions = {
     NetworkInterfaceState,
     NetworkInterfaceType,
     NetworkProtocol,
-    ProbeType
+    ProbeType,
+    SpindleType
 };
 
 /**
