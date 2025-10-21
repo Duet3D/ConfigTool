@@ -79,7 +79,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 
 		displayDotstarPort: "io3.out",
 		expansionBoards: new Set([
-			ExpansionBoardType.Duet3Mini2Plus
+			ExpansionBoardType.Duet3Mini2Plus,
+			ExpansionBoardType.Duet3Mini2XD
 		]),
 		objectModelBoard: initObject(Board, {
 			canAddress: 0,
@@ -162,7 +163,8 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 
 		displayDotstarPort: "io3.out",
 		expansionBoards: new Set([
-			ExpansionBoardType.Duet3Mini2Plus
+			ExpansionBoardType.Duet3Mini2Plus,
+			ExpansionBoardType.Duet3Mini2XD
 		]),
 		objectModelBoard: initObject(Board, {
 			canAddress: 0,

@@ -24,6 +24,7 @@ export enum ExpansionBoardType {
 	MB6XD = "Duet 3 Main Board 6XD",
 
 	Duet3Mini2Plus = "Duet 3 Mini 2+",                                              // virtual
+	Duet3Mini2XD = "Duet 3 Mini 2XD",                                               // virtual
 	DueX5 = "DueX 5",                                                               // virtual
 	Duet2ExpansionBreakout = "Duet 2 Expansion Breakout Board",                     // virtual
 
@@ -452,6 +453,41 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		maxVoltage: 25,
 		numDrivers: 2,
 		microstepInterpolations: [1, 2, 4, 8, 16, 32, 64, 128],
+		objectModelBoard: initObject(Board, {
+			maxMotors: 2
+		}),
+		ports: {
+			[PortType.analogIn]: [],
+			[PortType.fan]: [],
+			[PortType.fanTacho]: [],
+			[PortType.gpIn]: [],
+			[PortType.gpInInterrupt]: [],
+			[PortType.gpOut]: [],
+			[PortType.heater]: [],
+			[PortType.pwm]: [],
+			[PortType.scanning]: [],
+			[PortType.spiCs]: [],
+			[PortType.thermistor]: [],
+			[PortType.uart]: []
+		},
+		supportsAccelerometer: false,
+		hasBuiltInAccelerometer: false
+	},
+	[ExpansionBoardType.Duet3Mini2XD]: {
+		hasADCAutoCalibration: false,
+		hasClosedLoopDrivers: false,
+		closedLoopConfig: null,
+		hasInputPullUps: false,
+		hasSmartDrivers: false,
+		hasMcuTempSensor: true,
+		hasStealthChop: false,
+		hasVrefMonitor: true,
+		motorWarnCurrent: -1,
+		motorMaxCurrent: -1,
+		minVoltage: 11,
+		maxVoltage: 25,
+		numDrivers: 2,
+		microstepInterpolations: [],
 		objectModelBoard: initObject(Board, {
 			maxMotors: 2
 		}),
