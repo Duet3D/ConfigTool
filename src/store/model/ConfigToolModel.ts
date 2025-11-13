@@ -108,7 +108,7 @@ export class ConfigToolModel extends ModelObject {
 	version: number = 1;
 
 	readonly autoSave: ConfigAutoSaveModel = new ConfigAutoSaveModel();
-	autoSelectFirstTool: boolean = false;
+	autoSelectFirstTool: boolean = true;
 	readonly capabilities: ConfigCapabilities = new ConfigCapabilities();
 	configOverride: boolean = false;
 	customSettings: string = "";
