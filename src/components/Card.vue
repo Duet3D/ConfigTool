@@ -47,13 +47,20 @@
 			</ul>
 			<g-code-output v-show="previewVisible" class="output" :value="generatedCode" readonly />
 		</template>
-		<template v-else>
+		<template v-else-if="!keepAlive">
 			<slot name="body" />
 			<div v-if="hasSlotContent($slots.default)" class="card-body">
 				<slot />
 			</div>
 			<slot name="append" />
 		</template>
+		<div v-if="keepAlive" v-show="!previewVisible">
+			<slot name="body" />
+			<div v-if="hasSlotContent($slots.default)" class="card-body">
+				<slot />
+			</div>
+			<slot name="append" />
+		</div>
 	</div>
 </template>
 
@@ -66,6 +73,7 @@ const GCodeOutput = defineAsyncComponent(() => import("./monaco/GCodeOutput.vue"
 
 const props = defineProps<{
 	title?: string,
+	keepAlive?: boolean,
 	previewTemplates?: Array<string> | null,
 	previewOptions?: Record<string, any> | Array<Record<string, any> | null> | null,
 	url?: string

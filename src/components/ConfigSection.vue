@@ -1,6 +1,7 @@
 <template>
 	<section :id="type" class="pt-3">
-		<card v-bind="$attrs" :title="props.title" :preview-templates="previewTemplates.map(item => item.template)"
+		<card v-bind="$attrs" :title="props.title" :keep-alive="keepAlive"
+			  :preview-templates="previewTemplates.map(item => item.template)"
 			  :preview-options="previewTemplates.map(item => item.data)" :url="props.url" :url-title="props.urlTitle">
 			<template #title>
 				<slot name="title" />
@@ -29,6 +30,7 @@ import Card from "./Card.vue";
 const props = defineProps<{
 	type: ConfigSectionType,
 	title?: string,
+	keepAlive?: boolean,
 	url?: string
 	urlTitle?: string
 }>();

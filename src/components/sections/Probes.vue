@@ -1,5 +1,5 @@
 <template>
-	<config-section :type="ConfigSectionType.Probes" url-title="Connecting a Z probe"
+	<config-section :type="ConfigSectionType.Probes" keep-alive url-title="Connecting a Z probe"
 					url="https://docs.duet3d.com/en/User_manual/Connecting_hardware/Z_probe_connecting">
 		<template #title>
 			{{ store.data.configTool.capabilities.cnc ? "Probes" : "Z-Probes" }}
@@ -108,7 +108,9 @@
 				</div>
 				<div v-if="probe?.type === ProbeType.scanningAnalog" class="alert alert-info">
 					<i class="bi-info"></i>
-					ConfigTool only sets up basic parameters for SZPs. Read the <a href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_3_family/Duet_3_Scanning_Z_Probe#connecting-peripherals" target="_blank">docs</a> for further information.
+					ConfigTool only sets up basic parameters for SZPs. Read the <a
+					   href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_3_family/Duet_3_Scanning_Z_Probe#connecting-peripherals"
+					   target="_blank">docs</a> for further information.
 				</div>
 			</div>
 
