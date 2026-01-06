@@ -10,6 +10,7 @@ export enum ConfigPortFunction {
 	endstop = "endstop",
 	fan = "fan",
 	fanTacho = "fanTacho",
+	filamentMonitor = "filamentMonitor",
 	gpIn = "gpIn",
 	gpOut = "gpOut",
 	heater = "heater",

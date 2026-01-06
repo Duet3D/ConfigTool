@@ -1,0 +1,39 @@
+<%  for (let i = 0; i < model.sensors.filamentMonitors.length; i++) {
+        const filamentMonitor = model.sensors.filamentMonitors[i];
+        if (filamentMonitor !== null) {
+            if (filamentMonitor.type === FilamentMonitorType.simple) { -%>
+M591 D<%- i %> P1 C"<%- getPortString(ConfigPortFunction.filamentMonitor, i) %>" S<%- filamentMonitor.enableMode %> ; configure simple filament monitor for extruder <%- i %>
+<%          } else if (filamentMonitor.type === FilamentMonitorType.rotatingMagnet) { -%>
+M591 <%- params({
+    D: i,
+    P: 3,
+    C: getPortString(ConfigPortFunction.filamentMonitor, i),
+    S: filamentMonitor.enableMode,
+    R: [filamentMonitor.configured.percentMin, filamentMonitor.configured.percentMax],
+    E: filamentMonitor.configured.mmPerRev,
+    A: filamentMonitor.configured.allMoves ? 1 : 0,
+    L: filamentMonitor.sampleDistance
+}) %> ; configure filament monitor with rotating magnet for extruder <%- i %>
+<%          } else if (filamentMonitor.type === FilamentMonitorType.laser) { -%>
+M591 <%- params({
+    D: i,
+    P: 5,
+    C: getPortString(ConfigPortFunction.filamentMonitor, i),
+    S: filamentMonitor.enableMode,
+    L: filamentMonitor.calibrationFactor,
+    R: [filamentMonitor.configured.percentMin, filamentMonitor.configured.percentMax],
+    E: filamentMonitor.configured.sampleDistance,
+    A: filamentMonitor.configured.allMoves ? 1 : 0
+}) %> ; configure laser filament monitor for extruder <%- i %>
+<%          } else if (filamentMonitor.type === FilamentMonitorType.pulsed) { -%>
+M591 <%- params({
+    D: i,
+    P: 7,
+    C: getPortString(ConfigPortFunction.filamentMonitor, i),
+    S: filamentMonitor.enableMode,
+    R: [filamentMonitor.configured.percentMin, filamentMonitor.configured.percentMax],
+    E: filamentMonitor.configured.mmPerPulse
+}) %> ; configure pulsed filament monitor for extruder <%- i %>
+<%          }
+        }
+    } -%>

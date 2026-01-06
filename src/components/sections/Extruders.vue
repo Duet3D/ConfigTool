@@ -99,7 +99,7 @@
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger mt-1"
-									@click.prevent="store.data.move.extruders.splice(index, 1)">
+									@click.prevent="removeExtruder(index)">
 								<i class="bi-trash"></i>
 							</button>
 						</td>
@@ -142,6 +142,18 @@ function addExtruder() {
 	}
 	extruder.driver = null;
 	store.data.move.extruders.push(extruder);
+}
+
+function removeExtruder(index: number) {
+	// Remove extruder
+	store.data.move.extruders.splice(index, 1);
+
+	// Remove associated filament monitor
+	if (store.data.sensors.filamentMonitors.length > store.data.move.extruders.length) {
+		store.data.sensors.filamentMonitors.splice(store.data.move.extruders.length);
+	} else if (store.data.sensors.filamentMonitors[index] !== null) {
+		store.data.sensors.filamentMonitors[index] = null;
+	}
 }
 
 // Microstepping

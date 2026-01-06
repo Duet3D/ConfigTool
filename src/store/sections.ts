@@ -1,4 +1,4 @@
-import { Axis, AxisLetter, CoreKinematics, KinematicsName, MachineMode, NetworkInterfaceState, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
+import { AxisLetter, CoreKinematics, KinematicsName, MachineMode, NetworkInterfaceState, NetworkInterfaceType, ProbeType } from "@duet3d/objectmodel";
 
 import { useStore } from ".";
 
@@ -16,6 +16,7 @@ export enum ConfigSectionType {
     Kinematics = "kinematics",
     Axes = "axes",
     Extruders = "extruders",
+    FilamentMonitors = "filamentMonitors",
     Probes = "probes",
     Endstops = "endstops",
     Compensation = "compensation",
@@ -46,6 +47,7 @@ export function getSections() {
         ConfigSectionType.Drivers,
         ConfigSectionType.Axes,
         (store.data.configTool.capabilities.fff) ? ConfigSectionType.Extruders : null,
+        (store.data.configTool.capabilities.fff) ? ConfigSectionType.FilamentMonitors : null,
         ConfigSectionType.Probes,
         ConfigSectionType.Endstops,
         ConfigSectionType.Compensation,
@@ -163,6 +165,11 @@ export function getSectionTemplates(section?: ConfigSectionType) {
         case ConfigSectionType.Extruders:
             if (store.data.move.extruders.length > 0) {
                 result.push({ template: "config/extruders", data: null });
+            }
+            break;
+        case ConfigSectionType.FilamentMonitors:
+            if (store.data.sensors.filamentMonitors.some(monitor => monitor !== null)) {
+                result.push({ template: "config/filamentMonitors", data: null });
             }
             break;
         case ConfigSectionType.Probes:

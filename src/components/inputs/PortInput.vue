@@ -266,6 +266,9 @@ const ports = computed(() => {
 		case ConfigPortFunction.fanTacho:
 			requiredCapabilities.add(PortType.fanTacho);
 			break;
+		case ConfigPortFunction.filamentMonitor:
+			requiredCapabilities.add(PortType.gpIn);
+			break;
 		case ConfigPortFunction.gpIn:
 			requiredCapabilities.add(PortType.gpIn);
 			break;

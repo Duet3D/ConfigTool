@@ -124,7 +124,9 @@ import { ConfigSectionType, getSections } from "@/store/sections";
 const sections = computed(() => getSections());
 
 function getSectionTitle(section: ConfigSectionType) {
-	if (section === ConfigSectionType.LedStrips) {
+	if (section === ConfigSectionType.FilamentMonitors) {
+		return "Filament Monitors";
+	} else if (section === ConfigSectionType.LedStrips) {
 		return "LED Strips";
 	}
 	return section[0].toUpperCase() + section.substring(1);

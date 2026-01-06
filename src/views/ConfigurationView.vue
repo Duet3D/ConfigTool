@@ -39,6 +39,7 @@ import Kinematics from "@/components/sections/Kinematics.vue";
 import Drivers from "@/components/sections/Drivers.vue";
 import Axes from "@/components/sections/Axes.vue";
 import Extruders from "@/components/sections/Extruders.vue";
+import FilamentMonitors from "@/components/sections/FilamentMonitors.vue";
 import Probes from "@/components/sections/Probes.vue";
 import Endstops from "@/components/sections/Endstops.vue";
 import Compensation from "@/components/sections/Compensation.vue";
@@ -86,6 +87,9 @@ const sectionComponents = computed(() => {
 				break;
 			case ConfigSectionType.Extruders:
 				components.push(Extruders);
+				break;
+			case ConfigSectionType.FilamentMonitors:
+				components.push(FilamentMonitors);
 				break;
 			case ConfigSectionType.Probes:
 				components.push(Probes);
