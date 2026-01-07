@@ -15,7 +15,7 @@
 		</span>
 		<button v-for="(sensor, index) in props.sensors" type="button" :key="sensor"
 				class="btn btn-outline-primary btn-sm text-nowrap"
-				v-title="getSensorName(sensor) ?? `Sensor #${sensor}`" @click.prevent="removeSensor(sensor, index)">
+				v-title="getSensorName(sensor)" @click.prevent="removeSensor(sensor, index)">
 			{{ sensor }}
 			<i class="bi-x"></i>
 		</button>
@@ -47,7 +47,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 import { useStore } from "@/store";
 import { BoardType } from "@/store/Boards";
-import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const props = withDefaults(defineProps<{
 	/**
@@ -107,7 +107,10 @@ function removeSensor(sensor: number, index: number) {
 
 // Sensor list
 function getSensorName(index: number) {
-	return (index < store.data.sensors.analog.length && store.data.sensors.analog[index] !== null) ? store.data.sensors.analog[index]!.name : null;
+	if (index < store.data.sensors.analog.length && store.data.sensors.analog[index] !== null && store.data.sensors.analog[index]!.name) {
+		return store.data.sensors.analog[index]!.name;
+	}
+	return `Sensor #${index}`;
 }
 
 const numObservableSensors = computed(() => [BoardType.Duet3MB6HC, BoardType.Duet3MB6XD, BoardType.Duet3Mini5PlusEthernet, BoardType.Duet3Mini5PlusWiFi].includes(store.data.boardType!) ? 64 : 32);
@@ -117,7 +120,7 @@ const availableSensors = computed(() => {
 		if (store.data.sensors.analog[i] !== null && !props.sensors.includes(i)) {
 			if (props.board !== undefined) {
 				const port = store.data.configTool.ports.find(port => [ConfigPortFunction.sensorSpiCs, ConfigPortFunction.thermistor].includes(port.function!) && port.index === i);
-				if (!port || !port.equalsBoard(props.board)) {
+				if (port && !port.equalsBoard(props.board)) {
 					continue;
 				}
 			}
