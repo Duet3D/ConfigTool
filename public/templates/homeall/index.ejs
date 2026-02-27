@@ -25,6 +25,6 @@
 <%  // home additional axes
     for (const axis of model.move.axes) {
         if (!['X', 'Y', 'Z'].includes(axis.letter) && model.canHomeIndividualAxis(axis.letter)) { -%>
-M98 P"home<%- /[a-z]/.test(axis.letter) ? `'${axis.letter}` : axis.letter %>.g" ; home <%- axis.letter %> axis
+M98 P"home<%- /[a-z]/.test(axis.letter) ? `'${axis.letter}` : axis.letter.toLowerCase() %>.g" ; home <%- axis.letter %> axis
 <%      }
     } -%>
