@@ -66,7 +66,7 @@ M308 <%- params({
     S: i,
     P: port,
     Y: type,
-    A: (sensor.name.trim() !== "") ? sensor.name : undefined,
+    A: (sensor.name !== null && sensor.name.trim() !== "") ? sensor.name : undefined,
     ...sensorOptions
 }) %> ; configure sensor #<%- i %>
 <%      }
