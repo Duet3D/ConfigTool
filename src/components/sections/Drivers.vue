@@ -189,7 +189,7 @@
 								Encoder Type
 							</th>
 							<th>
-								Encoder Counts per Full Step
+								Encoder Pulses per Revolution
 							</th>
 						</tr>
 					</thead>
@@ -205,10 +205,10 @@
 											  :preset="ConfigDriverClosedLoopEncoderType.none" />
 							</td>
 							<td>
-								<number-input v-if="driver.closedLoop.countsPerFullStep !== null"
-											  title="Encoder counts per full step" :min="1" :step="1"
-											  :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none"
-											  v-model="driver.closedLoop.countsPerFullStep" :preset="5" />
+								<number-input v-if="driver.closedLoop.pulsesPerRevolution !== null"
+											  title="Encoder pulses per revolution" :min="1" :step="1"
+											  :disabled="driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.none || driver.closedLoop.encoderType === ConfigDriverClosedLoopEncoderType.magnetic"
+											  v-model="driver.closedLoop.pulsesPerRevolution" :preset="1000" />
 							</td>
 						</tr>
 					</tbody>

@@ -41,7 +41,7 @@
                             {{ board.canAddress ?? "n/a" }}
                         </td>
                         <td>
-                            <select-input title="Type of the connected accelerometer" :options="AccelerometerTypes"
+                            <select-input title="Type of the connected accelerometer" :options="getAccelerometerTypes(board)"
                                           :required="false" :model-value="getAccelerometerModel(board)"
                                           @update:model-value="setAccelerometerModel(board, $event)" />
                         </td>
@@ -181,16 +181,6 @@ const OrientationOptions: Array<SelectOption> = [
     }
 ];
 
-const AccelerometerTypes: Array<SelectOption> = [
-    {
-        text: "None",
-        value: null
-    },
-    {
-        text: "LIS3DH",
-        value: "LIS3DH"
-    }
-];
 </script>
 
 <script setup lang="ts">
@@ -226,8 +216,20 @@ function hasBuiltInAccelerometer(board: Board) {
     return board.canAddress && (getExpansionBoardDefinition(board as Board)?.hasBuiltInAccelerometer ?? false);
 }
 
+function getAccelerometerType(board: Board): string {
+    return (getExpansionBoardType(board) === ExpansionBoardType.TOOL1RR) ? "LIS2DW12" : "LIS3DH";
+}
+
+function getAccelerometerTypes(board: Board): Array<SelectOption> {
+    const type = getAccelerometerType(board);
+    return [
+        { text: "None", value: null },
+        { text: type, value: type }
+    ];
+}
+
 function getAccelerometerModel(board: Board) {
-    return (board.accelerometer !== null) ? "LIS3DH" : null;
+    return (board.accelerometer !== null) ? getAccelerometerType(board) : null;
 }
 
 function setAccelerometerModel(board: Board, value: string | null) {

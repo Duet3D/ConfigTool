@@ -18,7 +18,7 @@ M563 <%- params({
                 offsets[axisLetter] = tool.offsets[k];
             }
             if (Object.keys(offsets).length > 0) { -%>
-M568 <%- params({
+G10 <%- params({
     P: i,
     ...offsets
 }) -%> ; set custom offsets for tool #<%- i %>

@@ -203,7 +203,7 @@ export default class ConfigModel extends ObjectModel {
 		if (newExpansionBoard !== null && expansionBoardDefinition.closedLoopConfig !== null) {
 			for (const driver of this.configTool.drivers) {
 				if (driver.id.board === newExpansionBoard.canAddress) {
-					driver.closedLoop.countsPerFullStep = expansionBoardDefinition.closedLoopConfig.countsPerFullStep;
+					driver.closedLoop.pulsesPerRevolution = expansionBoardDefinition.closedLoopConfig.pulsesPerRevolution;
 					driver.closedLoop.encoderType = expansionBoardDefinition.closedLoopConfig.encoderType;
 				}
 			}
@@ -631,6 +631,23 @@ export default class ConfigModel extends ObjectModel {
 		if (!value) {
 			this.move.extruders.splice(0);
 			this.sensors.filamentMonitors.splice(0);
+			this.heat.heaters.splice(0);
+			this.heat.bedHeaters.splice(0);
+			this.heat.chamberHeaters.splice(0);
+
+			for (const tool of this.tools) {
+				if (tool !== null) {
+					tool.extruders.splice(0);
+					tool.heaters.splice(0);
+					tool.filamentExtruder = -1;
+				}
+			}
+
+			for (const port of this.configTool.ports) {
+				if (port.function === ConfigPortFunction.heater) {
+					port.function = null;
+				}
+			}
 
 			if (this.state.machineMode === MachineMode.fff) {
 				this.state.machineMode = this.configTool.capabilities.cnc ? MachineMode.cnc : MachineMode.laser;

@@ -205,7 +205,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 		hasADCAutoCalibration: true,
 		hasClosedLoopDrivers: true,
 		closedLoopConfig: initObject(ConfigDriverClosedLoop, {
-			countsPerFullStep: null,
+			pulsesPerRevolution: null,
 			encoderType: ConfigDriverClosedLoopEncoderType.magnetic
 		}),
 		hasInputPullUps: true,
