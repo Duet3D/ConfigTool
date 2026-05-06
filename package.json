@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "3.6.10",
+  "version": "3.6.11",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -11,7 +11,7 @@
   "type": "module",
   "dependencies": {
     "@duet3d/monacotokens": "~3.6.0",
-    "@duet3d/objectmodel": "~3.6.0",
+    "@duet3d/objectmodel": "~3.6.3",
     "@popperjs/core": "^2.11.5",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",

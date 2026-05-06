@@ -178,7 +178,7 @@ const defaultTemplate = initObject(ConfigModel, {
 				gateway: "192.168.1.254",
 				dnsServer: "192.168.1.254",
 				state: NetworkInterfaceState.active,
-				type: NetworkInterfaceType.lan
+				type: NetworkInterfaceType.ethernet
 			}
 		])
 	}),

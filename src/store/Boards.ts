@@ -125,7 +125,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		}),
 		objectModelNetworkInterfaces: [
 			initObject(NetworkInterface, {
-				type: NetworkInterfaceType.lan
+				type: NetworkInterfaceType.ethernet
 			})
 		],
 		supportsAccelerometer: true,
@@ -288,7 +288,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		}),
 		objectModelNetworkInterfaces: [
 			initObject(NetworkInterface, {
-				type: NetworkInterfaceType.lan
+				type: NetworkInterfaceType.ethernet
 			})
 		],
 		supportsAccelerometer: true,
@@ -368,7 +368,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		}),
 		objectModelNetworkInterfaces: [
 			initObject(NetworkInterface, {
-				type: NetworkInterfaceType.lan
+				type: NetworkInterfaceType.ethernet
 			})
 		],
 		supportsAccelerometer: true,
@@ -450,7 +450,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		}),
 		objectModelNetworkInterfaces: [
 			initObject(NetworkInterface, {
-				type: NetworkInterfaceType.lan
+				type: NetworkInterfaceType.ethernet
 			})
 		],
 		supportsAccelerometer: true,
@@ -690,7 +690,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 		}),
 		objectModelNetworkInterfaces: [
 			initObject(NetworkInterface, {
-				type: NetworkInterfaceType.lan
+				type: NetworkInterfaceType.ethernet
 			})
 		],
 		supportsAccelerometer: true,
@@ -749,7 +749,7 @@ export function getBoardType(model: ConfigModel): BoardType | null {
 
 				// WiFi boards expose the WiFi firmware filename even in SBC mode.
 				// That way, we can check if the board is a WiFi or LAN variant
-				const netType = (model.boards.find(board => !!board.canAddress)?.wifiFirmwareFileName !== null) ? NetworkInterfaceType.wifi : NetworkInterfaceType.lan;
+				const netType = (model.boards.find(board => !!board.canAddress)?.wifiFirmwareFileName !== null) ? NetworkInterfaceType.wifi : NetworkInterfaceType.ethernet;
 				const netMatch = matches.find(({ value }) => value.objectModelNetworkInterfaces.length > 0 && value.objectModelNetworkInterfaces[0].type === netType);
 				if (netMatch) {
 					return netMatch.key as BoardType;

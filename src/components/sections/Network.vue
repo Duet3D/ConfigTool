@@ -162,8 +162,8 @@ import { ConfigSectionType } from "@/store/sections";
 const store = useStore();
 
 // Ethernet
-const lanInterface = computed(() => store.data.network.interfaces.find(iface => iface.type === NetworkInterfaceType.lan));
-const presetLanInterface = computed(() => store.preset.network.interfaces.find(iface => iface.type === NetworkInterfaceType.lan));
+const lanInterface = computed(() => store.data.network.interfaces.find(iface => iface.type === NetworkInterfaceType.ethernet));
+const presetLanInterface = computed(() => store.preset.network.interfaces.find(iface => iface.type === NetworkInterfaceType.ethernet));
 
 const configureLan = computed({
 	get() { return !!lanInterface.value && (lanInterface.value.state !== NetworkInterfaceState.disabled); },

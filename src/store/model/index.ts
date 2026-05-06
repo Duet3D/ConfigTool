@@ -25,6 +25,15 @@ export default class ConfigModel extends ObjectModel {
 	 * @returns Updated instance (may not equal the original instance)
 	 */
 	update(jsonElement: any): IModelObject | null {
+		// Older presets stored the wired interface type as "lan"; map it to "ethernet"
+		if (jsonElement?.network?.interfaces instanceof Array) {
+			for (const iface of jsonElement.network.interfaces) {
+				if (iface?.type === "lan") {
+					iface.type = NetworkInterfaceType.ethernet;
+				}
+			}
+		}
+
 		super.update(jsonElement);
 		if (jsonElement.configTool) {
 			this.configTool.update(jsonElement.configTool);
@@ -263,9 +272,9 @@ export default class ConfigModel extends ObjectModel {
 		this.sbc = value ? new SBC() : null;
 		if (value) {
 			// Assume a standard Raspberry Pi with LAN and WiFi is the SBC to use
-			if (this.network.interfaces.length === 0 || this.network.interfaces[0].type !== NetworkInterfaceType.lan) {
+			if (this.network.interfaces.length === 0 || this.network.interfaces[0].type !== NetworkInterfaceType.ethernet) {
 				const lanInterface = new NetworkInterface();
-				lanInterface.type = NetworkInterfaceType.lan;
+				lanInterface.type = NetworkInterfaceType.ethernet;
 				preconfigureNetworkInterface(lanInterface);
 				if (this.network.interfaces.length === 0) {
 					this.network.interfaces.push(lanInterface);
