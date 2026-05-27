@@ -1,4 +1,4 @@
-import ObjectModel, { Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter, SBC, NetworkInterfaceType, MachineMode } from "@duet3d/objectmodel";
+import { ObjectModel, Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter, SBC, NetworkInterfaceType, MachineMode } from "@duet3d/objectmodel";
 
 import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigDriver, ConfigDriverMode } from "@/store/model/ConfigDriver";

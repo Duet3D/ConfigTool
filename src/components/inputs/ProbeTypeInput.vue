@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import { initObject, ProbeType, Probe } from '@duet3d/objectmodel';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import SelectInput, { type SelectOption } from './SelectInput.vue';
 import { useStore } from '@/store';
@@ -14,7 +14,9 @@ import { ConfigPortFunction } from '@/store/model/ConfigPort';
 enum ProbePresetType {
 	Switch = "switch",
 	SmartProbe = "smartProbe",
-	SmartEffector = "smartEffector"
+	SmartEffector = "smartEffector",
+	InductiveNO = "inductiveNO",
+	InductiveNC = "inductiveNC"
 }
 
 interface ProbeTypeInputProps {
@@ -40,6 +42,37 @@ const store = useStore();
 
 const probePreset = ref<ProbePresetType | null>(null);
 
+function applyInductivePresetToPort(preset: ProbePresetType.InductiveNO | ProbePresetType.InductiveNC): boolean {
+    const port = store.data.configTool.ports.find(p =>
+        p.function === ConfigPortFunction.probeIn && p.index === props.index
+    );
+    if (!port) {
+        return false;
+    }
+    port.inverted = (preset === ProbePresetType.InductiveNO);
+    const boardDef = store.data.getBoardDefinition(port.canBoard);
+    if (boardDef && !boardDef.hasInputPullUps) {
+        // Duet 2 inputs need ^ explicitly; Duet 3 IO_x.in pins have permanent pull-ups
+        port.pullUp = true;
+    }
+    return true;
+}
+
+function scheduleInductivePortApply(preset: ProbePresetType.InductiveNO | ProbePresetType.InductiveNC): void {
+    if (applyInductivePresetToPort(preset)) {
+        return;
+    }
+    watch(
+        () => store.data.configTool.ports.find(p => p.function === ConfigPortFunction.probeIn && p.index === props.index),
+        (port) => {
+            if (port && probePreset.value === preset) {
+                applyInductivePresetToPort(preset);
+            }
+        },
+        { once: true }
+    );
+}
+
 const probeOptions = computed(() => {
     const result: Record<string, Array<SelectOption>> = {
 		"Presets": [
@@ -54,6 +87,14 @@ const probeOptions = computed(() => {
 			{
 				text: "Smart Effector",
 				value: ProbePresetType.SmartEffector
+			},
+			{
+				text: "Inductive probe (NPN, NO)",
+				value: ProbePresetType.InductiveNO
+			},
+			{
+				text: "Inductive probe (NPN, NC)",
+				value: ProbePresetType.InductiveNC
 			},
 		],
 		"Types": [
@@ -120,6 +161,10 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
                     value = ProbeType.analog;
                     break;
                 case ProbePresetType.SmartEffector:
+                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
+                    break;
+                case ProbePresetType.InductiveNO:
+                case ProbePresetType.InductiveNC:
                     value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
                     break;
                 default:
@@ -198,6 +243,10 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
                     probe.speeds.splice(2, 1);
                 }
                 probe.type = value;
+            }
+
+            if (probePreset.value === ProbePresetType.InductiveNO || probePreset.value === ProbePresetType.InductiveNC) {
+                scheduleInductivePortApply(probePreset.value);
             }
         }
     }

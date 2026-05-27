@@ -45,7 +45,10 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			"@": fileURLToPath(new URL("./src", import.meta.url))
+			"@": fileURLToPath(new URL("./src", import.meta.url)),
+			// ejs's ESM build imports node:fs/node:path for its fileLoader code paths;
+			// the bundled browser build skips them and trims the build of stub warnings
+			"ejs": fileURLToPath(new URL("./node_modules/ejs/ejs.min.js", import.meta.url))
 		}
 	},
 	worker: {

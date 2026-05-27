@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "3.6.11",
+  "version": "3.6.12",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -15,7 +15,7 @@
     "@popperjs/core": "^2.11.5",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
-    "ejs": "^5.0.1",
+    "ejs": "^6.0.1",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "monaco-editor": "^0.55.0",
@@ -31,10 +31,10 @@
     "@types/node": "^25.0.0",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/tsconfig": "^0.9.0",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.1",
     "sass": "~1.78.0",
-    "typescript": "^5.7.2",
-    "vite": "^7.0.5",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.14",
     "vue-tsc": "^3.0.2"
   }
 }
