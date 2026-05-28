@@ -1,10 +1,17 @@
 import { fileURLToPath, URL } from "node:url";
+import { readFileSync } from "node:fs";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 
+// Prerelease builds (alpha/beta/rc in package.json version) deploy under /beta so the
+// stable build at / stays untouched while the prerelease is reachable in parallel
+const configtoolVersion = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")).version as string;
+const isPrerelease = /-(?:alpha|beta|rc)\b/i.test(configtoolVersion);
+
 // https://vitejs.dev/config/
 export default defineConfig({
+	base: isPrerelease ? "/beta/" : "/",
 	build: {
 		chunkSizeWarningLimit: 5000000,
 		rollupOptions: {
