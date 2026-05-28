@@ -261,7 +261,7 @@ function getHomingSpeeds(axis: Axis, configDriver: ConfigDriver): Array<number> 
 				return getAxisHomingSpeeds('X');
 			}
 			break;
-		case KinematicsName.delta:
+		case KinematicsName.linearDelta:
 		case KinematicsName.rotaryDelta:
 			if (['X', 'Y', 'Z'].includes(axis.letter)) {
 				return getAxisHomingSpeeds('X');

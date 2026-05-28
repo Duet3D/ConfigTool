@@ -17,8 +17,10 @@
 			<table v-if="store.data.ledStrips.length > 0" class="table table-led-strips table-striped mb-0">
 				<colgroup>
 					<col style="width: auto;">
-					<col style="width: 50%;">
-					<col style="width: 50%;">
+					<col style="width: 25%;">
+					<col style="width: 25%;">
+					<col style="width: 35%;">
+					<col style="width: 15%;">
 					<col style="width: auto;">
 				</colgroup>
 				<thead>
@@ -31,6 +33,12 @@
 						</th>
 						<th>
 							Control Port
+						</th>
+						<th>
+							Color Order
+						</th>
+						<th>
+							Max LEDs
 						</th>
 						<th>
 							<!-- Delete button -->
@@ -49,6 +57,17 @@
 						<td>
 							<port-input title="Output port for this LED strip" :function="ConfigPortFunction.ledStrip"
 										:index="index" />
+						</td>
+						<td>
+							<select-input title="Order in which the colour channels are sent to this LED strip"
+										  v-model="strip.colorOrder"
+										  :preset="getPresetLedStripValue(index, 'colorOrder')"
+										  :options="LedStripColorOrders" />
+						</td>
+						<td>
+							<number-input title="Maximum number of LEDs on this strip (0 uses firmware default)"
+										  :min="0" :step="1" v-model="strip.maxLeds"
+										  :preset="getPresetLedStripValue(index, 'maxLeds')" />
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger" @click.prevent="deleteLedStrip(index)">
@@ -84,13 +103,23 @@ const LedStripTypes: Array<SelectOption> = [
 		value: LedStripType.NeoPixel_RGBW
 	}
 ];
+
+const LedStripColorOrders: Array<SelectOption> = [
+	{ text: "BGR (DotStar default)", value: LedStripColorOrder.BGR },
+	{ text: "BRG", value: LedStripColorOrder.BRG },
+	{ text: "RGB", value: LedStripColorOrder.RGB },
+	{ text: "RBG", value: LedStripColorOrder.RBG },
+	{ text: "GBR", value: LedStripColorOrder.GBR },
+	{ text: "GRB (NeoPixel default)", value: LedStripColorOrder.GRB }
+];
 </script>
 
 <script setup lang="ts">
-import { LedStrip, LedStripType } from "@duet3d/objectmodel";
+import { LedStrip, LedStripColorOrder, LedStripType } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
+import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 

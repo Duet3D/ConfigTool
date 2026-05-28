@@ -80,7 +80,7 @@ export default class ConfigModel extends ObjectModel {
 				// CoreXZ requires XZ to be homed at once
 				reservedAxes = [AxisLetter.X, AxisLetter.Z];
 				break;
-			case KinematicsName.delta:
+			case KinematicsName.linearDelta:
 			case KinematicsName.rotaryDelta:
 			case KinematicsName.hangprinter:
 				// Delta setups require XYZ to be homed at once. Hangprinters do not have homing files for XYZ
@@ -703,7 +703,7 @@ export default class ConfigModel extends ObjectModel {
 	 * Check if the machine is using delta kinematics
 	 */
 	get isDelta(): boolean {
-		return [KinematicsName.delta, KinematicsName.rotaryDelta].includes(this.move.kinematics.name);
+		return [KinematicsName.linearDelta, KinematicsName.rotaryDelta].includes(this.move.kinematics.name);
 	}
 	
 	/**

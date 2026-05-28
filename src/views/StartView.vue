@@ -15,26 +15,22 @@
 			</h4>
 		</div>
 
-		<div class="row mb-5">
-			<div class="col-3"></div>
-			<div class="col-6 text-center">
-				<h4 class="mb-3">
-					Please choose your firmware version to continue:
-				</h4>
+		<div class="text-center mb-5">
+			<h4 class="mb-3">
+				Please choose your firmware version to continue:
+			</h4>
 
-				<div class="card">
-					<div class="card-body py-4">
-						<input type="radio" class="btn-check" name="firmwareVersion" id="v34" value="v34" autocomplete="off"
-							   v-model="firmwareVersion">
-						<label class="btn btn-outline-secondary btn-lg me-1" for="v34">Version 3.4 or older</label>
+			<input type="radio" class="btn-check" name="firmwareVersion" id="v34" value="v34" autocomplete="off"
+				   v-model="firmwareVersion">
+			<label class="btn btn-outline-secondary btn-lg me-1" for="v34">Version 3.4 or older</label>
 
-						<input type="radio" class="btn-check" name="firmwareVersion" id="v35" value="v35" autocomplete="off"
-							   v-model="firmwareVersion">
-						<label class="btn btn-outline-success btn-lg ms-1" for="v35">Version 3.5 or 3.6</label>
-					</div>
-				</div>
-			</div>
-			<div class="col-3"></div>
+			<input type="radio" class="btn-check" name="firmwareVersion" id="v35" value="v35" autocomplete="off"
+				   v-model="firmwareVersion">
+			<label class="btn btn-outline-secondary btn-lg mx-1" for="v35">Version 3.5 or 3.6</label>
+
+			<input type="radio" class="btn-check" name="firmwareVersion" id="v37" value="v37" autocomplete="off"
+				   v-model="firmwareVersion">
+			<label class="btn btn-outline-success btn-lg ms-1" for="v37">Version 3.7</label>
 		</div>
 
 		<div class="d-flex justify-content-center mb-3">
@@ -65,11 +61,11 @@
 			Version {{ packageInfo.version }}
 		</div>
 
-		<base-dialog title="Unsupported Firmware" v-model="oldFirmwareDialogShown">
+		<base-dialog title="Unsupported Firmware" v-model="unsupportedFirmwareDialogShown">
 			The selected firmware version is not compatible with this version of the Config Tool.
-			For this reason, you will be forwarded to the previous version of the Config Tool as soon as you click OK.
+			Click OK to be forwarded to the matching Config Tool.
 			<template #buttons>
-				<a href="https://configtool.reprapfirmware.org/legacy" class="btn btn-primary">
+				<a :href="unsupportedFirmwareUrl" class="btn btn-primary">
 					OK
 				</a>
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -83,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import BaseDialog from "@/components/dialogs/BaseDialog.vue";
@@ -96,8 +92,16 @@ import packageInfo from "../../package.json";
 const store = useStore();
 const router = useRouter();
 
-const firmwareVersion = ref<"v34" | "v35">("v35");
-const oldFirmwareDialogShown = ref(false);
+const firmwareVersion = ref<"v34" | "v35" | "v37">("v37");
+const unsupportedFirmwareDialogShown = ref(false);
+
+const unsupportedFirmwareUrl = computed(() => {
+	switch (firmwareVersion.value) {
+		case "v34": return "https://configtool.reprapfirmware.org/legacy";
+		case "v35": return "https://configtool.reprapfirmware.org/";
+		default: return "";
+	}
+});
 
 function startFromScratch() {
 	if (store.dataModified) {
@@ -106,11 +110,11 @@ function startFromScratch() {
 		}
 	}
 
-	if (firmwareVersion.value === "v34") {
-		oldFirmwareDialogShown.value = true;
-	} else {
+	if (firmwareVersion.value === "v37") {
 		store.$reset();
 		router.push("/Configuration");
+	} else {
+		unsupportedFirmwareDialogShown.value = true;
 	}
 };
 

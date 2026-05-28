@@ -324,7 +324,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 			const fan = new Fan();
 			fan.name = legacyFan.name;
 			if (legacyFan.thermostatic) {
-				fan.thermostatic.heaters = legacyFan.heaters;
+				fan.thermostatic.sensors = legacyFan.heaters.map(h => model.heat.heaters[h]?.sensor ?? h);
 				fan.thermostatic.lowTemperature = legacyFan.trigger_temperature;
 			}
 			fan.max = legacyFan.value / 100;

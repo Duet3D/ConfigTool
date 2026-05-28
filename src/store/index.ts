@@ -254,6 +254,12 @@ export const useStore = defineStore("model", {
 				}
 			}
 
+			// Rename legacy kinematics name "delta" to "linearDelta"
+			const kinematics = (newModel as any).move?.kinematics;
+			if (kinematics && kinematics.name === "delta") {
+				kinematics.name = KinematicsName.linearDelta;
+			}
+
 			// Load model
 			this.data.update(newModel);
 			this.data.validate();

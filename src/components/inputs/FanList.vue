@@ -91,7 +91,7 @@ function getFanName(index: number) {
 const availableFans = computed(() => {
 	const fanList: Array<number> = [];
 	for (let i = 0; i < Math.min(store.data.fans.length, 32 /* fixed for now */); i++) {
-		if (store.data.fans[i] !== null && store.data.fans[i]!.thermostatic.heaters.length === 0 && !props.fans.includes(i)) {
+		if (store.data.fans[i] !== null && store.data.fans[i]!.thermostatic.sensors.length === 0 && !props.fans.includes(i)) {
 			fanList.push(i);
 		}
 	}
