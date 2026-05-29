@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { AnalogSensorType, EndstopType, ProbeType } from "@duet3d/objectmodel";
+import { AnalogSensorType, EndstopType, LedStripType, ProbeType } from "@duet3d/objectmodel";
 import { computed, ref, watch } from "vue";
 
 import NumberInput from "@/components/inputs/NumberInput.vue";
@@ -283,7 +283,12 @@ const ports = computed(() => {
 			requiredCapabilities.add(PortType.pwm);
 			break;
 		case ConfigPortFunction.ledStrip:
-			requiredCapabilities.add(PortType.gpOut);
+			if (props.index < store.data.ledStrips.length && store.data.ledStrips[props.index]?.type === LedStripType.DotStar) {
+				// DotStar needs the dedicated LED port with separate clock and data lines; a plain digital output can only drive NeoPixel
+				requiredCapabilities.add(PortType.spi);
+			} else {
+				requiredCapabilities.add(PortType.gpOut);
+			}
 			break;
 		case ConfigPortFunction.probeIn:
 			if (props.index < store.data.sensors.probes.length) {

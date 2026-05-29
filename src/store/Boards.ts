@@ -72,6 +72,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io1.out", "io2.out", "io3.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: ["usb", "io0.in+io0.out"]
@@ -156,6 +157,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io1.out", "io2.out", "io3.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: ["usb", "io0.in+io0.out"]
@@ -240,6 +242,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: ["led"],
 			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
@@ -319,6 +322,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io7.out", "laser+vfd"],
 			[PortType.scanning]: [],
+			[PortType.spi]: ["led"],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
@@ -399,6 +403,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
 			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp"],
 			[PortType.uart]: ["usb", "urxd0+utxd0"]
@@ -481,6 +486,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
 			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp"],
 			[PortType.uart]: ["usb", "urxd0+utxd0"]
@@ -564,6 +570,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
 			[PortType.pwm]: ["zprobe.mod", "exp.heater3+exp.8", "exp.heater4+exp.13", "exp.heater5+exp.18", "exp.heater6+exp.23", "exp.heater7+exp.31"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4", "spi.cs5+exp.50", "spi.cs6+exp.9", "spi.cs7+exp.14", "spi.cs8+exp.19"],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp"],
 			[PortType.uart]: ["usb", "urxd0+utxd0"]
@@ -642,6 +649,7 @@ export const Boards: Record<BoardType, BoardDescriptor> = {
 			[PortType.heater]: ["bedheat", "e0heat", "e1heat"],
 			[PortType.pwm]: ["zprobe.mod+servo"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2"],
 			[PortType.thermistor]: ["bedtemp", "e0temp", "e1temp", "ctemp"],
 			[PortType.uart]: ["usb", "urxd+utxd"]

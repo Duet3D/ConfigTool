@@ -35,6 +35,7 @@ export enum PortType {
 	heater = "heater",
 	pwm = "pwm",
 	scanning = "scanning",
+	spi = "spi",			// dedicated LED port with clock and data lines, required for DotStar strips
 	spiCs = "spiCs",
 	thermistor = "thermistor",
 	uart = "uart"

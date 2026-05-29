@@ -77,6 +77,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io1.out", "io4.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: []
@@ -116,6 +117,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0", "out1"],
 			[PortType.pwm]: ["io0.out", "io2.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["temp0"],
 			[PortType.uart]: []
@@ -155,6 +157,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
 			[PortType.scanning]: ["i2c.ldc1612"],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
@@ -194,6 +197,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: [],
 			[PortType.pwm]: ["io0.out", "io1.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["temp0", "temp1"],
 			[PortType.uart]: []
@@ -236,6 +240,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
@@ -275,6 +280,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0"],
 			[PortType.pwm]: ["io0.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["temp0", "temp1"],
 			[PortType.uart]: []
@@ -314,6 +320,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0"],
 			[PortType.pwm]: ["io0.out"],
 			[PortType.scanning]: ["i2c.ldc1612"],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: []
@@ -353,6 +360,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0", "out1", "out2"],
 			[PortType.pwm]: ["io1.out", "io2.out", "io3.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2"],
 			[PortType.uart]: ["usb", "io0.in+io0.out"]
@@ -392,6 +400,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io5.out", "io7.out"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs0", "spi.cs1", "spi.cs2", "spi.cs3"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
@@ -431,6 +440,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["out0", "out1", "out2", "out3"],
 			[PortType.pwm]: ["io4.out", "io7.out", "laser+vfd"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["spi.cs1", "spi.cs2", "spi.cs3", "spi.cs4"],
 			[PortType.thermistor]: ["temp0", "temp1", "temp2", "temp3"],
 			[PortType.uart]: ["usb", "io0.in+io0.out", "io1.in+io1.out"]
@@ -466,6 +476,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
@@ -501,6 +512,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
@@ -537,6 +549,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
 			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 			[PortType.uart]: []
@@ -573,6 +586,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
 			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 			[PortType.uart]: []
@@ -609,6 +623,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: ["duex.e2heat", "duex.e3heat", "duex.e4heat", "duex.e5heat", "duex.e6heat"],
 			[PortType.pwm]: ["duex.pwm1", "duex.pwm2", "duex.pwm3", "duex.pwm4", "duex.pwm5"],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: ["duex.cs5", "duex.cs6", "duex.cs7", "duex.cs8"],
 			[PortType.thermistor]: ["duex.e2temp", "duex.e3temp", "duex.e4temp", "duex.e5temp", "duex.e6temp"],
 			[PortType.uart]: []
@@ -644,6 +659,7 @@ export const ExpansionBoards: Record<ExpansionBoardType, ExpansionBoardDescripto
 			[PortType.heater]: [],
 			[PortType.pwm]: [],
 			[PortType.scanning]: [],
+			[PortType.spi]: [],
 			[PortType.spiCs]: [],
 			[PortType.thermistor]: [],
 			[PortType.uart]: []
