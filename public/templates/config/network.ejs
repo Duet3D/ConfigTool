@@ -12,7 +12,7 @@ M551 P<%- escape(model.configTool.password) %> ; set <%- (model.sbc === null) ? 
             if (iface.state !== NetworkInterfaceState.disabled) {
                 // Configure network interface in standalone mode
                 // TODO: Add support for MAC address
-                if (iface.type === NetworkInterfaceType.lan) { -%>
+                if (iface.type === NetworkInterfaceType.ethernet) { -%>
 M552 <%- params({
     I: i,
     P: [iface.configuredIP ?? "0.0.0.0"],

@@ -23,7 +23,7 @@ M550 P<%- escape(model.network.name) -%> ; set persistent hostname
         }
 
         if (iface.state !== NetworkInterfaceState.disabled) {
-            if (iface.type === NetworkInterfaceType.lan) {
+            if (iface.type === NetworkInterfaceType.ethernet) {
                 if (model.sbc !== null) { -%>
 M552 <%- params({
     I: i,
