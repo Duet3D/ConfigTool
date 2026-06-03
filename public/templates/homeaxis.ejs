@@ -42,8 +42,8 @@ G90 ; absolute positioning
 var xCenter = move.compensation.probeGrid.mins[0] + (move.compensation.probeGrid.maxs[0] - move.compensation.probeGrid.mins[0]) / 2 - sensors.probes[<%- zProbeIndex %>].offsets[0]
 var yCenter = move.compensation.probeGrid.mins[1] + (move.compensation.probeGrid.maxs[1] - move.compensation.probeGrid.mins[1]) / 2 - sensors.probes[<%- zProbeIndex %>].offsets[1]
 <%          } else { -%>
-var xCenter = model.move.axes[0].min + (model.move.axes[0].max - model.move.axes[0].min) / 2 - sensors.probes[<%- zProbeIndex %>].offsets[0]
-var yCenter = model.move.axes[1].min + (model.move.axes[1].max - model.move.axes[1].min) / 2 - sensors.probes[<%- zProbeIndex %>].offsets[1]
+var xCenter = move.axes[0].min + (move.axes[0].max - move.axes[0].min) / 2 - sensors.probes[<%- zProbeIndex %>].offsets[0]
+var yCenter = move.axes[1].min + (move.axes[1].max - move.axes[1].min) / 2 - sensors.probes[<%- zProbeIndex %>].offsets[1]
 <%          } -%>
 G1 <%- params({
     X: "{var.xCenter}",
