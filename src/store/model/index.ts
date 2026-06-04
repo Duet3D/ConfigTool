@@ -577,17 +577,18 @@ export default class ConfigModel extends ObjectModel {
 			case BoardType.Duet2Ethernet:
 			case BoardType.Duet2WiFi:
 			case BoardType.Duet2SBC:
-				if (this.configTool.ports.some(port => port.coversDueX) ||
-					this.move.axes.some(axis => axis.drivers.some(driver => driver?.board === 0 && driver?.driver >= 5)) ||
-					this.move.extruders.some(extruder => extruder.driver?.board === 0 && extruder.driver?.driver >= 5)
+				// Duet 2 mainboard drivers have no CAN address, so a DueX board is addressed via board === null
+				if (this.configTool.expansionBoard !== ExpansionBoardType.DueX2 &&
+					this.configTool.expansionBoard !== ExpansionBoardType.DueX5 &&
+					this.configTool.expansionBoard !== ExpansionBoardType.Duet2ExpansionBreakout
 				) {
-					// Drives >= 0.5 require a DueX 2, DueX 5, or Duet 2 Expansion Breakout Board
-					if (this.configTool.expansionBoard !== ExpansionBoardType.DueX2 &&
-						this.configTool.expansionBoard !== ExpansionBoardType.DueX5 &&
-						this.configTool.expansionBoard !== ExpansionBoardType.Duet2ExpansionBreakout
+					if (this.configTool.ports.some(port => port.coversDueX) ||
+						this.move.axes.some(axis => axis.drivers.some(driver => driver?.board === null && driver?.driver >= 5)) ||
+						this.move.extruders.some(extruder => extruder.driver?.board === null && extruder.driver?.driver >= 5)
 					) {
-						if (this.move.axes.some(axis => axis.current > 0 && axis.drivers.some(driver => driver?.board === 0 && driver?.driver >= 5)) ||
-							this.move.extruders.some(extruder => extruder.current > 0 && extruder.driver?.board === 0 && extruder.driver?.driver >= 5)
+						// Drives >= 0.5 require a DueX 2, DueX 5, or Duet 2 Expansion Breakout Board
+						if (this.move.axes.some(axis => axis.current > 0 && axis.drivers.some(driver => driver?.board === null && driver?.driver >= 5)) ||
+							this.move.extruders.some(extruder => extruder.current > 0 && extruder.driver?.board === null && extruder.driver?.driver >= 5)
 						) {
 							// DueX 2 is no longer officially supported, so assume a DueX 5 is present
 							this.configTool.expansionBoard = ExpansionBoardType.DueX5;
@@ -596,7 +597,7 @@ export default class ConfigModel extends ObjectModel {
 							this.configTool.expansionBoard = ExpansionBoardType.Duet2ExpansionBreakout;
 						}
 					} else {
-						// Reset expansion board
+						// No expansion board required
 						this.configTool.expansionBoard = null;
 					}
 				}
