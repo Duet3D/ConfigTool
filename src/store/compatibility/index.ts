@@ -132,7 +132,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 
 	// Homing preferences
 	model.sensors.probes.push(initObject(Probe, {
-		diveHeight: input.z_dive_height,
+		diveHeights: [input.z_dive_height, input.z_dive_height],
 		travelSpeed: input.travel_speed
 	}));
 

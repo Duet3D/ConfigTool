@@ -5,7 +5,7 @@
                 K: probeIndex,
                 P: probe.type,
                 C: getCombinedPortString([ConfigPortFunction.probeIn, ConfigPortFunction.probeMod], probeIndex),
-                H: probe.diveHeight,
+                H: reduce(probe.diveHeights),
                 F: reduce(probe.speeds.map(speed => speed * 60)),
                 T: probe.travelSpeed,
                 R: (probe.recoveryTime !== 0) ? probe.recoveryTime : undefined,

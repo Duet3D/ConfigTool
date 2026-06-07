@@ -203,21 +203,21 @@
 						</tr>
 					</thead>
 					<tbody>
-						<template v-for="(bedHeater, index) in store.data.heat.bedHeaters">
-							<tr v-if="bedHeater >= 0">
+						<template v-for="(heaters, index) in store.data.heat.bedHeaterMapping">
+							<tr v-if="heaters[0] >= 0">
 								<td>
 									<select-input title="Number of this bed heater" :model-value="index"
 												  @update:model-value="changeBedHeaterNumber(index, $event)"
 												  :options="getBedHeaterNumbers(index)" />
 								</td>
 								<td>
-									<select-input title="Mapped heater of this bed" :model-value="bedHeater"
+									<select-input title="Mapped heater of this bed" :model-value="heaters[0]"
 												  @update:model-value="changeBedHeater(index, $event)"
-												  :options="getSlowHeaters(bedHeater)" />
+												  :options="getSlowHeaters(heaters[0])" />
 								</td>
 								<td>
 									<button class="btn btn-sm btn-danger mt-1"
-											@click.prevent="store.data.heat.bedHeaters[index] = -1">
+											@click.prevent="store.data.heat.bedHeaterMapping[index] = [-1]">
 										<i class="bi-trash"></i>
 									</button>
 								</td>
@@ -279,21 +279,21 @@
 						</tr>
 					</thead>
 					<tbody>
-						<template v-for="(chamberHeater, index) in store.data.heat.chamberHeaters">
-							<tr v-if="chamberHeater >= 0">
+						<template v-for="(heaters, index) in store.data.heat.chamberHeaterMapping">
+							<tr v-if="heaters[0] >= 0">
 								<td>
 									<select-input title="Number of this chamber heater" :model-value="index"
 												  @update:model-value="changeChamberHeaterNumber(index, $event)"
 												  :options="getChamberHeaterNumbers(index)" />
 								</td>
 								<td>
-									<select-input title="Mapped heater of this chamber" :model-value="chamberHeater"
+									<select-input title="Mapped heater of this chamber" :model-value="heaters[0]"
 												  @update:model-value="changeChamberHeater(index, $event)"
-												  :options="getSlowHeaters(chamberHeater)" />
+												  :options="getSlowHeaters(heaters[0])" />
 								</td>
 								<td>
 									<button class="btn btn-sm btn-danger mt-1"
-											@click.prevent="store.data.heat.chamberHeaters[index] = -1">
+											@click.prevent="store.data.heat.chamberHeaterMapping[index] = [-1]">
 										<i class="bi-trash"></i>
 									</button>
 								</td>
@@ -547,31 +547,31 @@ function getSlowHeaters(current: number) {
 		result.push({
 			text: `Heater #${i}`,
 			value: i,
-			disabled: (i !== current) && (store.data.heat.bedHeaters.some(bedHeater => bedHeater === i) || store.data.heat.chamberHeaters.some(chamberHeater => chamberHeater === i))
+			disabled: (i !== current) && (store.data.heat.bedHeaterMapping.some(heaters => heaters.includes(i)) || store.data.heat.chamberHeaterMapping.some(heaters => heaters.includes(i)))
 		});
 	}
 	return result;
 }
 
 // Bed Heaters
-const hasBedHeaters = computed(() => store.data.heat.bedHeaters.some(heater => heater >= 0));
-const canAddBedHeater = computed(() => (bedHeaterToAdd.value < 0) && ((store.data.heat.bedHeaters.length < store.data.limits.bedHeaters!) || store.data.heat.bedHeaters.some(heater => heater < 0)));
+const hasBedHeaters = computed(() => store.data.heat.bedHeaterMapping.some(heaters => heaters[0] >= 0));
+const canAddBedHeater = computed(() => (bedHeaterToAdd.value < 0) && ((store.data.heat.bedHeaterMapping.length < store.data.limits.bedHeaters!) || store.data.heat.bedHeaterMapping.some(heaters => heaters[0] < 0)));
 const bedHeaterToAdd = ref(-1);
 function addBedHeater() {
-	for (let i = 0; i < store.data.heat.bedHeaters.length; i++) {
-		if (store.data.heat.bedHeaters[i] < 0) {
+	for (let i = 0; i < store.data.heat.bedHeaterMapping.length; i++) {
+		if (store.data.heat.bedHeaterMapping[i][0] < 0) {
 			bedHeaterToAdd.value = i;
 			return;
 		}
 	}
 
-	store.data.heat.bedHeaters.push(-1);
-	bedHeaterToAdd.value = store.data.heat.bedHeaters.length - 1;
+	store.data.heat.bedHeaterMapping.push([-1]);
+	bedHeaterToAdd.value = store.data.heat.bedHeaterMapping.length - 1;
 }
 
 function changeBedHeaterNumber(from: number, to: number) {
-	store.data.heat.bedHeaters[to] = store.data.heat.bedHeaters[from];
-	store.data.heat.bedHeaters[from] = -1;
+	store.data.heat.bedHeaterMapping[to] = store.data.heat.bedHeaterMapping[from];
+	store.data.heat.bedHeaterMapping[from] = [-1];
 }
 function getBedHeaterNumbers(index: number) {
 	const result: Array<SelectOption> = [];
@@ -579,36 +579,36 @@ function getBedHeaterNumbers(index: number) {
 		result.push({
 			text: i.toString(),
 			value: i,
-			disabled: (i !== index) && (i < store.data.heat.bedHeaters.length) && (store.data.heat.bedHeaters[i] >= 0)
+			disabled: (i !== index) && (i < store.data.heat.bedHeaterMapping.length) && (store.data.heat.bedHeaterMapping[i][0] >= 0)
 		});
 	}
 	return result;
 }
 
 function changeBedHeater(index: number, to: number) {
-	store.data.heat.bedHeaters[index] = to;
+	store.data.heat.bedHeaterMapping[index] = [to];
 	bedHeaterToAdd.value = -1;
 }
 
 // Chamber Heaters
-const hasChamberHeaters = computed(() => store.data.heat.chamberHeaters.some(heater => heater >= 0));
-const canAddChamberHeater = computed(() => (chamberHeaterToAdd.value < 0) && ((store.data.heat.chamberHeaters.length < store.data.limits.chamberHeaters!) || store.data.heat.chamberHeaters.some(heater => heater < 0)));
+const hasChamberHeaters = computed(() => store.data.heat.chamberHeaterMapping.some(heaters => heaters[0] >= 0));
+const canAddChamberHeater = computed(() => (chamberHeaterToAdd.value < 0) && ((store.data.heat.chamberHeaterMapping.length < store.data.limits.chamberHeaters!) || store.data.heat.chamberHeaterMapping.some(heaters => heaters[0] < 0)));
 const chamberHeaterToAdd = ref(-1);
 function addChamberHeater() {
-	for (let i = 0; i < store.data.heat.chamberHeaters.length; i++) {
-		if (store.data.heat.chamberHeaters[i] < 0) {
+	for (let i = 0; i < store.data.heat.chamberHeaterMapping.length; i++) {
+		if (store.data.heat.chamberHeaterMapping[i][0] < 0) {
 			chamberHeaterToAdd.value = i;
 			return;
 		}
 	}
 
-	store.data.heat.chamberHeaters.push(-1);
-	chamberHeaterToAdd.value = store.data.heat.chamberHeaters.length - 1;
+	store.data.heat.chamberHeaterMapping.push([-1]);
+	chamberHeaterToAdd.value = store.data.heat.chamberHeaterMapping.length - 1;
 }
 
 function changeChamberHeaterNumber(from: number, to: number) {
-	store.data.heat.chamberHeaters[to] = store.data.heat.chamberHeaters[from];
-	store.data.heat.chamberHeaters[from] = -1;
+	store.data.heat.chamberHeaterMapping[to] = store.data.heat.chamberHeaterMapping[from];
+	store.data.heat.chamberHeaterMapping[from] = [-1];
 }
 function getChamberHeaterNumbers(index: number) {
 	const result: Array<SelectOption> = [];
@@ -616,14 +616,14 @@ function getChamberHeaterNumbers(index: number) {
 		result.push({
 			text: i.toString(),
 			value: i,
-			disabled: (i !== index) && (i < store.data.heat.chamberHeaters.length) && (store.data.heat.chamberHeaters[i] >= 0)
+			disabled: (i !== index) && (i < store.data.heat.chamberHeaterMapping.length) && (store.data.heat.chamberHeaterMapping[i][0] >= 0)
 		});
 	}
 	return result;
 }
 
 function changeChamberHeater(index: number, to: number) {
-	store.data.heat.chamberHeaters[index] = to;
+	store.data.heat.chamberHeaterMapping[index] = [to];
 	chamberHeaterToAdd.value = -1;
 }
 </script>

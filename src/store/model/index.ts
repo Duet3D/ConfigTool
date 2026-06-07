@@ -34,6 +34,25 @@ export default class ConfigModel extends ObjectModel {
 			}
 		}
 
+		// Older configs stored bed and chamber heaters as a flat list; map each entry to the grouped form
+		if (jsonElement?.heat) {
+			if (jsonElement.heat.bedHeaters instanceof Array && !(jsonElement.heat.bedHeaterMapping instanceof Array)) {
+				jsonElement.heat.bedHeaterMapping = jsonElement.heat.bedHeaters.map((heater: number) => [heater]);
+			}
+			if (jsonElement.heat.chamberHeaters instanceof Array && !(jsonElement.heat.chamberHeaterMapping instanceof Array)) {
+				jsonElement.heat.chamberHeaterMapping = jsonElement.heat.chamberHeaters.map((heater: number) => [heater]);
+			}
+		}
+
+		// Older configs stored a single probe dive height; map it to the first element of the list
+		if (jsonElement?.sensors?.probes instanceof Array) {
+			for (const probe of jsonElement.sensors.probes) {
+				if (probe && typeof probe.diveHeight === "number" && !(probe.diveHeights instanceof Array)) {
+					probe.diveHeights = [probe.diveHeight, probe.diveHeight];
+				}
+			}
+		}
+
 		super.update(jsonElement);
 		if (jsonElement.configTool) {
 			this.configTool.update(jsonElement.configTool);
@@ -641,8 +660,8 @@ export default class ConfigModel extends ObjectModel {
 			this.move.extruders.splice(0);
 			this.sensors.filamentMonitors.splice(0);
 			this.heat.heaters.splice(0);
-			this.heat.bedHeaters.splice(0);
-			this.heat.chamberHeaters.splice(0);
+			this.heat.bedHeaterMapping.splice(0);
+			this.heat.chamberHeaterMapping.splice(0);
 
 			for (const tool of this.tools) {
 				if (tool !== null) {

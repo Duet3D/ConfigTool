@@ -58,7 +58,7 @@ const defaultTemplate = initObject(ConfigModel, {
 		}
 	]),
 	heat: initObject(Heat, {
-		bedHeaters: [0],
+		bedHeaterMapping: [[0]],
 		heaters: initCollection(Heater, [
 			{
 				max: 140,
@@ -206,7 +206,8 @@ const defaultTemplate = initObject(ConfigModel, {
 		]),
 		probes: initCollection(Probe, [
 			{
-				type: ProbeType.analog
+				type: ProbeType.analog,
+				diveHeights: [5, 5]
 			}
 		])
 	}),

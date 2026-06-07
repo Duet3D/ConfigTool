@@ -52,21 +52,23 @@ M301 <%- params({
 <%          }
         }
     }
-    if (model.heat.bedHeaters.some(bedHeater => bedHeater >= 0)) { -%>
+    if (model.heat.bedHeaterMapping.some(heaters => heaters.some(heater => heater >= 0))) { -%>
 
 ; Heated beds
-<%      for (let i = 0; i < model.heat.bedHeaters.length; i++) {
-            if (model.heat.bedHeaters[i] >= 0) { -%>
-M140 P<%- i %> H<%- model.heat.bedHeaters[i] %> ; configure heated bed #<%- i %>
+<%      for (let i = 0; i < model.heat.bedHeaterMapping.length; i++) {
+            const heaters = model.heat.bedHeaterMapping[i].filter(heater => heater >= 0);
+            if (heaters.length > 0) { -%>
+M140 P<%- i %> H<%- heaters.join(':') %> ; configure heated bed #<%- i %>
 <%          }
         }
     }
-    if (model.heat.chamberHeaters.some(chamberHeater => chamberHeater >= 0)) { -%>
+    if (model.heat.chamberHeaterMapping.some(heaters => heaters.some(heater => heater >= 0))) { -%>
 
 ; Heated chambers
-<%      for (let i = 0; i < model.heat.chamberHeaters.length; i++) {
-            if (model.heat.chamberHeaters[i] >= 0) { -%>
-M141 P<%- i %> H<%- model.heat.chamberHeaters[i] %> ; configure heated chamber #<%- i %>
+<%      for (let i = 0; i < model.heat.chamberHeaterMapping.length; i++) {
+            const heaters = model.heat.chamberHeaterMapping[i].filter(heater => heater >= 0);
+            if (heaters.length > 0) { -%>
+M141 P<%- i %> H<%- heaters.join(':') %> ; configure heated chamber #<%- i %>
 <%          }
         }
     } -%>
