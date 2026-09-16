@@ -17,7 +17,9 @@
     const fastHomingSpeed = (firstDriver && firstDriver.homingSpeeds.length > 0) ? firstDriver.homingSpeeds[0] * 60 : 600;
     const slowHomingSpeed = (firstDriver && firstDriver.homingSpeeds.length > 1) ? firstDriver.homingSpeeds[1] * 60 : 300;
     const homeTwice = firstDriver && firstDriver.homingSpeeds.length > 1;
-    const zLiftCanHitEndstop = model.sensors.endstops.some(endstop => (endstop !== null) && (endstop.letter === 'Z') && endstop.highEnd);
+    const zAxisIndex = model.move.axes.findIndex(axis => axis.letter === 'Z');
+    const zEndstop = (zAxisIndex >= 0 && zAxisIndex < model.sensors.endstops.length) ? model.sensors.endstops[zAxisIndex] : null;
+    const zLiftCanHitEndstop = (zEndstop !== null) && (zEndstop.type !== EndstopType.ZProbeAsEndstop) && zEndstop.highEnd;
 
     // Check how the axis is supposed to be homed
     if (endstop) {
