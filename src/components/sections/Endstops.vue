@@ -204,6 +204,13 @@ function getEndstopTypeOptions(axis: Axis): Array<SelectOption> {
 		});
 	}
 
+	if (axis.drivers.length > 0 && axis.drivers.every(driver => driver.board && store.data.getBoardDefinition(driver.board)?.hasClosedLoopDrivers)) {
+		options.push({
+			text: "Encoder Position Error",
+			value: EndstopType.motorStallEncoder
+		});
+	}
+
 	// No endstop is always possible, too
 	options.push({
 		text: "None",

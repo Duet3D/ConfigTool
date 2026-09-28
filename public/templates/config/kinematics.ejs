@@ -1,4 +1,5 @@
-<%  if (model.move.kinematics instanceof CoreKinematics) {
+<%  const segmentation = model.move.kinematics.segmentation;
+    if (model.move.kinematics instanceof CoreKinematics) {
         let kinematicsName, kParam;
         switch (model.move.kinematics.name) {
             case KinematicsName.cartesian:
@@ -36,7 +37,7 @@
                 moveCoefficients += ` ${letters[i]}${model.move.kinematics.forwardMatrix[i].join(':')}`;
             }
         } -%>
-M669 K<%- kParam %><%- moveCoefficients %> ; configure <%- kinematicsName %> kinematics
+M669 K<%- kParam %><%- moveCoefficients %><%- (segmentation !== null) ? ` S${segmentation.segmentsPerSec} T${segmentation.minSegLength}` : "" %> ; configure <%- kinematicsName %> kinematics
 <%  } else if (model.isDelta) { -%>
 M665 <%- params({
     L: reduce(model.move.kinematics.towers.map(tower => tower.diagonal)),
@@ -52,14 +53,19 @@ M666 <%- params({
     A: model.move.kinematics.xTilt,
     B: model.move.kinematics.yTilt
 }) %> ; endstop adjustments and XY tilt, can be determined using auto calibration as well
-<%  } else if (model.move.kinematics.name === KinematicsName.hangprinter) { -%>
+<%      if (segmentation !== null) { -%>
+M669 S<%- segmentation.segmentsPerSec %> T<%- segmentation.minSegLength %> ; configure segmentation
+<%      }
+    } else if (model.move.kinematics.name === KinematicsName.hangprinter) { -%>
 M669 <%- params({
     K: 6,
     A: model.move.kinematics.anchors[0],
     B: model.move.kinematics.anchors[1],
     C: model.move.kinematics.anchors[2],
     D: model.move.kinematics.anchors[3],
-    P: model.move.kinematics.printRadius
+    P: model.move.kinematics.printRadius,
+    S: segmentation?.segmentsPerSec,
+    T: segmentation?.minSegLength
 }) %> ; configure hangprinter kinematics
 M208 S0 Z<%- model.move.axes.find(axis => axis.letter === 'Z').max %> ; set maximum height
 M208 S1 Z<%- model.move.axes.find(axis => axis.letter === 'Z').min %> ; set minimum height

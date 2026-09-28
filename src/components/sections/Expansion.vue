@@ -7,11 +7,7 @@
 <template>
 	<config-section :type="ConfigSectionType.Expansion" title="Expansion">
 		<template #append-title>
-			<a v-if="isDuet2" href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_2_family" target="_blank">
-				<i class="bi-info-circle"></i>
-				Duet 2 Family
-			</a>
-			<a v-else-if="isDuet3" href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_3_family" target="_blank">
+			<a v-if="isDuet3" href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_3_family" target="_blank">
 				<i class="bi-info-circle"></i>
 				Duet 3 Family
 			</a>
@@ -126,11 +122,11 @@ import { useStore } from "@/store";
 import { PortType } from "@/store/BaseBoard";
 import { ConfigSectionType } from "@/store/sections";
 import { ExpansionBoards, ExpansionBoardType } from "@/store/ExpansionBoards";
+import { ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const store = useStore();
 
 const supportsExpansionBoards = computed(() => store.data.boardDefinition && store.data.boardDefinition.expansionBoards.size > 0);
-const isDuet2 = computed(() => store.data.boardType !== null && (store.data.boardType as string).startsWith("Duet 2"));
 const isDuet3 = computed(() => store.data.boardType !== null && (store.data.boardType as string).startsWith("Duet 3"));
 
 // Direct-Connect Expansion board
@@ -216,6 +212,17 @@ function setCanAddress(canBoard: Board, value: number) {
 			driver.id.board = value;
 		}
 	}
+	for (const port of store.data.configTool.ports) {
+		if ([ConfigPortFunction.accelerometerInt, ConfigPortFunction.accelerometerSpiCs].includes(port.function!) && port.index === canBoard.canAddress) {
+			port.index = value;
+		}
+	}
+	for (const accelerometer of store.data.sensors.accelerometers) {
+		if (accelerometer !== null && store.data.getAccelerometerBoard(accelerometer) === canBoard.canAddress) {
+			accelerometer.port = `${value}.nil`;
+		}
+	}
 	canBoard.canAddress = value;
+	store.data.refreshAccelerometers();
 }
 </script>

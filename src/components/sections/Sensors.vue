@@ -36,16 +36,21 @@
 											  :preset="getPresetSensorValue(index, 'type')" />
 							</div>
 							<div class="col-3">
-								<select-input v-if="requiresBaseSensor(sensor.type)"
-											  :label="(sensor.type === AnalogSensorType.dhtHumidity) ? 'DHT Sensor' : 'BME280 Sensor'"
+								<select-input v-if="requiresBaseSensor(sensor.type)" :label="getBaseSensorLabel(sensor.type)"
 											  title="Existing sensor channel number used for this extra sensor. The corresponding sensor must come before this one"
 											  :model-value="getConfigSensorValue(index, 'baseSensor')"
 											  @update:model-value="setConfigSensorValue(index, 'baseSensor', $event)"
 											  :preset="getPresetConfigSensorValue(index, 'baseSensor')"
 											  :options="getBaseSensorOptions(sensor.type, index)" />
+								<select-input v-else-if="sensor.type === AnalogSensorType.boardTemp" label="Board"
+											  title="Expansion board whose built-in temperature sensor is read"
+											  :model-value="getConfigSensorValue(index, 'canBoard')"
+											  @update:model-value="setConfigSensorValue(index, 'canBoard', $event)"
+											  :preset="getPresetConfigSensorValue(index, 'canBoard')"
+											  :options="boardTempOptions" />
 								<port-input v-else-if="![AnalogSensorType.mcuTemp, AnalogSensorType.drivers, AnalogSensorType.driversDuex].includes(sensor.type)"
 											label="Input Port" title="Input port for this sensor"
-											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.sensorSpiCs"
+											:function="[AnalogSensorType.thermistor, AnalogSensorType.pt1000, AnalogSensorType.linearAnalog, AnalogSensorType.thermopileTPiSObject].includes(sensor.type) ? ConfigPortFunction.thermistor : ConfigPortFunction.sensorSpiCs"
 											:index="index" />
 							</div>
 							<!-- Thermistor and PT1000 Options-->
@@ -158,7 +163,7 @@
 								</div>
 							</template>
 							<!-- ADS131 -->
-							<template v-else-if="sensor.type === AnalogSensorType.ads131chan0 || sensor.type === AnalogSensorType.ads131chan1">
+							<template v-else-if="[AnalogSensorType.ads131chan0Unipolar, AnalogSensorType.ads131chan0Bipolar, AnalogSensorType.ads131chan1].includes(sensor.type)">
 								<div class="col-4">
 									<number-input label="Zero Reading"
 												  title="Reading required when the ADC reading is at minimum (typically with 0V output from the sensor)"
@@ -175,13 +180,6 @@
 												  :preset="getPresetConfigSensorValue(index, 'maxTemp')"
 												  :min="getConfigSensorValue(index, 'minTemp')" :max="1999" step="any"
 												  unit="°C" />
-								</div>
-								<div class="col-4 d-flex align-items-end">
-									<check-input class="mb-1" label="Bipolar Operation"
-												 title="Enable this to measure negative voltages. Note that this reduces the maximum measurable positive voltage"
-												 :model-value="getConfigSensorValue(index, 'bipolar')"
-												 @update:model-value="setConfigSensorValue(index, 'bipolar', $event)"
-												 :preset="getPresetConfigSensorValue(index, 'bipolar')" />
 								</div>
 							</template>
 						</div>
@@ -248,7 +246,7 @@ import TextInput from "@/components/inputs/TextInput.vue";
 import { useStore } from "@/store";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigTempSensor } from "@/store/model/ConfigTempSensor";
-import { ExpansionBoardType } from "@/store/ExpansionBoards";
+import { ExpansionBoardType, getExpansionBoardDefinition } from "@/store/ExpansionBoards";
 import { PortType } from "@/store/BaseBoard";
 import { ConfigSectionType } from "@/store/sections";
 
@@ -311,6 +309,11 @@ function setSensorNumber(index: number, newIndex: number) {
 	}
 }
 
+const boardTempOptions = computed<Array<SelectOption>>(() => store.data.boards.filter(board => board.canAddress && getExpansionBoardDefinition(board)?.hasBoardThermistor).map(board => ({
+	text: `${board.shortName} (${board.canAddress})`,
+	value: board.canAddress
+})));
+
 function getSensorTypes(index: number) {
 	// Embedded ADC
 	const result: Record<string, Array<SelectOption>> = {
@@ -334,7 +337,7 @@ function getSensorTypes(index: number) {
 	const builtInTypes: Array<SelectOption> = [];
 	if (store.data.boardDefinition?.hasMcuTempSensor) {
 		builtInTypes.push({
-			text: "MCU",
+			text: "MCU Temperature",
 			value: AnalogSensorType.mcuTemp
 		});
 	}
@@ -343,24 +346,36 @@ function getSensorTypes(index: number) {
 			text: "Smart Drivers",
 			value: AnalogSensorType.drivers
 		});
-
-		if (store.data.boardDefinition.expansionBoards.has(ExpansionBoardType.DueX2) ||
-			store.data.boardDefinition.expansionBoards.has(ExpansionBoardType.DueX5))
-		{
-			builtInTypes.push({
-				text: "Smart Drivers (Duex)",
-				value: AnalogSensorType.driversDuex
-			});
-		}
 	}
-	if (store.data.boards.find(board => !board.canAddress)?.mcuTemp !== null) {
+	if (boardTempOptions.value.length > 0) {
 		builtInTypes.push({
-			text: "MCU Temperature",
-			value: AnalogSensorType.mcuTemp
+			text: "Board Temperature",
+			value: AnalogSensorType.boardTemp
 		});
 	}
 	if (builtInTypes.length > 0) {
 		result["Built-In Sensors"] = builtInTypes;
+	}
+
+	// Thermopile on INDX tool boards
+	if (store.data.configTool.ports.some(port => port.capabilities.has(PortType.thermopile))) {
+		const hasThermopile = store.data.sensors.analog.some((sensor, idx) => (idx < index) && sensor?.type === AnalogSensorType.thermopileTPiSObject);
+		result["Thermopile Sensors"] = [
+			{
+				text: "Thermopile Nozzle Temperature",
+				value: AnalogSensorType.thermopileTPiSObject
+			},
+			{
+				text: "Thermopile Ambient",
+				value: AnalogSensorType.thermopileTPiSAmbient,
+				disabled: !hasThermopile
+			},
+			{
+				text: "Thermopile Hot End Surround",
+				value: AnalogSensorType.thermopileTPiSEnvironment,
+				disabled: !hasThermopile
+			}
+		];
 	}
 
 	// DHT + SPI
@@ -416,8 +431,12 @@ function getSensorTypes(index: number) {
 		];
 		if (store.data.boardDefinition?.supportsADS131) {
 			spiBoards.push({
-				text: "ADS131 (Channel 0)",
-				value: AnalogSensorType.ads131chan0
+				text: "ADS131 (Channel 0, Unipolar)",
+				value: AnalogSensorType.ads131chan0Unipolar
+			});
+			spiBoards.push({
+				text: "ADS131 (Channel 0, Bipolar)",
+				value: AnalogSensorType.ads131chan0Bipolar
 			});
 			spiBoards.push({
 				text: "ADS131 (Channel 1)",
@@ -440,17 +459,27 @@ function getSensorPortFunctions(sensorType: AnalogSensorType) {
 		case AnalogSensorType.bme280:
 		case AnalogSensorType.bme280pressure:
 		case AnalogSensorType.bme280humidity:
+		case AnalogSensorType.bme68x:
+		case AnalogSensorType.bme68xpressure:
+		case AnalogSensorType.bme68xhumidity:
+		case AnalogSensorType.bme68xgas:
 		case AnalogSensorType.max31855:
 		case AnalogSensorType.max31856:
 		case AnalogSensorType.max31865:
-		case AnalogSensorType.ads131chan0:
+		case AnalogSensorType.ads131chan0Unipolar:
+		case AnalogSensorType.ads131chan0Bipolar:
 		case AnalogSensorType.ads131chan1:
 			result.add(ConfigPortFunction.sensorSpiCs);
 			break;
 
+		case AnalogSensorType.boardTemp:
+		case AnalogSensorType.current:
 		case AnalogSensorType.drivers:
 		case AnalogSensorType.driversDuex:
 		case AnalogSensorType.mcuTemp:
+		case AnalogSensorType.remote:
+		case AnalogSensorType.thermopileTPiSAmbient:
+		case AnalogSensorType.thermopileTPiSEnvironment:
 		case AnalogSensorType.unknown:
 			// none
 			break;
@@ -458,6 +487,7 @@ function getSensorPortFunctions(sensorType: AnalogSensorType) {
 		case AnalogSensorType.linearAnalog:
 		case AnalogSensorType.pt1000:
 		case AnalogSensorType.thermistor:
+		case AnalogSensorType.thermopileTPiSObject:
 			result.add(ConfigPortFunction.thermistor);
 			break;
 
@@ -521,7 +551,19 @@ function getPresetConfigSensorValue<K extends keyof ConfigTempSensor>(index: num
 }
 
 function requiresBaseSensor(type: AnalogSensorType) {
-	return [AnalogSensorType.dhtHumidity, AnalogSensorType.bme280humidity, AnalogSensorType.bme280pressure].includes(type);
+	return [AnalogSensorType.dhtHumidity, AnalogSensorType.bme280humidity, AnalogSensorType.bme280pressure, AnalogSensorType.thermopileTPiSAmbient, AnalogSensorType.thermopileTPiSEnvironment].includes(type);
+}
+
+function getBaseSensorLabel(type: AnalogSensorType) {
+	switch (type) {
+		case AnalogSensorType.dhtHumidity:
+			return "DHT Sensor";
+		case AnalogSensorType.thermopileTPiSAmbient:
+		case AnalogSensorType.thermopileTPiSEnvironment:
+			return "Thermopile Sensor";
+		default:
+			return "BME280 Sensor";
+	}
 }
 
 function getBaseSensorOptions(type: AnalogSensorType, index: number) {
@@ -538,6 +580,13 @@ function getBaseSensorOptions(type: AnalogSensorType, index: number) {
 				}
 			} else if (type === AnalogSensorType.bme280humidity || type === AnalogSensorType.bme280pressure) {
 				if (sensor.type == AnalogSensorType.bme280) {
+					options.push({
+						text: sensor.name ? sensor.name : `Sensor #${i}`,
+						value: i
+					});
+				}
+			} else if (type === AnalogSensorType.thermopileTPiSAmbient || type === AnalogSensorType.thermopileTPiSEnvironment) {
+				if (sensor.type === AnalogSensorType.thermopileTPiSObject) {
 					options.push({
 						text: sensor.name ? sensor.name : `Sensor #${i}`,
 						value: i

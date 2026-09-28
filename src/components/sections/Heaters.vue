@@ -471,11 +471,8 @@ function configureHeaterModel(index: number, model: HeaterModel) {
 	showHeaterModelDialog.value = true;
 }
 function getHeaterModelClasses(model: HeaterModel) {
-	let isValid = isFinite(model.heatingRate) && isFinite(model.deadTime) && isFinite(model.coolingExp) &&
+	const isValid = isFinite(model.heatingRate) && isFinite(model.deadTime) && isFinite(model.coolingExp) &&
 		isFinite(model.coolingRate) && isFinite(model.fanCoolingRate) && isFinite(model.standardVoltage) && isFinite(model.maxPwm);
-	if (model.pid.used && model.pid.overridden) {
-		isValid = isValid && isFinite(model.pid.p) && isFinite(model.pid.i) && isFinite(model.pid.d);
-	}
 	return isValid ? "btn-outline-secondary" : "btn-danger is-invalid";
 }
 

@@ -88,13 +88,6 @@ export class ConfigPort extends ModelObject {
 	rawPorts: Array<string> = [];
 
 	/**
-	 * Check if any port is set for DueX
-	 */
-	get coversDueX(): boolean {
-		return this.rawPorts.some(rawPort => rawPort.startsWith("duex."));
-	}
-
-	/**
 	 * Assign the ports from the given value
 	 * @param value Port to assign from
 	 * @param updateProperties Whether to update the properties of this port

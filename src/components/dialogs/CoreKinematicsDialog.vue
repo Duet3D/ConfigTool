@@ -28,7 +28,9 @@
 				</table>
 			</div>
 			-->
-			<!-- TODO segmentation -->
+			<div class="col-12">
+				<segmentation-input />
+			</div>
 		</div>
 		<div v-else class="text-danger">
 			error, no core kinematics selected
@@ -42,6 +44,7 @@ import { computed } from "vue";
 
 import BaseDialog from "./BaseDialog.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
+import SegmentationInput from "@/components/inputs/SegmentationInput.vue";
 
 import { useStore } from "@/store";
 

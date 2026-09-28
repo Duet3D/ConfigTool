@@ -25,8 +25,8 @@
                 case ProbeType.dumbModulated:
                     type = "modulated";
                     break;
-                case ProbeType.alternateAnalog:
-                    type = "alternate analog";
+                case ProbeType.alternateAnalog_obsolete:
+                    type = "alternate analog (obsolete)";
                     break;
                 case ProbeType.endstopSwitch_obsolete:
                     type = "endstop (obsolete)";
@@ -55,6 +55,13 @@
                 case ProbeType.scanningAnalog:
                     type = "scanning";
                     break;
+                case ProbeType.loadCell:
+                    type = "load cell";
+                    probeConfig.V = probe.loadCell?.gramsPerCount;
+                    if (probe.loadCell && probe.loadCell.preloadWindow[0] !== probe.loadCell.preloadWindow[1]) {
+                        probeConfig.U = probe.loadCell.preloadWindow;
+                    }
+                    break;
             } -%>
 M558 <%- params(probeConfig) %> ; configure <%- type %> probe via slot #<%- probeIndex %>
 <%          if (model.isDelta && model.configTool.delta.lowDiveHeight) { -%>
@@ -66,12 +73,12 @@ G31 <%- params({
     Y: probe.offsets[1],
     Z: probe.triggerHeight
 }) %> ; set Z probe trigger value, offset and trigger height
-<%      }
-        if (probe.type === ProbeType.blTouch) {
-            const servoIndex = getProbeServoIndex(probeIndex); -%>
+<%          if (probe.type === ProbeType.blTouch) {
+                const servoIndex = getProbeServoIndex(probeIndex); -%>
 M950 <%- params({
     S: servoIndex,
     C: getPortString(ConfigPortFunction.probeServo, probeIndex)
 }) -%> ; create servo #<%- servoIndex %> for BLtouch
-<%      }
+<%          }
+        }
     } -%>

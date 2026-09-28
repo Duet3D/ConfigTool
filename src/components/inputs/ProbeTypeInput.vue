@@ -4,12 +4,13 @@
 </template>
 
 <script setup lang="ts">
-import { initObject, ProbeType, Probe } from '@duet3d/objectmodel';
+import { initObject, ProbeType, Probe, ProbeLoadCell } from '@duet3d/objectmodel';
 import { ref, computed, watch } from 'vue';
 
 import SelectInput, { type SelectOption } from './SelectInput.vue';
 import { useStore } from '@/store';
 import { ConfigPortFunction } from '@/store/model/ConfigPort';
+import { PortType } from '@/store/BaseBoard';
 
 enum ProbePresetType {
 	Switch = "switch",
@@ -111,10 +112,6 @@ const probeOptions = computed(() => {
 				value: ProbeType.dumbModulated
 			},
 			{
-				text: "Alternate analog probe",
-				value: ProbeType.alternateAnalog
-			},
-			{
 				text: "Digital probe",
 				value: ProbeType.digital
 			},
@@ -133,6 +130,12 @@ const probeOptions = computed(() => {
             }
 		]
 	}
+    if (store.data.configTool.ports.some(port => port.capabilities.has(PortType.loadCell))) {
+        result["Types"].push({
+            text: "Load cell",
+            value: ProbeType.loadCell
+        });
+    }
     if (props.index < store.data.sensors.probes.length - 1 || store.data.sensors.probes[props.index] === null) {
         result["Generic"] = [{
 			text: "Not Present",
@@ -150,27 +153,22 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
         return (props.probe !== null) ? props.probe.type : null;
     },
     set(value) {
-        // Apply preset if applicable. Duet 2 needs probe type digital, Duet 3 + expansion only supports unfilteredDigital
+        // Apply preset if applicable. Duet 3 + expansion only supports unfilteredDigital
         if (typeof value === "string") {
             probePreset.value = value as ProbePresetType;
             switch (probePreset.value) {
-                case ProbePresetType.Switch:
-                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
-                    break;
                 case ProbePresetType.SmartProbe:
                     value = ProbeType.analog;
                     break;
+                case ProbePresetType.Switch:
                 case ProbePresetType.SmartEffector:
-                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
-                    break;
                 case ProbePresetType.InductiveNO:
                 case ProbePresetType.InductiveNC:
-                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
+                    value = ProbeType.unfilteredDigital;
                     break;
                 default:
                     const _exhaustiveCheck: never = probePreset.value;
-                    value = store.data.boards.some(board => board.canAddress === null) ? ProbeType.digital : ProbeType.unfilteredDigital;
-                    value = ProbeType.digital;
+                    value = ProbeType.unfilteredDigital;
                     break;
             }
         } else {
@@ -196,13 +194,14 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
                 });
             } else {
                 if ((
-                        ![ProbeType.analog, ProbeType.dumbModulated, ProbeType.alternateAnalog].includes(probe.type) &&
-                         [ProbeType.analog, ProbeType.dumbModulated, ProbeType.alternateAnalog].includes(value)
-                    ) || [ProbeType.none, ProbeType.scanningAnalog].includes(value)) {
+                        ![ProbeType.analog, ProbeType.dumbModulated].includes(probe.type) &&
+                         [ProbeType.analog, ProbeType.dumbModulated].includes(value)
+                    ) || [ProbeType.none, ProbeType.scanningAnalog, ProbeType.loadCell].includes(value) || probe.type === ProbeType.loadCell) {
                     for (const port of store.data.configTool.ports) {
                         if (port.function === ConfigPortFunction.probeIn && port.index === props.index) {
                             // Reset input port for manual/scanning config and when switching from digital to analog probes
                             port.function = null;
+                            port.inverted = false;
                         }
                     }
                 }
@@ -243,6 +242,18 @@ const probeType = computed<ProbeType | ProbePresetType | null>({
                     probe.speeds.splice(2, 1);
                 }
                 probe.type = value;
+            }
+
+            // The threshold is only editable for load cells (in grams), so restore the default when leaving that type
+            const newProbe = store.data.sensors.probes[props.index]!;
+            if (value === ProbeType.loadCell) {
+                if (newProbe.loadCell === null) {
+                    newProbe.loadCell = initObject(ProbeLoadCell, { gramsPerCount: 0.11 });
+                    newProbe.threshold = 70;
+                }
+            } else if (newProbe.loadCell !== null) {
+                newProbe.loadCell = null;
+                newProbe.threshold = new Probe().threshold;
             }
 
             if (probePreset.value === ProbePresetType.InductiveNO || probePreset.value === ProbePresetType.InductiveNC) {

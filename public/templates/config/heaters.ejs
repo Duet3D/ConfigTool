@@ -42,15 +42,7 @@ M307 <%- params({
     S: (heater.model.maxPwm !== 1) ? heater.model.maxPwm : undefined,
     V: (heater.model.standardVoltage > 0) ? heater.model.standardVoltage : undefined
 }) %> ; configure model of heater #<%- i %>
-<%          if (heater.model.pid.overridden) { -%>
-M301 <%- params({
-    H: i,
-    P: heater.model.pid.p,
-    I: heater.model.pid.i,
-    D: heater.model.pid.d
-}) %> ; apply custom PID parameters for heater #<%- i %>
-<%          }
-        }
+<%      }
     }
     if (model.heat.bedHeaterMapping.some(heaters => heaters.some(heater => heater >= 0))) { -%>
 

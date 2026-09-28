@@ -71,6 +71,32 @@
 											  @update:model-value="probe.speeds[2] = $event"
 											  :preset="getPresetProbeValue(index, 'speeds', 2)" />
 							</div>
+							<template v-if="probe.type === ProbeType.loadCell && probe.loadCell !== null">
+								<div class="col-2">
+									<number-input label="Trigger Force"
+												  title="Force relative to the tare at which the probe triggers. Negative values trigger when the force falls to the threshold"
+												  unit="g" :step="1" v-model="probe.threshold"
+												  :preset="getPresetProbeValue(index, 'threshold')" />
+								</div>
+								<div class="col-2">
+									<number-input label="Load Cell Scale"
+												  title="Load cell scale in grams per ADC count. Use a negative value if the reading falls as the force increases"
+												  unit="g/count" :step="0.0001" v-model="probe.loadCell.gramsPerCount"
+												  :valid="probe.loadCell.gramsPerCount !== 0" />
+								</div>
+								<div class="col-2">
+									<number-input label="Min Preload"
+												  title="Lower limit of the preload measured when a probing move starts. Set both limits to the same value to disable the check"
+												  unit="g" :step="1" :model-value="probe.loadCell.preloadWindow[0]"
+												  @update:model-value="probe.loadCell.preloadWindow[0] = $event" />
+								</div>
+								<div class="col-2">
+									<number-input label="Max Preload"
+												  title="Upper limit of the preload measured when a probing move starts. Set both limits to the same value to disable the check"
+												  unit="g" :step="1" :min="probe.loadCell.preloadWindow[0]" :model-value="probe.loadCell.preloadWindow[1]"
+												  @update:model-value="probe.loadCell.preloadWindow[1] = $event" />
+								</div>
+							</template>
 							<div class="col-2">
 								<number-input label="Recovery Time"
 											  title="Optional probe recovery time before the probing move is started"
