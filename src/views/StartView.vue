@@ -30,7 +30,11 @@
 
 			<input type="radio" class="btn-check" name="firmwareVersion" id="v37" value="v37" autocomplete="off"
 				   v-model="firmwareVersion">
-			<label class="btn btn-outline-success btn-lg ms-1" for="v37">Version 3.7</label>
+			<label class="btn btn-outline-secondary btn-lg mx-1" for="v37">Version 3.7</label>
+
+			<input type="radio" class="btn-check" name="firmwareVersion" id="v38" value="v38" autocomplete="off"
+				   v-model="firmwareVersion">
+			<label class="btn btn-outline-success btn-lg ms-1" for="v38">Version 3.8</label>
 		</div>
 
 		<div class="d-flex justify-content-center mb-3">
@@ -92,13 +96,14 @@ import packageInfo from "../../package.json";
 const store = useStore();
 const router = useRouter();
 
-const firmwareVersion = ref<"v34" | "v35" | "v37">("v37");
+const firmwareVersion = ref<"v34" | "v35" | "v37" | "v38">("v38");
 const unsupportedFirmwareDialogShown = ref(false);
 
 const unsupportedFirmwareUrl = computed(() => {
 	switch (firmwareVersion.value) {
 		case "v34": return "https://configtool.reprapfirmware.org/legacy";
 		case "v35": return "https://configtool.reprapfirmware.org/3.6/";
+		case "v37": return "https://configtool.reprapfirmware.org/";
 		default: return "";
 	}
 });
@@ -110,7 +115,7 @@ function startFromScratch() {
 		}
 	}
 
-	if (firmwareVersion.value === "v37") {
+	if (firmwareVersion.value === "v38") {
 		store.$reset();
 		router.push("/Configuration");
 	} else {

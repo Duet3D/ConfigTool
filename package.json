@@ -1,6 +1,6 @@
 {
   "name": "configtool",
-  "version": "3.7.0-rc.1",
+  "version": "3.8.0-alpha.1",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
