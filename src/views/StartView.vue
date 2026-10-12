@@ -98,7 +98,7 @@ const unsupportedFirmwareDialogShown = ref(false);
 const unsupportedFirmwareUrl = computed(() => {
 	switch (firmwareVersion.value) {
 		case "v34": return "https://configtool.reprapfirmware.org/legacy";
-		case "v35": return "https://configtool.reprapfirmware.org/";
+		case "v35": return "https://configtool.reprapfirmware.org/3.6/";
 		default: return "";
 	}
 });
