@@ -68,6 +68,7 @@ M558 <%- params(probeConfig) %> ; configure <%- type %> probe via slot #<%- prob
 M558 H30 ;*** Remove this line after delta calibration has been done and new delta parameters have been saved
 <%		    } -%>
 G31 <%- params({
+    K: probeIndex,
     P: probe.threshold,
     X: probe.offsets[0],
     Y: probe.offsets[1],
