@@ -5,7 +5,7 @@
                 K: probeIndex,
                 P: probe.type,
                 C: getCombinedPortString([ConfigPortFunction.probeIn, ConfigPortFunction.probeMod], probeIndex),
-                H: probe.diveHeight,
+                H: reduce(probe.diveHeights),
                 F: reduce(probe.speeds.map(speed => speed * 60)),
                 T: probe.travelSpeed,
                 R: (probe.recoveryTime !== 0) ? probe.recoveryTime : undefined,
@@ -25,8 +25,8 @@
                 case ProbeType.dumbModulated:
                     type = "modulated";
                     break;
-                case ProbeType.alternateAnalog:
-                    type = "alternate analog";
+                case ProbeType.alternateAnalog_obsolete:
+                    type = "alternate analog (obsolete)";
                     break;
                 case ProbeType.endstopSwitch_obsolete:
                     type = "endstop (obsolete)";
@@ -55,23 +55,31 @@
                 case ProbeType.scanningAnalog:
                     type = "scanning";
                     break;
+                case ProbeType.loadCell:
+                    type = "load cell";
+                    probeConfig.V = probe.loadCell?.gramsPerCount;
+                    if (probe.loadCell && probe.loadCell.preloadWindow[0] !== probe.loadCell.preloadWindow[1]) {
+                        probeConfig.U = probe.loadCell.preloadWindow;
+                    }
+                    break;
             } -%>
 M558 <%- params(probeConfig) %> ; configure <%- type %> probe via slot #<%- probeIndex %>
 <%          if (model.isDelta && model.configTool.delta.lowDiveHeight) { -%>
 M558 H30 ;*** Remove this line after delta calibration has been done and new delta parameters have been saved
 <%		    } -%>
 G31 <%- params({
+    K: probeIndex,
     P: probe.threshold,
     X: probe.offsets[0],
     Y: probe.offsets[1],
     Z: probe.triggerHeight
 }) %> ; set Z probe trigger value, offset and trigger height
-<%      }
-        if (probe.type === ProbeType.blTouch) {
-            const servoIndex = getProbeServoIndex(probeIndex); -%>
+<%          if (probe.type === ProbeType.blTouch) {
+                const servoIndex = getProbeServoIndex(probeIndex); -%>
 M950 <%- params({
     S: servoIndex,
     C: getPortString(ConfigPortFunction.probeServo, probeIndex)
 }) -%> ; create servo #<%- servoIndex %> for BLtouch
-<%      }
+<%          }
+        }
     } -%>

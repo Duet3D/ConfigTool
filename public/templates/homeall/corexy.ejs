@@ -1,6 +1,6 @@
 <%  // Get Z-probe values
     const zProbe = model.sensors.probes.find(probe => probe !== null), zProbeIndex = model.sensors.probes.indexOf(zProbe);
-    const diveHeight = zProbe ? zProbe.diveHeight : 5;
+    const diveHeight = zProbe ? zProbe.diveHeights[0] : 5;
     const travelSpeed = zProbe ? zProbe.travelSpeed : 6000;
 
     // Get XYZ(UV) homing properties

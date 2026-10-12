@@ -17,8 +17,10 @@
 			<table v-if="store.data.ledStrips.length > 0" class="table table-led-strips table-striped mb-0">
 				<colgroup>
 					<col style="width: auto;">
-					<col style="width: 50%;">
-					<col style="width: 50%;">
+					<col style="width: 25%;">
+					<col style="width: 25%;">
+					<col style="width: 35%;">
+					<col style="width: 15%;">
 					<col style="width: auto;">
 				</colgroup>
 				<thead>
@@ -33,6 +35,12 @@
 							Control Port
 						</th>
 						<th>
+							Color Order
+						</th>
+						<th>
+							Max LEDs
+						</th>
+						<th>
 							<!-- Delete button -->
 						</th>
 					</tr>
@@ -43,12 +51,24 @@
 							{{ index }}
 						</td>
 						<td>
-							<select-input title="Type of this LED strip" v-model="strip.type"
-										  :preset="getPresetLedStripValue(index, 'type')" :options="LedStripTypes" />
+							<select-input title="Type of this LED strip" :model-value="strip.type"
+										  @update:model-value="setLedStripType(index, $event)"
+										  :preset="getPresetLedStripValue(index, 'type')" :options="availableLedStripTypes" />
 						</td>
 						<td>
 							<port-input title="Output port for this LED strip" :function="ConfigPortFunction.ledStrip"
 										:index="index" />
+						</td>
+						<td>
+							<select-input title="Order in which the colour channels are sent to this LED strip"
+										  v-model="strip.colorOrder"
+										  :preset="getPresetLedStripValue(index, 'colorOrder')"
+										  :options="LedStripColorOrders" />
+						</td>
+						<td>
+							<number-input title="Maximum number of LEDs on this strip (0 uses firmware default)"
+										  :min="0" :step="1" v-model="strip.maxLeds"
+										  :preset="getPresetLedStripValue(index, 'maxLeds')" />
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger" @click.prevent="deleteLedStrip(index)">
@@ -84,17 +104,28 @@ const LedStripTypes: Array<SelectOption> = [
 		value: LedStripType.NeoPixel_RGBW
 	}
 ];
+
+const LedStripColorOrders: Array<SelectOption> = [
+	{ text: "BGR (DotStar default)", value: LedStripColorOrder.BGR },
+	{ text: "BRG", value: LedStripColorOrder.BRG },
+	{ text: "RGB", value: LedStripColorOrder.RGB },
+	{ text: "RBG", value: LedStripColorOrder.RBG },
+	{ text: "GBR", value: LedStripColorOrder.GBR },
+	{ text: "GRB (NeoPixel default)", value: LedStripColorOrder.GRB }
+];
 </script>
 
 <script setup lang="ts">
-import { LedStrip, LedStripType } from "@duet3d/objectmodel";
+import { LedStrip, LedStripColorOrder, LedStripType } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import ConfigSection from "@/components/ConfigSection.vue";
+import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 
 import { useStore } from "@/store";
+import { PortType } from "@/store/BaseBoard";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { ConfigSectionType } from "@/store/sections";
 
@@ -102,12 +133,33 @@ const store = useStore();
 
 // LED strip management
 const canAddLedStrip = computed(() => store.data.ledStrips.length < store.data.limits.ledStrips!);
+
+// DotStar requires the dedicated LED port; only offer it when the configured boards actually have one
+const availableLedStripTypes = computed(() => store.data.configTool.ports.some(port => port.capabilities.has(PortType.spi))
+	? LedStripTypes
+	: LedStripTypes.filter(option => option.value !== LedStripType.DotStar));
+
+function setLedStripType(index: number, type: LedStripType) {
+	store.data.ledStrips[index].type = type;
+	if (type === LedStripType.DotStar) {
+		// DotStar can only run on the dedicated LED port, so release any plain digital output left over from a NeoPixel selection
+		for (const port of store.data.configTool.ports) {
+			if (port.function === ConfigPortFunction.ledStrip && port.index === index && !port.capabilities.has(PortType.spi)) {
+				port.function = null;
+			}
+		}
+	}
+}
 function addLedStrip() {
 	const strip = new LedStrip();
 	if (store.preset.ledStrips.length > store.data.ledStrips.length) {
 		strip.update(store.preset.ledStrips[store.data.ledStrips.length]);
 	} else if (store.preset.ledStrips.length > 0) {
 		strip.update(store.preset.ledStrips[0]);
+	}
+	if (strip.type === LedStripType.DotStar && !availableLedStripTypes.value.some(option => option.value === LedStripType.DotStar)) {
+		// The default type is DotStar, but the configured boards have no port for it
+		strip.type = LedStripType.NeoPixel_RGB;
 	}
 	store.data.ledStrips.push(strip);
 }

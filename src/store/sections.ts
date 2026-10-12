@@ -125,7 +125,7 @@ export function getSectionTemplates(section?: ConfigSectionType) {
             }
             break;
         case ConfigSectionType.Accessories:
-            if (store.data.boards.some(board => !board.canAddress && board.directDisplay !== null) || store.data.panelDueChannel >= 0) {
+            if ((store.data.mainBoard !== null && store.data.mainBoard.directDisplay !== null) || store.data.panelDueChannel >= 0) {
                 result.push({ template: "config/accessories", data: null });
             }
             break;

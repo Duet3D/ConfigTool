@@ -1,4 +1,4 @@
-import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, FilamentMonitorType, HeaterMonitorCondition, KinematicsName, LedStripType, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics, SpindleType } from "@duet3d/objectmodel";
+import { AnalogSensorType, CoreKinematics, DeltaKinematics, DirectDisplayController, EndstopType, FilamentMonitorType, HeaterMonitorCondition, KinematicsName, LedStripColorOrder, LedStripType, MachineMode, NetworkInterfaceState, NetworkInterfaceType, NetworkProtocol, ProbeType, ScaraKinematics, SpindleType } from "@duet3d/objectmodel";
 import ejs from "ejs";
 
 import { precise } from "@/utils";
@@ -217,6 +217,7 @@ const renderOptions = {
     EndstopType,
     FilamentMonitorType,
     HeaterMonitorCondition,
+    LedStripColorOrder,
     LedStripType,
     MachineMode,
     NetworkInterfaceState,

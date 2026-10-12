@@ -49,28 +49,6 @@
 					</template>
 				</number-input>
 			</div>
-			<template v-if="props.model.pid.used">
-				<div class="col-3 d-flex align-items-end">
-					<check-input label="Override PID parameters"
-								 title="Override model-defined PID parameters using M301"
-								 v-model="props.model.pid.overridden" :preset="getPidPreset('overridden')" />
-				</div>
-				<div class="col-3">
-					<number-input label="Kp" title="Proportional value of the heater's PID loop"
-								  :disabled="!props.model.pid.overridden" v-model="props.model.pid.p"
-								  :preset="getPidPreset('p')" :step="0.00001" />
-				</div>
-				<div class="col-3">
-					<number-input label="Ki" title="Integral value of the heater's PID loop"
-								  :disabled="!props.model.pid.overridden" v-model="props.model.pid.i"
-								  :preset="getPidPreset('i')" :step="0.0001" />
-				</div>
-				<div class="col-3">
-					<number-input label="Kd" title="Derivative value of the heater's PID loop"
-								  :disabled="!props.model.pid.overridden" v-model="props.model.pid.d"
-								  :preset="getPidPreset('d')" :step="0.001" />
-				</div>
-			</template>
 		</div>
 		<div v-else class="text-danger">
 			error, no heater selected
@@ -79,10 +57,9 @@
 </template>
 
 <script setup lang="ts">
-import type { HeaterModel, HeaterModelPID } from "@duet3d/objectmodel";
+import type { HeaterModel } from "@duet3d/objectmodel";
 
 import BaseDialog from "./BaseDialog.vue";
-import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import { useStore } from "@/store";
 
@@ -99,9 +76,5 @@ const store = useStore();
 
 function getPreset<K extends keyof HeaterModel>(key: K) {
 	return (props.heaterIndex < store.preset.heat.heaters.length) && (store.preset.heat.heaters[props.heaterIndex] !== null) ? store.preset.heat.heaters[props.heaterIndex]!.model[key] : null;
-}
-
-function getPidPreset<K extends keyof HeaterModelPID>(key: K) {
-	return (props.heaterIndex < store.preset.heat.heaters.length) && (store.preset.heat.heaters[props.heaterIndex] !== null) ? store.preset.heat.heaters[props.heaterIndex]!.model.pid[key] : null;
 }
 </script>

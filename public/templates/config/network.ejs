@@ -16,6 +16,7 @@ M551 P<%- escape(model.configTool.password) %> ; set <%- (model.sbc === null) ? 
 M552 <%- params({
     I: i,
     P: [iface.configuredIP ?? "0.0.0.0"],
+    T: iface.activeProtocols.has(NetworkProtocol.HTTPS) ? 1 : undefined,
     S: 1
 }) %> ; configure Ethernet adapter
 <%                  if (iface.configuredIP && iface.configuredIP !== "0.0.0.0") { -%>
@@ -25,17 +26,23 @@ M554 P<%- iface.gateway %> ; set gateway
                 } else if (iface.type === NetworkInterfaceType.wifi) { -%>
 M552 <%- params({
     I: i,
+    T: iface.activeProtocols.has(NetworkProtocol.HTTPS) ? 1 : undefined,
     S: 1
 }) %> ; configure WiFi adapter
 <%              }
 
                 // Configure network protocols
                 for (const protocol of iface.activeProtocols) {
-                    let protocolNumber = undefined, protocolName = undefined;
+                    let protocolNumber = undefined, protocolSecure = undefined, protocolName = undefined;
                     switch (protocol) {
                         case NetworkProtocol.HTTP:
                             protocolNumber = 0;
                             protocolName = "HTTP";
+                            break;
+                        case NetworkProtocol.HTTPS:
+                            protocolNumber = 0;
+                            protocolSecure = 1;
+                            protocolName = "HTTPS";
                             break;
                         case NetworkProtocol.FTP:
                             protocolNumber = 1;
@@ -51,6 +58,7 @@ M552 <%- params({
 M586 <%- params({
     I: i,
     P: protocolNumber,
+    T: protocolSecure,
     S: 1
 }) %> ; configure <%- protocolName %>
 <%                  }

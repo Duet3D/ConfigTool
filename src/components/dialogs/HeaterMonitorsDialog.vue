@@ -80,7 +80,7 @@
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue"
 import { HeaterMonitorAction, HeaterMonitorCondition } from "@duet3d/objectmodel"
-import { SelectionDirection } from "monaco-editor";
+import { SelectionDirection } from "@/components/monaco/monaco";
 
 const ConditionOptions: Array<SelectOption> = [
 	{

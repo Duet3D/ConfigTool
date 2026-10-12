@@ -33,9 +33,12 @@ export enum PortType {
 	gpInInterrupt = "gpInInterrupt",
 	gpOut = "gpOut",
 	heater = "heater",
+	loadCell = "loadCell",
 	pwm = "pwm",
 	scanning = "scanning",
+	spi = "spi",			// dedicated LED port with clock and data lines, required for DotStar strips
 	spiCs = "spiCs",
 	thermistor = "thermistor",
+	thermopile = "thermopile",
 	uart = "uart"
 }

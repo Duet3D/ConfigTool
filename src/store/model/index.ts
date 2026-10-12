@@ -1,6 +1,6 @@
-import { ObjectModel, Board, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter, SBC, NetworkInterfaceType, MachineMode } from "@duet3d/objectmodel";
+import { ObjectModel, Accelerometer, AnalogSensorType, ExpansionBoard, ProbeType, MainBoard, DriverId, type IModelObject, NetworkInterface, Endstop, KinematicsName, AxisLetter, SBC, NetworkInterfaceType, MachineMode } from "@duet3d/objectmodel";
 
-import { ConfigPort, ConfigPortFunction } from "@/store/model/ConfigPort";
+import { ConfigPort, ConfigPortFunction, stripBoard } from "@/store/model/ConfigPort";
 import { ConfigDriver, ConfigDriverMode } from "@/store/model/ConfigDriver";
 import { ConfigToolModel } from "@/store/model/ConfigToolModel";
 import { PortType, type BaseBoardDescriptor } from "@/store/BaseBoard";
@@ -34,6 +34,55 @@ export default class ConfigModel extends ObjectModel {
 			}
 		}
 
+		// Older configs stored bed and chamber heaters as a flat list; map each entry to the grouped form
+		if (jsonElement?.heat) {
+			if (jsonElement.heat.bedHeaters instanceof Array && !(jsonElement.heat.bedHeaterMapping instanceof Array)) {
+				jsonElement.heat.bedHeaterMapping = jsonElement.heat.bedHeaters.map((heater: number) => [heater]);
+			}
+			if (jsonElement.heat.chamberHeaters instanceof Array && !(jsonElement.heat.chamberHeaterMapping instanceof Array)) {
+				jsonElement.heat.chamberHeaterMapping = jsonElement.heat.chamberHeaters.map((heater: number) => [heater]);
+			}
+		}
+
+		// Older configs stored a single probe dive height; map it to the first element of the list
+		if (jsonElement?.sensors?.probes instanceof Array) {
+			for (const probe of jsonElement.sensors.probes) {
+				if (probe && typeof probe.diveHeight === "number" && !(probe.diveHeights instanceof Array)) {
+					probe.diveHeights = [probe.diveHeight, probe.diveHeight];
+				}
+
+				// Alternate analog probes (P3) are no longer supported by RRF 3.7
+				if (probe?.type === ProbeType.alternateAnalog_obsolete) {
+					probe.type = ProbeType.analog;
+				}
+			}
+		}
+
+		// Older configs stored one accelerometer per board; number them in board order. The ports are filled in by refreshAccelerometers
+		if (jsonElement?.boards instanceof Array && jsonElement.boards.some((board: any) => board?.accelerometer)) {
+			jsonElement.sensors ??= {};
+			if (!(jsonElement.sensors.accelerometers instanceof Array)) {
+				jsonElement.sensors.accelerometers = [];
+			}
+			for (const board of jsonElement.boards) {
+				if (board?.accelerometer) {
+					jsonElement.sensors.accelerometers.push({
+						orientation: board.accelerometer.orientation,
+						port: board.canAddress ? `${board.canAddress}.nil` : "nil"
+					});
+				}
+			}
+		}
+
+		// Older configs stored ADS131 channel 0 without polarity and kept it in the config tool sensor data
+		if (jsonElement?.sensors?.analog instanceof Array) {
+			jsonElement.sensors.analog.forEach((sensor: any, index: number) => {
+				if (sensor?.type === "ads131.chan0") {
+					sensor.type = jsonElement.configTool?.sensors?.[index]?.bipolar ? AnalogSensorType.ads131chan0Bipolar : AnalogSensorType.ads131chan0Unipolar;
+				}
+			});
+		}
+
 		super.update(jsonElement);
 		if (jsonElement.configTool) {
 			this.configTool.update(jsonElement.configTool);
@@ -46,6 +95,13 @@ export default class ConfigModel extends ObjectModel {
 	 */
 	get boardDefinition(): BoardDescriptor | null {
 		return getBoardDefinition(this);
+	}
+
+	/**
+	 * Get the mainboard or null if no board is configured yet
+	 */
+	get mainBoard(): MainBoard | null {
+		return (this.boards.length > 0) ? this.boards[0] as MainBoard : null;
 	}
 
 	/** 
@@ -80,7 +136,7 @@ export default class ConfigModel extends ObjectModel {
 				// CoreXZ requires XZ to be homed at once
 				reservedAxes = [AxisLetter.X, AxisLetter.Z];
 				break;
-			case KinematicsName.delta:
+			case KinematicsName.linearDelta:
 			case KinematicsName.rotaryDelta:
 			case KinematicsName.hangprinter:
 				// Delta setups require XYZ to be homed at once. Hangprinters do not have homing files for XYZ
@@ -137,7 +193,7 @@ export default class ConfigModel extends ObjectModel {
 			}
 			this.boards[0].update(boardDefinition.objectModelBoard);
 		} else {
-			const newBoard = new Board();
+			const newBoard = new MainBoard();
 			newBoard.update(boardDefinition.objectModelBoard);
 			this.boards.push(newBoard);
 		}
@@ -190,14 +246,14 @@ export default class ConfigModel extends ObjectModel {
 		}
 
 		const expansionBoardDefinition = ExpansionBoards[boardType];
-		let newExpansionBoard: Board | null = null;
+		let newExpansionBoard: ExpansionBoard | null = null;
 		if (expansionBoardDefinition.objectModelBoard.canAddress !== null) {
 			const mainBoard = this.boards[0];
 			if (mainBoard.canAddress === null) {
 				throw new Error("Cannot add CAN expansion board to mainboard which does not support CAN");
 			}
 
-			newExpansionBoard = new Board();
+			newExpansionBoard = new ExpansionBoard();
 			newExpansionBoard.update(expansionBoardDefinition.objectModelBoard);
 			while (this.boards.some(board => board.canAddress === newExpansionBoard!.canAddress)) {
 				newExpansionBoard.canAddress!++;
@@ -235,6 +291,7 @@ export default class ConfigModel extends ObjectModel {
 
 		this.refreshDrivers();
 		this.refreshPorts();
+		this.refreshAccelerometers();
 	}
 
 	/**
@@ -321,6 +378,7 @@ export default class ConfigModel extends ObjectModel {
 		this.refreshDrivers();
 		this.refreshPorts();
 		this.refreshSensors();
+		this.refreshAccelerometers();
 		this.enforceLimits();
 	}
 
@@ -551,6 +609,54 @@ export default class ConfigModel extends ObjectModel {
 	}
 
 	/**
+	 * Get the CAN address of the board an accelerometer is connected to
+	 * @param accelerometer Accelerometer to check
+	 * @returns CAN address or 0 if it is connected to the mainboard
+	 */
+	getAccelerometerBoard(accelerometer: Accelerometer): number {
+		const match = /^(\d+)\./.exec(accelerometer.port);
+		return (match !== null) ? parseInt(match[1]) : 0;
+	}
+
+	/**
+	 * Get the M955 C parameter for the accelerometer on a given board
+	 * @param canAddress CAN address of the board or 0 for the mainboard
+	 * @returns Port string or null if the SPI ports have not been assigned yet
+	 */
+	getAccelerometerPort(canAddress: number): string | null {
+		const prefix = (canAddress > 0) ? `${canAddress}.` : "";
+		const board = (canAddress > 0) ? this.boards.find(board => board.canAddress === canAddress) : undefined;
+		if (board && getExpansionBoardDefinition(board)?.hasBuiltInAccelerometer) {
+			return `${prefix}i2c.lis`;
+		}
+
+		const csPort = this.configTool.ports.find(port => port.function === ConfigPortFunction.accelerometerSpiCs && port.index === canAddress);
+		const intPort = this.configTool.ports.find(port => port.function === ConfigPortFunction.accelerometerInt && port.index === canAddress);
+		return (csPort && intPort) ? `${prefix}${stripBoard(csPort.rawPorts[0])}+${stripBoard(intPort.rawPorts[0])}` : null;
+	}
+
+	/**
+	 * Update the ports of configured accelerometers and remove those whose board is gone
+	 */
+	refreshAccelerometers(): void {
+		for (let i = 0; i < this.sensors.accelerometers.length; i++) {
+			const accelerometer = this.sensors.accelerometers[i];
+			if (accelerometer !== null) {
+				const canAddress = this.getAccelerometerBoard(accelerometer);
+				if (!this.getBoardDefinition(canAddress)?.supportsAccelerometer) {
+					this.sensors.accelerometers[i] = null;
+				} else {
+					accelerometer.port = this.getAccelerometerPort(canAddress) ?? ((canAddress > 0) ? `${canAddress}.nil` : "nil");
+				}
+			}
+		}
+
+		while (this.sensors.accelerometers.length > 0 && this.sensors.accelerometers[this.sensors.accelerometers.length - 1] === null) {
+			this.sensors.accelerometers.pop();
+		}
+	}
+
+	/**
 	 * Fix the virtual expansion boards of a given config model object
 	 */
 	private fixExpansionBoards(): void {
@@ -572,47 +678,6 @@ export default class ConfigModel extends ObjectModel {
 			case BoardType.Duet3MB6XD:
 				// These boards do not support any direct-connect expansion boards
 				this.configTool.expansionBoard = null;
-				break;
-
-			case BoardType.Duet2Ethernet:
-			case BoardType.Duet2WiFi:
-			case BoardType.Duet2SBC:
-				// Duet 2 mainboard drivers have no CAN address, so a DueX board is addressed via board === null
-				if (this.configTool.expansionBoard !== ExpansionBoardType.DueX2 &&
-					this.configTool.expansionBoard !== ExpansionBoardType.DueX5 &&
-					this.configTool.expansionBoard !== ExpansionBoardType.Duet2ExpansionBreakout
-				) {
-					if (this.configTool.ports.some(port => port.coversDueX) ||
-						this.move.axes.some(axis => axis.drivers.some(driver => driver?.board === null && driver?.driver >= 5)) ||
-						this.move.extruders.some(extruder => extruder.driver?.board === null && extruder.driver?.driver >= 5)
-					) {
-						// Drives >= 0.5 require a DueX 2, DueX 5, or Duet 2 Expansion Breakout Board
-						if (this.move.axes.some(axis => axis.current > 0 && axis.drivers.some(driver => driver?.board === null && driver?.driver >= 5)) ||
-							this.move.extruders.some(extruder => extruder.current > 0 && extruder.driver?.board === null && extruder.driver?.driver >= 5)
-						) {
-							// DueX 2 is no longer officially supported, so assume a DueX 5 is present
-							this.configTool.expansionBoard = ExpansionBoardType.DueX5;
-						} else {
-							// Drivers >= 0.5 don't have any motor current set. Assume this is a breakout expansion board
-							this.configTool.expansionBoard = ExpansionBoardType.Duet2ExpansionBreakout;
-						}
-					} else {
-						// No expansion board required
-						this.configTool.expansionBoard = null;
-					}
-				}
-				break;
-
-			case BoardType.Duet2Maestro:
-				if (this.move.axes.some(axis => axis.drivers.some(driver => driver?.board === null && driver?.driver >= 5)) ||
-					this.move.extruders.some(extruder => extruder.driver?.board === null && extruder.driver?.driver >= 5)
-				) {
-					// Drives 0.5 + 0.6 require a Duet Maestro 2+ expansion board
-					this.configTool.expansionBoard = ExpansionBoardType.Duet2Maestro2Plus;
-				} else {
-					// Reset expansion board
-					this.configTool.expansionBoard = null;
-				}
 				break;
 
 			case null:
@@ -642,8 +707,8 @@ export default class ConfigModel extends ObjectModel {
 			this.move.extruders.splice(0);
 			this.sensors.filamentMonitors.splice(0);
 			this.heat.heaters.splice(0);
-			this.heat.bedHeaters.splice(0);
-			this.heat.chamberHeaters.splice(0);
+			this.heat.bedHeaterMapping.splice(0);
+			this.heat.chamberHeaterMapping.splice(0);
 
 			for (const tool of this.tools) {
 				if (tool !== null) {
@@ -704,7 +769,7 @@ export default class ConfigModel extends ObjectModel {
 	 * Check if the machine is using delta kinematics
 	 */
 	get isDelta(): boolean {
-		return [KinematicsName.delta, KinematicsName.rotaryDelta].includes(this.move.kinematics.name);
+		return [KinematicsName.linearDelta, KinematicsName.rotaryDelta].includes(this.move.kinematics.name);
 	}
 	
 	/**
@@ -716,10 +781,10 @@ export default class ConfigModel extends ObjectModel {
 				const uartPorts = this.boardDefinition.ports.uart[channel];
 	
 				// USB isn't a valid choice
-				if (uartPorts === "usb") {
+				if (uartPorts.startsWith("usb")) {
 					continue;
 				}
-	
+
 				// Check if the given UART ports are all assigned to function UART
 				let isAssignedToUart = true;
 				for (const uartPort of uartPorts.split("+")) {
@@ -753,7 +818,7 @@ export default class ConfigModel extends ObjectModel {
 				const uartPorts = this.boardDefinition.ports.uart[channel];
 
 				// USB isn't a valid choice
-				if (uartPorts === "usb") {
+				if (uartPorts.startsWith("usb")) {
 					continue;
 				}
 

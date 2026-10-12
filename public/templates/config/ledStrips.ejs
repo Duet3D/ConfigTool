@@ -12,10 +12,15 @@
                 type = 2;
                 break;
         }
+
+        // Firmware applies a strip-type-specific default for the color order; emit K only when overridden
+        const defaultColorOrder = (strip.type === LedStripType.DotStar) ? LedStripColorOrder.BGR : LedStripColorOrder.GRB;
         -%>
 M950 <%- params({
     E: i,
     C: getPortString(ConfigPortFunction.ledStrip, i),
-    T: type
+    T: type,
+    U: (strip.maxLeds > 0) ? strip.maxLeds : undefined,
+    K: (strip.colorOrder !== defaultColorOrder) ? strip.colorOrder : undefined
 }) %> ; configure LED strip #<%- i %>
 <%  } -%>

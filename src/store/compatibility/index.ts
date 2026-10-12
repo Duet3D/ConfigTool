@@ -61,14 +61,9 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 		case LegacyBoardType.Duet085:
 			throw new Error("Duet 0.6/0.8.5 is no longer supported. Please use configtool < 3.4 instead");
 		case LegacyBoardType.Duet2WiFi:
-			model.boardType = BoardType.Duet2WiFi;
-			break;
 		case LegacyBoardType.Duet2Ethernet:
-			model.boardType = BoardType.Duet2Ethernet;
-			break;
 		case LegacyBoardType.Duet2Maestro:
-			model.boardType = BoardType.Duet2Maestro;
-			break;
+			throw new Error("Duet 2 is not supported by RRF 3.7. Please use the Config Tool for RRF 3.6 instead");
 		case LegacyBoardType.Duet3MB6HC:
 			model.boardType = BoardType.Duet3MB6HC;
 			break;
@@ -132,7 +127,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 
 	// Homing preferences
 	model.sensors.probes.push(initObject(Probe, {
-		diveHeight: input.z_dive_height,
+		diveHeights: [input.z_dive_height, input.z_dive_height],
 		travelSpeed: input.travel_speed
 	}));
 
@@ -140,11 +135,8 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 	for (const expansionBoardType of input.expansion_boards as LegacyExpansionBoardType[]) {
 		switch (expansionBoardType) {
 			case LegacyExpansionBoardType.DueX2:
-				model.addExpansionBoard(ExpansionBoardType.DueX2);
-				break;
 			case LegacyExpansionBoardType.DueX5:
-				model.addExpansionBoard(ExpansionBoardType.DueX5);
-				break;
+				throw new Error("DueX boards are not supported by RRF 3.7. Please use the Config Tool for RRF 3.6 instead");
 			case LegacyExpansionBoardType.Duet3Mini2Plus:
 				model.addExpansionBoard(ExpansionBoardType.Duet3Mini2Plus);
 				break;
@@ -324,7 +316,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 			const fan = new Fan();
 			fan.name = legacyFan.name;
 			if (legacyFan.thermostatic) {
-				fan.thermostatic.heaters = legacyFan.heaters;
+				fan.thermostatic.sensors = legacyFan.heaters.map(h => model.heat.heaters[h]?.sensor ?? h);
 				fan.thermostatic.lowTemperature = legacyFan.trigger_temperature;
 			}
 			fan.max = legacyFan.value / 100;
@@ -391,7 +383,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 	model.move.compensation.skew.tanYZ = input.orthogonal.deviations[2] / input.orthogonal.height;
 
 	// Direct-Connect Display
-	const mainboard = model.boards[0];
+	const mainboard = model.mainBoard!;
 	if (mainboard.supportsDirectDisplay && input.display.type !== 0) {
 		mainboard.directDisplay = new DirectDisplay();
 		mainboard.directDisplay.encoder!.pulsesPerClick = input.display.encoder_steps;
@@ -431,7 +423,7 @@ export function convertLegacyPreset(input: LegacyPreset): ConfigModel {
 
 	// Miscellaneous
 	if (input.panelDue && model.boardDefinition !== null) {
-		const firstUartPorts = model.boardDefinition.ports.uart.find(item => item !== "usb");
+		const firstUartPorts = model.boardDefinition.ports.uart.find(item => !item.startsWith("usb"));
 		if (firstUartPorts) {
 			for (const uartPort of firstUartPorts.split("+")) {
 				model.configTool.assignPort(uartPort, ConfigPortFunction.uart, 0);

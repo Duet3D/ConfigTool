@@ -11,8 +11,9 @@
             <table v-if="accelerometerBoards.length > 0" class="table table-striped table-accelerometer-boards mt-n1 mb-0">
                 <colgroup>
                     <col style="width: auto;">
-                    <col style="width: 25%;">
-                    <col style="width: 35%;">
+                    <col style="width: 10%;">
+                    <col style="width: 20%;">
+                    <col style="width: 30%;">
                     <col style="width: 20%;">
                     <col style="width: 20%;">
                 </colgroup>
@@ -20,6 +21,9 @@
                     <tr>
                         <th class="text-center text-nowrap">
                             CAN Address
+                        </th>
+                        <th>
+                            Number
                         </th>
                         <th>
                             Accelerometer Type
@@ -41,6 +45,11 @@
                             {{ board.canAddress ?? "n/a" }}
                         </td>
                         <td>
+                            <select-input title="Number of this accelerometer (P parameter)" :options="getAccelerometerNumbers(board)"
+                                          :disabled="getAccelerometerIndex(board) < 0" :model-value="getAccelerometerIndex(board)"
+                                          @update:model-value="setAccelerometerNumber(board, $event)" />
+                        </td>
+                        <td>
                             <select-input title="Type of the connected accelerometer" :options="getAccelerometerTypes(board)"
                                           :required="false" :model-value="getAccelerometerModel(board)"
                                           @update:model-value="setAccelerometerModel(board, $event)" />
@@ -52,12 +61,12 @@
                         </td>
                         <td>
                             <port-input :board="board.canAddress" :function="ConfigPortFunction.accelerometerSpiCs"
-                                        :index="board.canAddress ?? 0" :disabled="getAccelerometerModel(board) === null"
+                                        :index="board.canAddress ?? 0" :disabled="getAccelerometerModel(board) === null || hasBuiltInAccelerometer(board)"
                                         :required="!hasBuiltInAccelerometer(board)" />
                         </td>
                         <td>
                             <port-input :board="board.canAddress" :function="ConfigPortFunction.accelerometerInt"
-                                        :index="board.canAddress ?? 0" :disabled="getAccelerometerModel(board) === null"
+                                        :index="board.canAddress ?? 0" :disabled="getAccelerometerModel(board) === null || hasBuiltInAccelerometer(board)"
                                         :required="!hasBuiltInAccelerometer(board)" />
                         </td>
                     </tr>
@@ -81,6 +90,8 @@
 <script lang="ts">
 import type { SelectOption } from "@/components/inputs/SelectInput.vue";
 import { ExpansionBoardType } from "@/store/ExpansionBoards";
+
+const MaxAccelerometers = 10;
 
 const OrientationOptions: Array<SelectOption> = [
     {
@@ -213,11 +224,11 @@ const accelerometerBoards = computed(() => {
 });
 
 function hasBuiltInAccelerometer(board: Board) {
-    return board.canAddress && (getExpansionBoardDefinition(board as Board)?.hasBuiltInAccelerometer ?? false);
+    return !!board.canAddress && (getExpansionBoardDefinition(board)?.hasBuiltInAccelerometer ?? false);
 }
 
 function getAccelerometerType(board: Board): string {
-    return (getExpansionBoardType(board) === ExpansionBoardType.TOOL1RR) ? "LIS2DW12" : "LIS3DH";
+    return [ExpansionBoardType.TOOL1RR, ExpansionBoardType.TOOLINDX].includes(getExpansionBoardType(board)!) ? "LIS2DW12" : "LIS3DH";
 }
 
 function getAccelerometerTypes(board: Board): Array<SelectOption> {
@@ -228,29 +239,75 @@ function getAccelerometerTypes(board: Board): Array<SelectOption> {
     ];
 }
 
+function getAccelerometerIndex(board: Board) {
+    return store.data.sensors.accelerometers.findIndex(accelerometer => accelerometer !== null && store.data.getAccelerometerBoard(accelerometer) === (board.canAddress ?? 0));
+}
+
+function getAccelerometer(board: Board) {
+    const index = getAccelerometerIndex(board);
+    return (index >= 0) ? store.data.sensors.accelerometers[index] : null;
+}
+
+function getAccelerometerNumbers(board: Board): Array<SelectOption> {
+    const ownIndex = getAccelerometerIndex(board), options: Array<SelectOption> = [];
+    for (let i = 0; i < MaxAccelerometers; i++) {
+        options.push({
+            text: i.toString(),
+            value: i,
+            disabled: (i !== ownIndex) && (i < store.data.sensors.accelerometers.length) && (store.data.sensors.accelerometers[i] !== null)
+        });
+    }
+    return options;
+}
+
+function setAccelerometerNumber(board: Board, value: number) {
+    const index = getAccelerometerIndex(board);
+    if (index >= 0 && index !== value) {
+        while (store.data.sensors.accelerometers.length <= value) {
+            store.data.sensors.accelerometers.push(null);
+        }
+        store.data.sensors.accelerometers[value] = store.data.sensors.accelerometers[index];
+        store.data.sensors.accelerometers[index] = null;
+        store.data.refreshAccelerometers();
+    }
+}
+
 function getAccelerometerModel(board: Board) {
-    return (board.accelerometer !== null) ? getAccelerometerType(board) : null;
+    return (getAccelerometer(board) !== null) ? getAccelerometerType(board) : null;
 }
 
 function setAccelerometerModel(board: Board, value: string | null) {
-    board.accelerometer = (value !== null) ? new Accelerometer() : null;
+    const index = getAccelerometerIndex(board);
     if (value === null) {
+        if (index >= 0) {
+            store.data.sensors.accelerometers[index] = null;
+        }
         for (const port of store.data.configTool.ports) {
             if ([ConfigPortFunction.accelerometerInt, ConfigPortFunction.accelerometerSpiCs].includes(port.function!) && port.index === (board.canAddress ?? 0)) {
                 // Release ports of the deleted accelerometer
                 port.function = null;
             }
         }
+    } else if (index < 0) {
+        const newAccelerometer = new Accelerometer(), freeIndex = store.data.sensors.accelerometers.indexOf(null);
+        newAccelerometer.port = board.canAddress ? `${board.canAddress}.nil` : "nil";
+        if (freeIndex >= 0) {
+            store.data.sensors.accelerometers[freeIndex] = newAccelerometer;
+        } else {
+            store.data.sensors.accelerometers.push(newAccelerometer);
+        }
     }
+    store.data.refreshAccelerometers();
 }
 
 function getAccelerometerOrientation(board: Board) {
-    return (board.accelerometer !== null) ? board.accelerometer.orientation : 20;
+    return getAccelerometer(board)?.orientation ?? 20;
 }
 
 function setAccelerometerOrientation(board: Board, value: number) {
-    if (board.accelerometer !== null) {
-        board.accelerometer.orientation = value;
+    const accelerometer = getAccelerometer(board);
+    if (accelerometer !== null) {
+        accelerometer.orientation = value;
     }
 }
 </script>

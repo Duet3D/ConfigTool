@@ -1,5 +1,5 @@
-<%  if (model.boards.length > 0 && model.boards[0].supportsDirectDisplay) {
-        const directDisplay = model.boards[0].directDisplay;
+<%  if (model.mainBoard?.supportsDirectDisplay) {
+        const directDisplay = model.mainBoard.directDisplay;
         if (directDisplay !== null) {
             let typeCode = 0;
             switch (directDisplay.screen.controller) {

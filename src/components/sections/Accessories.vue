@@ -4,44 +4,44 @@
 		<div class="row">
 			<!-- Direct Display -->
 			<div class="col-auto">
-				<check-input v-if="(store.data.boards.length > 0) && store.data.boards[0].supportsDirectDisplay"
+				<check-input v-if="store.data.mainBoard?.supportsDirectDisplay"
 							 label="Enable Direct Display"
 							 title="Check this option if you have a direct display connected to your Duet (like a 12864 or TFT display)"
 							 v-model="configureDirectDisplay"
-							 :preset="(store.preset.boards.length > 0) && (store.preset.boards[0].directDisplay !== null)" />
+							 :preset="(store.preset.mainBoard?.directDisplay ?? null) !== null" />
 			</div>
 			<div class="col-12">
 				<div v-if="configureDirectDisplay" class="row ms-3 my-2">
 					<div class="col-6">
 						<select-input label="Direct display type" title="Type of the connected display"
 									  v-model="directDisplayController" :options="DirectDisplayTypes"
-									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.screen.controller : null" />
+									  :preset="store.preset.mainBoard?.directDisplay?.screen.controller ?? null" />
 					</div>
-					<div v-if="store.data.boards[0].directDisplay?.encoder" class="col-3">
+					<div v-if="store.data.mainBoard!.directDisplay?.encoder" class="col-3">
 						<select-input label="Encoder pulses per click" title="Number of pulses per encoder turn"
-									  v-model="store.data.boards[0].directDisplay!.encoder!.pulsesPerClick"
+									  v-model="store.data.mainBoard!.directDisplay!.encoder!.pulsesPerClick"
 									  :options="PulsesPerClick"
-									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.encoder?.pulsesPerClick : null" />
+									  :preset="store.preset.mainBoard?.directDisplay?.encoder?.pulsesPerClick ?? null" />
 					</div>
 					<div class="col-3">
 						<number-input label="SPI frequency" title="Frequency of the SPI link"
-									  v-model="store.data.boards[0].directDisplay!.screen.spiFreq"
-									  :preset="(store.preset.boards.length > 0) ? store.preset.boards[0].directDisplay?.screen.spiFreq : null"
+									  v-model="store.data.mainBoard!.directDisplay!.screen.spiFreq"
+									  :preset="store.preset.mainBoard?.directDisplay?.screen.spiFreq ?? null"
 									  unit="Hz" :min="100000" :max="8000000" :step="1" />
 					</div>
 				</div>
-				<div v-if="store.data.boards[0].directDisplay?.screen.controller === DirectDisplayController.ST7567"
+				<div v-if="store.data.mainBoard!.directDisplay?.screen.controller === DirectDisplayController.ST7567"
 					 class="row ms-3 my-2">
 					<div class="col">
 						<number-input label="Contrast ratio" title="Contrast ratio of this display"
-									  v-model="(store.data.boards[0].directDisplay!.screen as DirectDisplayScreenST7567).contrast"
-									  :preset="(store.preset.boards.length > 0) ? (store.preset.boards[0].directDisplay?.screen as DirectDisplayScreenST7567 | null)?.contrast : null"
+									  v-model="(store.data.mainBoard!.directDisplay!.screen as DirectDisplayScreenST7567).contrast"
+									  :preset="(store.preset.mainBoard?.directDisplay?.screen as DirectDisplayScreenST7567 | undefined)?.contrast ?? null"
 									  :min="0" :max="100" :step="1" />
 					</div>
 					<div class="col">
 						<number-input label="Resistor ratio" title="Resistor ratio of this display"
-									  v-model="(store.data.boards[0].directDisplay!.screen as DirectDisplayScreenST7567).resistorRatio"
-									  :preset="(store.preset.boards.length > 0) ? (store.preset.boards[0].directDisplay?.screen as DirectDisplayScreenST7567 | null)?.resistorRatio : null"
+									  v-model="(store.data.mainBoard!.directDisplay!.screen as DirectDisplayScreenST7567).resistorRatio"
+									  :preset="(store.preset.mainBoard?.directDisplay?.screen as DirectDisplayScreenST7567 | undefined)?.resistorRatio ?? null"
 									  :min="1" :max="7" :step="1" />
 					</div>
 				</div>
@@ -167,14 +167,14 @@ const store = useStore();
 
 // Direct Display
 const configureDirectDisplay = computed({
-	get() { return (store.data.boards.length > 0) && store.data.boards[0].supportsDirectDisplay && (store.data.boards[0].directDisplay !== null); },
-	set(value) { store.data.boards[0].directDisplay = value ? new DirectDisplay() : null; }
+	get() { return !!store.data.mainBoard?.supportsDirectDisplay && (store.data.mainBoard.directDisplay !== null); },
+	set(value) { store.data.mainBoard!.directDisplay = value ? new DirectDisplay() : null; }
 });
 
 const directDisplayController = computed({
-	get() { return (store.data.boards.length > 0) && store.data.boards[0].directDisplay!.screen.controller; },
+	get() { return store.data.mainBoard?.directDisplay?.screen.controller ?? null; },
 	set(value) {
-		store.data.boards[0].directDisplay!.update({ screen: { controller: value } });
+		store.data.mainBoard!.directDisplay!.update({ screen: { controller: value } });
 
 		// ST7567 displays require a Dotstar LED strip
 		if (value === DirectDisplayController.ST7567) {
@@ -207,7 +207,7 @@ const panelDueChannels = computed(() => {
 	const result: Array<SelectOption> = [];
 	if (store.data.boardDefinition !== null) {
 		for (let i = 0; i < store.data.boardDefinition.ports.uart.length; i++) {
-			if (store.data.boardDefinition.ports.uart[i] !== "usb") {
+			if (!store.data.boardDefinition.ports.uart[i].startsWith("usb")) {
 				result.push({
 					text: `Channel ${i} (${store.data.boardDefinition.ports.uart[i]})`,
 					value: i

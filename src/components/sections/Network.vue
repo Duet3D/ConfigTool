@@ -117,11 +117,11 @@
 							 :model-value="isProtocolEnabled(NetworkProtocol.HTTP)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.HTTP, $event)"
 							 :preset="isPresetProtocolEnabled(NetworkProtocol.HTTP)" />
-				<check-input v-if="store.data.sbc !== null" label="Enable HTTPS"
-							 title="Enable HTTPS access using Duet Web Control via self-signed certificate"
+				<check-input label="Enable HTTPS"
+							 :title="(store.data.sbc !== null) ? 'Enable HTTPS access using Duet Web Control via self-signed certificate' : 'Enable HTTPS access using Duet Web Control. This requires server.key and server.crt in the sys directory of the SD card'"
 							 :model-value="isProtocolEnabled(NetworkProtocol.HTTPS)"
 							 @update:model-value="setProtocolEnabled(NetworkProtocol.HTTPS, $event)"
-							 :preset="isPresetProtocolEnabled(NetworkProtocol.HTTP)" />
+							 :preset="isPresetProtocolEnabled(NetworkProtocol.HTTPS)" />
 			</div>
 			<div class="col d-flex flex-column justify-content-end">
 				<check-input label="Enable FTP" title="Enable FTP access"
@@ -216,7 +216,7 @@ function isProtocolEnabled(protocol: NetworkProtocol) {
 }
 
 function isPresetProtocolEnabled(protocol: NetworkProtocol) {
-	for (const iface of store.data.network.interfaces) {
+	for (const iface of store.preset.network.interfaces) {
 		if (iface.activeProtocols.has(protocol)) {
 			return true;
 		}

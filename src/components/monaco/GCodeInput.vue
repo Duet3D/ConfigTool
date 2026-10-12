@@ -9,13 +9,10 @@ div {
 </template>
 
 <script setup lang="ts">
-import * as monaco from "monaco-editor";
+import * as monaco from "./monaco";
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 
 import { useStore } from "@/store";
-
-import "./monaco-gcode";
-import "./monaco-worker";
 
 const store = useStore();
 

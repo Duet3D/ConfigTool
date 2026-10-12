@@ -11,7 +11,7 @@
 				<i class="bi-info-circle"></i>
 				CoreXY configuration
 			</a>
-			<a v-else-if="store.data.move.kinematics.name === KinematicsName.delta"
+			<a v-else-if="store.data.move.kinematics.name === KinematicsName.linearDelta"
 			   href="https://docs.duet3d.com/User_manual/Machine_configuration/Configuration_linear_delta"
 			   target="_blank">
 				<i class="bi-info-circle"></i>
@@ -65,7 +65,7 @@
 			<!-- Core Kinematics -->
 			<core-kinematics-dialog v-model="showAdvancedSettings" />
 		</div>
-		<div v-else-if="store.data.move.kinematics.name === KinematicsName.delta" class="row g-3">
+		<div v-else-if="store.data.move.kinematics.name === KinematicsName.linearDelta" class="row g-3">
 			<!-- Delta Kinematics -->
 			<delta-kinematics-dialog v-model="showAdvancedSettings" />
 			<div class="col">
@@ -303,7 +303,7 @@ const KinematicsOptions: Record<string, Array<SelectOption>> = {
 	"Delta Kinematics": [
 		{
 			text: "Linear Delta",
-			value: KinematicsName.delta
+			value: KinematicsName.linearDelta
 		},
 		{
 			disabled: true,

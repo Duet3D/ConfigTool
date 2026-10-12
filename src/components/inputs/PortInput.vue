@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { AnalogSensorType, EndstopType, ProbeType } from "@duet3d/objectmodel";
+import { AnalogSensorType, EndstopType, LedStripType, ProbeType } from "@duet3d/objectmodel";
 import { computed, ref, watch } from "vue";
 
 import NumberInput from "@/components/inputs/NumberInput.vue";
@@ -101,7 +101,8 @@ const emit = defineEmits<{
 const store = useStore();
 
 // Invert button
-const allowInversion = computed(() => !disabled.value && (![ConfigPortFunction.accelerometerInt, ConfigPortFunction.accelerometerSpiCs, ConfigPortFunction.ledStrip, ConfigPortFunction.thermistor, ConfigPortFunction.sensorSpiCs].includes(props.function)));
+const allowInversion = computed(() => !disabled.value && (![ConfigPortFunction.accelerometerInt, ConfigPortFunction.accelerometerSpiCs, ConfigPortFunction.ledStrip, ConfigPortFunction.thermistor, ConfigPortFunction.sensorSpiCs].includes(props.function))
+	&& !(props.function === ConfigPortFunction.probeIn && store.data.sensors.probes[props.index]?.type === ProbeType.loadCell));
 const isInverted = computed(() => realPort.value?.inverted ?? false);
 function getInversionTitle() {
 	return `Change pin signal to ${isInverted.value ? "active high" : "active low"}.` + "<br><br>" + `The current setting is ${isInverted.value ? "active low" : "active high"}`;
@@ -142,7 +143,7 @@ const allowPullUp = computed(() => {
 		case ConfigPortFunction.probeIn:
 			if (props.index < store.data.sensors.probes.length) {
 				const probe = store.data.sensors.probes[props.index];
-				if (probe !== null && (probe.type === ProbeType.analog || probe.type === ProbeType.dumbModulated || probe.type === ProbeType.alternateAnalog)) {
+				if (probe !== null && [ProbeType.analog, ProbeType.dumbModulated, ProbeType.loadCell].includes(probe.type)) {
 					// Anlog inputs do not support pull-up configurations
 					return false;
 				}
@@ -283,7 +284,12 @@ const ports = computed(() => {
 			requiredCapabilities.add(PortType.pwm);
 			break;
 		case ConfigPortFunction.ledStrip:
-			requiredCapabilities.add(PortType.gpOut);
+			if (props.index < store.data.ledStrips.length && store.data.ledStrips[props.index]?.type === LedStripType.DotStar) {
+				// DotStar needs the dedicated LED port with separate clock and data lines; a plain digital output can only drive NeoPixel
+				requiredCapabilities.add(PortType.spi);
+			} else {
+				requiredCapabilities.add(PortType.gpOut);
+			}
 			break;
 		case ConfigPortFunction.probeIn:
 			if (props.index < store.data.sensors.probes.length) {
@@ -295,6 +301,9 @@ const ports = computed(() => {
 					} else if (probe.type === ProbeType.scanningAnalog) {
 						// Scanning probes have their own dedicate port type
 						requiredCapabilities.add(PortType.scanning);
+						break;
+					} else if (probe.type === ProbeType.loadCell) {
+						requiredCapabilities.add(PortType.loadCell);
 						break;
 					}
 				}
@@ -320,7 +329,14 @@ const ports = computed(() => {
 			requiredCapabilities.add(PortType.gpOut);
 			break;
 		case ConfigPortFunction.thermistor:
-			requiredCapabilities.add(PortType.thermistor);
+			switch (store.data.sensors.analog[props.index]?.type) {
+				case AnalogSensorType.thermopileTPiSObject:
+					requiredCapabilities.add(PortType.thermopile);
+					break;
+				default:
+					requiredCapabilities.add(PortType.thermistor);
+					break;
+			}
 			break;
 		case ConfigPortFunction.uart:
 			// none
@@ -336,7 +352,7 @@ const ports = computed(() => {
 		if (props.index < store.data.sensors.probes.length) {
 			const probe = store.data.sensors.probes[props.index];
 			if (probe !== null) {
-				mustBeOnMainboard = ![ProbeType.unfilteredDigital, ProbeType.blTouch, ProbeType.scanningAnalog].includes(probe.type);
+				mustBeOnMainboard = ![ProbeType.unfilteredDigital, ProbeType.blTouch, ProbeType.scanningAnalog, ProbeType.loadCell].includes(probe.type);
 			}
 		}
 	}
@@ -506,7 +522,7 @@ const disabled = computed(() => {
 			// Only enabled for modulated probes and smart effectors
 			if (props.index < store.data.sensors.probes.length) {
 				const probe = store.data.sensors.probes[props.index];
-				return (probe === null) || ![ProbeType.dumbModulated, ProbeType.alternateAnalog, ProbeType.digital, ProbeType.unfilteredDigital].includes(probe.type);
+				return (probe === null) || ![ProbeType.dumbModulated, ProbeType.digital, ProbeType.unfilteredDigital].includes(probe.type);
 			}
 			break;
 		case ConfigPortFunction.probeServo:
@@ -520,7 +536,7 @@ const disabled = computed(() => {
 		case ConfigPortFunction.thermistor:
 			// Input port selection is only available for thermistors
 			if (props.index < store.data.sensors.analog.length && store.data.sensors.analog[props.index] !== null) {
-				return ![AnalogSensorType.linearAnalog, AnalogSensorType.pt1000, AnalogSensorType.thermistor].includes(store.data.sensors.analog[props.index]!.type);
+				return ![AnalogSensorType.linearAnalog, AnalogSensorType.pt1000, AnalogSensorType.thermistor, AnalogSensorType.thermopileTPiSObject].includes(store.data.sensors.analog[props.index]!.type);
 			}
 			break;
 	}

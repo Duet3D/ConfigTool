@@ -39,11 +39,6 @@
 											:function="ConfigPortFunction.probeServo" :index="index" />
 							</div>
 							<div class="col-2">
-								<number-input label="Dive Height" title="Dive height of the probe" unit="mm"
-											  :min="-10000" :max="10000" :step="0.01" v-model="probe.diveHeight"
-											  :preset="getPresetProbeValue(index, 'diveHeight')" />
-							</div>
-							<div class="col-2">
 								<number-input label="Trigger Height" title="Z trigger height of the probe" unit="mm"
 											  :min="-10000" :max="10000" :step="0.01" v-model="probe.triggerHeight"
 											  :preset="getPresetProbeValue(index, 'triggerHeight')" />
@@ -55,8 +50,19 @@
 											  :preset="getPresetProbeValue(index, 'travelSpeed')" />
 							</div>
 							<div class="col-4">
-								<homing-speeds-input :probe-speeds="true" :speeds="probe.speeds"
-													 :preset="getPresetProbeValue(index, 'speeds')" />
+								<two-value-input :values="probe.diveHeights" fixed-length :positive="false"
+												 label="Dive Height" label-plural="Dive Heights" unit="mm"
+												 :min="-10000" :max="10000" :step="0.01"
+												 toggle-title="Use a separate dive height for subsequent taps"
+												 first-title="Dive height for the first tap"
+												 second-title="Dive height for subsequent taps"
+												 :preset="getPresetProbeValue(index, 'diveHeights')" />
+							</div>
+							<div class="col-4">
+								<two-value-input :values="probe.speeds" fixed-length label="Probe Speed" label-plural="Probe Speeds"
+												 toggle-title="Probe twice per point" first-title="First speed when probing"
+												 second-title="Second speed when probing"
+												 :preset="getPresetProbeValue(index, 'speeds')" />
 							</div>
 							<div v-if="probe.type === ProbeType.scanningAnalog" class="col-2">
 								<number-input label="Mesh Probe Speed"
@@ -65,6 +71,32 @@
 											  @update:model-value="probe.speeds[2] = $event"
 											  :preset="getPresetProbeValue(index, 'speeds', 2)" />
 							</div>
+							<template v-if="probe.type === ProbeType.loadCell && probe.loadCell !== null">
+								<div class="col-2">
+									<number-input label="Trigger Force"
+												  title="Force relative to the tare at which the probe triggers. Negative values trigger when the force falls to the threshold"
+												  unit="g" :step="1" v-model="probe.threshold"
+												  :preset="getPresetProbeValue(index, 'threshold')" />
+								</div>
+								<div class="col-2">
+									<number-input label="Load Cell Scale"
+												  title="Load cell scale in grams per ADC count. Use a negative value if the reading falls as the force increases"
+												  unit="g/count" :step="0.0001" v-model="probe.loadCell.gramsPerCount"
+												  :valid="probe.loadCell.gramsPerCount !== 0" />
+								</div>
+								<div class="col-2">
+									<number-input label="Min Preload"
+												  title="Lower limit of the preload measured when a probing move starts. Set both limits to the same value to disable the check"
+												  unit="g" :step="1" :model-value="probe.loadCell.preloadWindow[0]"
+												  @update:model-value="probe.loadCell.preloadWindow[0] = $event" />
+								</div>
+								<div class="col-2">
+									<number-input label="Max Preload"
+												  title="Upper limit of the preload measured when a probing move starts. Set both limits to the same value to disable the check"
+												  unit="g" :step="1" :min="probe.loadCell.preloadWindow[0]" :model-value="probe.loadCell.preloadWindow[1]"
+												  @update:model-value="probe.loadCell.preloadWindow[1] = $event" />
+								</div>
+							</template>
 							<div class="col-2">
 								<number-input label="Recovery Time"
 											  title="Optional probe recovery time before the probing move is started"
@@ -106,7 +138,7 @@
 						</template>
 					</div>
 				</div>
-				<div v-if="probe?.type === ProbeType.scanningAnalog" class="alert alert-info">
+				<div v-if="probe?.type === ProbeType.scanningAnalog" class="alert alert-info mb-0">
 					<i class="bi-info"></i>
 					ConfigTool only sets up basic parameters for SZPs. Read the <a
 					   href="https://docs.duet3d.com/en/Duet3D_hardware/Duet_3_family/Duet_3_Scanning_Z_Probe#connecting-peripherals"
@@ -129,7 +161,7 @@ import { computed } from "vue";
 import CheckInput from "@/components/inputs/CheckInput.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
 import PortInput from "@/components/inputs/PortInput.vue";
-import HomingSpeedsInput from "@/components/inputs/HomingSpeedsInput.vue";
+import TwoValueInput from "@/components/inputs/TwoValueInput.vue";
 import ProbeTypeInput from "@/components/inputs/ProbeTypeInput.vue";
 import ConfigSection from "@/components/ConfigSection.vue";
 
@@ -143,6 +175,7 @@ const canAddProbe = computed(() => (store.data.limits.zProbes === null) || (stor
 
 function addProbe() {
 	const probe = new Probe();
+	probe.diveHeights[0] = probe.diveHeights[1] = 5;
 	if (store.data.sensors.probes.length < store.preset.sensors.probes.length) {
 		probe.update(store.preset.sensors.probes[store.data.sensors.probes.length]);
 	}

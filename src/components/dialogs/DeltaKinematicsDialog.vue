@@ -45,7 +45,7 @@
 				</div>
 			</div>
 
-			<!-- TODO segmentation -->
+			<segmentation-input class="mt-2" />
 		</div>
 		<div v-else class="text-danger">
 			error, no delta kinematics selected
@@ -59,6 +59,7 @@ import { computed } from "vue";
 
 import BaseDialog from "./BaseDialog.vue";
 import NumberInput from "@/components/inputs/NumberInput.vue";
+import SegmentationInput from "@/components/inputs/SegmentationInput.vue";
 
 import { useStore } from "@/store";
 

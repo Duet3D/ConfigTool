@@ -80,7 +80,7 @@ export const DefaultInverseMatrix: { [Property in CoreKinematicsTypes]: Readonly
 	]
 }
 
-export const DefaultDeltaKinematics = new DeltaKinematics(KinematicsName.delta);
+export const DefaultDeltaKinematics = new DeltaKinematics(KinematicsName.linearDelta);
 DefaultDeltaKinematics.update({
 	deltaRadius: 105.6,
 	homedHeight: 250,

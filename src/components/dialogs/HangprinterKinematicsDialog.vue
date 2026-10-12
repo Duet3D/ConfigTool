@@ -2,8 +2,7 @@
 	<base-dialog title="Advanced Hangprinter Kinematics Settings"
 	             :model-value="props.modelValue" @update:model-value="emit('update:modelValue', $event)">
 		<div v-if="hangprinterKinematics">
-			No advanced options available
-			<!-- TODO Segmentation (segments per seconds, min segment length) -->
+			<segmentation-input />
 		</div>
 		<div v-else class="text-danger">
 			error, no hangprinter kinematics selected
@@ -16,7 +15,7 @@ import { HangprinterKinematics } from "@duet3d/objectmodel";
 import { computed } from "vue";
 
 import BaseDialog from "./BaseDialog.vue";
-//import NumberInput from "@/components/inputs/NumberInput.vue";
+import SegmentationInput from "@/components/inputs/SegmentationInput.vue";
 
 import { useStore } from "@/store";
 

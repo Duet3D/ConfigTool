@@ -22,6 +22,9 @@
                 case EndstopType.motorStallIndividual:
                     endstopConfig.S = 4;
                     break;
+                case EndstopType.motorStallEncoder:
+                    endstopConfig.S = 5;
+                    break;
             }
         } -%>
 M574 <%- params(endstopConfig) %> ; configure <%- axis.letter %> axis endstop

@@ -3,7 +3,6 @@ import {
 	AnalogSensorType,
 	Axis,
 	AxisLetter,
-	Board,
 	CoreKinematics,
 	DriverId,
 	Endstop,
@@ -22,6 +21,7 @@ import {
 	initObject,
 	KinematicsName,
 	Limits,
+	MainBoard,
 	Microstepping,
 	ModelSet,
 	Move,
@@ -42,7 +42,7 @@ import { ConfigPortFunction } from "@/store/model/ConfigPort";
 import { Boards, BoardType } from "@/store/Boards";
 
 const defaultTemplate = initObject(ConfigModel, {
-	boards: initCollection(Board, [
+	boards: initCollection(MainBoard, [
 		Boards[BoardType.Duet3Mini5PlusWiFi].objectModelBoard
 	]),
 	fans: initCollection(Fan, [
@@ -58,7 +58,7 @@ const defaultTemplate = initObject(ConfigModel, {
 		}
 	]),
 	heat: initObject(Heat, {
-		bedHeaters: [0],
+		bedHeaterMapping: [[0]],
 		heaters: initCollection(Heater, [
 			{
 				max: 140,
@@ -206,7 +206,8 @@ const defaultTemplate = initObject(ConfigModel, {
 		]),
 		probes: initCollection(Probe, [
 			{
-				type: ProbeType.analog
+				type: ProbeType.analog,
+				diveHeights: [5, 5]
 			}
 		])
 	}),
@@ -245,6 +246,11 @@ export const useStore = defineStore("model", {
     },
     actions: {
 		setModel(newModel: ConfigModel) {
+			const shortName = newModel.boards?.[0]?.shortName;
+			if (shortName !== undefined && !Object.values(Boards).some(board => board.objectModelBoard.shortName === shortName)) {
+				throw new Error(`Board ${shortName} is not supported by RRF 3.7. Please use the Config Tool for RRF 3.6 instead`);
+			}
+
 			// Update deprecated port functions
 			for (const port of newModel.configTool.ports) {
 				if (port.function === ConfigPortFunction.spindleForwards_deprecated) {
@@ -252,6 +258,12 @@ export const useStore = defineStore("model", {
 				} else if (port.function === ConfigPortFunction.spindleBackwards_deprecated) {
 					port.function = ConfigPortFunction.spindleSecondPort;
 				}
+			}
+
+			// Rename legacy kinematics name "delta" to "linearDelta"
+			const kinematics = (newModel as any).move?.kinematics;
+			if (kinematics && kinematics.name === "delta") {
+				kinematics.name = KinematicsName.linearDelta;
 			}
 
 			// Load model
