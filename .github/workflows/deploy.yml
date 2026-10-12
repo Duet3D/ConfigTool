@@ -3,8 +3,9 @@ name: Build and deploy ConfigTool
 on:
   push:
     branches:
-      - master
-      - dev
+      - v3.6-dev
+      - v3.7-dev
+      - v3.8-dev
   workflow_dispatch:
 
 jobs:
@@ -25,17 +26,16 @@ jobs:
       - name: Build ConfigTool
         run: npm run build
 
-      # Prerelease versions (alpha/beta/rc tagged in package.json) deploy under /beta
-      # so the stable build at the web root stays untouched
+      # Keyed on the branch so this file stays identical everywhere and survives merges between lines
       - name: Determine deployment target
         id: target
         run: |
-          version=$(node -p "require('./package.json').version")
-          if [[ "$version" =~ -(alpha|beta|rc) ]]; then
-            echo "remote_path=/var/www/configtool/beta" >> "$GITHUB_OUTPUT"
-          else
-            echo "remote_path=/var/www/configtool" >> "$GITHUB_OUTPUT"
-          fi
+          case "${{ github.ref_name }}" in
+            v3.6-dev) path=/var/www/configtool/3.6 ;;
+            v3.7-dev) path=/var/www/configtool ;;
+            *) path=/var/www/configtool/beta ;;
+          esac
+          echo "remote_path=$path" >> "$GITHUB_OUTPUT"
 
       - name: Upload ConfigTool to web root
         uses: Creepios/sftp-action@v1.0.5
