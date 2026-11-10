@@ -66,7 +66,7 @@
 							Fan Outputs
 						</th>
 						<th>
-							GPIO Ports
+							GPIO In / Out
 						</th>
 						<th>
 							<!-- Delete button -->
@@ -74,7 +74,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="(canBoard, index) in store.data.boards.slice(1)">
+					<tr v-for="(canBoard, index) in store.data.boards.slice(1)" :key="canBoard.canAddress!">
 						<td>
 							<select-input title="CAN address of this board"
 										  :model-value="canBoard.canAddress"
@@ -84,19 +84,19 @@
 						<td>
 							{{ ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType] }}
 						</td>
-						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].numDrivers }}
+						<td v-title="`Drivers: ${formatPorts(canBoard, getDriverNames(canBoard))}`">
+							{{ getBoardDefinition(canBoard).numDrivers }}
 						</td>
-						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.heater].length }}
+						<td v-title="`Heater outputs: ${formatPorts(canBoard, getBoardDefinition(canBoard).ports[PortType.heater])}`">
+							{{ getBoardDefinition(canBoard).ports[PortType.heater].length }}
 						</td>
-						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.fan].length }}
+						<td v-title="`Fan outputs: ${formatPorts(canBoard, getBoardDefinition(canBoard).ports[PortType.fan])}`">
+							{{ getBoardDefinition(canBoard).ports[PortType.fan].length }}
 						</td>
-						<td>
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.gpIn].length }}
+						<td v-title="`GPIO inputs: ${formatPorts(canBoard, getBoardDefinition(canBoard).ports[PortType.gpIn])}<br>GPIO outputs: ${formatPorts(canBoard, getBoardDefinition(canBoard).ports[PortType.gpOut])}`">
+							{{ getBoardDefinition(canBoard).ports[PortType.gpIn].length }}
 							/
-							{{ ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]].ports[PortType.gpOut].length }}
+							{{ getBoardDefinition(canBoard).ports[PortType.gpOut].length }}
 						</td>
 						<td>
 							<button class="btn btn-sm btn-danger" @click.prevent="store.data.removeExpansionBoard(index + 1)">
@@ -121,7 +121,7 @@ import SelectInput, { type SelectOption } from "@/components/inputs/SelectInput.
 import { useStore } from "@/store";
 import { PortType } from "@/store/BaseBoard";
 import { ConfigSectionType } from "@/store/sections";
-import { ExpansionBoards, ExpansionBoardType } from "@/store/ExpansionBoards";
+import { type ExpansionBoardDescriptor, ExpansionBoards, ExpansionBoardType } from "@/store/ExpansionBoards";
 import { ConfigPortFunction } from "@/store/model/ConfigPort";
 
 const store = useStore();
@@ -187,7 +187,19 @@ const canExpansionBoards = computed(() => {
 });
 
 const canExpansionBoardToAdd = ref(Object.keys(ExpansionBoardType).length > 0 ? Object.values(ExpansionBoardType)[0] as ExpansionBoardType : null);
-const canAddCanExpansionBoard = computed(() => canExpansionBoardToAdd.value || (store.data.limits.boards !== null && store.data.boards.length > store.data.limits.boards));
+const canAddCanExpansionBoard = computed(() => !!canExpansionBoardToAdd.value && (store.data.limits.boards === null || store.data.boards.length < store.data.limits.boards));
+
+function getBoardDefinition(canBoard: Board): ExpansionBoardDescriptor {
+	return ExpansionBoards[ExpansionBoardType[canBoard.shortName as keyof typeof ExpansionBoardType]];
+}
+
+function getDriverNames(canBoard: Board): Array<string> {
+	return Array.from({ length: getBoardDefinition(canBoard).numDrivers }, (_, i) => i.toString());
+}
+
+function formatPorts(canBoard: Board, ports: Array<string>): string {
+	return (ports.length > 0) ? ports.map(port => `${canBoard.canAddress}.${port}`).join(", ") : "none";
+}
 
 function getCanAddressOptions(currentAddress: number) {
 	const result = new Array<SelectOption>();

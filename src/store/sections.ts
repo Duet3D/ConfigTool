@@ -40,7 +40,7 @@ export function getSections() {
         ConfigSectionType.General,
         ConfigSectionType.Kinematics,
         ConfigSectionType.Accessories,
-        (store.data.limits.ledStrips ?? 0 > 0) ? ConfigSectionType.LedStrips : null,
+        ((store.data.limits.ledStrips ?? 0) > 0) ? ConfigSectionType.LedStrips : null,
         (store.data.network.interfaces.length > 0) ? ConfigSectionType.Network : null,
         ConfigSectionType.Expansion,
         ConfigSectionType.Accelerometers,

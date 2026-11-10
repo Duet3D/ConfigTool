@@ -29,7 +29,7 @@ M569 <%- params({
     S: driver.forwards ? 1 : 0,
     R: driver.external.enablePolarity ? 1 : 0,
     T: [driver.external.minStepPulse, driver.external.minStepInterval, driver.external.dirSetupTime, driver.external.holdTime]
-}) %> ; driver <%- driver.id.toString() %> goes <%- driver.forwards ? "forwards" : "backwards" %> and requires an <%- driver.enablePolarity ? "active-high" : "active-low" %> enable signal (<%- axis ? `${axis.letter} axis` : `extruder ${extruderIndex}` %>)
+}) %> ; driver <%- driver.id.toString() %> goes <%- driver.forwards ? "forwards" : "backwards" %> and requires an <%- driver.external.enablePolarity ? "active-high" : "active-low" %> enable signal (<%- axis ? `${axis.letter} axis` : `extruder ${extruderIndex}` %>)
 <%          hasExternalDrivers = true;
         } 
     }

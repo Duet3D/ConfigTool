@@ -98,6 +98,13 @@
 							  :preset="store.preset.state.machineMode" />
 			</div>
 		</div>
+		<div v-if="revisionVoltageWarnings.length > 0" class="alert alert-warning mt-3 mb-0">
+			<i class="bi-exclamation-triangle"></i>
+			The configured auto-save thresholds imply a supply voltage that older board revisions do not support:
+			<ul class="mb-0">
+				<li v-for="warning in revisionVoltageWarnings">{{ warning }}</li>
+			</ul>
+		</div>
 	</config-section>
 </template>
 
@@ -126,7 +133,9 @@ import NumberInput from "@/components/inputs/NumberInput.vue";
 import SelectInput from "@/components/inputs/SelectInput.vue";
 import TextInput from "@/components/inputs/TextInput.vue";
 
+import type { BaseBoardDescriptor } from "@/store/BaseBoard";
 import { BoardType, UnsupportedBoardType } from "@/store/Boards";
+import { getExpansionBoardDefinition, getExpansionBoardType } from "@/store/ExpansionBoards";
 import { ConfigSectionType } from "@/store/sections";
 import { useStore } from "@/store";
 
@@ -189,6 +198,28 @@ const boardPreset = computed(() => store.preset.boardType as string);
 // Misc
 const supportsSbcMode = computed(() => !!store.data.boardDefinition?.objectModelBoard.iapFileNameSBC);
 const supportsAutoSave = computed(() => !!store.data.boardDefinition?.objectModelBoard.vIn);
+
+// CAN boards normally share the main board's supply
+const revisionVoltageWarnings = computed(() => {
+	const result: Array<string> = [], autoSave = store.data.configTool.autoSave;
+	if (supportsAutoSave.value && autoSave.enabled) {
+		const threshold = Math.max(autoSave.saveThreshold, autoSave.resumeThreshold);
+		const check = (boardDefinition: BaseBoardDescriptor | null, name: string) => {
+			const limit = boardDefinition?.maxVoltageBeforeRevision;
+			if (limit && threshold > limit.maxVoltage) {
+				result.push(`${name} requires v${limit.revision} or later to operate above ${limit.maxVoltage}V`);
+			}
+		};
+
+		check(store.data.boardDefinition, store.data.boardType as string);
+		for (const board of store.data.boards) {
+			if (board.canAddress !== null && board.canAddress > 0) {
+				check(getExpansionBoardDefinition(board), `${getExpansionBoardType(board)} (CAN address ${board.canAddress})`);
+			}
+		}
+	}
+	return result;
+});
 
 // Machine Mode
 const machineModeOptions = computed(() => [

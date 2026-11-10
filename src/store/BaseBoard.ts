@@ -15,6 +15,7 @@ export interface BaseBoardDescriptor {
 	motorMaxCurrent: number;
 	minVoltage: number,
 	maxVoltage: number,
+	maxVoltageBeforeRevision?: { revision: string, maxVoltage: number };	// lower VIN rating of boards older than the given revision
 	numDrivers: number;                         // TODO add this to object model -> boards
 	microstepInterpolations: Array<number>;     // TODO add this to object model -> boards
 	objectModelBoard: Board;

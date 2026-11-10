@@ -25,6 +25,7 @@
                 if (!boardDefinition?.hasSmartDrivers) {
                     delete currents[axis.letter];
                     delete microstepping[axis.letter];
+                    delete microsteppingInterpolated[axis.letter];
                     break;
                 }
             }

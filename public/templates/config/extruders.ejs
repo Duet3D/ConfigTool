@@ -1,24 +1,21 @@
 <%  const microstepping = [], microsteppingInterpolated = [], currents = [];
     for (let i = 0; i < model.move.extruders.length; i++) {
         const extruder = model.move.extruders[i];
-        if (extruder.microstepping.interpolated) {
-            microsteppingInterpolated.push(extruder.microstepping.value);
+        const board = model.boards.find(board => (board.canAddress ?? 0) === (extruder.driver.board ?? 0));
+        const boardDefinition = !board ? null : (board.canAddress > 0) ? getExpansionBoardDefinition(board) : getBoardDefinition(model);
+        if (!boardDefinition?.hasSmartDrivers) {
             microstepping.push(-1);
-        } else {
-            microstepping.push(extruder.microstepping.value);
             microsteppingInterpolated.push(-1);
-        }
-
-        const board = model.boards.find(board => board.canAddress === extruder.driver.board);
-        if (board) {
-            const boardDefinition = (board.canAddress > 0) ? getExpansionBoardDefinition(board) : getBoardDefinition(model);
-            if (boardDefinition?.hasSmartDrivers) {
-                currents.push(extruder.current);
-            } else {
-                currents.push(0);
-            }
-        } else {
             currents.push(0);
+        } else {
+            if (extruder.microstepping.interpolated) {
+                microsteppingInterpolated.push(extruder.microstepping.value);
+                microstepping.push(-1);
+            } else {
+                microstepping.push(extruder.microstepping.value);
+                microsteppingInterpolated.push(-1);
+            }
+            currents.push(extruder.current);
         }
     }
 
